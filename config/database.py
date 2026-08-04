@@ -1,6 +1,12 @@
 import os
 from pymongo import MongoClient
 
-cliente = MongoClient(os.environ.get("MONGO_URI"))
+MONGO_URI = os.environ.get("MONGO_URI")
 
-db = cliente["CIEM"]
+cliente = MongoClient(
+    MONGO_URI,
+    tls=True,
+    serverSelectionTimeoutMS=30000
+)
+
+db = cliente["CIEM_Academico"]
