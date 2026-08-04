@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>
+Nueva Matrícula 2026 | CIEM Académico
+</title>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet">
+
+
+<style>
+
+body{
+
+background:#f1f5f9;
+font-family:'Segoe UI',sans-serif;
+
+}
+
+
+.container{
+
+max-width:1200px;
+
+}
+
+
+.header{
+
+background:linear-gradient(135deg,#08142C,#1E4E8C);
+color:white;
+padding:30px;
+border-radius:20px;
+box-shadow:0 8px 20px rgba(0,0,0,.15);
+
+}
+
+
+.card{
+
+border:none;
+border-radius:20px;
+box-shadow:0 5px 20px rgba(0,0,0,.12);
+margin-bottom:25px;
+
+}
+
+
+.card-header{
+
+background:#08142C;
+color:white;
+font-weight:700;
+font-size:18px;
+
+}
+
+
+label{
+
+font-weight:600;
+
+}
+
+
+.form-control,
+.form-select{
+
+border-radius:10px;
+
+}
+
+
+.btn-ciem{
+
+background:#2563eb;
+color:white;
+
+}
+
+
+.btn-ciem:hover{
+
+background:#1d4ed8;
+color:white;
+
+}
+
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+<div class="container mt-4">
+
+
+
+<!-- ENCABEZADO -->
+
+<div class="header mb-4">
+
+
+<div class="d-flex justify-content-between align-items-center">
+
+
+<div>
+
+
+<h2>
+📝 Hoja de Matrícula Año Lectivo 2026
+</h2>
+
+
+<p class="mb-0">
+Colegio Integral Emanuel Matagalpa - CIEM
+</p>
+
+
+</div>
+
+
+
+<a href="{{ url_for('admin_dashboard') }}"
+class="btn btn-light">
+
+🏠 Regresar Dashboard
+
+</a>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<form method="POST">
+
+
+
+
+
+<!-- INFORMACION MATRICULA -->
+
+<div class="card">
+
+
+<div class="card-header">
+
+📌 Información de Matrícula
+
+</div>
+
+
+<div class="card-body">
+
+
+<div class="row">
+
+
+<div class="col-md-4">
+
+<label>
+Fecha de matrícula
+</label>
+
+<input type="date"
+name="fecha_matricula"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-4">
+
+<label>
+Código del estudiante
+</label>
+
+<input type="text"
+name="codigo_estudiante"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-2">
+
+<label>
+Grado
+</label>
+
+<input type="text"
+name="grado"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-2">
+
+<label>
+Sección
+</label>
+
+<input type="text"
+name="seccion"
+class="form-control">
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- INFORMACION ESTUDIANTE -->
+
+<div class="card">
+
+
+<div class="card-header">
+
+👦 Información del Estudiante
+
+</div>
+
+
+<div class="card-body">
+
+
+<div class="row">
+
+
+<div class="col-md-3">
+
+<label>
+1er Apellido
+</label>
+
+<input name="primer_apellido"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-3">
+
+<label>
+2do Apellido
+</label>
+
+<input name="segundo_apellido"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-3">
+
+<label>
+1er Nombre
+</label>
+
+<input name="primer_nombre"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-3">
+
+<label>
+2do Nombre
+</label>
+
+<input name="segundo_nombre"
+class="form-control">
+
+</div>
+
+
+
+
+<div class="col-md-2 mt-3">
+
+<label>
+Día nacimiento
+</label>
+
+<input type="number"
+name="dia"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-2 mt-3">
+
+<label>
+Mes
+</label>
+
+<input type="number"
+name="mes"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-2 mt-3">
+
+<label>
+Año
+</label>
+
+<input type="number"
+name="anio"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-2 mt-3">
+
+<label>
+Edad
+</label>
+
+<input type="number"
+name="edad"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-2 mt-3">
+
+<label>
+Género
+</label>
+
+
+<select name="genero"
+class="form-select">
+
+<option>M</option>
+<option>F</option>
+
+</select>
+
+
+</div>
+
+
+
+<div class="col-md-4 mt-3">
+
+<label>
+Lugar de nacimiento
+</label>
+
+<input name="lugar_nacimiento"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-2 mt-3">
+
+<label>
+Talla
+</label>
+
+<input name="talla"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-2 mt-3">
+
+<label>
+Peso
+</label>
+
+<input name="peso"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-2 mt-3">
+
+<label>
+Tipo de sangre
+</label>
+
+<input name="tipo_sangre"
+class="form-control">
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- UBICACION -->
+
+
+<div class="card">
+
+
+<div class="card-header">
+
+📍 Ubicación del Estudiante
+
+</div>
+
+
+<div class="card-body">
+
+
+<div class="row">
+
+
+<div class="col-md-4">
+
+<label>
+Dirección
+</label>
+
+<input name="direccion"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-3">
+
+<label>
+Barrio
+</label>
+
+<input name="barrio"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-2">
+
+<label>
+Teléfono
+</label>
+
+<input name="telefono"
+class="form-control">
+
+</div>
+
+
+
+<div class="col-md-3">
+
+<label>
+Celular
+</label>
+
+<input name="celular"
+class="form-control">
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- PADRES -->
+
+
+<div class="card">
+
+
+<div class="card-header">
+
+👨‍👩‍👦 Información de Padres, Madres y Tutor
+
+</div>
+
+
+<div class="card-body">
+
+
+<h6>Padre</h6>
+
+
+<div class="row">
+
+
+<div class="col-md-3">
+<input name="padre_nombre"
+placeholder="Nombre Padre"
+class="form-control">
+</div>
+
+
+<div class="col-md-3">
+<input name="padre_cedula"
+placeholder="Cédula"
+class="form-control">
+</div>
+
+
+<div class="col-md-3">
+<input name="padre_profesion"
+placeholder="Profesión"
+class="form-control">
+</div>
+
+
+<div class="col-md-3">
+<input name="padre_celular"
+placeholder="Celular"
+class="form-control">
+</div>
+
+
+</div>
+
+
+<hr>
+
+
+<h6>Madre</h6>
+
+
+<div class="row">
+
+
+<div class="col-md-3">
+<input name="madre_nombre"
+placeholder="Nombre Madre"
+class="form-control">
+</div>
+
+
+<div class="col-md-3">
+<input name="madre_cedula"
+placeholder="Cédula"
+class="form-control">
+</div>
+
+
+<div class="col-md-3">
+<input name="madre_profesion"
+placeholder="Profesión"
+class="form-control">
+</div>
+
+
+<div class="col-md-3">
+<input name="madre_celular"
+placeholder="Celular"
+class="form-control">
+</div>
+
+
+</div>
+
+
+
+<hr>
+
+
+<h6>Tutor</h6>
+
+
+<div class="row">
+
+
+<div class="col-md-3">
+<input name="tutor_nombre"
+placeholder="Nombre Tutor"
+class="form-control">
+</div>
+
+
+<div class="col-md-3">
+<input name="tutor_cedula"
+placeholder="Cédula"
+class="form-control">
+</div>
+
+
+<div class="col-md-3">
+<input name="tutor_profesion"
+placeholder="Profesión"
+class="form-control">
+</div>
+
+
+<div class="col-md-3">
+<input name="tutor_celular"
+placeholder="Celular"
+class="form-control">
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<!-- POLITICAS -->
+
+
+<div class="card">
+
+
+<div class="card-body">
+
+
+<input type="checkbox" required>
+
+Acepto cumplir con el Plan Educativo Institucional, Manual de Convivencia Escolar y políticas internas del Colegio Integral Emanuel Matagalpa.
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<button type="submit"
+class="btn btn-ciem btn-lg">
+
+💾 Guardar Matrícula
+
+</button>
+
+
+
+<a href="{{ url_for('listar_matriculas') }}"
+class="btn btn-secondary btn-lg">
+
+⬅ Regresar Matrículas
+
+</a>
+
+
+
+<a href="{{ url_for('admin_dashboard') }}"
+class="btn btn-dark btn-lg">
+
+🏠 Dashboard
+
+</a>
+
+
+
+
+</form>
+
+
+</div>
+
+
+</body>
+
+</html>

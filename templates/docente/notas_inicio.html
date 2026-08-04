@@ -1,0 +1,25 @@
+{% for asignatura in asignaturas %}
+
+<div class="card mb-3">
+
+    <div class="card-body">
+
+        <h5>{{ asignatura.nombre }}</h5>
+
+        <p>
+            {{ asignatura.grado }}° - Sección {{ asignatura.seccion }}
+        </p>
+
+        <a href="{{ url_for('docente.docente_notas', asignatura_id=asignatura._id) }}"
+
+            <i class="bi bi-pencil-square"></i>
+
+            Abrir Registro
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endfor %}

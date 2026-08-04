@@ -1,0 +1,12 @@
+﻿<form method="GET" action="/docente">
+    <select name="curso" onchange="this.form.submit()">
+
+        {% for c in cursos %}
+            <option value="{{ c.nombre }}"
+                {% if c.nombre == curso_activo %}selected{% endif %}>
+                {{ c.nombre }}
+            </option>
+        {% endfor %}
+
+    </select>
+</form>

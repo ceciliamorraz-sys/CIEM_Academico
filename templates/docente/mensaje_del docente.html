@@ -1,0 +1,20 @@
+<form method="POST"
+action="{{ url_for('docente.responder_mensaje', id=conversacion._id) }}">
+
+
+<textarea 
+name="respuesta"
+class="form-control"
+placeholder="Escriba respuesta al padre..."
+required>
+</textarea>
+
+
+<button class="btn btn-success mt-2">
+
+Enviar respuesta
+
+</button>
+
+
+</form>

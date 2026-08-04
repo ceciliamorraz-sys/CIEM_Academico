@@ -1,0 +1,239 @@
+/* =====================================================
+   CIEM - VER CLASE / ASIGNATURA
+===================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: #eef3f8;
+    color: #2c3e50;
+}
+
+
+/*==========================
+CONTENEDOR
+==========================*/
+
+.container {
+    width: 95%;
+    max-width: 1400px;
+    margin: 30px auto;
+}
+
+
+/*==========================
+ENCABEZADO
+==========================*/
+
+.header-clase {
+    background: linear-gradient(135deg, #1D3256, #28497e);
+    color: #fff;
+    border-radius: 18px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .15);
+}
+
+.header-clase h1 {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.header-clase h1 i {
+    color: #FFC107;
+}
+
+.header-clase p {
+    font-size: 17px;
+    opacity: .95;
+}
+
+
+/*==========================
+BOTONES
+==========================*/
+
+.acciones-clase {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.btn-clase {
+    background: #fff;
+    text-decoration: none;
+    color: #1D3256;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    transition: .3s;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+    border-top: 5px solid #FFC107;
+}
+
+.btn-clase:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, .18);
+}
+
+.btn-clase i {
+    font-size: 38px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.btn-clase.notas i {
+    color: #0d6efd;
+}
+
+.btn-clase.asistencia i {
+    color: #198754;
+}
+
+.btn-clase.incidencia i {
+    color: #dc3545;
+}
+
+
+/*==========================
+CARD
+==========================*/
+
+.card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 25px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
+}
+
+.card h2 {
+    color: #1D3256;
+    margin-bottom: 20px;
+}
+
+.card h2 i {
+    color: #FFC107;
+}
+
+
+/*==========================
+TABLA
+==========================*/
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #1D3256;
+    color: white;
+}
+
+thead th {
+    padding: 15px;
+    text-align: center;
+}
+
+tbody td {
+    padding: 14px;
+    text-align: center;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+tbody tr:nth-child(even) {
+    background: #f8f9fc;
+}
+
+tbody tr:hover {
+    background: #eaf2ff;
+    transition: .3s;
+}
+
+tbody td:nth-child(2) {
+    text-align: left;
+    font-weight: 600;
+}
+
+
+/*==========================
+ESTADO
+==========================*/
+
+.estado {
+    padding: 6px 12px;
+    border-radius: 25px;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.activo {
+    background: #198754;
+}
+
+.inactivo {
+    background: #dc3545;
+}
+
+
+/*==========================
+VOLVER
+==========================*/
+
+.volver {
+    display: inline-block;
+    margin-top: 25px;
+    text-decoration: none;
+    background: #1D3256;
+    color: white;
+    padding: 14px 22px;
+    border-radius: 10px;
+    transition: .3s;
+}
+
+.volver:hover {
+    background: #28497e;
+}
+
+.volver i {
+    margin-right: 8px;
+}
+
+
+/*==========================
+RESPONSIVE
+==========================*/
+
+@media(max-width:1100px) {
+    .acciones-clase {
+        grid-template-columns: 1fr;
+    }
+    .header-clase {
+        text-align: center;
+    }
+    table {
+        font-size: 14px;
+    }
+}
+
+@media(max-width:768px) {
+    .container {
+        width: 98%;
+    }
+    .card {
+        overflow-x: auto;
+    }
+    table {
+        min-width: 700px;
+    }
+    .header-clase h1 {
+        font-size: 26px;
+    }
+}

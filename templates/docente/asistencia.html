@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>
+Asistencia | CIEM Académico
+</title>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='css/asistencia.css') }}">
+
+
+</head>
+
+
+
+<body>
+
+
+
+<div class="container-fluid py-4">
+
+
+
+<!-- ================= HEADER ================= -->
+
+
+<div class="header-asistencia d-flex justify-content-between align-items-center">
+
+
+<div class="d-flex align-items-center">
+
+
+<img
+src="{{ url_for('static', filename='img/logo.jpg') }}"
+class="logo-ciem">
+
+
+
+<div class="ms-3">
+
+
+<h2>
+
+<i class="bi bi-calendar-check-fill"></i>
+
+Registro de Asistencia
+
+</h2>
+
+
+<p>
+Colegio Integral Emanuel Matagalpa
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+<a href="{{ url_for('docente.aulas') }}"
+class="btn btn-light">
+
+
+<i class="bi bi-arrow-left-circle"></i>
+
+Volver
+
+
+</a>
+
+
+
+</div>
+
+
+
+
+
+
+<!-- ================= INFORMACION CLASE ================= -->
+
+
+<div class="card shadow mt-4">
+
+
+<div class="card-body">
+
+
+<div class="row g-3">
+
+
+
+<div class="col-md-4">
+
+
+<label class="form-label">
+
+Asignatura
+
+</label>
+
+
+<input 
+class="form-control"
+readonly
+value="{{ asignatura.nombre }}">
+
+
+</div>
+
+
+
+
+<div class="col-md-2">
+
+
+<label class="form-label">
+
+Nivel
+
+</label>
+
+
+<input
+class="form-control"
+readonly
+value="{{ asignatura.nivel }}">
+
+
+</div>
+
+
+
+
+<div class="col-md-2">
+
+
+<label class="form-label">
+
+Grado
+
+</label>
+
+
+<input
+class="form-control"
+readonly
+value="{{ asignatura.grado }}">
+
+
+</div>
+
+
+
+
+
+<div class="col-md-2">
+
+
+<label class="form-label">
+
+Sección
+
+</label>
+
+
+<input
+class="form-control"
+readonly
+value="{{ asignatura.seccion }}">
+
+
+</div>
+
+
+
+
+
+<div class="col-md-2">
+
+
+<label class="form-label">
+
+Fecha
+
+</label>
+
+
+<input
+type="date"
+class="form-control"
+name="fecha"
+value="{{ fecha }}"
+readonly>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<!-- ================= FORMULARIO ================= -->
+
+
+<form method="POST"
+action="{{ url_for('docente.guardar_asistencia') }}">
+
+
+
+<input type="hidden"
+name="asignatura_id"
+value="{{ asignatura._id }}">
+
+
+
+<input type="hidden"
+name="grado"
+value="{{ asignatura.grado }}">
+
+
+<input type="hidden"
+name="seccion"
+value="{{ asignatura.seccion }}">
+
+
+<input type="hidden"
+name="fecha"
+value="{{ fecha }}">
+
+
+
+
+
+
+
+<div class="card shadow mt-4">
+
+
+
+<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+
+
+
+<h5 class="mb-0">
+
+<i class="bi bi-people-fill"></i>
+
+Lista de estudiantes
+
+</h5>
+
+
+
+
+<button
+type="button"
+class="btn btn-warning btn-sm"
+id="marcarTodos">
+
+
+<i class="bi bi-check2-all"></i>
+
+Marcar todos presentes
+
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+<div class="card-body">
+
+
+
+<div class="table-responsive">
+
+
+
+<table class="table table-hover align-middle">
+
+
+
+<thead>
+
+
+<tr>
+
+
+<th>
+#
+</th>
+
+
+<th>
+Código
+</th>
+
+
+<th>
+Estudiante
+</th>
+
+
+<th>
+Estado
+</th>
+
+
+<th>
+Observación
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+
+
+
+<tbody>
+
+
+
+{% for e in estudiantes %}
+
+
+
+<tr>
+
+
+
+<td>
+
+{{ loop.index }}
+
+</td>
+
+
+
+
+
+<td>
+
+
+{{ e.codigo }}
+
+
+<input
+type="hidden"
+name="estudiante_id"
+value="{{ e._id }}">
+
+
+
+</td>
+
+
+
+
+
+
+
+<td>
+
+
+<div class="d-flex align-items-center">
+
+
+
+<img
+src="{{ url_for('static', filename='img/user.jpg') }}"
+class="foto-estudiante">
+
+
+
+<span class="ms-3">
+
+{{ e.nombre }}
+
+</span>
+
+
+
+</div>
+
+
+</td>
+
+
+
+
+
+
+
+<td>
+
+
+<select
+
+class="form-select estado"
+
+name="estado_{{ e._id }}"
+
+>
+
+
+
+<option value="Presente">
+
+🟢 Presente
+
+</option>
+
+
+
+<option value="Ausente">
+
+🔴 Ausente
+
+</option>
+
+
+
+<option value="Tardanza">
+
+🟡 Tardanza
+
+</option>
+
+
+
+<option value="Justificada">
+
+🔵 Justificada
+
+</option>
+
+
+
+</select>
+
+
+
+</td>
+
+
+
+
+
+
+
+<td>
+
+
+<input
+
+type="text"
+
+class="form-control"
+
+name="observacion_{{ e._id }}"
+
+placeholder="Observación">
+
+
+
+</td>
+
+
+
+
+</tr>
+
+
+
+
+{% endfor %}
+
+
+
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<div class="card-footer d-flex justify-content-between">
+
+
+<a href="{{ url_for('docente.aulas') }}"
+class="btn btn-secondary">
+
+
+<i class="bi bi-arrow-left"></i>
+
+Cancelar
+
+
+</a>
+
+
+
+
+
+<button
+type="submit"
+class="btn btn-primary">
+
+
+<i class="bi bi-save"></i>
+
+Guardar asistencia
+
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+</form>
+
+
+
+
+</div>
+
+
+
+
+
+
+<script>
+
+
+document
+.getElementById("marcarTodos")
+.addEventListener("click",function(){
+
+
+document
+.querySelectorAll(".estado")
+.forEach(function(select){
+
+
+select.value="Presente";
+
+
+});
+
+
+});
+
+
+
+</script>
+
+
+
+</body>
+
+</html>

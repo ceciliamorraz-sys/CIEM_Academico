@@ -1,0 +1,380 @@
+/* =====================================
+   CIEM ACADÉMICO
+   DASHBOARD DOCENTE
+===================================== */
+
+:root {
+    --ciem-dark: #08142C;
+    --ciem-blue: #0D2A52;
+    --ciem-primary: #1E4E8C;
+    --ciem-light: #EAF2FF;
+    --white: #FFFFFF;
+    --gray: #64748B;
+    --border: #D9E2F2;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body {
+    background: #F5F8FC;
+    color: #1E293B;
+    overflow-x: hidden;
+}
+
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+
+/* =====================================
+            SIDEBAR
+===================================== */
+
+.sidebar {
+    width: 270px;
+    background: linear-gradient( 180deg, var(--ciem-dark), var(--ciem-blue));
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 25px 18px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+}
+
+.brand img {
+    width: 55px;
+    height: 55px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.brand h2 {
+    font-size: 22px;
+}
+
+.brand span {
+    opacity: .75;
+    font-size: 13px;
+}
+
+
+/* PERFIL */
+
+.perfil {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0;
+}
+
+.avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: white;
+    color: var(--ciem-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.perfil small {
+    opacity: .7;
+}
+
+
+/* MENÚ */
+
+nav {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+
+/* Scroll elegante */
+
+nav::-webkit-scrollbar {
+    width: 5px;
+}
+
+nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .25);
+    border-radius: 10px;
+}
+
+nav a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 15px;
+    margin-bottom: 6px;
+    border-radius: 12px;
+    color: white;
+    text-decoration: none;
+    transition: .25s;
+}
+
+nav a i {
+    font-size: 18px;
+}
+
+nav a:hover,
+nav a.activo {
+    background: rgba(255, 255, 255, .12);
+}
+
+
+/* =====================================
+        BOTÓN SALIR
+===================================== */
+
+.salir {
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 15px;
+    border-radius: 15px;
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+    font-size: 15px;
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(255, 255, 255, .18);
+    transition: .35s;
+}
+
+.salir i {
+    font-size: 20px;
+}
+
+.salir:hover {
+    background: #FFC107;
+    color: #08142C;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
+}
+
+
+/* =====================================
+          CONTENIDO
+===================================== */
+
+.contenido {
+    margin-left: 270px;
+    width: calc(100% - 270px);
+    padding: 35px;
+}
+
+header h1 {
+    font-size: 32px;
+    color: var(--ciem-dark);
+}
+
+.fecha {
+    color: var(--ciem-primary);
+    font-weight: 600;
+}
+
+header p {
+    color: var(--gray);
+}
+
+
+/* =====================================
+          TARJETAS
+===================================== */
+
+.cards {
+    margin-top: 35px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    border-left: 5px solid var(--ciem-primary);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, .06);
+}
+
+.card i {
+    font-size: 34px;
+    color: var(--ciem-primary);
+}
+
+.card span {
+    color: var(--gray);
+}
+
+.card h2 {
+    font-size: 30px;
+    color: var(--ciem-dark);
+}
+
+
+/* =====================================
+            PANELES
+===================================== */
+
+.panel-grid {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+}
+
+.panel {
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, .06);
+}
+
+.panel h2 {
+    margin-bottom: 18px;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px;
+    border-bottom: 1px solid var(--border);
+}
+
+.item h3 {
+    color: var(--ciem-primary);
+}
+
+.item p {
+    color: var(--gray);
+}
+
+.item a {
+    color: var(--ciem-primary);
+    font-size: 20px;
+    margin-left: 10px;
+}
+
+
+/* ACCIONES */
+
+.acciones {
+    display: grid;
+    gap: 12px;
+}
+
+.acciones a {
+    background: var(--ciem-light);
+    color: var(--ciem-primary);
+    padding: 14px;
+    border-radius: 12px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: .3s;
+}
+
+.acciones a:hover {
+    background: #D9E7FF;
+}
+
+
+/* IA */
+
+.ia {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    background: linear-gradient( 135deg, #08142C, #1E4E8C);
+    color: white;
+}
+
+.ia h2 {
+    color: white;
+}
+
+.ia p {
+    color: #E5E7EB;
+}
+
+.ia i {
+    font-size: 45px;
+}
+
+.ia button {
+    margin-left: auto;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+
+/* FOOTER */
+
+footer {
+    margin-top: 35px;
+    text-align: center;
+    color: var(--gray);
+}
+
+
+/* =====================================
+            RESPONSIVE
+===================================== */
+
+@media(max-width:1000px) {
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .panel-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(max-width:700px) {
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+    .contenido {
+        margin-left: 0;
+        width: 100%;
+    }
+    .app {
+        display: block;
+    }
+    .cards {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Perfil del Estudiante | CIEM Académico</title>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+
+
+<style>
+
+
+body{
+
+    background:#f4f6f9;
+
+    font-family:'Segoe UI',sans-serif;
+
+}
+
+
+/* HEADER */
+
+.header-ciem{
+
+
+    background:linear-gradient(
+        135deg,
+        #08142C,
+        #1E4E8C
+    );
+
+
+    color:white;
+
+    padding:30px;
+
+    border-radius:20px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.15);
+
+}
+
+
+
+.logo-ciem{
+
+
+    width:85px;
+
+    height:85px;
+
+    object-fit:contain;
+
+    background:white;
+
+    padding:8px;
+
+    border-radius:18px;
+
+
+}
+
+
+
+
+/* TARJETA PERFIL */
+
+
+.profile-card{
+
+
+    background:white;
+
+    border-radius:25px;
+
+    padding:30px;
+
+    box-shadow:
+
+    0 8px 20px rgba(0,0,0,.08);
+
+
+}
+
+
+
+
+/* FOTO */
+
+
+.avatar{
+
+
+    width:130px;
+
+    height:130px;
+
+    border-radius:50%;
+
+    background:#FFC107;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    margin:auto;
+
+    overflow:hidden;
+
+    font-size:60px;
+
+    color:#08142C;
+
+
+}
+
+
+
+.foto-estudiante{
+
+
+    width:130px;
+
+    height:130px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+
+}
+
+
+
+
+/* INFORMACION */
+
+
+.info-card{
+
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    height:100%;
+
+
+    box-shadow:
+
+    0 5px 15px rgba(0,0,0,.07);
+
+
+}
+
+
+
+.info-title{
+
+
+    color:#08142C;
+
+    font-weight:700;
+
+    border-bottom:3px solid #FFC107;
+
+    padding-bottom:10px;
+
+    margin-bottom:20px;
+
+
+}
+
+
+
+.item{
+
+
+    padding:12px;
+
+    border-bottom:1px solid #eee;
+
+}
+
+
+
+.item i{
+
+
+    color:#1E4E8C;
+
+    margin-right:10px;
+
+
+}
+
+
+
+
+/* BOTONES */
+
+
+.btn-ciem{
+
+
+    background:#FFC107;
+
+    color:#08142C;
+
+    font-weight:bold;
+
+    border-radius:12px;
+
+    padding:12px 25px;
+
+}
+
+
+
+.btn-ciem:hover{
+
+
+    background:#e0a800;
+
+}
+
+
+
+.btn-blue{
+
+
+    background:#1E4E8C;
+
+    color:white;
+
+    border-radius:12px;
+
+    padding:12px 25px;
+
+
+}
+
+
+
+.btn-blue:hover{
+
+
+    background:#08142C;
+
+    color:white;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+<div class="container py-4">
+
+
+
+<!-- ENCABEZADO -->
+
+<div class="header-ciem mb-4">
+
+
+<div class="d-flex align-items-center">
+
+
+<img
+
+src="{{ url_for('static',
+filename='img/logo.jpg') }}"
+
+class="logo-ciem me-4">
+
+
+
+<div>
+
+
+<h1>
+
+<i class="bi bi-person-badge"></i>
+
+Perfil del Estudiante
+
+
+</h1>
+
+
+<p class="mb-0">
+
+Expediente académico digital CIEM
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<a href="{{ url_for('docente.estudiantes') }}"
+
+class="btn btn-light mb-4">
+
+
+<i class="bi bi-arrow-left"></i>
+
+Regresar a estudiantes
+
+
+</a>
+
+
+
+
+
+
+<!-- PERFIL PRINCIPAL -->
+
+
+<div class="profile-card mb-4">
+
+
+<div class="row align-items-center">
+
+
+
+<div class="col-md-3 text-center">
+
+
+<div class="avatar">
+
+
+{% if estudiante.foto %}
+
+
+<img
+
+src="{{ url_for(
+'static',
+filename='img/estudiantes/' + estudiante.foto
+) }}"
+
+class="foto-estudiante">
+
+
+{% else %}
+
+
+<i class="bi bi-person-fill"></i>
+
+
+{% endif %}
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-9">
+
+
+<h2 class="fw-bold">
+
+{{ estudiante.nombre }}
+
+</h2>
+
+
+
+<span class="badge bg-success">
+
+{{ estudiante.estado }}
+
+</span>
+
+
+
+<hr>
+
+
+
+
+<div class="row">
+
+
+<div class="col-md-4">
+
+
+<strong>
+
+Código
+
+</strong>
+
+<p>
+
+{{ estudiante.codigo }}
+
+</p>
+
+
+</div>
+
+
+
+<div class="col-md-4">
+
+
+<strong>
+
+Grado
+
+</strong>
+
+<p>
+
+{{ estudiante.grado }}
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="col-md-4">
+
+
+<strong>
+
+Sección
+
+</strong>
+
+<p>
+
+{{ estudiante.seccion }}
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="row g-4">
+
+
+
+<!-- INFORMACION PERSONAL -->
+
+
+<div class="col-md-6">
+
+
+<div class="info-card">
+
+
+<h4 class="info-title">
+
+<i class="bi bi-person"></i>
+
+Información Personal
+
+</h4>
+
+
+
+<div class="item">
+
+<i class="bi bi-calendar-event"></i>
+
+
+Fecha nacimiento:
+
+{{ estudiante.fecha_nacimiento }}
+
+
+</div>
+
+
+
+
+<div class="item">
+
+
+<i class="bi bi-person-heart"></i>
+
+
+Responsable:
+
+{{ estudiante.padre }}
+
+
+</div>
+
+
+
+
+
+<div class="item">
+
+
+<i class="bi bi-person-vcard"></i>
+
+
+Usuario:
+
+{{ estudiante.usuario }}
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<!-- INFORMACION ACADEMICA -->
+
+
+<div class="col-md-6">
+
+
+<div class="info-card">
+
+
+<h4 class="info-title">
+
+<i class="bi bi-mortarboard"></i>
+
+Información Académica
+
+</h4>
+
+
+
+
+<div class="item">
+
+<i class="bi bi-building"></i>
+
+
+Institución:
+
+Colegio Integral Emanuel Matagalpa
+
+
+</div>
+
+
+
+
+<div class="item">
+
+
+<i class="bi bi-book"></i>
+
+
+Nivel:
+
+Educación General
+
+
+</div>
+
+
+
+
+<div class="item">
+
+
+<i class="bi bi-calendar"></i>
+
+
+Año lectivo:
+
+2026
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<!-- ACCIONES -->
+
+
+<div class="profile-card mt-4 text-center">
+
+
+<h4 class="mb-4">
+
+
+<i class="bi bi-grid"></i>
+
+
+Gestión académica
+
+
+</h4>
+
+
+
+
+<a href="{{ url_for(
+'docente.seleccionar_asistencia_estudiante',
+estudiante_id=estudiante._id
+)}}"
+class="btn btn-success">
+
+<i class="bi bi-calendar-check"></i>
+
+Tomar asistencia
+
+</a>
+
+
+
+<a href="{{ url_for(
+'docente.boletin_estudiante',
+estudiante_id=estudiante._id
+) }}"
+
+class="btn btn-ciem me-2">
+
+
+<i class="bi bi-file-earmark-text"></i>
+
+Boletín
+
+
+</a>
+
+
+
+
+
+<a href="{{ url_for(
+'docente.materiales_estudiante',
+estudiante_id=estudiante._id
+) }}"
+
+class="btn btn-blue">
+
+
+<i class="bi bi-folder"></i>
+
+Materiales
+
+
+</a>
+
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+</body>
+
+
+</html>

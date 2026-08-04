@@ -1,0 +1,350 @@
+/* =====================================================
+   CIEM ACADÉMICO - MÓDULO DE NOTAS
+====================================================== */
+
+:root {
+    --azul: #0B1F4D;
+    --azul2: #174A8B;
+    --celeste: #4EA8DE;
+    --dorado: #FFC107;
+    --verde: #28A745;
+    --rojo: #DC3545;
+    --gris: #F4F7FB;
+    --blanco: #FFFFFF;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #eef3fb, #dfeaf8);
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+}
+
+
+/*================ HEADER ================*/
+
+.header-notas {
+    background: linear-gradient(135deg, var(--azul), var(--azul2));
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, .18);
+}
+
+.header-notas h2 {
+    font-weight: 700;
+    font-size: 32px;
+}
+
+.header-notas p {
+    opacity: .9;
+    margin-top: 8px;
+}
+
+
+/*================ TARJETAS ================*/
+
+.panel {
+    border: none;
+    border-radius: 18px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, .92);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+    transition: .3s;
+}
+
+.panel:hover {
+    transform: translateY(-5px);
+}
+
+.card-body {
+    padding: 25px;
+}
+
+.panel h5 {
+    color: var(--azul);
+    font-weight: 700;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ececec;
+    padding-bottom: 10px;
+}
+
+
+/*================ FORMULARIOS ================*/
+
+label {
+    font-weight: 600;
+    color: var(--azul);
+    margin-bottom: 6px;
+}
+
+.form-control,
+.form-select {
+    border-radius: 12px;
+    border: 1px solid #d8dde7;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    transition: .3s;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--azul2);
+    box-shadow: 0 0 0 .2rem rgba(23, 74, 139, .15);
+}
+
+
+/*================ TABLA ================*/
+
+.tabla-notas {
+    font-size: 13px;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.tabla-notas thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--azul);
+}
+
+.tabla-notas thead th {
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 13px;
+    padding: 14px;
+}
+
+.tabla-notas tbody tr {
+    transition: .2s;
+}
+
+.tabla-notas tbody tr:nth-child(even) {
+    background: #fafbfd;
+}
+
+.tabla-notas tbody tr:hover {
+    background: #E8F2FF;
+}
+
+.tabla-notas td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.tabla-notas td:nth-child(2) {
+    text-align: left;
+    font-weight: 600;
+    color: var(--azul);
+}
+
+
+/*================ INPUTS NOTAS ================*/
+
+.nota {
+    width: 48px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid #c9d3e3;
+    text-align: center;
+    font-weight: 700;
+    transition: .25s;
+}
+
+.nota:hover {
+    background: #f3f8ff;
+}
+
+.nota:focus {
+    border-color: var(--azul2);
+    transform: scale(1.08);
+}
+
+
+/*================ ACUMULADO ================*/
+
+.acumulado {
+    font-weight: bold;
+    color: var(--azul2);
+}
+
+.promedio {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--verde);
+}
+
+
+/*================ BOTÓN ================*/
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--azul2), var(--azul));
+    border: none;
+    border-radius: 12px;
+    padding: 13px 35px;
+    font-weight: 600;
+    transition: .3s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .25);
+}
+
+
+/*================ ESTADÍSTICAS ================*/
+
+.estadisticas div {
+    background: #f7f9fd;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.estadisticas strong {
+    display: block;
+    font-size: 30px;
+    color: var(--azul2);
+}
+
+
+/*================ TABLAS INFERIORES ================*/
+
+.table {
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.table thead {
+    background: var(--azul);
+    color: white;
+}
+
+
+/*================ RESUMEN SEMESTRAL ================*/
+
+#notaPrimerSemestre,
+#notaSegundoSemestre {
+    display: inline-block;
+    background: var(--dorado);
+    color: #111;
+    padding: 10px 22px;
+    border-radius: 30px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+/*================ SCROLL TABLA ================*/
+
+.table-responsive {
+    max-height: 600px;
+    overflow: auto;
+}
+
+
+/*================ RESPONSIVE ================*/
+
+@media(max-width:992px) {
+    .header-notas h2 {
+        font-size: 26px;
+    }
+    .nota {
+        width: 42px;
+        height: 36px;
+    }
+}
+
+.logo-ciem {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #fff;
+    padding: 4px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, .2);
+}
+
+
+/*====================================
+ ACUMULADO
+=====================================*/
+
+.acumulado {
+    background: #FFF3CD !important;
+    color: #856404;
+    font-weight: 700;
+    font-size: 17px;
+    min-width: 110px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+
+/*====================================
+ PROMEDIO
+=====================================*/
+
+.promedio {
+    background: #D4EDDA !important;
+    color: #155724;
+    font-size: 20px;
+    font-weight: 800;
+    min-width: 90px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+
+/* Encabezados */
+
+.tabla-notas th:nth-last-child(2) {
+    background: #FFC107 !important;
+    color: #000;
+}
+
+.tabla-notas th:last-child {
+    background: #198754 !important;
+    color: #FFF;
+}
+
+.col-lg-7 {
+    padding-left: 5px;
+    margin-left: -20px;
+}
+
+
+/*=========================
+ BOTÓN VOLVER
+==========================*/
+
+.btn-volver {
+    background: #ffffff;
+    color: #0B1F4D;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: .3s;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
+}
+
+.btn-volver:hover {
+    background: #FFC107;
+    color: #000;
+    transform: translateY(-2px);
+}
+
+.btn-volver i {
+    margin-right: 6px;
+}

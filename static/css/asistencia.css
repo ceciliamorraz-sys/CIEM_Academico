@@ -1,0 +1,224 @@
+/* ======================================
+   ASISTENCIA CIEM ACADÉMICO
+   Diseño institucional
+====================================== */
+
+body {
+    background: #f4f7fb;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+
+/* ===============================
+   HEADER
+================================ */
+
+.header-asistencia {
+    background: linear-gradient( 135deg, #08142C, #1E4E8C);
+    padding: 25px;
+    border-radius: 18px;
+    color: white;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .18);
+}
+
+.logo-ciem {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+}
+
+.header-asistencia h2 {
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.header-asistencia p {
+    margin: 0;
+    opacity: .85;
+}
+
+
+/* ===============================
+   TARJETAS
+================================ */
+
+.card {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, .08);
+    overflow: hidden;
+}
+
+.card-body {
+    padding: 25px;
+}
+
+
+/* ===============================
+   CAMPOS
+================================ */
+
+.form-label {
+    color: #08142C;
+    font-weight: 600;
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 1px solid #d9dee8;
+    padding: 10px;
+}
+
+.form-control:focus {
+    border-color: #1E4E8C;
+    box-shadow: 0 0 0 .2rem rgba(30, 78, 140, .20);
+}
+
+
+/* ===============================
+   CABECERA TABLA
+================================ */
+
+.card-header {
+    background: #0D2A52 !important;
+    padding: 18px 25px;
+}
+
+.card-header h5 {
+    font-weight: 700;
+}
+
+
+/* ===============================
+   TABLA
+================================ */
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background: #08142C;
+    color: white;
+    text-align: center;
+    font-size: 14px;
+    padding: 15px;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    padding: 12px;
+}
+
+.table tbody tr {
+    transition: .25s;
+}
+
+.table tbody tr:hover {
+    background: #eef4ff;
+}
+
+
+/* ===============================
+   FOTO ESTUDIANTE
+================================ */
+
+.foto-estudiante {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #1E4E8C;
+}
+
+
+/* ===============================
+   SELECT ESTADO
+================================ */
+
+.estado {
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.estado option {
+    font-weight: 600;
+}
+
+
+/* ===============================
+   COLORES DE ESTADO
+================================ */
+
+tr.estado-presente {
+    background: #e9f8ef;
+}
+
+tr.estado-ausente {
+    background: #fdecec;
+}
+
+tr.estado-tardanza {
+    background: #fff7dc;
+}
+
+tr.estado-justificada {
+    background: #e9f1ff;
+}
+
+
+/* ===============================
+   BOTONES
+================================ */
+
+.btn-primary {
+    background: #1E4E8C;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 25px;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: #08142C;
+}
+
+.btn-warning {
+    border-radius: 25px;
+    font-weight: 600;
+}
+
+.btn-secondary {
+    border-radius: 25px;
+}
+
+
+/* ===============================
+   FOOTER
+================================ */
+
+.card-footer {
+    background: white;
+    padding: 20px;
+}
+
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media(max-width:768px) {
+    .header-asistencia {
+        text-align: center;
+    }
+    .logo-ciem {
+        width: 65px;
+        height: 65px;
+    }
+    .table {
+        font-size: 14px;
+    }
+}

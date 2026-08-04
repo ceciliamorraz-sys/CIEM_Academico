@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar Docente</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #eef2f7;
+        }
+
+        /* 🔷 HEADER */
+        .header {
+            background: linear-gradient(90deg, #2c3e50, #34495e);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .header img {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .container {
+            width: 40%;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52,152,219,0.4);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #219150;
+            transform: scale(1.02);
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #3498db;
+        }
+
+        .back:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 🔥 HEADER CON LOGO -->
+<div class="header">
+    <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo">
+    <h2>Sistema Académico</h2>
+</div>
+
+<div class="container">
+
+    <h2>➕ Agregar Docente</h2>
+
+    <form method="POST">
+
+        <label>Código</label>
+        <input type="text" name="codigo" required>
+
+        <label>Nombre</label>
+        <input type="text" name="nombre" required>
+
+        <label>Especialidad</label>
+        <input type="text" name="especialidad" required>
+
+        <label>Correo</label>
+        <input type="email" name="correo" required>
+
+        <button type="submit">💾 Guardar Docente</button>
+    </form>
+
+    <a class="back" href="/docentes">⬅ Volver a lista</a>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1249 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+Registro de Notas | CIEM Académico
+</title>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet">
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+rel="stylesheet">
+
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='css/modules/notas.css') }}">
+
+
+<style>
+
+body{
+
+    background:#f1f5f9;
+    font-family:'Segoe UI',sans-serif;
+
+}
+
+
+.header-notas{
+
+    background:#0f172a;
+    color:white;
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:20px;
+
+}
+
+
+.logo-ciem{
+
+    width:80px;
+    height:80px;
+    border-radius:50%;
+
+}
+
+
+.card{
+
+    border:none;
+    border-radius:18px;
+
+}
+
+
+.panel h5{
+
+    color:#0f172a;
+    font-weight:700;
+
+}
+
+
+.btn-ciem{
+
+    background:#2563eb;
+    color:white;
+
+}
+
+
+.btn-ciem:hover{
+
+    background:#1d4ed8;
+    color:white;
+
+}
+
+
+.tabla-notas input{
+
+    width:65px;
+    text-align:center;
+
+}
+
+
+.tabla-notas th{
+
+    background:#0f172a;
+    color:white;
+    text-align:center;
+    font-size:13px;
+
+}
+
+
+.tabla-notas td{
+
+    text-align:center;
+    vertical-align:middle;
+
+}
+
+
+.acumulado{
+
+    font-weight:bold;
+    color:#2563eb;
+
+}
+
+
+.promedio{
+
+    font-weight:bold;
+    color:#059669;
+
+}
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+<div class="container-fluid py-4">
+
+
+
+<!-- ==========================
+ ENCABEZADO
+========================== -->
+
+
+<div class="header-notas d-flex justify-content-between align-items-center">
+
+
+<div class="d-flex align-items-center">
+
+
+<img src="{{ url_for('static', filename='img/logo.jpg') }}"
+class="logo-ciem me-3">
+
+
+<div>
+
+<h2>
+
+<i class="bi bi-journal-text"></i>
+
+Registro de Calificaciones
+
+</h2>
+
+
+<p class="mb-0">
+
+{{ asignatura.nombre }}
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+<a href="{{ url_for('docente.aulas') }}"
+class="btn btn-light">
+
+<i class="bi bi-arrow-left"></i>
+
+Volver
+
+</a>
+
+
+</div>
+
+
+
+
+
+<!-- ==========================
+ CONFIGURACIÓN
+========================== -->
+
+
+<div class="card shadow mb-4">
+
+
+<div class="card-body">
+
+
+<h5>
+
+<i class="bi bi-gear"></i>
+
+Configuración de Evaluación
+
+</h5>
+
+
+<form method="POST"
+action="{{ url_for('docente.guardar_notas') }}">
+
+
+
+<input type="hidden"
+name="asignatura_id"
+value="{{ asignatura._id }}">
+
+
+
+<div class="row g-3">
+
+
+
+<div class="col-md-4">
+
+
+<label class="form-label">
+
+Asignatura
+
+</label>
+
+
+<input class="form-control"
+value="{{ asignatura.nombre }}"
+readonly>
+
+
+</div>
+
+
+
+
+<div class="col-md-4">
+
+
+<label class="form-label">
+
+Periodo
+
+</label>
+
+
+<select class="form-select"
+name="periodo"
+id="periodo">
+
+
+<option value="I Semestre">
+
+I Semestre
+
+</option>
+
+
+<option value="II Semestre">
+
+II Semestre
+
+</option>
+
+
+</select>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-4">
+
+
+<label class="form-label">
+
+Evaluación
+
+</label>
+
+
+<select class="form-select"
+name="evaluacion"
+id="evaluacion">
+
+
+<option value="Primer Parcial">
+
+Primer Parcial
+
+</option>
+
+
+<option value="Segundo Parcial">
+
+Segundo Parcial
+
+</option>
+
+
+<option value="Tercer Parcial">
+
+Tercer Parcial
+
+</option>
+
+
+<option value="Cuarto Parcial">
+
+Cuarto Parcial
+
+</option>
+
+
+</select>
+
+
+</div>
+
+
+
+</div>
+<!-- ==========================
+ TABLA DE NOTAS
+========================== -->
+
+
+<div class="card shadow mt-4">
+
+
+<div class="card-body">
+
+
+<h5 class="mb-3">
+
+<i class="bi bi-pencil-square"></i>
+
+Registro de Evaluaciones
+
+</h5>
+
+
+
+<div class="table-responsive">
+
+
+
+<table class="table table-bordered tabla-notas">
+
+
+<thead>
+
+
+<tr>
+
+
+<th>
+#
+</th>
+
+
+<th>
+Estudiante
+</th>
+
+
+<th>
+EP1
+</th>
+
+
+<th>
+EP2
+</th>
+
+
+<th>
+EP3
+</th>
+
+
+<th>
+EP4
+</th>
+
+
+<th>
+EP5
+</th>
+
+
+<th>
+EP6
+</th>
+
+
+<th>
+EP7
+</th>
+
+
+<th>
+EP8
+</th>
+
+
+<th>
+EP9
+</th>
+
+
+<th>
+EP10
+</th>
+
+
+<th>
+Acumulado
+</th>
+
+
+<th>
+Promedio
+</th>
+
+
+<th>
+Estado
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+<tbody>
+
+
+
+{% for e in estudiantes %}
+
+
+<tr>
+
+
+
+<td>
+
+{{ loop.index }}
+
+</td>
+
+
+
+
+<td class="text-start">
+
+{{ e.nombre }}
+
+</td>
+
+
+
+
+
+<td>
+<input 
+type="number"
+min="0"
+max="10"
+step="0.1"
+class="form-control nota"
+name="ep1_{{e._id}}"
+value="0">
+
+</td>
+
+
+
+
+<td>
+<input 
+type="number"
+min="0"
+max="10"
+step="0.1"
+class="form-control nota"
+name="ep2_{{e._id}}"
+value="0">
+
+</td>
+
+
+
+
+<td>
+<input 
+type="number"
+min="0"
+max="10"
+step="0.1"
+class="form-control nota"
+name="ep3_{{e._id}}"
+value="0">
+
+</td>
+
+
+
+
+<td>
+<input 
+type="number"
+min="0"
+max="10"
+step="0.1"
+class="form-control nota"
+name="ep4_{{e._id}}"
+value="0">
+
+</td>
+
+
+
+
+<td>
+<input 
+type="number"
+min="0"
+max="10"
+step="0.1"
+class="form-control nota"
+name="ep5_{{e._id}}"
+value="0">
+
+</td>
+
+
+
+
+<td>
+<input 
+type="number"
+min="0"
+max="10"
+step="0.1"
+class="form-control nota"
+name="ep6_{{e._id}}"
+value="0">
+
+</td>
+
+
+
+
+<td>
+<input 
+type="number"
+min="0"
+max="10"
+step="0.1"
+class="form-control nota"
+name="ep7_{{e._id}}"
+value="0">
+
+</td>
+
+
+
+
+<td>
+<input 
+type="number"
+min="0"
+max="10"
+step="0.1"
+class="form-control nota"
+name="ep8_{{e._id}}"
+value="0">
+
+</td>
+
+
+
+
+<td>
+<input 
+type="number"
+min="0"
+max="10"
+step="0.1"
+class="form-control nota"
+name="ep9_{{e._id}}"
+value="0">
+
+</td>
+
+
+
+
+<td>
+<input 
+type="number"
+min="0"
+max="10"
+step="0.1"
+class="form-control nota"
+name="ep10_{{e._id}}"
+value="0">
+
+</td>
+
+
+
+
+
+<td class="acumulado">
+
+0 / 100
+
+</td>
+
+
+
+
+
+<td class="promedio">
+
+0.0
+
+</td>
+
+
+
+
+
+<td class="estado">
+
+
+<span class="badge bg-secondary">
+
+Pendiente
+
+</span>
+
+
+</td>
+
+
+
+
+</tr>
+
+
+
+{% endfor %}
+
+
+
+
+</tbody>
+
+
+</table>
+
+
+
+</div>
+
+
+
+
+<button type="submit"
+class="btn btn-ciem mt-3">
+
+
+<i class="bi bi-save"></i>
+
+Guardar Calificaciones
+
+
+</button>
+
+
+
+
+</form>
+
+
+
+</div>
+
+
+</div>
+<!-- ==========================
+ BOLETÍN POR CORTES
+========================== -->
+
+
+<div class="card shadow mt-4">
+
+
+<div class="card-body">
+
+
+<h5>
+
+<i class="bi bi-file-earmark-text"></i>
+
+Resumen de Cortes
+
+</h5>
+
+
+
+<div class="table-responsive">
+
+
+<table class="table table-bordered text-center">
+
+
+<thead class="table-dark">
+
+
+<tr>
+
+<th>
+Asignatura
+</th>
+
+<th>
+I Corte
+</th>
+
+<th>
+II Corte
+</th>
+
+<th>
+III Corte
+</th>
+
+<th>
+IV Corte
+</th>
+
+<th>
+Nota Final
+</th>
+
+</tr>
+
+
+</thead>
+
+
+
+<tbody>
+
+
+<tr>
+
+
+<td>
+
+{{ asignatura.nombre }}
+
+</td>
+
+
+<td>
+
+{{ corte1 if corte1 else '-' }}
+
+</td>
+
+
+<td>
+
+{{ corte2 if corte2 else '-' }}
+
+</td>
+
+
+<td>
+
+{{ corte3 if corte3 else '-' }}
+
+</td>
+
+
+<td>
+
+{{ corte4 if corte4 else '-' }}
+
+</td>
+
+
+<td>
+
+{{ nota_final if nota_final else '-' }}
+
+</td>
+
+
+</tr>
+
+
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<!-- ==========================
+ RESUMEN
+========================== -->
+
+
+<div class="card shadow mt-4">
+
+
+<div class="card-body">
+
+
+<h5>
+
+<i class="bi bi-bar-chart"></i>
+
+Resumen Académico
+
+</h5>
+
+
+
+<div class="row text-center">
+
+
+
+<div class="col-md-3">
+
+
+<h6>
+
+Estudiantes
+
+</h6>
+
+
+<h3>
+
+{{ estudiantes|length }}
+
+</h3>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-3">
+
+
+<h6>
+
+Promedio General
+
+</h6>
+
+
+<h3 id="promedioGeneral">
+
+0.0
+
+</h3>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-3">
+
+
+<h6>
+
+Aprobados
+
+</h6>
+
+
+<h3 id="aprobados">
+
+0
+
+</h3>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-3">
+
+
+<h6>
+
+Reforzamiento
+
+</h6>
+
+
+<h3 id="reforzamiento">
+
+0
+
+</h3>
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+<!-- ==========================
+ JAVASCRIPT
+========================== -->
+
+
+<script>
+
+
+document.addEventListener(
+"DOMContentLoaded",
+function(){
+
+
+
+let filas =
+document.querySelectorAll(
+"tbody tr"
+);
+
+
+
+filas.forEach(function(fila){
+
+
+
+let inputs =
+fila.querySelectorAll(
+".nota"
+);
+
+
+
+let acumulado =
+fila.querySelector(
+".acumulado"
+);
+
+
+
+let promedio =
+fila.querySelector(
+".promedio"
+);
+
+
+
+let estado =
+fila.querySelector(
+".estado"
+);
+
+
+
+
+
+inputs.forEach(function(input){
+
+
+input.addEventListener(
+"input",
+function(){
+
+
+calcularFila();
+
+
+});
+
+
+});
+
+
+
+
+
+
+function calcularFila(){
+
+
+
+let suma = 0;
+
+
+
+inputs.forEach(function(input){
+
+
+let valor =
+parseFloat(input.value) || 0;
+
+
+if(valor > 10){
+
+valor = 10;
+
+input.value = 10;
+
+}
+
+
+if(valor < 0){
+
+valor = 0;
+
+input.value = 0;
+
+}
+
+
+
+suma += valor;
+
+
+});
+
+
+
+
+let prom =
+(suma / 10).toFixed(2);
+
+
+
+
+acumulado.innerHTML =
+suma + " / 100";
+
+
+
+promedio.innerHTML =
+prom;
+
+
+
+if(prom >= 6){
+
+
+estado.innerHTML =
+
+`
+<span class="badge bg-success">
+Aprobado
+</span>
+`;
+
+
+
+}else{
+
+
+estado.innerHTML =
+
+`
+<span class="badge bg-danger">
+Reforzamiento
+</span>
+`;
+
+}
+
+
+actualizarResumen();
+
+
+}
+
+
+
+});
+
+
+
+
+
+function actualizarResumen(){
+
+
+
+let total = 0;
+
+let sumaProm = 0;
+
+let aprobados = 0;
+
+let reforzamiento = 0;
+
+
+
+document.querySelectorAll(
+".promedio"
+)
+.forEach(function(p){
+
+
+let valor =
+parseFloat(p.innerHTML) || 0;
+
+
+sumaProm += valor;
+
+
+total++;
+
+
+if(valor >= 6){
+
+aprobados++;
+
+}else{
+
+reforzamiento++;
+
+}
+
+
+});
+
+
+
+
+if(total > 0){
+
+
+document.getElementById(
+"promedioGeneral"
+).innerHTML =
+
+(sumaProm / total).toFixed(2);
+
+
+
+}
+
+
+
+document.getElementById(
+"aprobados"
+).innerHTML =
+aprobados;
+
+
+
+document.getElementById(
+"reforzamiento"
+).innerHTML =
+reforzamiento;
+
+
+
+}
+
+
+
+});
+
+
+</script>
+
+
+
+
+</body>
+
+</html>

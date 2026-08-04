@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Mis Estudiantes | CIEM Académico</title>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+
+
+<style>
+
+
+body{
+
+    background:#f4f6f9;
+
+    font-family:'Segoe UI',sans-serif;
+
+}
+
+
+
+/* HEADER CIEM */
+
+
+.header-ciem{
+
+    background:linear-gradient(
+        135deg,
+        #08142C,
+        #1E4E8C
+    );
+
+    color:white;
+
+    padding:30px;
+
+    border-radius:20px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.15);
+
+}
+
+
+
+.logo-ciem{
+
+    width:90px;
+
+    height:90px;
+
+    object-fit:contain;
+
+    background:white;
+
+    padding:8px;
+
+    border-radius:15px;
+
+}
+
+
+
+
+/* CARDS */
+
+
+.card-ciem{
+
+    background:white;
+
+    border:none;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+}
+
+
+
+
+/* ESTADISTICAS */
+
+
+.stat-card{
+
+    padding:20px;
+
+    border-radius:18px;
+
+    color:white;
+
+    height:130px;
+
+}
+
+
+
+.stat-blue{
+
+    background:#08142C;
+
+}
+
+
+
+.stat-light{
+
+    background:#1E4E8C;
+
+}
+
+
+
+.stat-gold{
+
+    background:#FFC107;
+
+    color:#08142C;
+
+}
+
+
+
+
+.stat-card h2{
+
+    font-size:35px;
+
+    font-weight:700;
+
+}
+
+
+
+/* TABLA */
+
+
+.table{
+
+    border-radius:15px;
+
+    overflow:hidden;
+
+}
+
+
+
+.table thead{
+
+    background:#08142C;
+
+    color:white;
+
+}
+
+
+
+
+/* BOTONES */
+
+
+.btn-action{
+
+    border-radius:10px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    margin:2px;
+
+}
+
+
+
+.btn-primary{
+
+    background:#1E4E8C;
+
+    border:none;
+
+}
+
+
+
+.btn-warning{
+
+    background:#FFC107;
+
+    color:#08142C;
+
+    border:none;
+
+}
+
+
+
+.btn-info{
+
+    background:#0dcaf0;
+
+    color:#08142C;
+
+    border:none;
+
+}
+
+
+
+.btn-success{
+
+    border:none;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+
+<div class="container py-4">
+
+
+
+
+
+<!-- ENCABEZADO -->
+
+<div class="header-ciem mb-4">
+
+
+<div class="d-flex align-items-center">
+
+
+<img
+
+src="{{ url_for('static', filename='img/logo.jpg') }}"
+
+class="logo-ciem me-4"
+
+
+>
+
+
+<div>
+
+
+<h1>
+
+<i class="bi bi-people-fill"></i>
+
+Mis Estudiantes
+
+
+</h1>
+
+
+<p class="mb-0">
+
+Listado académico de estudiantes asignados al docente.
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- REGRESAR -->
+
+
+<a href="{{ url_for('docente.dashboard_docente') }}"
+
+class="btn btn-light mb-4">
+
+
+<i class="bi bi-arrow-left"></i>
+
+Regresar al Dashboard
+
+
+</a>
+
+
+
+
+
+
+
+<!-- TARJETAS -->
+
+
+<div class="row g-4 mb-4">
+
+
+
+<div class="col-md-4">
+
+
+<div class="stat-card stat-blue">
+
+
+<h2>
+
+{{ estudiantes|length }}
+
+</h2>
+
+
+<p>
+
+Estudiantes asignados
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+<div class="col-md-4">
+
+
+<div class="stat-card stat-light">
+
+
+<h2>
+
+<i class="bi bi-mortarboard-fill"></i>
+
+</h2>
+
+
+<p>
+
+Grupos académicos
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-4">
+
+
+<div class="stat-card stat-gold">
+
+
+<h2>
+
+<i class="bi bi-bar-chart-fill"></i>
+
+</h2>
+
+
+<p>
+
+Seguimiento académico
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- TABLA -->
+
+
+<div class="card-ciem">
+
+
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+
+<h3>
+
+<i class="bi bi-list-check"></i>
+
+Estudiantes
+
+
+</h3>
+
+
+
+
+<input
+
+type="text"
+
+id="buscar"
+
+class="form-control"
+
+style="max-width:300px"
+
+placeholder="Buscar estudiante..."
+
+>
+
+
+</div>
+
+
+
+
+
+<div class="table-responsive">
+
+
+<table class="table table-hover align-middle"
+
+id="tablaEstudiantes">
+
+
+
+<thead>
+
+
+<tr>
+
+
+<th>
+
+#
+
+</th>
+
+
+<th>
+
+Nombre
+
+</th>
+
+
+<th>
+
+Grado
+
+</th>
+
+
+<th>
+
+Sección
+
+</th>
+
+
+<th>
+
+Estado
+
+</th>
+
+
+<th>
+
+Acciones
+
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+
+
+<tbody>
+
+
+
+{% for estudiante in estudiantes %}
+
+
+<tr>
+
+
+
+<td>
+
+{{ loop.index }}
+
+</td>
+
+
+
+<td>
+
+
+<strong>
+
+{{ estudiante.nombre }}
+
+</strong>
+
+
+</td>
+
+
+
+<td>
+
+{{ estudiante.grado }}
+
+</td>
+
+
+
+<td>
+
+{{ estudiante.seccion }}
+
+</td>
+
+
+
+<td>
+
+
+<span class="badge bg-success">
+
+Activo
+
+</span>
+
+
+</td>
+
+
+
+
+
+<td>
+
+
+
+
+<a href="{{ url_for('docente.perfil_estudiante', estudiante_id=estudiante._id) }}"
+
+class="btn btn-primary btn-sm btn-action">
+
+
+<i class="bi bi-person-circle"></i>
+
+Perfil
+
+
+</a>
+
+
+
+
+
+
+<a href="{{ url_for('docente.asistencia_estudiante', estudiante_id=estudiante._id) }}"
+
+class="btn btn-success btn-sm btn-action">
+
+
+<i class="bi bi-calendar-check"></i>
+
+Asistencia
+
+
+</a>
+
+
+
+
+
+
+<a href="{{ url_for('docente.boletin_estudiante', estudiante_id=estudiante._id) }}"
+
+class="btn btn-warning btn-sm btn-action">
+
+
+<i class="bi bi-file-earmark-text"></i>
+
+Boletín
+
+
+</a>
+
+
+
+
+
+
+<a href="{{ url_for('docente.materiales_estudiante', estudiante_id=estudiante._id) }}"
+
+class="btn btn-info btn-sm btn-action">
+
+
+<i class="bi bi-folder2-open"></i>
+
+Materiales
+
+
+</a>
+
+
+
+
+</td>
+
+
+
+</tr>
+
+
+
+{% else %}
+
+
+
+<tr>
+
+
+<td colspan="6"
+
+class="text-center text-muted">
+
+
+No existen estudiantes asignados.
+
+
+</td>
+
+
+</tr>
+
+
+
+{% endfor %}
+
+
+
+</tbody>
+
+
+
+</table>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<script>
+
+
+document
+.getElementById("buscar")
+.addEventListener("keyup",function(){
+
+
+let texto=this.value.toLowerCase();
+
+
+document
+.querySelectorAll("#tablaEstudiantes tbody tr")
+.forEach(function(fila){
+
+
+fila.style.display =
+
+fila.innerText
+.toLowerCase()
+.includes(texto)
+
+?
+
+""
+
+:
+
+"none";
+
+
+
+});
+
+
+});
+
+
+
+</script>
+
+
+
+
+
+</body>
+
+</html>

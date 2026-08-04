@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Docente</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body{
+            background:#f1f5f9;
+            font-family:'Segoe UI', sans-serif;
+        }
+
+        .card-form{
+            max-width:600px;
+            margin:60px auto;
+            border:none;
+            border-radius:20px;
+        }
+
+        .header{
+            text-align:center;
+            margin-bottom:20px;
+        }
+
+        .btn-primary{
+            background:#2563eb;
+            border:none;
+        }
+
+        .btn-primary:hover{
+            background:#1d4ed8;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card card-form shadow p-4">
+
+        <div class="header">
+            <h3>✏️ Editar Docente</h3>
+            <p class="text-muted">Actualiza la información del docente</p>
+        </div>
+
+        <form method="POST">
+
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text"
+                       name="nombre"
+                       value="{{ docente.nombre }}"
+                       class="form-control"
+                       required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Especialidad</label>
+                <input type="text"
+                       name="especialidad"
+                       value="{{ docente.especialidad }}"
+                       class="form-control"
+                       required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Correo</label>
+                <input type="email"
+                       name="correo"
+                       value="{{ docente.correo }}"
+                       class="form-control"
+                       required>
+            </div>
+
+            <div class="d-flex justify-content-between">
+
+                <a href="{{ url_for('listar_docentes') }}"
+                   class="btn btn-secondary">
+                    Cancelar
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    💾 Guardar cambios
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

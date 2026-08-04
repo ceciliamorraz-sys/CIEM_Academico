@@ -1,0 +1,315 @@
+/* =====================================================
+   CIEM ONE
+   PORTAL FAMILIAR ACADÉMICO
+   Diseño institucional
+===================================================== */
+
+:root {
+    --ciem-dark: #08142C;
+    --ciem-blue: #1E4E8C;
+    --ciem-light: #EAF2FF;
+    --ciem-yellow: #FFC107;
+    --white: #FFFFFF;
+    --text: #1E293B;
+    --gray: #64748B;
+}
+
+
+/* ==========================
+   GENERAL
+========================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #F5F7FB;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: var(--text);
+}
+
+.portal-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 30px;
+}
+
+
+/* ==========================
+   HEADER
+========================== */
+
+.top-header {
+    background: linear-gradient( 135deg, var(--ciem-dark), var(--ciem-blue));
+    color: white;
+    padding: 25px 35px;
+    border-radius: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .15);
+}
+
+.top-header h1 {
+    font-size: 32px;
+    font-weight: 900;
+    margin: 0;
+}
+
+.top-header p {
+    margin: 5px 0 0;
+    color: #DDE9FF;
+    font-size: 16px;
+}
+
+
+/* ==========================
+   ESTUDIANTE
+========================== */
+
+.student-panel {
+    background: white;
+    margin-top: 25px;
+    padding: 25px;
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .08);
+}
+
+.student-avatar i {
+    font-size: 85px;
+    color: var(--ciem-blue);
+}
+
+.student-info h2 {
+    color: var(--ciem-dark);
+    font-weight: 900;
+    margin-bottom: 10px;
+}
+
+.student-info p {
+    margin: 5px 0;
+    color: var(--gray);
+    font-weight: 600;
+}
+
+
+/* ==========================
+   RESUMEN
+========================== */
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.summary-box {
+    background: white;
+    padding: 30px;
+    border-radius: 22px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .08);
+    transition: .3s;
+}
+
+.summary-box:hover {
+    transform: translateY(-5px);
+}
+
+.summary-box i {
+    font-size: 40px;
+    color: var(--ciem-blue);
+}
+
+.summary-box span {
+    display: block;
+    margin-top: 15px;
+    color: var(--gray);
+    font-weight: 700;
+}
+
+.summary-box strong {
+    display: block;
+    margin-top: 10px;
+    font-size: 30px;
+    color: var(--ciem-dark);
+    font-weight: 900;
+}
+
+
+/* ==========================
+   PANEL ACADÉMICO
+========================== */
+
+.academic-panel,
+.teachers-panel {
+    background: white;
+    margin-top: 30px;
+    padding: 30px;
+    border-radius: 25px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .08);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.panel-header h2,
+.teachers-panel h2 {
+    color: var(--ciem-dark);
+    font-weight: 900;
+}
+
+.selectors {
+    display: flex;
+    gap: 15px;
+}
+
+.selectors select {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #CBD5E1;
+}
+
+
+/* ==========================
+   MATERIAS
+========================== */
+
+.subject {
+    margin-top: 25px;
+    padding: 20px;
+    background: #F8FAFC;
+    border-radius: 20px;
+    border-left: 6px solid var(--ciem-blue);
+}
+
+.subject h3 {
+    color: var(--ciem-blue);
+    font-weight: 900;
+    margin-bottom: 20px;
+}
+
+
+/* ==========================
+   TABLA NOTAS
+========================== */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+table th {
+    background: var(--ciem-blue);
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-size: 14px;
+}
+
+table td {
+    padding: 12px;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 1px solid #E2E8F0;
+}
+
+table tr:hover {
+    background: #F1F5F9;
+}
+
+
+/* ============================
+   CONTACTO DOCENTES
+============================ */
+
+.docente-selector {
+    max-width: 450px;
+    margin-top: 20px;
+}
+
+.docente-selector label {
+    font-weight: 800;
+    color: #08142C;
+    margin-bottom: 8px;
+}
+
+.docente-card {
+    display: none;
+    margin-top: 25px;
+    background: #F8FAFC;
+    border-radius: 18px;
+    padding: 20px;
+    border-left: 5px solid #1E4E8C;
+    align-items: center;
+    gap: 20px;
+}
+
+.docente-avatar i {
+    font-size: 55px;
+    color: #1E4E8C;
+}
+
+.docente-datos h3 {
+    margin: 0;
+    color: #08142C;
+    font-weight: 900;
+}
+
+.docente-datos p {
+    margin: 5px 0;
+    color: #64748B;
+}
+
+.docente-datos a {
+    display: inline-block;
+    margin-top: 10px;
+    background: #1E4E8C;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media(max-width:900px) {
+    .summary {
+        grid-template-columns: 1fr;
+    }
+    .teachers-grid {
+        grid-template-columns: 1fr;
+    }
+    .student-panel {
+        flex-direction: column;
+        text-align: center;
+    }
+    .panel-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .selectors {
+        width: 100%;
+        flex-direction: column;
+    }
+    .selectors select {
+        width: 100%;
+    }
+}

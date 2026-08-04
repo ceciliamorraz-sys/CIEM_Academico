@@ -1,0 +1,5 @@
+<h2>📈 Estadísticas</h2>
+
+<p>🧑‍🎓 Estudiantes: {{ estudiantes }}</p>
+<p>📚 Cursos: {{ cursos }}</p>
+<p>📝 Notas registradas: {{ notas }}</p>

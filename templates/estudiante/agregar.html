@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar Estudiante</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #eef2f7;
+        }
+
+        /* 🔷 HEADER */
+        .header {
+            background: linear-gradient(90deg, #2c3e50, #34495e);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .header img {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* 🔷 CONTENEDOR */
+        .container {
+            width: 40%;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        }
+
+        h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 14px;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0 14px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 6px rgba(52,152,219,0.4);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #2c80b4;
+            transform: scale(1.02);
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #3498db;
+        }
+
+        .back:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 🔥 HEADER CON LOGO Y TÍTULO -->
+<div class="header">
+    <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo">
+    <h2>Agregar Estudiante</h2>
+</div>
+
+<!-- 📦 FORMULARIO -->
+<div class="container">
+
+    <h3>👨‍🎓 Registro de Estudiante</h3>
+
+    <form method="POST">
+
+        <label>Código</label>
+        <input type="text" name="codigo" required>
+
+        <label>Nombre</label>
+        <input type="text" name="nombre" required>
+
+        <label>Fecha de Nacimiento</label>
+        <input type="date" name="fecha_nacimiento" required>
+
+        <label>Grado</label>
+        <input type="text" name="grado" required>
+
+        <label>Sección</label>
+        <input type="text" name="seccion" required>
+
+        <label>Padre o Tutor</label>
+        <input type="text" name="padre" required>
+
+        <label>Usuario</label>
+        <input type="text" name="usuario" required>
+
+        <label>Contraseña</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">💾 Guardar Estudiante</button>
+
+    </form>
+
+    <a class="back" href="/estudiantes">⬅ Volver a lista</a>
+
+</div>
+
+</body>
+</html>

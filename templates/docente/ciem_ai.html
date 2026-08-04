@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CIEM Asiste IA</title>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+
+
+<style>
+
+
+body{
+
+    background:#f4f6f9;
+    font-family:'Segoe UI', sans-serif;
+
+}
+
+
+/* ENCABEZADO */
+
+.header-ciem{
+
+    background:linear-gradient(
+        135deg,
+        #08142C,
+        #1E4E8C
+    );
+
+    color:white;
+
+    padding:30px;
+
+    border-radius:20px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.15);
+
+}
+
+
+
+.logo-ciem{
+
+    width:90px;
+
+    height:90px;
+
+    object-fit:contain;
+
+    background:white;
+
+    padding:8px;
+
+    border-radius:15px;
+
+}
+
+
+
+
+.header-ciem h1{
+
+    font-weight:700;
+
+}
+
+
+
+
+/* TARJETAS */
+
+
+.card-ciem{
+
+
+    background:white;
+
+    border:none;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    box-shadow:
+    0 5px 18px rgba(0,0,0,.08);
+
+
+    transition:.3s;
+
+
+}
+
+
+
+.card-ciem:hover{
+
+    transform:translateY(-5px);
+
+}
+
+
+
+
+
+.icon-box{
+
+
+    width:55px;
+
+    height:55px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+
+    background:#FFC107;
+
+    color:#08142C;
+
+
+    border-radius:15px;
+
+    font-size:28px;
+
+    margin-bottom:15px;
+
+
+}
+
+
+
+
+
+.form-control{
+
+    border-radius:12px;
+
+    padding:12px;
+
+}
+
+
+
+
+.form-check{
+
+
+    padding:10px;
+
+    border-radius:10px;
+
+
+}
+
+
+
+.form-check:hover{
+
+    background:#f2f2f2;
+
+}
+
+
+
+
+.btn-ciem{
+
+
+    background:#FFC107;
+
+    color:#08142C;
+
+    font-weight:bold;
+
+
+    padding:12px 35px;
+
+    border-radius:12px;
+
+    border:none;
+
+
+}
+
+
+
+.btn-ciem:hover{
+
+
+    background:#e0a800;
+
+
+}
+
+
+
+/* RESULTADO */
+
+
+.resultado{
+
+
+    background:white;
+
+    border-radius:15px;
+
+    padding:25px;
+
+    border-left:6px solid #FFC107;
+
+
+}
+
+
+
+.resultado table{
+
+    width:100%;
+
+}
+
+
+.resultado th{
+
+    text-align:center;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+
+
+<body>
+
+
+<div class="container py-4">
+
+
+
+<!-- ==========================
+     ENCABEZADO
+=========================== -->
+
+
+<div class="header-ciem mb-4">
+
+
+
+    <div class="text-end mb-3">
+
+
+        <a href="{{ url_for('docente.dashboard_docente') }}"
+           class="btn btn-light">
+
+
+            <i class="bi bi-arrow-left"></i>
+
+            Regresar al Dashboard
+
+
+        </a>
+
+
+    </div>
+
+
+
+
+    <div class="d-flex align-items-center">
+
+
+        <img
+
+        src="{{ url_for('static', filename='img/logo.jpg') }}"
+
+        class="logo-ciem me-4"
+
+
+        >
+
+
+
+
+        <div>
+
+
+            <h1>
+
+
+                <i class="bi bi-robot"></i>
+
+                CIEM Asiste IA
+
+
+            </h1>
+
+
+
+            <p class="mb-0">
+
+
+                Asistente inteligente para generación de recursos pedagógicos docentes.
+
+
+            </p>
+
+
+        </div>
+
+
+
+    </div>
+
+
+
+</div>
+
+
+
+
+
+
+<!-- ==========================
+     FORMULARIO
+=========================== -->
+
+
+
+<form method="POST" action="{{ url_for('ciem_ai.generar') }}">
+
+
+
+
+
+<div class="row g-4">
+
+
+
+<!-- EVALUACIÓN -->
+
+
+<div class="col-md-6">
+
+
+<div class="card-ciem">
+
+
+<div class="icon-box">
+
+<i class="bi bi-clipboard-check"></i>
+
+</div>
+
+
+
+<h4>
+
+Instrumentos de Evaluación
+
+</h4>
+
+
+
+<p class="text-muted">
+
+Generación de herramientas profesionales.
+
+</p>
+
+
+
+
+<div class="form-check">
+
+
+<input
+
+class="form-check-input"
+
+type="radio"
+
+name="tipo"
+
+value="rubrica"
+
+required>
+
+
+<label>
+
+Rúbrica profesional
+
+</label>
+
+
+</div>
+
+
+
+
+
+<div class="form-check">
+
+
+<input
+
+class="form-check-input"
+
+type="radio"
+
+name="tipo"
+
+value="lista">
+
+
+<label>
+
+Lista de cotejo
+
+</label>
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<!-- MATERIAL -->
+
+
+<div class="col-md-6">
+
+
+<div class="card-ciem">
+
+
+
+<div class="icon-box">
+
+
+<i class="bi bi-book"></i>
+
+
+</div>
+
+
+
+
+<h4>
+
+Material Educativo
+
+</h4>
+
+
+
+<p class="text-muted">
+
+Recursos para apoyar el aprendizaje.
+
+</p>
+
+
+
+
+<div class="form-check">
+
+
+<input
+
+class="form-check-input"
+
+type="radio"
+
+name="tipo"
+
+value="practica">
+
+
+<label>
+
+Guía práctica
+
+</label>
+
+
+</div>
+
+
+
+
+
+<div class="form-check">
+
+
+<input
+
+class="form-check-input"
+
+type="radio"
+
+name="tipo"
+
+value="examen">
+
+
+<label>
+
+Examen
+
+</label>
+
+
+</div>
+
+
+
+
+
+<div class="form-check">
+
+
+<input
+
+class="form-check-input"
+
+type="radio"
+
+name="tipo"
+
+value="plan">
+
+
+<label>
+
+Plan de clase
+
+</label>
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+<!-- DATOS -->
+
+
+<div class="card-ciem mt-4">
+
+
+<h4>
+
+<i class="bi bi-pencil-square"></i>
+
+Información académica
+
+</h4>
+
+
+
+
+<div class="row g-3 mt-2">
+
+
+
+<div class="col-md-4">
+
+
+<label>
+
+Asignatura
+
+</label>
+
+
+
+<input
+
+class="form-control"
+
+name="asignatura"
+
+placeholder="Ejemplo: Matemática"
+
+required>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-4">
+
+
+<label>
+
+Tema
+
+</label>
+
+
+
+<input
+
+class="form-control"
+
+name="tema"
+
+placeholder="Ejemplo: Fracciones"
+
+required>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-4">
+
+
+<label>
+
+Grado / Nivel
+
+</label>
+
+
+
+<input
+
+class="form-control"
+
+name="grado"
+
+placeholder="Ejemplo: 4 grado"
+
+required>
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+<div class="text-center mt-4">
+
+
+<button
+
+type="submit"
+
+class="btn btn-ciem">
+
+
+<i class="bi bi-stars"></i>
+
+
+Generar con IA
+
+
+</button>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+</form>
+
+
+
+
+
+
+
+<!-- ==========================
+     RESULTADO
+=========================== -->
+
+
+
+{% if resultado %}
+
+
+
+<div class="card-ciem mt-4">
+
+
+<h3>
+
+
+<i class="bi bi-file-earmark-text"></i>
+
+
+Resultado generado
+
+
+</h3>
+
+
+
+<hr>
+
+
+
+
+<div class="resultado">
+
+
+{{ resultado | safe }}
+
+
+</div>
+
+
+
+
+
+
+<form method="POST"
+action="{{ url_for('ciem_ai.generar_pdf') }}">
+
+
+
+<input
+
+type="hidden"
+
+name="contenido"
+
+value="{{ resultado }}">
+
+
+
+
+
+<button
+
+class="btn btn-danger mt-3">
+
+
+<i class="bi bi-file-earmark-pdf"></i>
+
+
+Descargar PDF
+
+
+</button>
+
+
+
+
+</form>
+
+
+
+</div>
+
+
+
+
+{% endif %}
+
+
+
+
+
+</div>
+
+
+
+</body>
+
+
+</html>

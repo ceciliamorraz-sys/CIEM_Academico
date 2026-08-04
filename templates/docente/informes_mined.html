@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>
+Informes MINED | CIEM
+</title>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet">
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+rel="stylesheet">
+
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='css/clases.css') }}">
+
+
+<style>
+
+
+body{
+
+background:#f4f6f9;
+
+}
+
+
+
+.logo{
+
+height:75px;
+
+object-fit:contain;
+
+}
+
+
+
+.header-mined{
+
+background:#0D2A52;
+
+color:white;
+
+padding:20px;
+
+border-radius:15px;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+}
+
+
+
+.logo-card{
+
+height:45px;
+
+object-fit:contain;
+
+}
+
+
+
+.informe-card{
+
+background:white;
+
+border-radius:18px;
+
+padding:25px;
+
+height:100%;
+
+box-shadow:0 5px 15px rgba(0,0,0,.15);
+
+transition:.3s;
+
+text-align:center;
+
+}
+
+
+
+.informe-card:hover{
+
+transform:translateY(-5px);
+
+}
+
+
+
+.icono{
+
+font-size:45px;
+
+color:#0D2A52;
+
+margin-bottom:15px;
+
+}
+
+
+
+.informe-card h4{
+
+color:#0D2A52;
+
+font-weight:bold;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+<div class="container-fluid py-4">
+
+
+
+<!-- ============================
+     ENCABEZADO
+============================= -->
+
+
+<div class="header-mined">
+
+
+
+<div class="d-flex align-items-center gap-4">
+
+
+
+<img src="{{ url_for('static', filename='img/logo.jpg') }}"
+class="logo"
+alt="CIEM">
+
+
+
+<img src="{{ url_for('static', filename='img/MINED.jpg') }}"
+class="logo"
+alt="MINED">
+
+
+
+<div>
+
+
+<h2>
+
+<i class="bi bi-file-earmark-bar-graph"></i>
+
+Informes MINED
+
+</h2>
+
+
+
+<p class="mb-0">
+
+Reportes oficiales del Ministerio de Educación
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+<a href="{{ url_for('docente.dashboard_docente') }}"
+class="btn btn-light">
+
+
+<i class="bi bi-arrow-left"></i>
+
+Volver
+
+
+</a>
+
+
+
+</div>
+
+
+
+
+
+
+<!-- ============================
+     TARJETAS
+============================= -->
+
+
+<div class="row mt-4 g-4">
+
+
+
+
+
+<!-- RETENCIÓN -->
+
+
+<div class="col-md-6 col-lg-4">
+
+
+<div class="informe-card">
+
+
+<img src="{{ url_for('static', filename='img/MINED.jpg') }}"
+class="logo-card mb-3">
+
+
+<div class="icono">
+
+<i class="bi bi-person-check"></i>
+
+</div>
+
+
+<h4>
+
+Retención Escolar
+
+</h4>
+
+
+
+<p>
+
+Control de matrícula, permanencia y retiros estudiantiles.
+
+</p>
+
+
+
+<a href="{{ url_for('docente.vista_retencion') }}"
+class="btn btn-primary w-100">
+
+
+<i class="bi bi-eye"></i>
+
+Ver Informe
+
+
+</a>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- RENDIMIENTO -->
+
+
+<div class="col-md-6 col-lg-4">
+
+
+<div class="informe-card">
+
+
+<img src="{{ url_for('static', filename='img/MINED.jpg') }}"
+class="logo-card mb-3">
+
+
+<div class="icono">
+
+<i class="bi bi-bar-chart"></i>
+
+</div>
+
+
+<h4>
+
+Rendimiento Académico
+
+</h4>
+
+
+
+<p>
+
+Análisis de promedios, aprobación y desempeño académico.
+
+</p>
+
+
+
+<a href="{{ url_for('docente.vista_rendimiento') }}"
+class="btn btn-success w-100">
+
+
+<i class="bi bi-graph-up"></i>
+
+Ver Informe
+
+
+</a>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- PROMOCIÓN -->
+
+
+<div class="col-md-6 col-lg-4">
+
+
+<div class="informe-card">
+
+
+<img src="{{ url_for('static', filename='img/MINED.jpg') }}"
+class="logo-card mb-3">
+
+
+<div class="icono">
+
+<i class="bi bi-mortarboard"></i>
+
+</div>
+
+
+
+<h4>
+
+Promoción Escolar
+
+</h4>
+
+
+
+<p>
+
+Estudiantes promovidos y no promovidos al cierre académico.
+
+</p>
+
+
+
+<a href="{{ url_for('docente.vista_promocion') }}"
+class="btn btn-warning w-100">
+
+
+<i class="bi bi-check-circle"></i>
+
+Ver Informe
+
+
+</a>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+</body>
+
+</html>

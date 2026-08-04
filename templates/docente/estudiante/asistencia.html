@@ -1,0 +1,41 @@
+<h2>Historial de Asistencia</h2>
+
+
+<table>
+
+<tr>
+<th>Fecha</th>
+<th>Asignatura</th>
+<th>Estado</th>
+<th>Docente</th>
+</tr>
+
+
+{% for a in asistencias %}
+
+<tr>
+
+<td>
+{{a.fecha}}
+</td>
+
+
+<td>
+{{a.asignatura_id}}
+</td>
+
+
+<td>
+{{a.estado}}
+</td>
+
+
+<td>
+{{a.docente}}
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>

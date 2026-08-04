@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CIEM | Clase</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/asignatura.css') }}">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header-clase">
+
+        <h1>
+            <i class="bi bi-book"></i>
+            {{ asignatura.nombre }}
+        </h1>
+
+        <p>
+            Grado: {{ asignatura.grado }}
+            |
+            Sección: {{ asignatura.seccion }}
+        </p>
+
+    </div>
+
+
+    <div class="acciones-clase">
+
+        <a href="{{ url_for('docente.docente_notas',
+        asignatura_id=asignatura._id) }}"
+        class="btn-clase notas">
+
+        <i class="bi bi-pencil-square"></i>
+        Notas
+
+        </a>
+
+        <a href="#" class="btn-clase asistencia">
+            <i class="bi bi-calendar-check"></i>
+            Asistencia
+        </a>
+
+
+        <a href="#" class="btn-clase incidencia">
+            <i class="bi bi-exclamation-triangle"></i>
+            Incidencias
+        </a>
+
+    </div>
+
+
+
+    <div class="card">
+
+        <h2>
+            <i class="bi bi-people"></i>
+            Estudiantes
+        </h2>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Grado</th>
+                    <th>Sección</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            {% for e in estudiantes %}
+
+                <tr>
+
+                    <td>
+                        {{ e.codigo }}
+                    </td>
+
+                    <td>
+                        {{ e.nombre }}
+                    </td>
+
+                    <td>
+                        {{ e.grado }}
+                    </td>
+
+                    <td>
+                        {{ e.seccion }}
+                    </td>
+
+                </tr>
+
+            {% else %}
+
+                <tr>
+                    <td colspan="4">
+                        No hay estudiantes asignados
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+
+    </div>
+
+
+<a href="{{ url_for('aulas') }}" class="volver">
+    <i class="bi bi-arrow-left"></i>
+    Volver a Mis Clases
+</a>
+
+<a href="{{ url_for('aulas') }}" class="volver">
+    <i class="bi bi-arrow-left"></i>
+    Volver a Mis Asignaturas
+</a>
+
+</div>
+
+
+</body>
+</html>
