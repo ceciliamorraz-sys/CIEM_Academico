@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+from config.database import db
 from urllib.parse import quote_plus
 
 # =====================================
@@ -14,7 +14,4 @@ MONGO_URI = (
     "?retryWrites=true&w=majority&appName=Cluster0"
 )
 
-client = MongoClient(MONGO_URI)
-
-# Base de datos
-db = client["CIEM"]
+from config.database import db

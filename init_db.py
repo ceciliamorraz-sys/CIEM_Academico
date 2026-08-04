@@ -1,7 +1,6 @@
 from pymongo import MongoClient
 
-client = MongoClient("mongodb://localhost:27017/")
-db = client["CIEM"]
+from config.database import db
 
 # LIMPIAR PARA EVITAR DUPLICADOS
 db.usuarios.delete_many({})

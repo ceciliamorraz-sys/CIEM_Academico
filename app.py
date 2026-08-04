@@ -1,77 +1,35 @@
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
 from reportlab.lib.styles import getSampleStyleSheet
-from routes.ciem_ai import ciem_ai_bp
-from pymongo import MongoClient
+from reportlab.lib import colors
 from bson import ObjectId
 from functools import wraps
 from datetime import datetime
-from flask import send_file
-from reportlab.lib import colors
-from flask import Blueprint
 import os
+
+from config.database import db
 
 
 app = Flask(__name__)
 
 app.secret_key = "CIEM_clave_segura_2026"
 
+
 from routes.docentes import docente_bp
 from routes.estudiante import estudiante_bp
 from routes.mensajes import mensajes_bp
-from routes.ciem_ai import ciem_ai_bp   # si existe
+from routes.ciem_ai import ciem_ai_bp
+
 
 app.register_blueprint(docente_bp)
 app.register_blueprint(estudiante_bp)
-app.register_blueprint(mensajes_bp)     # <-- FALTA ESTA LÍNEA
+app.register_blueprint(mensajes_bp)
 app.register_blueprint(ciem_ai_bp)
-from pymongo import MongoClient
-from urllib.parse import quote_plus
 
-# =====================================
-# CONEXIÓN MONGODB ATLAS
-# =====================================
 
-from pymongo import MongoClient
-from urllib.parse import quote_plus
 
-usuario_atlas = "ceciliamorraz_db_user"
-password_atlas = quote_plus("Ciem2026Atlas123")
+from config.database import db
 
-MONGO_URI = (
-    f"mongodb+srv://{usuario_atlas}:{password_atlas}"
-    "@cluster0.olbd8g8.mongodb.net/CIEM?retryWrites=true&w=majority&appName=Cluster0"
-)
-
-client = MongoClient(MONGO_URI)
-
-db = client["CIEM"]
-
-# =====================================
-# PRUEBA DE CONEXIÓN
-# =====================================
-
-try:
-    client.admin.command("ping")
-
-    print("====================================")
-    print("✅ CONECTADO A MONGODB ATLAS")
-    print("BASE ACTUAL:", db.name)
-
-    print("COLECCIONES:")
-    print(db.list_collection_names())
-
-    print("------------------------------------")
-    print("TOTAL USUARIOS:", db.usuarios.count_documents({}))
-
-    print("DOCUMENTOS USUARIOS:")
-    for u in db.usuarios.find({}, {"_id": 1, "usuario": 1, "rol": 1}):
-        print(u)
-
-    print("====================================")
-
-except Exception as e:
-    print("❌ ERROR MONGODB:", e)
 # =========================
 # FUNCIONES BASE CIEM
 # =========================

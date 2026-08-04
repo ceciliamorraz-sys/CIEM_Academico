@@ -1,10 +1,8 @@
-from pymongo import MongoClient
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from config.database import db
 from datetime import datetime
 
-client = MongoClient("mongodb://localhost:27017/")
-db = client["CIEM"]
+from config.database import db
 # ===================================
 #   PROMEDIO ESTUDIANTE
 # ===================================
