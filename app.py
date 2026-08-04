@@ -1,4 +1,4 @@
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Imagepython
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from reportlab.lib.styles import getSampleStyleSheet
 from routes.ciem_ai import ciem_ai_bp
@@ -36,7 +36,7 @@ from pymongo import MongoClient
 from urllib.parse import quote_plus
 
 usuario_atlas = "ceciliamorraz_db_user"
-password_atlas = quote_plus("CiemAtlas2026")
+password_atlas = quote_plus("Ciem2026Atlas")
 
 MONGO_URI = (
     f"mongodb+srv://{usuario_atlas}:{password_atlas}"
@@ -45,9 +45,7 @@ MONGO_URI = (
 
 client = MongoClient(MONGO_URI)
 
-# Base de datos
 db = client["CIEM"]
-
 
 # =====================================
 # PRUEBA DE CONEXIÓN
