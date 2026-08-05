@@ -139,29 +139,33 @@ filename='img/estudiantes/' + estudiante.foto) }}">
 <div class="student-information">
 
 
+{% if estudiante %}
+
 <h2>
-
-{{ estudiante.nombre }}
-
+    {{ estudiante.nombre }}
 </h2>
 
+<p>
+    <i class="bi bi-mortarboard-fill"></i>
+    Grado:
+    <strong>
+        {{ estudiante.grado }}
+        {{ estudiante.seccion }}
+    </strong>
+</p>
 
+{% else %}
+
+<h2>
+    {{ session.get("nombre") }}
+</h2>
 
 <p>
-
-<i class="bi bi-mortarboard-fill"></i>
-
-Grado:
-
-<strong>
-
-{{ estudiante.grado }}
-
-{{ estudiante.seccion }}
-
-</strong>
-
+    <i class="bi bi-person-fill"></i>
+    Padre de familia
 </p>
+
+{% endif %}
 
 
 
@@ -602,7 +606,56 @@ Seleccione un docente para iniciar una conversación.
 <hr>
 
 
+<hr>
 
+<h4>📨 Mensajes enviados por el docente</h4>
+
+{% for m in mensajes %}
+
+<div class="card border-primary mb-3 shadow-sm">
+
+    <div class="card-body">
+
+        <h5 class="card-title">
+            👨‍🏫 {{ m.docente }}
+        </h5>
+
+        <p class="card-text">
+            {{ m.mensaje }}
+        </p>
+
+        <p class="mb-1">
+            <strong>Estudiante:</strong>
+            {{ m.estudiante }}
+        </p>
+
+        <small class="text-muted">
+
+            {{ m.fecha.strftime("%d/%m/%Y %H:%M") }}
+
+        </small>
+
+        <br><br>
+
+        <span class="badge bg-warning text-dark">
+
+            {{ m.estado }}
+
+        </span>
+
+    </div>
+
+</div>
+
+{% else %}
+
+<div class="alert alert-info">
+
+    No tiene mensajes enviados por los docentes.
+
+</div>
+
+{% endfor %}
 
 <h4>
 

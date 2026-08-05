@@ -19,20 +19,47 @@ estudiante_bp = Blueprint(
 
 
 @estudiante_bp.route("/")
-@role_required("estudiante","padre")
+@role_required("estudiante", "padre")
 def dashboard():
 
-    estudiante = db.estudiantes.find_one({
-        "_id": session.get("id")
-    })
+    estudiante = None
+    notas = []
+    docentes = []
+    conversaciones = []
+    mensajes = []
 
+    if session.get("rol") == "estudiante":
+
+        estudiante = db.estudiantes.find_one({
+            "_id": session.get("id")
+        })
+
+        if estudiante:
+            notas = list(db.notas.find({
+                "estudiante_id": session.get("id")
+            }))
+
+    elif session.get("rol") == "padre":
+
+        mensajes = list(
+            db.mensajes.find({
+                "padre": session.get("usuario")
+            }).sort("fecha", -1)
+        )
+
+    docentes = list(db.docentes.find())
 
     return render_template(
         "estudiante/estudiante_dashboard.html",
         estudiante=estudiante,
+        notas=notas,
+        docentes=docentes,
+        conversaciones=conversaciones,
+        mensajes=mensajes,
         resumen={
-            "promedio":0,
-            "asistencia":0
+            "promedio": 0,
+            "asistencia": 0,
+            "estado": "Activo"
         }
     )
 # =====================================
