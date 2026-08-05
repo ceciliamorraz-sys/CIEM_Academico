@@ -1,9 +1,3 @@
-/* =====================================
-   CIEM ONE
-   DASHBOARD ESTUDIANTE
-   Diseño Institucional
-===================================== */
-
 * {
     box-sizing: border-box;
 }
@@ -15,6 +9,11 @@ body {
     color: #1D3256;
 }
 
+
+/* ===========================
+   CONTENEDOR PRINCIPAL
+=========================== */
+
 .dashboard-container {
     width: 95%;
     margin: auto;
@@ -22,17 +21,19 @@ body {
 }
 
 
-/* ================= HEADER ================= */
+/* ===========================
+   HEADER CIEM ONE
+=========================== */
 
 .ciem-header {
-    background: linear-gradient( 135deg, #08142C, #0D2A52);
-    color: white;
+    background: linear-gradient( 135deg, #08142C, #1E4E8C);
     padding: 20px 30px;
-    border-radius: 0 0 20px 20px;
+    border-radius: 0 0 25px 25px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    color: white;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .15);
 }
 
 .brand-ciem {
@@ -42,15 +43,17 @@ body {
 }
 
 .logo-ciem {
-    width: 90px;
-    height: 90px;
+    width: 95px;
+    height: 95px;
+    border-radius: 18px;
     object-fit: contain;
-    border-radius: 15px;
+    background: white;
 }
 
 .brand-ciem h1 {
+    font-size: 34px;
     margin: 0;
-    font-size: 32px;
+    font-weight: 700;
 }
 
 .brand-ciem p {
@@ -61,34 +64,50 @@ body {
 .header-user {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
+}
+
+.header-user i {
+    font-size: 22px;
+}
+
+.welcome h5 {
+    margin: 0;
+}
+
+.welcome span {
+    color: #FFC107;
+    font-weight: bold;
 }
 
 
-/* ================= PERFIL ================= */
+/* ===========================
+   PERFIL ESTUDIANTE
+=========================== */
 
 .profile-card {
+    margin-top: 25px;
     background: white;
-    border-radius: 20px;
+    border-radius: 25px;
     padding: 25px;
     display: flex;
     align-items: center;
     gap: 25px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, .08);
-    margin-bottom: 25px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .08);
 }
 
 .profile-image {
-    width: 120px;
-    height: 120px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
-    background: #1E4E8C;
-    color: white;
+    overflow: hidden;
+    background: #0D2A52;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 50px;
-    overflow: hidden;
+    color: white;
+    font-size: 55px;
+    border: 5px solid #FFC107;
 }
 
 .profile-image img {
@@ -99,56 +118,172 @@ body {
 
 .student-information h2 {
     color: #08142C;
+    font-weight: 700;
+}
+
+.student-information p {
+    margin: 8px 0;
+}
+
+.student-status {
+    margin-left: auto;
+    text-align: center;
+}
+
+.status-success {
+    background: #198754;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: bold;
 }
 
 
-/* ================= TARJETAS ================= */
+/* ===========================
+   TARJETAS RESUMEN
+=========================== */
 
 .cards {
-    margin-bottom: 25px;
+    margin-top: 25px;
 }
 
 .info-card {
     background: white;
-    border-radius: 18px;
+    border-radius: 22px;
     padding: 25px;
     text-align: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, .08);
-    border-top: 5px solid #FFC107;
+    height: 100%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+    transition: .3s;
+    border-bottom: 5px solid #FFC107;
 }
 
-.info-card i {
-    font-size: 35px;
+.info-card:hover {
+    transform: translateY(-8px);
+}
+
+.icon-box {
+    width: 65px;
+    height: 65px;
+    margin: auto;
+    border-radius: 50%;
+    background: #EAF1FB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-box i {
+    font-size: 32px;
     color: #1E4E8C;
 }
 
 .info-card h2 {
-    margin: 10px 0;
+    margin-top: 15px;
     color: #08142C;
+    font-weight: 700;
+}
+
+.info-card p {
+    color: #666;
 }
 
 
-/* ================= PANELES ================= */
+/* ===========================
+   ACCESOS RAPIDOS
+=========================== */
+
+.quick-access {
+    margin-top: 30px;
+    background: white;
+    padding: 25px;
+    border-radius: 25px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+}
+
+.quick-access h3 {
+    color: #08142C;
+    margin-bottom: 20px;
+}
+
+.quick-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.quick-card {
+    background: #F4F7FB;
+    padding: 25px;
+    border-radius: 20px;
+    text-align: center;
+    transition: .3s;
+    cursor: pointer;
+}
+
+.quick-card:hover {
+    background: #0D2A52;
+    color: white;
+    transform: translateY(-5px);
+}
+
+.quick-card i {
+    display: block;
+    font-size: 35px;
+    margin-bottom: 10px;
+    color: #1E4E8C;
+}
+
+.quick-card:hover i {
+    color: #FFC107;
+}
+
+
+/* ===========================
+   PANELES GENERALES
+=========================== */
 
 .panel {
     background: white;
-    padding: 25px;
-    border-radius: 20px;
-    margin-bottom: 25px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, .08);
+    margin-top: 30px;
+    padding: 30px;
+    border-radius: 25px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .08);
 }
 
 .panel h3 {
-    color: #0D2A52;
-    border-bottom: 2px solid #FFC107;
-    padding-bottom: 10px;
+    color: #08142C;
+    font-weight: 700;
+    border-bottom: 3px solid #FFC107;
+    padding-bottom: 12px;
+}
+
+.text-muted {
+    color: #6c757d!important;
 }
 
 
-/* ================= TABLA ================= */
+/* ===========================
+   GRAFICA
+=========================== */
+
+.chart-container {
+    height: 350px;
+    margin-top: 20px;
+}
+
+
+/* ===========================
+   TABLA DE NOTAS
+=========================== */
+
+.table-responsive {
+    border-radius: 15px;
+    overflow-x: auto;
+}
 
 .table {
-    font-size: 14px;
+    margin-top: 20px;
 }
 
 .table thead {
@@ -156,45 +291,149 @@ body {
     color: white;
 }
 
+.table th {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
 .table tbody tr:hover {
     background: #F4F7FB;
 }
 
+.grade-value {
+    font-weight: bold;
+    color: #1E4E8C;
+}
 
-/* ================= MENSAJES ================= */
-
-.card {
+.badge {
+    padding: 8px 12px;
     border-radius: 15px;
 }
 
-textarea,
-select {
-    border-radius: 10px!important;
+
+/* ===========================
+   MENSAJES
+=========================== */
+
+.message-card {
+    background: #F8FAFD;
+    border-left: 5px solid #1E4E8C;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.message-header span {
+    background: #FFC107;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 13px;
 }
 
 
-/* ================= FOOTER ================= */
+/* ===========================
+   CONVERSACIONES
+=========================== */
+
+.conversation-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #F8FAFD;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+
+.conversation-card h5 {
+    color: #0D2A52;
+}
+
+
+/* ===========================
+   AVISOS
+=========================== */
+
+.notice {
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    font-weight: 600;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.notice-primary {
+    background: #EAF1FB;
+    color: #0D2A52;
+}
+
+.notice-warning {
+    background: #FFF3CD;
+    color: #664D03;
+}
+
+
+/* ===========================
+   FOOTER
+=========================== */
 
 footer {
+    margin-top: 40px;
     text-align: center;
-    margin-top: 30px;
-    color: #666;
+    color: #6c757d;
 }
 
 
-/* ================= RESPONSIVE ================= */
+/* ===========================
+   RESPONSIVE
+=========================== */
 
-@media(max-width:768px) {
-    .ciem-header {
-        flex-direction: column;
-        gap: 20px;
+@media(max-width:992px) {
+    .quick-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
     .profile-card {
         flex-direction: column;
         text-align: center;
     }
+    .student-status {
+        margin: auto;
+    }
+}
+
+@media(max-width:600px) {
+    .ciem-header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    .brand-ciem {
+        flex-direction: column;
+    }
     .header-user {
         flex-wrap: wrap;
         justify-content: center;
+    }
+    .quick-grid {
+        grid-template-columns: 1fr;
+    }
+    .info-card {
+        margin-bottom: 15px;
+    }
+    .panel {
+        padding: 15px;
     }
 }

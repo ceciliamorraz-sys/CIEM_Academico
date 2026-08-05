@@ -6,9 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>
-CIEM ONE | Dashboard Estudiante
-</title>
+<title>CIEM ONE | Dashboard Estudiante</title>
 
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -27,9 +25,7 @@ href="{{ url_for('static', filename='css/estudiante_dashboard.css') }}">
 </head>
 
 
-
 <body>
-
 
 
 <div class="dashboard-container">
@@ -55,7 +51,6 @@ class="logo-ciem">
 CIEM ONE
 </h1>
 
-
 <p>
 Portal Académico Estudiantil
 </p>
@@ -68,17 +63,26 @@ Portal Académico Estudiantil
 
 
 
-
 <div class="header-user">
 
 
-<i class="bi bi-bell-fill"></i>
+<div class="welcome">
+
+<h5>
+Bienvenido 👋
+</h5>
 
 
-<i class="bi bi-person-circle"></i>
-
-
+<span>
 {{session.usuario}}
+</span>
+
+
+</div>
+
+
+
+<i class="bi bi-bell-fill"></i>
 
 
 <a href="/logout"
@@ -94,21 +98,17 @@ Salir
 </div>
 
 
+
 </header>
 
 
 
 
 
-
-
-
-
-<!-- ================= PERFIL ESTUDIANTE ================= -->
+<!-- ================= PERFIL ================= -->
 
 
 <section class="profile-card">
-
 
 
 <div class="profile-image">
@@ -135,37 +135,30 @@ filename='img/estudiantes/' + estudiante.foto) }}">
 
 
 
-
 <div class="student-information">
 
 
-{% if estudiante %}
-
 <h2>
-    {{ estudiante.nombre }}
+
+{{ estudiante.nombre }}
+
 </h2>
 
-<p>
-    <i class="bi bi-mortarboard-fill"></i>
-    Grado:
-    <strong>
-        {{ estudiante.grado }}
-        {{ estudiante.seccion }}
-    </strong>
-</p>
-
-{% else %}
-
-<h2>
-    {{ session.get("nombre") }}
-</h2>
 
 <p>
-    <i class="bi bi-person-fill"></i>
-    Padre de familia
-</p>
 
-{% endif %}
+<i class="bi bi-mortarboard-fill"></i>
+
+Grado:
+
+<strong>
+
+{{ estudiante.grado }}
+{{ estudiante.seccion }}
+
+</strong>
+
+</p>
 
 
 
@@ -204,6 +197,28 @@ Tutor:
 </div>
 
 
+
+<div class="student-status">
+
+
+<h4>
+
+Estado
+
+</h4>
+
+
+<span class="status-success">
+
+Activo
+
+</span>
+
+
+</div>
+
+
+
 </section>
 
 
@@ -212,10 +227,7 @@ Tutor:
 
 
 
-
-
-
-<!-- ================= RESUMEN ================= -->
+<!-- ================= INDICADORES ================= -->
 
 
 <section class="row cards">
@@ -228,7 +240,11 @@ Tutor:
 <div class="info-card">
 
 
+<div class="icon-box">
+
 <i class="bi bi-graph-up-arrow"></i>
+
+</div>
 
 
 <h2>
@@ -239,7 +255,9 @@ Tutor:
 
 
 <p>
+
 Promedio General
+
 </p>
 
 
@@ -252,13 +270,18 @@ Promedio General
 
 
 
+
 <div class="col-md-3">
 
 
 <div class="info-card">
 
 
+<div class="icon-box">
+
 <i class="bi bi-calendar-check"></i>
+
+</div>
 
 
 <h2>
@@ -269,7 +292,9 @@ Promedio General
 
 
 <p>
+
 Asistencia
+
 </p>
 
 
@@ -282,13 +307,18 @@ Asistencia
 
 
 
+
 <div class="col-md-3">
 
 
 <div class="info-card">
 
 
+<div class="icon-box">
+
 <i class="bi bi-award-fill"></i>
+
+</div>
 
 
 <h2>
@@ -299,7 +329,9 @@ Asistencia
 
 
 <p>
+
 Estado Académico
+
 </p>
 
 
@@ -307,6 +339,7 @@ Estado Académico
 
 
 </div>
+
 
 
 
@@ -318,7 +351,11 @@ Estado Académico
 <div class="info-card">
 
 
+<div class="icon-box">
+
 <i class="bi bi-book-fill"></i>
+
+</div>
 
 
 <h2>
@@ -329,7 +366,9 @@ Estado Académico
 
 
 <p>
+
 Asignaturas
+
 </p>
 
 
@@ -348,20 +387,116 @@ Asignaturas
 
 
 
+<!-- ================= ACCESOS RAPIDOS ================= -->
 
-<!-- ================= GRAFICA ================= -->
 
-
-<section class="panel">
+<section class="quick-access">
 
 
 <h3>
-📈 Rendimiento Académico
+
+Accesos rápidos
+
 </h3>
 
 
 
+<div class="quick-grid">
+
+
+
+<div class="quick-card">
+
+<i class="bi bi-journal-text"></i>
+
+<span>
+
+Mis notas
+
+</span>
+
+</div>
+
+
+
+
+<div class="quick-card">
+
+<i class="bi bi-chat-dots"></i>
+
+<span>
+
+Mensajes
+
+</span>
+
+</div>
+
+
+
+
+<div class="quick-card">
+
+<i class="bi bi-file-earmark-bar-graph"></i>
+
+<span>
+
+Reportes
+
+</span>
+
+</div>
+
+
+
+
+<div class="quick-card">
+
+<i class="bi bi-megaphone"></i>
+
+<span>
+
+Avisos
+
+</span>
+
+</div>
+
+
+
+</div>
+
+
+</section>
+<!-- ================= RENDIMIENTO ACADEMICO ================= -->
+
+
+<section class="panel academic-performance">
+
+
+<h3>
+<i class="bi bi-bar-chart-fill"></i>
+
+Rendimiento Académico
+
+</h3>
+
+
+<p class="text-muted">
+
+Visualización del desempeño académico actualizado por los docentes.
+
+</p>
+
+
+
+<div class="chart-container">
+
+
 <canvas id="graficoNotas"></canvas>
+
+
+</div>
 
 
 </section>
@@ -374,22 +509,64 @@ Asignaturas
 
 
 
-<!-- ================= NOTAS ================= -->
+<!-- ================= REGISTRO ACADEMICO ================= -->
 
 
 <section class="panel">
 
 
+<div class="section-header">
+
+
+<div>
+
 <h3>
-📚 Registro Académico
+
+<i class="bi bi-journal-bookmark-fill"></i>
+
+Registro Académico
+
 </h3>
+
+
+<p class="text-muted">
+
+Las calificaciones se actualizan automáticamente cuando el docente registra nuevas evaluaciones.
+
+</p>
+
+</div>
+
+
+
+<div class="academic-summary">
+
+
+<span>
+
+Asignaturas:
+
+<strong>
+{{ notas|length }}
+</strong>
+
+</span>
+
+
+</div>
+
+
+</div>
+
+
+
 
 
 
 <div class="table-responsive">
 
 
-<table class="table table-bordered">
+<table class="table table-hover align-middle">
 
 
 <thead>
@@ -397,24 +574,77 @@ Asignaturas
 
 <tr>
 
-<th>Asignatura</th>
 
-<th>EP1</th>
-<th>EP2</th>
-<th>EP3</th>
-<th>EP4</th>
-<th>EP5</th>
-<th>EP6</th>
-<th>EP7</th>
-<th>EP8</th>
-<th>EP9</th>
-<th>EP10</th>
+<th>
+Asignatura
+</th>
 
-<th>Acumulado</th>
 
-<th>Promedio</th>
+<th>
+EP1
+</th>
 
-<th>Estado</th>
+
+<th>
+EP2
+</th>
+
+
+<th>
+EP3
+</th>
+
+
+<th>
+EP4
+</th>
+
+
+<th>
+EP5
+</th>
+
+
+<th>
+EP6
+</th>
+
+
+<th>
+EP7
+</th>
+
+
+<th>
+EP8
+</th>
+
+
+<th>
+EP9
+</th>
+
+
+<th>
+EP10
+</th>
+
+
+<th>
+Acumulado
+</th>
+
+
+<th>
+Promedio
+</th>
+
+
+<th>
+Estado
+</th>
+
+
 
 </tr>
 
@@ -423,245 +653,396 @@ Asignaturas
 
 
 
+
 <tbody>
+
 
 
 {% for n in notas %}
 
 
+
 <tr>
 
 
+
 <td>
 
-{{n.asignatura}}
+<strong>
+
+{{ n.asignatura }}
+
+</strong>
+
 
 </td>
 
 
-<td>{{n.ep1}}</td>
-<td>{{n.ep2}}</td>
-<td>{{n.ep3}}</td>
-<td>{{n.ep4}}</td>
-<td>{{n.ep5}}</td>
-<td>{{n.ep6}}</td>
-<td>{{n.ep7}}</td>
-<td>{{n.ep8}}</td>
-<td>{{n.ep9}}</td>
-<td>{{n.ep10}}</td>
 
+<td>{{ n.ep1 }}</td>
 
-<td>
+<td>{{ n.ep2 }}</td>
 
-{{n.acumulado}}
+<td>{{ n.ep3 }}</td>
 
-</td>
+<td>{{ n.ep4 }}</td>
 
+<td>{{ n.ep5 }}</td>
 
-<td>
+<td>{{ n.ep6 }}</td>
 
-{{n.promedio}}
+<td>{{ n.ep7 }}</td>
 
-</td>
+<td>{{ n.ep8 }}</td>
+
+<td>{{ n.ep9 }}</td>
+
+<td>{{ n.ep10 }}</td>
+
 
 
 <td>
 
-{{n.estado}}
+<strong>
+
+{{ n.acumulado }}
+
+</strong>
+
 
 </td>
+
+
+
+<td>
+
+
+<span class="grade-value">
+
+{{ n.promedio }}
+
+</span>
+
+
+</td>
+
+
+
+
+<td>
+
+
+{% if n.estado == "Aprobado" %}
+
+
+<span class="badge bg-success">
+
+{{ n.estado }}
+
+</span>
+
+
+
+{% elif n.estado == "Reprobado" %}
+
+
+
+<span class="badge bg-danger">
+
+{{ n.estado }}
+
+</span>
+
+
+
+{% else %}
+
+
+
+<span class="badge bg-warning text-dark">
+
+{{ n.estado }}
+
+</span>
+
+
+
+{% endif %}
+
+
+
+</td>
+
+
 
 
 </tr>
 
 
+
+
 {% endfor %}
+
+
 
 
 </tbody>
 
 
+
 </table>
+
 
 
 </div>
 
 
+
 </section>
+<!-- ================= COMUNICACION DOCENTE ================= -->
 
-
-
-<!-- ================= COMUNICACIÓN DOCENTE ================= -->
 
 <section class="panel">
 
 
 <h3>
-💬 Comunicación Académica
+
+<i class="bi bi-chat-square-text-fill"></i>
+
+Comunicación Académica
+
 </h3>
 
 
-<p>
-Seleccione un docente para iniciar una conversación.
+<p class="text-muted">
+
+Comuníquese con sus docentes para consultas académicas.
+
 </p>
 
 
 
+
 <form method="POST"
-      action="{{ url_for('mensajes.crear') }}">
-
-
-    <label class="form-label">
-
-        Docente
-
-    </label>
+action="{{ url_for('mensajes.crear') }}">
 
 
 
-    <select
-    name="docente_id"
-    class="form-select"
-    required>
+<div class="row">
 
 
-        <option value="">
-
-            Seleccione docente
-
-        </option>
+<div class="col-md-6">
 
 
+<label class="form-label">
 
-        {% for d in docentes %}
+Docente
 
-
-        <option value="{{ d._id }}">
-
-            {{ d.nombre }}
-
-            -
-
-            {{ d.materia }}
-
-        </option>
-
-
-        {% endfor %}
+</label>
 
 
 
-    </select>
+<select
+name="docente_id"
+class="form-select"
+required>
+
+
+<option value="">
+
+Seleccione docente
+
+</option>
 
 
 
-
-    <label class="form-label mt-3">
-
-        Mensaje inicial
-
-    </label>
+{% for d in docentes %}
 
 
+<option value="{{ d._id }}">
 
-    <textarea
+{{ d.nombre }} - {{ d.materia }}
 
-    name="mensaje"
+</option>
 
-    class="form-control"
 
-    rows="4"
+{% endfor %}
 
-    placeholder="Escriba su consulta al docente..."
 
-    required></textarea>
+
+</select>
+
+
+</div>
 
 
 
 
-    <!-- IMPORTANTE -->
-    <!-- Este formulario crea una conversación nueva -->
+
+<div class="col-md-6">
 
 
-    <button class="btn btn-primary mt-3"
-            type="submit">
+<label class="form-label">
+
+Mensaje inicial
+
+</label>
 
 
-        <i class="bi bi-chat-dots-fill"></i>
+
+<textarea
+
+name="mensaje"
+
+class="form-control"
+
+rows="3"
+
+placeholder="Escriba su consulta..."
+
+required></textarea>
 
 
-        Enviar mensaje
+
+</div>
 
 
-    </button>
+
+</div>
+
+
+
+
+<button class="btn btn-primary mt-3">
+
+
+<i class="bi bi-send-fill"></i>
+
+Enviar mensaje
+
+
+</button>
 
 
 
 </form>
 
 
+</section>
 
 
 
-<hr>
 
 
-<hr>
 
-<h4>📨 Mensajes enviados por el docente</h4>
+
+
+<!-- ================= MENSAJES DOCENTES ================= -->
+
+
+<section class="panel">
+
+
+<h3>
+
+<i class="bi bi-envelope-paper-fill"></i>
+
+Mensajes recibidos
+
+</h3>
+
+
+
 
 {% for m in mensajes %}
 
-<div class="card border-primary mb-3 shadow-sm">
 
-    <div class="card-body">
 
-        <h5 class="card-title">
-            👨‍🏫 {{ m.docente }}
-        </h5>
+<div class="message-card">
 
-        <p class="card-text">
-            {{ m.mensaje }}
-        </p>
 
-        <p class="mb-1">
-            <strong>Estudiante:</strong>
-            {{ m.estudiante }}
-        </p>
+<div class="message-header">
 
-        <small class="text-muted">
 
-            {{ m.fecha.strftime("%d/%m/%Y %H:%M") }}
+<h5>
 
-        </small>
+👨‍🏫 {{ m.docente }}
 
-        <br><br>
+</h5>
 
-        <span class="badge bg-warning text-dark">
 
-            {{ m.estado }}
 
-        </span>
+<span>
 
-    </div>
+{{ m.estado }}
+
+</span>
+
 
 </div>
+
+
+
+
+<p>
+
+{{ m.mensaje }}
+
+</p>
+
+
+
+<small>
+
+{{ m.fecha.strftime("%d/%m/%Y %H:%M") }}
+
+</small>
+
+
+
+</div>
+
+
+
 
 {% else %}
 
+
+
 <div class="alert alert-info">
 
-    No tiene mensajes enviados por los docentes.
+No tiene mensajes recibidos actualmente.
 
 </div>
 
+
+
 {% endfor %}
 
-<h4>
+
+
+</section>
+
+
+
+
+
+
+
+
+<!-- ================= CONVERSACIONES ================= -->
+
+
+<section class="panel">
+
+
+<h3>
+
+<i class="bi bi-chat-left-dots-fill"></i>
 
 Conversaciones recientes
 
-</h4>
+</h3>
 
 
 
@@ -671,10 +1052,12 @@ Conversaciones recientes
 
 
 
-<div class="card mt-3 shadow-sm">
+
+<div class="conversation-card">
 
 
-<div class="card-body">
+
+<div>
 
 
 <h5>
@@ -693,8 +1076,7 @@ Conversaciones recientes
 
 
 
-
-<small class="text-muted">
+<small>
 
 {{ c.ultima_actualizacion.strftime("%d/%m/%Y %H:%M") }}
 
@@ -702,24 +1084,28 @@ Conversaciones recientes
 
 
 
-<br><br>
+</div>
 
 
 
 
-<a href="{{url_for('mensajes.chat',
-conversacion_id=c._id)}}"
+<a href="{{ url_for('mensajes.chat',
+conversacion_id=c._id) }}"
+
 class="btn btn-success">
 
+
 Abrir chat
+
 
 </a>
 
 
+
 </div>
 
 
-</div>
+
 
 
 
@@ -739,41 +1125,63 @@ Aún no tiene conversaciones.
 
 
 
+
 </section>
 
 
 
 
 
-<!-- ================= AVISOS ================= -->
+
+
+
+<!-- ================= AVISOS CIEM ================= -->
 
 
 <section class="panel">
 
 
 <h3>
-📢 Avisos CIEM
+
+<i class="bi bi-megaphone-fill"></i>
+
+Avisos CIEM
+
 </h3>
 
 
 
-<div class="alert alert-primary">
+
+<div class="notice notice-primary">
+
+
+<i class="bi bi-calendar-event"></i>
+
 
 Reunión de padres de familia
 
+
 </div>
 
 
 
-<div class="alert alert-warning">
+
+<div class="notice notice-warning">
+
+
+<i class="bi bi-file-earmark-text"></i>
+
 
 Entrega de boletines académicos
 
+
 </div>
+
 
 
 
 </section>
+
 
 
 
@@ -783,23 +1191,21 @@ Entrega de boletines académicos
 
 <footer>
 
+
 CIEM Académico © 2026
+
 
 </footer>
 
 
 
+
+
 </div>
-
-
-
-
-
-
 <script>
 
 
-const materias=[
+const materias = [
 
 {% for n in notas %}
 
@@ -811,7 +1217,7 @@ const materias=[
 
 
 
-const promedios=[
+const promedios = [
 
 {% for n in notas %}
 
@@ -824,11 +1230,13 @@ const promedios=[
 
 
 
+
 new Chart(
 
 document.getElementById("graficoNotas"),
 
 {
+
 
 type:"bar",
 
@@ -841,28 +1249,52 @@ labels:materias,
 
 datasets:[{
 
-label:"Promedio",
 
-data:promedios
+label:"Promedio académico",
+
+data:promedios,
+
+
+borderWidth:2
+
 
 }]
 
+},
+
+
+options:{
+
+
+responsive:true,
+
+
+scales:{
+
+
+y:{
+
+
+beginAtZero:true,
+
+max:100
+
 
 }
 
 
 }
+
+
+
+}
+
+
+}
+
 
 );
 
 
 
 </script>
-
-
-
-
-
-</body>
-
-</html>
