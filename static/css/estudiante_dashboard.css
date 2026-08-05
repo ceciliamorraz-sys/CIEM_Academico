@@ -1,292 +1,54 @@
-/* =====================================
-   CIEM ONE
-   DASHBOARD ESTUDIANTE
-   Diseño Institucional
-===================================== */
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    background: #F4F7FB;
-    font-family: "Segoe UI", Arial, sans-serif;
-    color: #1D3256;
-}
-
-.dashboard-container {
-    width: 95%;
-    margin: auto;
-    padding-bottom: 40px;
-}
-
-
-/* ================= HEADER ================= */
-
-.ciem-header {
-    margin-top: 25px;
-    background: linear-gradient( 135deg, #08142C, #0D2A52);
-    color: white;
-    padding: 30px 40px;
-    border-radius: 22px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 10px 30px rgba(8, 20, 44, .25);
-}
-
-.ciem-header h1 {
-    font-size: 36px;
-    font-weight: 700;
-    margin: 0;
-}
-
-.ciem-header p {
-    margin: 5px 0 0;
-    opacity: .85;
-}
-
-.header-user {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-}
-
-
-/* ================= PERFIL ================= */
-
-.profile-card {
-    background: white;
-    margin-top: 30px;
-    padding: 30px;
-    border-radius: 25px;
-    display: flex;
-    align-items: center;
-    gap: 30px;
-    border-top: 5px solid #FFC107;
-    box-shadow: 0 8px 25px rgba(8, 20, 44, .10);
-}
-
-.profile-image {
-    width: 110px;
-    height: 110px;
-    background: #0D2A52;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 60px;
-}
-
-.profile-card h2 {
-    color: #08142C;
-    font-weight: 700;
-}
-
-
-/* ================= TARJETAS ================= */
-
-.info-card {
-    background: white;
-    margin-top: 30px;
-    padding: 25px;
-    height: 170px;
-    border-radius: 22px;
-    text-align: center;
-    border-bottom: 4px solid #1E4E8C;
-    box-shadow: 0 8px 25px rgba(8, 20, 44, .08);
-    transition: .3s;
-}
-
-.info-card:hover {
-    transform: translateY(-6px);
-}
-
-.info-card i {
-    font-size: 38px;
-    color: #1E4E8C;
-}
-
-.info-card h2 {
-    margin-top: 15px;
-    color: #08142C;
-    font-size: 32px;
-}
-
-
-/* ================= IA ================= */
-
-.ai-card {
-    margin-top: 30px;
-    background: white;
-    padding: 25px;
-    border-radius: 22px;
-    border-left: 7px solid #FFC107;
-    box-shadow: 0 8px 25px rgba(8, 20, 44, .08);
-}
-
-.ai-card h3 {
-    color: #0D2A52;
-}
-
-
-/* ================= PANELES ================= */
-
-.panel {
-    background: white;
-    margin-top: 30px;
-    padding: 30px;
-    border-radius: 22px;
-    box-shadow: 0 8px 25px rgba(8, 20, 44, .08);
-}
-
-.panel h3 {
-    color: #08142C;
-    font-weight: 700;
-}
-
-
-/* ================= TABLA ================= */
-
-.table thead {
-    background: #08142C;
-    color: white;
-}
-
-.table th {
-    text-align: center;
-    white-space: nowrap;
-}
-
-.table td {
-    text-align: center;
-    vertical-align: middle;
-}
-
-.table td:first-child {
-    text-align: left;
-    font-weight: 600;
-}
-
-
-/* ================= DOCENTES ================= */
-
-.teacher-card {
-    background: #F8FAFC;
-    padding: 20px;
-    border-radius: 18px;
-    border-left: 5px solid #1E4E8C;
-    transition: .3s;
-}
-
-.teacher-card:hover {
-    background: #EAF1FA;
-}
-
-
-/* ================= BOTONES ================= */
-
-.btn-primary {
-    background: #0D2A52;
-    border: none;
-}
-
-.btn-primary:hover {
-    background: #1E4E8C;
-}
-
-
-/* ================= FOOTER ================= */
-
-footer {
-    margin-top: 40px;
-    text-align: center;
-    color: #6c757d;
-}
-
-
-/* ================= MOVIL ================= */
-
-@media(max-width:768px) {
-    .ciem-header {
-        flex-direction: column;
-        text-align: center;
-        gap: 20px;
-    }
-    .profile-card {
-        flex-direction: column;
-        text-align: center;
-    }
-}
-
-
-/* ===========================
-   FOTO DEL ESTUDIANTE
-=========================== */
-
-.profile-image {
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    overflow: hidden;
-    background: #0D2A52;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 5px solid #FFC107;
-    flex-shrink: 0;
-}
-
-.profile-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-.profile-image i {
-    font-size: 70px;
-    color: white;
-}
-
-
 /* =================================
-   MENSAJES DOCENTES
+   LOGO CIEM ONE HEADER
 ================================= */
 
-.mensaje-docente {
-    background: white;
-    border-radius: 18px;
-    padding: 20px;
-    margin-bottom: 15px;
-    border-left: 5px solid #1E4E8C;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+.ciem-header {
+    overflow: hidden;
 }
 
-.mensaje-titulo {
+.header-logo {
     display: flex;
     align-items: center;
-    gap: 10px;
-    color: #08142C;
-    font-size: 18px;
-    margin-bottom: 12px;
+    gap: 20px;
 }
 
-.mensaje-titulo i {
-    color: #1E4E8C;
-    font-size: 28px;
+.header-logo img {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    border-radius: 15px;
 }
 
-.mensaje-texto {
-    font-size: 16px;
-    color: #333;
-    line-height: 1.6;
+
+/* Texto del logo */
+
+.header-title {
+    display: flex;
+    flex-direction: column;
 }
 
-.mensaje-fecha {
-    margin-top: 12px;
-    color: #666;
-    font-size: 13px;
+.header-title h1 {
+    font-size: 32px;
+    margin: 0;
+    color: white;
+}
+
+.header-title p {
+    margin-top: 5px;
+    color: #DCE6F5;
+    font-size: 14px;
+}
+
+
+/* Ajuste para pantallas pequeñas */
+
+@media(max-width:768px) {
+    .header-logo {
+        flex-direction: column;
+        text-align: center;
+    }
+    .header-logo img {
+        width: 90px;
+        height: 90px;
+    }
 }
