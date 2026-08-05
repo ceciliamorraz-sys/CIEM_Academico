@@ -9,17 +9,14 @@ import os
 
 from config.database import db
 
-
 app = Flask(__name__)
 
 app.secret_key = "CIEM_clave_segura_2026"
-
 
 from routes.docentes import docente_bp
 from routes.estudiante import estudiante_bp
 from routes.mensajes import mensajes_bp
 from routes.ciem_ai import ciem_ai_bp
-
 
 app.register_blueprint(docente_bp)
 app.register_blueprint(estudiante_bp)
@@ -27,8 +24,6 @@ app.register_blueprint(mensajes_bp)
 app.register_blueprint(ciem_ai_bp)
 
 
-
-from config.database import db
 
 # =========================
 # FUNCIONES BASE CIEM
