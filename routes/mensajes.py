@@ -594,19 +594,19 @@ def bandeja_docente():
 
     lista = list(
 
-        conversaciones.find({
+    conversaciones.find({
 
-            "docente_id": docente["_id"]
+        "docente_id": docente["codigo"]
 
-        }).sort(
+    }).sort(
 
-            "ultima_actualizacion",
+        "ultima_actualizacion",
 
-            -1
-
-        )
+        -1
 
     )
+
+)
 
 
 
@@ -632,26 +632,16 @@ def bandeja_docente():
 @mensajes_bp.route("/padre")
 def bandeja_padre():
 
-
     estudiante = obtener_estudiante()
-
-
 
     if not estudiante:
 
-
         flash(
-
             "No se encontró estudiante",
-
             "danger"
-
         )
 
-
         return redirect("/")
-
-
 
 
     lista = list(
@@ -663,7 +653,6 @@ def bandeja_padre():
         }).sort(
 
             "ultima_actualizacion",
-
             -1
 
         )
@@ -671,19 +660,11 @@ def bandeja_padre():
     )
 
 
-
     return render_template(
-
         "estudiante/mensajes.html",
-
         conversaciones=lista,
-
         estudiante=estudiante
-
     )
-
-
-
 
 # ==========================================================
 # CONTADOR DE MENSAJES NO LEIDOS
