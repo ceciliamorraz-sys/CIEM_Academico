@@ -11,6 +11,7 @@ from flask import (
 from config.database import db
 from utils.decorators import role_required
 
+
 estudiante_bp = Blueprint(
     "estudiante",
     __name__,
@@ -26,45 +27,64 @@ def dashboard():
     notas = []
     docentes = []
     mensajes = []
+    conversaciones = []
 
-    if session.get("rol") == "estudiante":
+    rol = session.get("rol")
+    usuario = session.get("usuario")
+
+
+    if rol == "estudiante":
 
         estudiante = db.estudiantes.find_one({
-            "usuario": session.get("usuario")
+            "usuario": usuario
         })
 
         if estudiante:
-            notas = list(db.notas.find({
-                "estudiante_id": estudiante.get("id")
-            }))
+            notas = list(
+                db.notas.find({
+                    "estudiante_id": estudiante.get("id")
+                })
+            )
 
-    elif session.get("rol") == "padre":
+
+    elif rol == "padre":
 
         estudiante = db.estudiantes.find_one({
-            "usuario": session.get("usuario")
+            "usuario": usuario
         })
 
         if estudiante:
-            notas = list(db.notas.find({
-                "estudiante_id": estudiante.get("id")
-            }))
+            notas = list(
+                db.notas.find({
+                    "estudiante_id": estudiante.get("id")
+                })
+            )
+
 
         mensajes = list(
             db.mensajes.find({
-                "padre": session.get("usuario")
+                "padre": usuario
             }).sort("fecha", -1)
         )
 
-    docentes = list(db.docentes.find())
+
+        conversaciones = list(
+            db.conversaciones.find({
+                "padre": usuario
+            }).sort("fecha", -1)
+        )
+
+
+    docentes = list(
+        db.docentes.find()
+    )
+
 
     return render_template(
-    "estudiante/dashboard_estudiante.html",
-    estudiante=estudiante,
-    notas=notas,
-    boletin=[],
-    docentes=[],
-    conversaciones=[]
-)
-
-        
-    
+        "estudiante/estudiante_dashboard.html",
+        estudiante=estudiante,
+        notas=notas,
+        docentes=docentes,
+        mensajes=mensajes,
+        conversaciones=conversaciones
+    )
