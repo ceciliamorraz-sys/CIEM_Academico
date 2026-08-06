@@ -6,21 +6,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>CIEM ONE | Dashboard Estudiante</title>
-
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>
+CIEM ONE - Estudiante
+</title>
 
 
 <link rel="stylesheet"
 href="{{ url_for('static', filename='css/estudiante_dashboard.css') }}">
-
 
 </head>
 
@@ -28,75 +20,159 @@ href="{{ url_for('static', filename='css/estudiante_dashboard.css') }}">
 <body>
 
 
-<div class="dashboard-container">
+<div class="dashboard">
 
 
-
-<!-- ================= HEADER ================= -->
-
-
-<header class="ciem-header">
+<!-- ================= SIDEBAR ================= -->
 
 
-<div class="brand-ciem">
+<aside class="sidebar">
+
+
+<div class="logo-box">
 
 
 <img src="{{ url_for('static', filename='img/logo.jpg') }}"
-class="logo-ciem">
+class="logo">
 
 
-<div>
-
-<h1>
+<h2>
 CIEM ONE
-</h1>
+</h2>
+
 
 <p>
-Portal Académico Estudiantil
+Colegio Integral Emanuel
 </p>
 
 
 </div>
 
 
-</div>
 
 
 
-<div class="header-user">
+<div class="perfil">
 
 
-<div class="welcome">
+<div class="avatar">
 
-<h5>
-Bienvenido 👋
-</h5>
-
-
-<span>
-{{session.usuario}}
-</span>
-
+{{ estudiante.nombre[0] if estudiante else 'A' }}
 
 </div>
 
 
 
-<i class="bi bi-bell-fill"></i>
+<h3>
+
+{{ estudiante.nombre if estudiante else 'ALMA MORRAZ' }}
+
+</h3>
 
 
-<a href="/logout"
-class="btn btn-danger">
 
-<i class="bi bi-box-arrow-right"></i>
+<p>
+Estudiante de Plataforma
+</p>
 
-Salir
 
+</div>
+
+
+
+
+
+<nav>
+
+
+<a class="activo">
+🏠 Dashboard
 </a>
 
 
+<a>
+📚 Evaluaciones
+</a>
+
+
+<a>
+📄 Boletín
+</a>
+
+
+<a>
+📊 Rendimiento
+</a>
+
+
+<a>
+💬 Mensajes
+</a>
+
+
+<a>
+👤 Mi Perfil
+</a>
+
+
+<a>
+⚙ Configuración
+</a>
+
+
+<a href="/logout">
+🚪 Cerrar sesión
+</a>
+
+
+
+</nav>
+
+
+
+</aside>
+
+
+
+
+
+
+<!-- ================= CONTENIDO ================= -->
+
+
+
+<main class="contenido">
+
+
+
+<header class="top">
+
+
+<div>
+
+<h1>
+
+Bienvenida,
+{{ estudiante.nombre }}
+
+👋
+
+</h1>
+
+
+<p>
+Seguimiento académico CIEM ONE
+</p>
+
+
 </div>
 
+
+<div class="fecha">
+
+📅 2026
+
+</div>
 
 
 </header>
@@ -105,395 +181,78 @@ Salir
 
 
 
-<!-- ================= PERFIL ================= -->
 
 
-<section class="profile-card">
+<!-- TARJETAS -->
 
 
-<div class="profile-image">
+<section class="cards">
 
 
-{% if estudiante.foto %}
 
+<div class="card azul">
 
-<img src="{{ url_for('static',
-filename='img/estudiantes/' + estudiante.foto) }}">
-
-
-
-{% else %}
-
-
-<i class="bi bi-person-fill"></i>
-
-
-{% endif %}
-
-
-</div>
-
-
-
-<div class="student-information">
-
-
-<h2>
-
-{{ estudiante.nombre }}
-
-</h2>
-
-
-<p>
-
-<i class="bi bi-mortarboard-fill"></i>
-
-Grado:
-
-<strong>
-
-{{ estudiante.grado }}
-{{ estudiante.seccion }}
-
-</strong>
-
-</p>
-
-
-
-<p>
-
-<i class="bi bi-upc-scan"></i>
-
-Código:
-
-<strong>
-
-{{ estudiante.codigo }}
-
-</strong>
-
-</p>
-
-
-
-<p>
-
-<i class="bi bi-person-badge"></i>
-
-Tutor:
-
-<strong>
-
-{{ estudiante.padre }}
-
-</strong>
-
-</p>
-
-
-
-</div>
-
-
-
-<div class="student-status">
-
-
-<h4>
-
-Estado
-
-</h4>
-
-
-<span class="status-success">
-
-Activo
-
+<span>
+📚
 </span>
 
 
-</div>
-
-
-
-</section>
-
-
-
-
-
-
-
-<!-- ================= INDICADORES ================= -->
-
-
-<section class="row cards">
-
-
-
-<div class="col-md-3">
-
-
-<div class="info-card">
-
-
-<div class="icon-box">
-
-<i class="bi bi-graph-up-arrow"></i>
-
-</div>
-
-
-<h2>
-
-{{ resumen.promedio }}
-
-</h2>
-
-
-<p>
-
-Promedio General
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-<div class="col-md-3">
-
-
-<div class="info-card">
-
-
-<div class="icon-box">
-
-<i class="bi bi-calendar-check"></i>
-
-</div>
-
-
-<h2>
-
-{{ resumen.asistencia }}%
-
-</h2>
-
-
-<p>
-
-Asistencia
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-<div class="col-md-3">
-
-
-<div class="info-card">
-
-
-<div class="icon-box">
-
-<i class="bi bi-award-fill"></i>
-
-</div>
-
-
-<h2>
-
-{{ resumen.estado }}
-
-</h2>
-
-
-<p>
-
-Estado Académico
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-<div class="col-md-3">
-
-
-<div class="info-card">
-
-
-<div class="icon-box">
-
-<i class="bi bi-book-fill"></i>
-
-</div>
-
-
-<h2>
-
-{{ notas|length }}
-
-</h2>
-
-
-<p>
-
+<h3>
 Asignaturas
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-</section>
-
-
-
-
-
-
-
-<!-- ================= ACCESOS RAPIDOS ================= -->
-
-
-<section class="quick-access">
-
-
-<h3>
-
-Accesos rápidos
-
 </h3>
 
 
+<h2>
+{{ notas|length }}
+</h2>
 
-<div class="quick-grid">
+
+</div>
 
 
 
-<div class="quick-card">
 
-<i class="bi bi-journal-text"></i>
+
+<div class="card dorado">
+
 
 <span>
-
-Mis notas
-
+⭐
 </span>
-
-</div>
-
-
-
-
-<div class="quick-card">
-
-<i class="bi bi-chat-dots"></i>
-
-<span>
-
-Mensajes
-
-</span>
-
-</div>
-
-
-
-
-<div class="quick-card">
-
-<i class="bi bi-file-earmark-bar-graph"></i>
-
-<span>
-
-Reportes
-
-</span>
-
-</div>
-
-
-
-
-<div class="quick-card">
-
-<i class="bi bi-megaphone"></i>
-
-<span>
-
-Avisos
-
-</span>
-
-</div>
-
-
-
-</div>
-
-
-</section>
-<!-- ================= RENDIMIENTO ACADEMICO ================= -->
-
-
-<section class="panel academic-performance">
 
 
 <h3>
-<i class="bi bi-bar-chart-fill"></i>
-
-Rendimiento Académico
-
+Promedio general
 </h3>
 
 
-<p class="text-muted">
-
-Visualización del desempeño académico actualizado por los docentes.
-
-</p>
+<h2>
+-
+</h2>
 
 
+</div>
 
-<div class="chart-container">
 
 
-<canvas id="graficoNotas"></canvas>
+
+
+<div class="card verde">
+
+
+<span>
+🏆
+</span>
+
+
+<h3>
+Estado académico
+</h3>
+
+
+<h2>
+Activo
+</h2>
 
 
 </div>
@@ -508,65 +267,187 @@ Visualización del desempeño académico actualizado por los docentes.
 
 
 
-
-<!-- ================= REGISTRO ACADEMICO ================= -->
+<!-- PERFIL -->
 
 
 <section class="panel">
 
 
-<div class="section-header">
+<h2>
+👤 Información del estudiante
+</h2>
+
+
+
+<div class="info">
+
+
+<p>
+
+<strong>
+Nombre:
+</strong>
+
+{{ estudiante.nombre }}
+
+</p>
+
+
+
+<p>
+
+<strong>
+Grado:
+</strong>
+
+{{ estudiante.grado }}
+
+</p>
+
+
+
+<p>
+
+<strong>
+Estado:
+</strong>
+
+<span class="badge">
+Activo
+</span>
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="acciones">
+
+
+<button>
+🔐 Cambiar contraseña
+</button>
+
+
+<button>
+📧 Cambiar correo electrónico
+</button>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- ================= EVALUACION ================= -->
+
+
+<section class="panel">
+
+
+<div class="panel-header">
 
 
 <div>
 
-<h3>
-
-<i class="bi bi-journal-bookmark-fill"></i>
-
-Registro Académico
-
-</h3>
+<h2>
+📘 Evaluación en proceso
+</h2>
 
 
-<p class="text-muted">
-
-Las calificaciones se actualizan automáticamente cuando el docente registra nuevas evaluaciones.
-
+<p>
+Nota del boletín por corte
 </p>
 
-</div>
-
-
-
-<div class="academic-summary">
-
-
-<span>
-
-Asignaturas:
-
-<strong>
-{{ notas|length }}
-</strong>
-
-</span>
-
-
-</div>
-
 
 </div>
 
 
 
+<select>
+
+
+<option>
+Seleccione Corte
+</option>
+
+
+<option>
+1EP
+</option>
+
+
+<option>
+2EP
+</option>
+
+
+<option>
+3EP
+</option>
+
+
+<option>
+4EP
+</option>
+
+
+<option>
+5EP
+</option>
+
+
+<option>
+6EP
+</option>
+
+
+<option>
+7EP
+</option>
+
+
+<option>
+8EP
+</option>
+
+
+<option>
+9EP
+</option>
+
+
+<option>
+10EP
+</option>
+
+
+</select>
 
 
 
-<div class="table-responsive">
+</div>
 
 
-<table class="table table-hover align-middle">
+
+
+
+
+<div class="tabla">
+
+
+<table>
 
 
 <thead>
@@ -574,76 +455,158 @@ Asignaturas:
 
 <tr>
 
+<th>
+DISCIPLINA
+</th>
+
+<th>1EP</th>
+<th>2EP</th>
+<th>3EP</th>
+<th>4EP</th>
+<th>5EP</th>
+<th>6EP</th>
+<th>7EP</th>
+<th>8EP</th>
+<th>9EP</th>
+<th>10EP</th>
+<th>ACUM</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+<tbody>
+
+
+
+{% if notas %}
+
+
+{% for nota in notas %}
+
+
+<tr>
+
+
+<td>
+{{ nota.disciplina }}
+</td>
+
+
+<td>{{nota.ep1}}</td>
+<td>{{nota.ep2}}</td>
+<td>{{nota.ep3}}</td>
+<td>{{nota.ep4}}</td>
+<td>{{nota.ep5}}</td>
+<td>{{nota.ep6}}</td>
+<td>{{nota.ep7}}</td>
+<td>{{nota.ep8}}</td>
+<td>{{nota.ep9}}</td>
+<td>{{nota.ep10}}</td>
+
+
+<td class="acum">
+
+{{nota.acum}}
+
+</td>
+
+
+
+</tr>
+
+
+{% endfor %}
+
+
+{% else %}
+
+
+<tr>
+
+<td colspan="12">
+
+No hay datos en la tabla
+
+</td>
+
+
+</tr>
+
+
+{% endif %}
+
+
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+<!-- ================= BOLETIN ================= -->
+
+
+<section class="panel">
+
+
+<h2>
+📄 Nota del boletín por corte
+</h2>
+
+
+
+<table>
+
+
+<thead>
+
+<tr>
 
 <th>
-Asignatura
+DISCIPLINA
+</th>
+
+<th>
+I Corte
 </th>
 
 
 <th>
-EP1
+II Corte
 </th>
 
 
 <th>
-EP2
+III Corte
 </th>
 
 
 <th>
-EP3
+IV Corte
 </th>
 
 
 <th>
-EP4
+Nota Final
 </th>
-
-
-<th>
-EP5
-</th>
-
-
-<th>
-EP6
-</th>
-
-
-<th>
-EP7
-</th>
-
-
-<th>
-EP8
-</th>
-
-
-<th>
-EP9
-</th>
-
-
-<th>
-EP10
-</th>
-
-
-<th>
-Acumulado
-</th>
-
-
-<th>
-Promedio
-</th>
-
-
-<th>
-Estado
-</th>
-
 
 
 </tr>
@@ -657,168 +620,101 @@ Estado
 <tbody>
 
 
+{% if boletin %}
 
-{% for n in notas %}
 
+{% for b in boletin %}
 
 
 <tr>
 
 
-
 <td>
-
-<strong>
-
-{{ n.asignatura }}
-
-</strong>
-
-
+{{b.disciplina}}
 </td>
 
 
-
-<td>{{ n.ep1 }}</td>
-
-<td>{{ n.ep2 }}</td>
-
-<td>{{ n.ep3 }}</td>
-
-<td>{{ n.ep4 }}</td>
-
-<td>{{ n.ep5 }}</td>
-
-<td>{{ n.ep6 }}</td>
-
-<td>{{ n.ep7 }}</td>
-
-<td>{{ n.ep8 }}</td>
-
-<td>{{ n.ep9 }}</td>
-
-<td>{{ n.ep10 }}</td>
-
-
-
 <td>
-
-<strong>
-
-{{ n.acumulado }}
-
-</strong>
-
-
+{{b.corte1}}
 </td>
 
 
-
 <td>
-
-
-<span class="grade-value">
-
-{{ n.promedio }}
-
-</span>
-
-
+{{b.corte2}}
 </td>
 
 
-
-
 <td>
-
-
-{% if n.estado == "Aprobado" %}
-
-
-<span class="badge bg-success">
-
-{{ n.estado }}
-
-</span>
-
-
-
-{% elif n.estado == "Reprobado" %}
-
-
-
-<span class="badge bg-danger">
-
-{{ n.estado }}
-
-</span>
-
-
-
-{% else %}
-
-
-
-<span class="badge bg-warning text-dark">
-
-{{ n.estado }}
-
-</span>
-
-
-
-{% endif %}
-
-
-
+{{b.corte3}}
 </td>
 
 
+<td>
+{{b.corte4}}
+</td>
+
+
+<td class="final">
+{{b.final}}
+</td>
 
 
 </tr>
-
-
 
 
 {% endfor %}
 
 
 
+{% else %}
+
+
+<tr>
+
+<td colspan="6">
+
+No hay datos en la tabla
+
+</td>
+
+</tr>
+
+
+{% endif %}
+
+
 
 </tbody>
-
 
 
 </table>
 
 
-
-</div>
-
-
-
 </section>
-<!-- ================= COMUNICACION DOCENTE ================= -->
+
+
+
+
+
+
+
+
+
+<!-- ================= COMUNICACION ================= -->
 
 
 <section class="panel">
 
 
-<h3>
-
-<i class="bi bi-chat-square-text-fill"></i>
-
-Comunicación Académica
-
-</h3>
+<h2>
+💬 Comunicación con docentes
+</h2>
 
 
-<p class="text-muted">
-
-Comuníquese con sus docentes para consultas académicas.
-
+<p>
+Seleccione el docente con quien desea comunicarse
 </p>
+
 
 
 
@@ -828,42 +724,27 @@ action="{{ url_for('mensajes.crear') }}">
 
 
 
-<div class="row">
-
-
-<div class="col-md-6">
-
-
-<label class="form-label">
-
-Docente
-
-</label>
-
-
-
-<select
-name="docente_id"
-class="form-select"
+<select name="docente_id"
 required>
 
 
 <option value="">
-
 Seleccione docente
-
 </option>
 
 
 
-{% for d in docentes %}
+
+{% for docente in docentes %}
 
 
-<option value="{{ d._id }}">
 
-{{ d.nombre }} - {{ d.materia }}
+<option value="{{docente._id}}">
+
+{{docente.nombre}}
 
 </option>
+
 
 
 {% endfor %}
@@ -873,53 +754,21 @@ Seleccione docente
 </select>
 
 
-</div>
-
-
-
-
-
-<div class="col-md-6">
-
-
-<label class="form-label">
-
-Mensaje inicial
-
-</label>
 
 
 
 <textarea
-
 name="mensaje"
-
-class="form-control"
-
-rows="3"
-
-placeholder="Escriba su consulta..."
-
+placeholder="Escriba su mensaje..."
 required></textarea>
 
 
 
-</div>
 
 
+<button class="btn-enviar">
 
-</div>
-
-
-
-
-<button class="btn btn-primary mt-3">
-
-
-<i class="bi bi-send-fill"></i>
-
-Enviar mensaje
-
+📩 Enviar mensaje
 
 </button>
 
@@ -937,192 +786,56 @@ Enviar mensaje
 
 
 
-<!-- ================= MENSAJES DOCENTES ================= -->
+<!-- HISTORIAL -->
 
 
 <section class="panel">
 
 
-<h3>
-
-<i class="bi bi-envelope-paper-fill"></i>
-
-Mensajes recibidos
-
-</h3>
+<h2>
+📨 Conversaciones
+</h2>
 
 
 
-
-{% for m in mensajes %}
-
+{% for mensaje in conversaciones %}
 
 
-<div class="message-card">
+<div class="mensaje">
 
 
-<div class="message-header">
-
-
-<h5>
-
-👨‍🏫 {{ m.docente }}
-
-</h5>
-
-
-
-<span>
-
-{{ m.estado }}
-
-</span>
-
-
-</div>
-
-
+<h4>
+👨‍🏫 {{mensaje.docente}}
+</h4>
 
 
 <p>
 
-{{ m.mensaje }}
+{{mensaje.mensaje}}
 
 </p>
 
 
-
 <small>
 
-{{ m.fecha.strftime("%d/%m/%Y %H:%M") }}
+{{mensaje.fecha}}
 
 </small>
 
 
-
 </div>
-
 
 
 
 {% else %}
 
 
-
-<div class="alert alert-info">
-
-No tiene mensajes recibidos actualmente.
-
-</div>
-
-
-
-{% endfor %}
-
-
-
-</section>
-
-
-
-
-
-
-
-
-<!-- ================= CONVERSACIONES ================= -->
-
-
-<section class="panel">
-
-
-<h3>
-
-<i class="bi bi-chat-left-dots-fill"></i>
-
-Conversaciones recientes
-
-</h3>
-
-
-
-
-
-{% for c in conversaciones %}
-
-
-
-
-<div class="conversation-card">
-
-
-
-<div>
-
-
-<h5>
-
-👩‍🏫 {{ c.docente }}
-
-</h5>
-
-
-
 <p>
-
-{{ c.ultimo_mensaje }}
-
+No hay conversaciones disponibles.
 </p>
 
 
-
-<small>
-
-{{ c.ultima_actualizacion.strftime("%d/%m/%Y %H:%M") }}
-
-</small>
-
-
-
-</div>
-
-
-
-
-<a href="{{ url_for('mensajes.chat',
-conversacion_id=c._id) }}"
-
-class="btn btn-success">
-
-
-Abrir chat
-
-
-</a>
-
-
-
-</div>
-
-
-
-
-
-
-{% else %}
-
-
-
-<div class="alert alert-info">
-
-Aún no tiene conversaciones.
-
-</div>
-
-
-
 {% endfor %}
-
 
 
 
@@ -1131,170 +844,15 @@ Aún no tiene conversaciones.
 
 
 
-
-
-
-
-<!-- ================= AVISOS CIEM ================= -->
-
-
-<section class="panel">
-
-
-<h3>
-
-<i class="bi bi-megaphone-fill"></i>
-
-Avisos CIEM
-
-</h3>
-
-
-
-
-<div class="notice notice-primary">
-
-
-<i class="bi bi-calendar-event"></i>
-
-
-Reunión de padres de familia
-
-
-</div>
-
-
-
-
-<div class="notice notice-warning">
-
-
-<i class="bi bi-file-earmark-text"></i>
-
-
-Entrega de boletines académicos
-
-
-</div>
-
-
-
-
-</section>
-
-
-
-
-
-
-
-
-<footer>
-
-
-CIEM Académico © 2026
-
-
-</footer>
-
-
+</main>
 
 
 
 </div>
-<script>
-
-
-const materias = [
-
-{% for n in notas %}
-
-"{{ n.asignatura }}",
-
-{% endfor %}
-
-];
 
 
 
-const promedios = [
-
-{% for n in notas %}
-
-{{ n.promedio }},
-
-{% endfor %}
-
-];
+</body>
 
 
-
-
-
-new Chart(
-
-document.getElementById("graficoNotas"),
-
-{
-
-
-type:"bar",
-
-
-data:{
-
-
-labels:materias,
-
-
-datasets:[{
-
-
-label:"Promedio académico",
-
-data:promedios,
-
-
-borderWidth:2
-
-
-}]
-
-},
-
-
-options:{
-
-
-responsive:true,
-
-
-scales:{
-
-
-y:{
-
-
-beginAtZero:true,
-
-max:100
-
-
-}
-
-
-}
-
-
-
-}
-
-
-}
-
-
-);
-
-
-
-</script>
+</html>

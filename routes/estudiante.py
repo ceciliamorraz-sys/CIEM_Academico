@@ -25,9 +25,7 @@ def dashboard():
     estudiante = None
     notas = []
     docentes = []
-    conversaciones = []
     mensajes = []
-
 
     if session.get("rol") == "estudiante":
 
@@ -35,45 +33,21 @@ def dashboard():
             "usuario": session.get("usuario")
         })
 
-
         if estudiante:
-
-            notas = list(
-                db.notas.find({
-                    "$or": [
-                        {
-                            "estudiante_id": estudiante.get("id")
-                        },
-                        {
-                            "estudiante_id": str(estudiante.get("_id"))
-                        }
-                    ]
-                })
-            )
-
+            notas = list(db.notas.find({
+                "estudiante_id": estudiante.get("id")
+            }))
 
     elif session.get("rol") == "padre":
 
         estudiante = db.estudiantes.find_one({
-            "padre": session.get("usuario")
+            "usuario": session.get("usuario")
         })
 
-
         if estudiante:
-
-            notas = list(
-                db.notas.find({
-                    "$or": [
-                        {
-                            "estudiante_id": estudiante.get("id")
-                        },
-                        {
-                            "estudiante_id": str(estudiante.get("_id"))
-                        }
-                    ]
-                })
-            )
-
+            notas = list(db.notas.find({
+                "estudiante_id": estudiante.get("id")
+            }))
 
         mensajes = list(
             db.mensajes.find({
@@ -81,9 +55,7 @@ def dashboard():
             }).sort("fecha", -1)
         )
 
-
     docentes = list(db.docentes.find())
-
 
     return render_template(
         "estudiante/estudiante_dashboard.html",
