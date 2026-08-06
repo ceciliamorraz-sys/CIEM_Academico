@@ -620,7 +620,7 @@ Nota Final
 <tbody>
 
 
-{% if boletin %}
+{% if boletin is defined and boletin %}
 
 
 {% for b in boletin %}
@@ -798,8 +798,7 @@ required></textarea>
 
 
 
-{% for mensaje in conversaciones %}
-
+{% for mensaje in conversaciones if conversaciones is defined %}
 
 <div class="mensaje">
 
@@ -828,13 +827,9 @@ required></textarea>
 
 
 {% else %}
-
-
 <p>
 No hay conversaciones disponibles.
 </p>
-
-
 {% endfor %}
 
 

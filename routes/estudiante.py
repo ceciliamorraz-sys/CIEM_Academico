@@ -58,15 +58,13 @@ def dashboard():
     docentes = list(db.docentes.find())
 
     return render_template(
-        "estudiante/estudiante_dashboard.html",
-        estudiante=estudiante,
-        notas=notas,
-        docentes=docentes,
-        conversaciones=[],
-        mensajes=mensajes,
-        resumen={
-            "promedio": 0,
-            "asistencia": 0,
-            "estado": "Activo"
-        }
-    )
+    "estudiante/dashboard_estudiante.html",
+    estudiante=estudiante,
+    notas=notas,
+    boletin=[],
+    docentes=[],
+    conversaciones=[]
+)
+
+        
+    
