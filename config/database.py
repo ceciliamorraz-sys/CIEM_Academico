@@ -1,17 +1,15 @@
 import os
 from pymongo import MongoClient
-from urllib.parse import quote_plus
 
 
-usuario_atlas = "ceciliamorraz_db_user"
-password_atlas = quote_plus("CiemAtlas2026")
+# =====================================
+# CONEXIÓN MONGODB ATLAS
+# =====================================
 
+MONGO_URI = os.getenv("MONGO_URI")
 
-MONGO_URI = (
-    f"mongodb+srv://{usuario_atlas}:{password_atlas}"
-    "@cluster0.olbd8g8.mongodb.net/CIEM"
-    "?retryWrites=true&w=majority&appName=Cluster0"
-)
+if not MONGO_URI:
+    raise Exception("MONGO_URI no está configurada en Render")
 
 
 cliente = MongoClient(
@@ -21,8 +19,13 @@ cliente = MongoClient(
 )
 
 
+# Base de datos CIEM
 db = cliente["CIEM"]
 
+
+# =====================================
+# PRUEBA DE CONEXIÓN
+# =====================================
 
 try:
 
@@ -31,6 +34,25 @@ try:
     print("====================================")
     print("✅ CONECTADO A MONGODB ATLAS")
     print("BASE ACTUAL:", db.name)
+
+    print("COLECCIONES:")
+    print(db.list_collection_names())
+
+    print("------------------------------------")
+    print("TOTAL USUARIOS:", db.usuarios.count_documents({}))
+
+    print("DOCUMENTOS USUARIOS:")
+
+    for usuario in db.usuarios.find(
+        {},
+        {
+            "_id": 1,
+            "usuario": 1,
+            "rol": 1
+        }
+    ):
+        print(usuario)
+
     print("====================================")
 
 
