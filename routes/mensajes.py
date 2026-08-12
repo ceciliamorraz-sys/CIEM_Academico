@@ -6,6 +6,7 @@ from flask import (
     url_for,
     session,
     flash
+    
 )
 
 from bson import ObjectId
@@ -263,93 +264,187 @@ def chat(conversacion_id):
     )
 
 
+# ==========================================================
+# FUNCIONES AUXILIARES
+# ==========================================================
 
-    # ======================================================
-    # CASO 2: RESPONDER CONVERSACIÓN EXISTENTE
-    # ======================================================
+def obtener_docente():
 
+    usuario = session.get("usuario")
 
-    if rol == "docente":
+    if not usuario:
+        print("⚠️ No existe usuario en sesión")
+        return None
 
-        emisor = "docente"
-
-
-        actualizar = {
-
-            "no_leidos_estudiante": 1,
-
-            "ultima_actualizacion": datetime.now(),
-
-            "ultimo_mensaje": mensaje
-
-        }
-
-
-
-    else:
-
-        emisor = "estudiante"
-
-
-        actualizar = {
-
-            "no_leidos_docente": 1,
-
-            "ultima_actualizacion": datetime.now(),
-
-            "ultimo_mensaje": mensaje
-
-        }
-
-
-
-
-    mensajes.insert_one({
-
-        "conversacion_id": ObjectId(conversacion_id),
-
-        "emisor": emisor,
-
-        "mensaje": mensaje,
-
-        "fecha": datetime.now(),
-
-        "leido": False
-
+    docente = docentes.find_one({
+        "usuario": usuario
     })
 
+    print("====================================")
+    print("BUSCANDO DOCENTE")
+    print("USUARIO:", usuario)
+    print("DOCENTE:", docente)
+    print("====================================")
+
+    return docente
 
 
+def obtener_estudiante():
 
-    conversaciones.update_one(
+    usuario = session.get("usuario")
 
-        {
+    if not usuario:
+        print("⚠️ No existe usuario en sesión")
+        return None
 
-            "_id": ObjectId(conversacion_id)
+    estudiante = estudiantes.find_one({
+        "usuario": usuario
+    })
 
-        },
+    print("====================================")
+    print("BUSCANDO ESTUDIANTE DEL PADRE")
+    print("USUARIO:", usuario)
+    print("ESTUDIANTE:", estudiante)
+    print("====================================")
 
-        {
-
-            "$set": actualizar
-
-        }
-
-    )
+    return estudiante
 
 
+def crear_conversacion(estudiante, docente):
 
-    return redirect(
+    conversacion = conversaciones.find_one({
+        "estudiante_id": estudiante["_id"],
+        "docente_id": docente["_id"]
+    })
 
-        url_for(
+    if conversacion:
+        return conversacion
 
-            "mensajes.chat",
+    nueva = {
 
-            conversacion_id=conversacion_id
+        "estudiante_id": estudiante["_id"],
 
+        "docente_id": docente["_id"],
+
+        "estudiante": estudiante.get("nombre"),
+
+        "docente": docente.get("nombre"),
+
+        "fecha_creacion": datetime.now(),
+
+        "ultima_actualizacion": datetime.now(),
+
+        "ultimo_mensaje": "",
+
+        "no_leidos_docente": 0,
+
+        "no_leidos_padre": 0
+    }
+
+    resultado = conversaciones.insert_one(nueva)
+
+    return conversaciones.find_one({
+        "_id": resultado.inserted_id
+    })
+# ==========================================================
+# BANDEJA DOCENTE
+# ==========================================================
+
+@mensajes_bp.route("/docente")
+def bandeja_docente():
+
+    docente = obtener_docente()
+
+    if not docente:
+
+        flash(
+            "Docente no encontrado",
+            "danger"
         )
 
+        return redirect("/")
+
+    # ======================================================
+    # IDENTIFICADORES DEL DOCENTE
+    # ======================================================
+
+    docente_id = docente.get("_id")
+    docente_codigo = docente.get("codigo")
+    docente_usuario = docente.get("usuario")
+
+    print("====================================")
+    print("BANDEJA DOCENTE")
+    print("DOCENTE:", docente.get("nombre"))
+    print("ID:", docente_id)
+    print("CODIGO:", docente_codigo)
+    print("USUARIO:", docente_usuario)
+    print("====================================")
+
+    # ======================================================
+    # BUSCAR CONVERSACIONES
+    # ======================================================
+
+    condiciones = []
+
+    if docente_codigo:
+        condiciones.append({
+            "docente_id": docente_codigo
+        })
+
+    if docente_id:
+        condiciones.append({
+            "docente_id": docente_id
+        })
+
+    if docente_usuario:
+        condiciones.append({
+            "docente_id": docente_usuario
+        })
+
+    lista = []
+
+    if condiciones:
+
+        lista = list(
+            conversaciones.find({
+                "$or": condiciones
+            }).sort(
+                "ultima_actualizacion",
+                -1
+            )
+        )
+
+    # ======================================================
+    # DEBUG
+    # ======================================================
+
+    print("====================================")
+    print("TOTAL CONVERSACIONES:", len(lista))
+
+    for c in lista:
+
+        print("------------------------------------")
+        print("ID:", c.get("_id"))
+        print("ESTUDIANTE:", c.get("estudiante"))
+        print("DOCENTE ID:", c.get("docente_id"))
+        print("ULTIMO MENSAJE:", c.get("ultimo_mensaje"))
+        print(
+            "NO LEIDOS DOCENTE:",
+            c.get("no_leidos_docente")
+        )
+
+    print("====================================")
+
+    # ======================================================
+    # MOSTRAR BANDEJA
+    # ======================================================
+
+    return render_template(
+        "docente/mensajes.html",
+        conversaciones=lista,
+        docente=docente
     )
+
 # ==========================================================
 # RESPONDER MENSAJE
 # ==========================================================
@@ -357,298 +452,260 @@ def chat(conversacion_id):
 @mensajes_bp.route("/responder", methods=["POST"])
 def responder():
 
-    conversacion_id = request.form.get("conversacion_id")
-    texto = request.form.get("mensaje")
+    conversacion_id = request.form.get(
+        "conversacion_id"
+    )
+
+    texto = request.form.get(
+        "mensaje",
+        ""
+    ).strip()
+
 
     if not conversacion_id or not texto:
 
-        flash("Datos incompletos", "warning")
-        return redirect(request.referrer)
+        flash(
+            "Datos incompletos",
+            "warning"
+        )
+
+        return redirect(
+            request.referrer or "/"
+        )
+
+
+    try:
+
+        conversacion_id_obj = ObjectId(
+            conversacion_id
+        )
+
+    except Exception:
+
+        flash(
+            "ID de conversación inválido",
+            "danger"
+        )
+
+        return redirect(
+            request.referrer or "/"
+        )
+
+
+    conversacion = conversaciones.find_one({
+
+        "_id": conversacion_id_obj
+
+    })
+
+
+    if not conversacion:
+
+        flash(
+            "Conversación no encontrada",
+            "danger"
+        )
+
+        return redirect("/")
+
 
     rol = session.get("rol")
+
+
+    # ======================================================
+    # DOCENTE RESPONDE
+    # ======================================================
 
     if rol == "docente":
 
         emisor = "docente"
 
         actualizar = {
+
             "ultimo_mensaje": texto,
-            "ultima_actualizacion": datetime.now(),
+
+            "ultima_actualizacion":
+                datetime.now(),
+
             "no_leidos_padre": 1,
+
             "no_leidos_docente": 0
+
         }
 
-    else:
+
+    # ======================================================
+    # PADRE RESPONDE
+    # ======================================================
+
+    elif rol == "padre":
 
         emisor = "padre"
 
         actualizar = {
+
             "ultimo_mensaje": texto,
-            "ultima_actualizacion": datetime.now(),
+
+            "ultima_actualizacion":
+                datetime.now(),
+
             "no_leidos_docente": 1,
+
             "no_leidos_padre": 0
-        }
-
-    mensajes.insert_one({
-
-        "conversacion_id": ObjectId(conversacion_id),
-        "emisor": emisor,
-        "mensaje": texto,
-        "fecha": datetime.now(),
-        "leido": False
-
-    })
-
-    conversaciones.update_one(
-
-        {"_id": ObjectId(conversacion_id)},
-
-        {"$set": actualizar}
-
-    )
-
-    return redirect(
-        url_for(
-            "mensajes.chat",
-            conversacion_id=conversacion_id
-        )
-    )
-# ==========================================================
-# FUNCIONES AUXILIARES
-# ==========================================================
-
-
-def obtener_docente():
-
-    usuario = session.get("usuario")
-
-
-    if not usuario:
-
-        return None
-
-
-
-    docente = docentes.find_one({
-
-        "usuario": usuario
-
-    })
-
-
-    return docente
-
-
-
-
-
-def obtener_estudiante():
-
-    usuario = session.get("usuario")
-
-
-    if not usuario:
-
-        return None
-
-
-
-    estudiante = estudiantes.find_one({
-
-        "padre": {
-
-            "$regex": usuario,
-
-            "$options": "i"
 
         }
 
-    })
 
-
-    return estudiante
-
-
-
-
-
-def crear_conversacion(estudiante, docente):
-
-
-    conversacion = conversaciones.find_one({
-
-        "estudiante_id": estudiante["_id"],
-
-        "docente_id": docente["_id"]
-
-    })
-
-
-    if conversacion:
-
-        return conversacion
-
-
-
-    nueva = {
-
-
-        "estudiante_id":
-
-            estudiante["_id"],
-
-
-
-        "docente_id":
-
-            docente["_id"],
-
-
-
-        "estudiante":
-
-            estudiante.get("nombre"),
-
-
-
-        "docente":
-
-            docente.get("nombre"),
-
-
-
-        "fecha_creacion":
-
-            datetime.now(),
-
-
-
-        "ultima_actualizacion":
-
-            datetime.now(),
-
-
-
-        "ultimo_mensaje":
-
-            "",
-
-
-
-        "no_leidos_docente":
-
-            0,
-
-
-
-        "no_leidos_padre":
-
-            0
-
-    }
-
-
-
-    resultado = conversaciones.insert_one(nueva)
-
-
-
-    return conversaciones.find_one({
-
-        "_id": resultado.inserted_id
-
-    })
-
-
-
-
-# ==========================================================
-# BANDEJA DOCENTE
-# ==========================================================
-
-
-@mensajes_bp.route("/docente")
-def bandeja_docente():
-
-
-    docente = obtener_docente()
-
-
-
-    if not docente:
-
+    else:
 
         flash(
-
-            "Docente no encontrado",
-
+            "Usuario no autorizado",
             "danger"
-
         )
-
 
         return redirect("/")
 
 
+    # ======================================================
+    # GUARDAR MENSAJE
+    # ======================================================
+
+    mensajes.insert_one({
+
+        "conversacion_id":
+            conversacion_id_obj,
+
+        "emisor":
+            emisor,
+
+        "mensaje":
+            texto,
+
+        "fecha":
+            datetime.now(),
+
+        "leido":
+            False
+
+    })
 
 
-    lista = list(
+    # ======================================================
+    # ACTUALIZAR CONVERSACIÓN
+    # ======================================================
 
-    conversaciones.find({
+    conversaciones.update_one(
 
-        "docente_id": docente["codigo"]
+        {
+            "_id":
+                conversacion_id_obj
+        },
 
-    }).sort(
-
-        "ultima_actualizacion",
-
-        -1
+        {
+            "$set":
+                actualizar
+        }
 
     )
 
-)
+
+    print("====================================")
+    print("MENSAJE ENVIADO")
+    print("ROL:", rol)
+    print("CONVERSACION:", conversacion_id)
+    print("EMISOR:", emisor)
+    print("MENSAJE:", texto)
+    print("====================================")
 
 
+    return redirect(
 
-    return render_template(
+        url_for(
 
-        "docente/mensajes.html",
+            "mensajes.chat",
 
-        conversaciones=lista,
+            conversacion_id=
+                conversacion_id
 
-        docente=docente
+        )
 
     )
 
 
-
-
-
 # ==========================================================
-# BANDEJA PADRE
+# BANDEJA DE MENSAJES DEL PADRE
 # ==========================================================
-
 
 @mensajes_bp.route("/padre")
 def bandeja_padre():
 
-    estudiante = obtener_estudiante()
+    usuario = session.get("usuario")
 
-    if not estudiante:
+    # ------------------------------------------
+    # VERIFICAR SESIÓN
+    # ------------------------------------------
+
+    if not usuario:
 
         flash(
-            "No se encontró estudiante",
-            "danger"
+            "Debe iniciar sesión para ver sus mensajes.",
+            "warning"
         )
 
         return redirect("/")
 
 
-    lista = list(
+    # ------------------------------------------
+    # BUSCAR ESTUDIANTE
+    # ------------------------------------------
+
+    estudiante = estudiantes.find_one({
+        "usuario": usuario
+    })
+
+
+    print("====================================")
+    print("BANDEJA PADRE")
+    print("USUARIO:", usuario)
+    print("ESTUDIANTE:", estudiante)
+    print("====================================")
+
+
+    # ------------------------------------------
+    # VERIFICAR ESTUDIANTE
+    # ------------------------------------------
+
+    if not estudiante:
+
+        flash(
+            "No se encontró el estudiante asociado al padre.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("estudiante.dashboard")
+        )
+
+
+    # ------------------------------------------
+    # ID DEL ESTUDIANTE
+    # ------------------------------------------
+
+    estudiante_id = str(
+        estudiante.get("_id")
+    )
+
+
+    # ------------------------------------------
+    # OBTENER CONVERSACIONES
+    # ------------------------------------------
+
+    conversaciones_padre = list(
 
         conversaciones.find({
 
-            "estudiante_id": estudiante["_id"]
+            "estudiante_id":
+                estudiante_id
 
         }).sort(
 
@@ -660,13 +717,62 @@ def bandeja_padre():
     )
 
 
-    return render_template(
-        "estudiante/mensajes.html",
-        conversaciones=lista,
-        estudiante=estudiante
+    # ------------------------------------------
+    # DEBUG
+    # ------------------------------------------
+
+    print("====================================")
+    print("ID ESTUDIANTE:", estudiante_id)
+    print(
+        "TOTAL CONVERSACIONES:",
+        len(conversaciones_padre)
     )
 
-# ==========================================================
+
+    for conversacion in conversaciones_padre:
+
+        print("------------------------------------")
+
+        print(
+            "ID:",
+            conversacion.get("_id")
+        )
+
+        print(
+            "DOCENTE:",
+            conversacion.get("docente")
+        )
+
+        print(
+            "ULTIMO MENSAJE:",
+            conversacion.get("ultimo_mensaje")
+        )
+
+        print(
+            "NO LEIDOS:",
+            conversacion.get(
+                "no_leidos_padre",
+                0
+            )
+        )
+
+
+    print("====================================")
+
+
+    # ------------------------------------------
+    # MOSTRAR BANDEJA DEL PADRE
+    # ------------------------------------------
+
+    return render_template(
+
+        "mensaje/bandeja_padre.html",
+
+        conversaciones=conversaciones_padre,
+
+        estudiante=estudiante
+
+    )# ==========================================================
 # CONTADOR DE MENSAJES NO LEIDOS
 # ==========================================================
 
@@ -771,9 +877,11 @@ def contador():
 
     }
 
+ # ------------------------------------------
+    # VOLVER AL DASHBOARD
+    # ------------------------------------------
 
-
-
+    return redirect("/estudiante/")
 
 
 # ==========================================================
@@ -862,9 +970,7 @@ def marcar_leido(id):
 # ==========================================================
 
 
-@mensajes_bp.route(
-    "/eliminar/<id>"
-)
+@mensajes_bp.route("/eliminar/<id>")
 def eliminar(id):
 
 

@@ -197,7 +197,7 @@ Sistema Académico
 
 
 <a href="{{ url_for('listar_estudiantes_admin') }}">
-👨‍🎓 Estudiantes
+    👨‍🎓 Estudiantes
 </a>
 
 <a href="/admin/docentes">
@@ -228,6 +228,7 @@ Sistema Académico
 <a href="{{ url_for('reporte_matriculas') }}">
 📝 Reporte Matrículas
 </a>
+
 
 
 <a href="{{ url_for('reporte_academico') }}">
@@ -418,7 +419,51 @@ Matrículas
 </div>
 
 
+<!-- ==========================
+     COMUNICADOS
+=========================== -->
 
+<div class="row g-4 mt-2">
+
+    <div class="col-md-3">
+
+        <a href="{{ url_for('admin_comunicados') }}"
+           style="text-decoration:none;">
+
+            <div class="card card-stat shadow"
+                 style="
+                    background:linear-gradient(
+                        135deg,
+                        #08142C,
+                        #1E4E8C
+                    );
+                    color:white;
+                    cursor:pointer;
+                 ">
+
+                <div class="card-body">
+
+                    <h5 style="color:white;">
+                        📢 Comunicados
+                    </h5>
+
+                    <div style="
+                        font-size:15px;
+                        margin-top:10px;
+                        opacity:.9;
+                    ">
+                        Enviar avisos a los padres
+                    </div>
+
+                </div>
+
+            </div>
+
+        </a>
+
+    </div>
+
+</div>
 
 
 
@@ -514,8 +559,8 @@ Distribución
 </h5>
 
 
-<a href="{{ url_for('agregar_estudiante') }}"
-class="btn btn-ciem">
+<a href="{{ url_for('agregar_matricula') }}"
+   class="btn btn-ciem">
 
 <i class="bi bi-plus-circle"></i>
 

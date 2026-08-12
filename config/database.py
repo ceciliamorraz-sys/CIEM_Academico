@@ -6,10 +6,21 @@ from pymongo import MongoClient
 # CONEXIÓN MONGODB ATLAS
 # =====================================
 
+import os
+from pymongo import MongoClient
+
+
+# =====================================
+# CONEXIÓN MONGODB ATLAS
+# =====================================
+
 MONGO_URI = os.getenv("MONGO_URI")
 
+
+# Desarrollo local
+# Si no existe variable de entorno usa esta conexión
 if not MONGO_URI:
-    raise Exception("MONGO_URI no está configurada en Render")
+    MONGO_URI = "mongodb+srv://ciemadmin:CiemAtlas2026@cluster0.olbd8g8.mongodb.net/CIEM?retryWrites=true&w=majority&appName=Cluster0"
 
 
 cliente = MongoClient(
@@ -19,10 +30,49 @@ cliente = MongoClient(
 )
 
 
-# Base de datos CIEM
+# =====================================
+# BASE DE DATOS CIEM
+# =====================================
+
 db = cliente["CIEM"]
+print("====================================")
+print("🔎 VERIFICACIÓN BASE CIEM")
+print("BASE:", db.name)
+
+print("BUSCAR USUARIO alma:")
+print(
+    db.estudiantes.find_one({
+        "usuario": "alma"
+    })
+)
+
+print("BUSCAR ID 001:")
+print(
+    db.estudiantes.find_one({
+        "_id": "001"
+    })
+)
+
+print("TOTAL ESTUDIANTES:")
+print(
+    db.estudiantes.count_documents({})
+)
+
+print("====================================")
 
 
+
+
+print("========== MONGODB ==========")
+print("BASE:", db.name)
+
+try:
+    print("HOSTS:", cliente.nodes)
+    print("COLECCIONES:", db.list_collection_names())
+except Exception as e:
+    print("ERROR:", e)
+
+print("=============================")
 # =====================================
 # PRUEBA DE CONEXIÓN
 # =====================================

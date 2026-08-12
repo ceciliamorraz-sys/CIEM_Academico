@@ -1,102 +1,713 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>
-Nueva Matrícula 2026 | CIEM Académico
-</title>
+    <title>Matrículas | CIEM Académico</title>
 
+    <style>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-rel="stylesheet">
+        * {
+            box-sizing: border-box;
+        }
 
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f3f6fa;
+            color: #1d3256;
+        }
 
-<style>
+        /* ==========================================
+           CONTENEDOR
+        ========================================== */
 
-body{
+        .contenedor {
+            width: 94%;
+            max-width: 1400px;
+            margin: 30px auto;
+        }
 
-background:#f1f5f9;
-font-family:'Segoe UI',sans-serif;
+        /* ==========================================
+           ENCABEZADO
+        ========================================== */
 
-}
+        .encabezado {
 
+            background: linear-gradient(
+                135deg,
+                #08142C,
+                #0D2A52
+            );
 
-.container{
+            color: white;
 
-max-width:1200px;
+            padding: 22px 30px;
 
-}
+            border-radius: 14px 14px 0 0;
 
+            box-shadow:
+                0 5px 18px rgba(0,0,0,.12);
+        }
 
-.header{
+        .encabezado-contenido {
 
-background:linear-gradient(135deg,#08142C,#1E4E8C);
-color:white;
-padding:30px;
-border-radius:20px;
-box-shadow:0 8px 20px rgba(0,0,0,.15);
+            display: flex;
 
-}
+            justify-content: space-between;
 
+            align-items: center;
 
-.card{
+            gap: 20px;
+        }
 
-border:none;
-border-radius:20px;
-box-shadow:0 5px 20px rgba(0,0,0,.12);
-margin-bottom:25px;
+        /* ==========================================
+           IDENTIDAD
+        ========================================== */
 
-}
+        .identidad {
 
+            display: flex;
 
-.card-header{
+            align-items: center;
 
-background:#08142C;
-color:white;
-font-weight:700;
-font-size:18px;
+            gap: 16px;
+        }
 
-}
+        .logo {
 
+            width: 72px;
 
-label{
+            height: 72px;
 
-font-weight:600;
+            object-fit: contain;
 
-}
+            background: white;
 
+            padding: 5px;
 
-.form-control,
-.form-select{
+            border-radius: 10px;
 
-border-radius:10px;
+            box-shadow:
+                0 3px 10px rgba(0,0,0,.20);
+        }
 
-}
+        .titulo h1 {
 
+            margin: 0;
 
-.btn-ciem{
+            font-size: 27px;
 
-background:#2563eb;
-color:white;
+            font-weight: 700;
+        }
 
-}
+        .titulo p {
 
+            margin: 5px 0 0;
 
-.btn-ciem:hover{
+            font-size: 14px;
 
-background:#1d4ed8;
-color:white;
+            opacity: .88;
+        }
 
-}
+        .anio {
 
+            background: #FFC107;
 
-</style>
+            color: #08142C;
 
+            padding: 10px 20px;
+
+            border-radius: 20px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+        /* ==========================================
+           CONTENIDO
+        ========================================== */
+
+        .contenido {
+
+            background: white;
+
+            padding: 28px;
+
+            border-radius: 0 0 14px 14px;
+
+            box-shadow:
+                0 5px 18px rgba(0,0,0,.08);
+        }
+
+        /* ==========================================
+           BARRA SUPERIOR
+        ========================================== */
+
+        .barra-superior {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 25px;
+
+            gap: 15px;
+        }
+
+        .descripcion h2 {
+
+            margin: 0;
+
+            font-size: 18px;
+
+            color: #0D2A52;
+        }
+
+        .descripcion p {
+
+            margin: 5px 0 0;
+
+            font-size: 13px;
+
+            color: #6c757d;
+        }
+
+        .botones {
+
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+        }
+
+        /* ==========================================
+           BOTONES
+        ========================================== */
+
+        .btn {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            padding: 11px 18px;
+
+            border-radius: 7px;
+
+            text-decoration: none;
+
+            border: none;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+        .btn-dashboard {
+
+            background: #6c757d;
+
+            color: white;
+        }
+
+        .btn-dashboard:hover {
+
+            background: #565e64;
+        }
+
+        .btn-nueva {
+
+            background: #0D2A52;
+
+            color: white;
+        }
+
+        .btn-nueva:hover {
+
+            background: #1E4E8C;
+        }
+
+        /* ==========================================
+           MENSAJES
+        ========================================== */
+
+        .mensaje {
+
+            padding: 14px 18px;
+
+            margin-bottom: 20px;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+        .mensaje.success {
+
+            background: #d1e7dd;
+
+            color: #0f5132;
+
+            border: 1px solid #badbcc;
+        }
+
+        .mensaje.warning {
+
+            background: #fff3cd;
+
+            color: #664d03;
+
+            border: 1px solid #ffecb5;
+        }
+
+        .mensaje.danger {
+
+            background: #f8d7da;
+
+            color: #842029;
+
+            border: 1px solid #f5c2c7;
+        }
+
+        .mensaje.info {
+
+            background: #cff4fc;
+
+            color: #055160;
+
+            border: 1px solid #b6effb;
+        }
+
+        /* ==========================================
+           TARJETAS
+        ========================================== */
+
+        .tarjetas {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 30px;
+        }
+
+        .tarjeta {
+
+            border: 1px solid #e0e5eb;
+
+            border-radius: 11px;
+
+            padding: 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 16px;
+
+            background: white;
+
+            box-shadow:
+                0 3px 10px rgba(0,0,0,.04);
+        }
+
+        .icono {
+
+            width: 52px;
+
+            height: 52px;
+
+            border-radius: 10px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 25px;
+
+            background: #eef3f8;
+        }
+
+        .tarjeta-info span {
+
+            display: block;
+
+            font-size: 13px;
+
+            color: #6c757d;
+
+            margin-bottom: 4px;
+        }
+
+        .tarjeta-info strong {
+
+            display: block;
+
+            font-size: 23px;
+
+            color: #0D2A52;
+        }
+
+        /* ==========================================
+           TITULO REGISTRO
+        ========================================== */
+
+        .titulo-listado {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 18px;
+        }
+
+        .titulo-listado h2 {
+
+            margin: 0;
+
+            font-size: 20px;
+
+            color: #0D2A52;
+        }
+
+        .titulo-listado span {
+
+            color: #6c757d;
+
+            font-size: 13px;
+        }
+
+        /* ==========================================
+           TABLA
+        ========================================== */
+
+        .tabla-contenedor {
+
+            width: 100%;
+
+            overflow-x: auto;
+
+            border: 1px solid #e0e5eb;
+
+            border-radius: 10px;
+        }
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 950px;
+        }
+
+        thead {
+
+            background: #0D2A52;
+
+            color: white;
+        }
+
+        th {
+
+            padding: 14px 12px;
+
+            text-align: left;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            white-space: nowrap;
+        }
+
+        td {
+
+            padding: 13px 12px;
+
+            border-bottom:
+                1px solid #e8edf2;
+
+            font-size: 13px;
+
+            color: #34495e;
+        }
+
+        tbody tr:hover {
+
+            background: #f7f9fb;
+        }
+
+        /* ==========================================
+           CÓDIGO
+        ========================================== */
+
+        .codigo {
+
+            font-weight: 700;
+
+            color: #0D2A52;
+
+            background: #eef3f8;
+
+            padding: 5px 8px;
+
+            border-radius: 6px;
+
+            display: inline-block;
+        }
+
+        /* ==========================================
+           BADGES
+        ========================================== */
+
+        .badge {
+
+            display: inline-block;
+
+            padding: 5px 9px;
+
+            border-radius: 15px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+        .badge-activa {
+
+            background: #d1e7dd;
+
+            color: #0f5132;
+        }
+
+        .badge-preescolar {
+
+            background: #f0e5ff;
+
+            color: #63359c;
+        }
+
+        .badge-primaria {
+
+            background: #e7f1ff;
+
+            color: #164a8a;
+        }
+
+        .badge-secundaria {
+
+            background: #fff0d5;
+
+            color: #805400;
+        }
+
+        /* ==========================================
+           ACCIONES
+        ========================================== */
+
+        .acciones {
+
+            display: flex;
+
+            gap: 6px;
+        }
+
+        .btn-accion {
+
+            width: 35px;
+
+            height: 35px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 6px;
+
+            text-decoration: none;
+
+            font-size: 15px;
+
+            border: none;
+
+            cursor: pointer;
+        }
+
+        .ver {
+
+            background: #e7f1ff;
+        }
+
+        .editar {
+
+            background: #fff3cd;
+        }
+
+        .eliminar {
+
+            background: #f8d7da;
+        }
+
+        /* ==========================================
+           SIN REGISTROS
+        ========================================== */
+
+        .sin-registros {
+
+            text-align: center;
+
+            padding: 60px 20px;
+        }
+
+        .icono-grande {
+
+            font-size: 55px;
+
+            margin-bottom: 12px;
+        }
+
+        .sin-registros h3 {
+
+            margin: 0 0 8px;
+
+            color: #0D2A52;
+        }
+
+        .sin-registros p {
+
+            margin: 0 auto 22px;
+
+            max-width: 500px;
+
+            color: #6c757d;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+        /* ==========================================
+           PIE
+        ========================================== */
+
+        .pie {
+
+            text-align: center;
+
+            margin-top: 25px;
+
+            padding-top: 18px;
+
+            border-top:
+                1px solid #e3e7eb;
+
+            color: #7a8793;
+
+            font-size: 12px;
+        }
+
+        /* ==========================================
+           RESPONSIVE
+        ========================================== */
+
+        @media (max-width: 900px) {
+
+            .tarjetas {
+
+                grid-template-columns: 1fr;
+            }
+
+            .encabezado-contenido {
+
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .contenedor {
+
+                width: 96%;
+
+                margin: 15px auto;
+            }
+
+            .contenido {
+
+                padding: 18px;
+            }
+
+            .encabezado {
+
+                padding: 18px;
+            }
+
+            .encabezado-contenido {
+
+                flex-direction: column;
+            }
+
+            .barra-superior {
+
+                flex-direction: column;
+
+                align-items: stretch;
+            }
+
+            .botones {
+
+                width: 100%;
+            }
+
+            .btn {
+
+                flex: 1;
+            }
+
+            .titulo h1 {
+
+                font-size: 21px;
+            }
+
+            .logo {
+
+                width: 58px;
+
+                height: 58px;
+            }
+        }
+
+    </style>
 
 </head>
 
@@ -104,645 +715,525 @@ color:white;
 <body>
 
 
-<div class="container mt-4">
+<div class="contenedor">
+
+
+    <!-- ==================================================
+         ENCABEZADO
+    =================================================== -->
+
+    <div class="encabezado">
+
+        <div class="encabezado-contenido">
+
+
+            <div class="identidad">
+
+
+                <img
+                    src="{{ url_for('static', filename='img/logo.jpg') }}"
+                    alt="Logo Colegio Integral Emanuel Matagalpa"
+                    class="logo"
+                >
+
+
+                <div class="titulo">
+
+                    <h1>
+                        📋 Matrículas
+                    </h1>
+
+                    <p>
+                        Colegio Integral Emanuel Matagalpa
+                    </p>
+
+                    <p>
+                        Sistema Académico CIEM
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="anio">
+                Año Lectivo 2026
+            </div>
+
+
+        </div>
+
+    </div>
 
 
 
-<!-- ENCABEZADO -->
+    <!-- ==================================================
+         CONTENIDO
+    =================================================== -->
 
-<div class="header mb-4">
-
-
-<div class="d-flex justify-content-between align-items-center">
-
-
-<div>
+    <div class="contenido">
 
 
-<h2>
-📝 Hoja de Matrícula Año Lectivo 2026
-</h2>
+        <!-- ==================================================
+             BARRA SUPERIOR
+        =================================================== -->
+
+        <div class="barra-superior">
 
 
-<p class="mb-0">
-Colegio Integral Emanuel Matagalpa - CIEM
-</p>
+            <div class="descripcion">
 
+                <h2>
+                    Gestión de Matrículas
+                </h2>
+
+                <p>
+                    Registro y control académico de estudiantes
+                </p>
+
+            </div>
+
+
+            <div class="botones">
+
+
+                <!-- REGRESAR -->
+
+                <a
+                    href="{{ url_for('admin_dashboard') }}"
+                    class="btn btn-dashboard"
+                >
+                    ← Regresar al Dashboard
+                </a>
+
+
+                <!-- NUEVA MATRÍCULA -->
+
+                <a
+                    href="{{ url_for('agregar_matricula') }}"
+                    class="btn btn-nueva"
+                >
+                    ➕ Nueva Matrícula
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ==================================================
+             MENSAJES FLASH
+        =================================================== -->
+
+        {% with mensajes =
+            get_flashed_messages(
+                with_categories=true
+            )
+        %}
+
+            {% if mensajes %}
+
+                {% for categoria, mensaje in mensajes %}
+
+                    <div class="mensaje {{ categoria }}">
+
+                        {% if categoria == "success" %}
+
+                            ✅
+
+                        {% elif categoria == "warning" %}
+
+                            ⚠️
+
+                        {% elif categoria == "danger" %}
+
+                            ❌
+
+                        {% else %}
+
+                            ℹ️
+
+                        {% endif %}
+
+                        {{ mensaje }}
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+
+        <!-- ==================================================
+             TARJETAS
+        =================================================== -->
+
+        <div class="tarjetas">
+
+
+            <!-- TOTAL -->
+
+            <div class="tarjeta">
+
+                <div class="icono">
+                    📋
+                </div>
+
+                <div class="tarjeta-info">
+
+                    <span>
+                        Total de matrículas
+                    </span>
+
+                    <strong>
+                        {{ matriculas|length }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- AÑO -->
+
+            <div class="tarjeta">
+
+                <div class="icono">
+                    🎓
+                </div>
+
+                <div class="tarjeta-info">
+
+                    <span>
+                        Año lectivo
+                    </span>
+
+                    <strong>
+                        2026
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- INSTITUCIÓN -->
+
+            <div class="tarjeta">
+
+                <div class="icono">
+                    🏫
+                </div>
+
+                <div class="tarjeta-info">
+
+                    <span>
+                        Institución
+                    </span>
+
+                    <strong>
+                        CIEM
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ==================================================
+             LISTADO
+        =================================================== -->
+
+        <div class="titulo-listado">
+
+            <div>
+
+                <h2>
+                    Registro de Matrículas
+                </h2>
+
+                <span>
+                    Año Lectivo 2026
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        {% if matriculas %}
+
+<div class="tabla-contenedor">
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Estudiante</th>
+                <th>Grado / Año</th>
+                <th>Sección</th>
+                <th>Fecha de Matrícula</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for matricula in matriculas %}
+
+            <tr>
+
+                <!-- CÓDIGO -->
+                <td>
+                    <span class="codigo">
+                        {{ matricula.codigo or matricula.estudiante_id or "—" }}
+                    </span>
+                </td>
+
+
+                <!-- ESTUDIANTE -->
+                <td>
+
+                    {% if matricula.estudiante %}
+
+                        <strong>
+                            {{ matricula.estudiante.nombre or "Sin nombre" }}
+                        </strong>
+
+                    {% else %}
+
+                        <span>
+                            Sin información
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+
+                <!-- GRADO -->
+                <td>
+
+                    {% set grado = matricula.grado or "" %}
+
+                    {% if grado == "Preescolar" %}
+
+                        <span class="badge badge-preescolar">
+                            Preescolar
+                        </span>
+
+                    {% elif grado in [
+                        "Primero",
+                        "Segundo",
+                        "Tercero",
+                        "Cuarto",
+                        "Quinto",
+                        "Sexto"
+                    ] %}
+
+                        <span class="badge badge-primaria">
+                            {{ grado }}
+                        </span>
+
+                    {% elif grado in [
+                        "Primer Año",
+                        "Segundo Año",
+                        "Tercer Año",
+                        "Cuarto Año",
+                        "Quinto Año"
+                    ] %}
+
+                        <span class="badge badge-secundaria">
+                            {{ grado }}
+                        </span>
+
+                    {% else %}
+
+                        {{ grado or "—" }}
+
+                    {% endif %}
+
+                </td>
+
+
+                <!-- SECCIÓN -->
+                <td>
+                    {{ matricula.seccion or "—" }}
+                </td>
+
+
+                <!-- FECHA -->
+                <td>
+                    {{ matricula.fecha_matricula or "—" }}
+                </td>
+
+
+                <!-- ESTADO -->
+                <td>
+
+                    {% if matricula.estado == "activa" %}
+
+                        <span class="badge badge-activa">
+                            Activa
+                        </span>
+
+                    {% else %}
+
+                        <span
+                            class="badge"
+                            style="
+                                background:#f8d7da;
+                                color:#842029;
+                            "
+                        >
+                            Inactiva
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+
+                <!-- ACCIONES -->
+                <td>
+
+                    <div class="acciones">
+
+
+                        <!-- VER -->
+
+                        <a
+                            href="{{ url_for(
+                                'ver_matricula',
+                                codigo=matricula.codigo
+                            ) }}"
+                            class="btn-accion ver"
+                            title="Ver matrícula"
+                        >
+                            👁️
+                        </a>
+
+
+                        <!-- EDITAR -->
+
+                        <a
+                            href="{{ url_for(
+                                'editar_matricula',
+                                codigo=matricula.codigo
+                            ) }}"
+                            class="btn-accion editar"
+                            title="Editar matrícula"
+                        >
+                            ✏️
+                        </a>
+
+
+                        <!-- DESACTIVAR -->
+
+                        {% if matricula.estado == "activa" %}
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'desactivar_matricula',
+                                    matricula_id=matricula._id
+                                ) }}"
+                                style="display:inline;"
+                                onsubmit="
+                                    return confirm(
+                                        '¿Está seguro de que desea desactivar esta matrícula?'
+                                    );
+                                "
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="btn-accion eliminar"
+                                    title="Desactivar matrícula"
+                                >
+                                    🗑️
+                                </button>
+
+                            </form>
+
+                        {% endif %}
+
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
 
 </div>
+            <span
+                class="badge"
+                style="
+                    background:#f8d7da;
+                    color:#842029;
+                "
+                title="Matrícula inactiva"
+            >
+                Inactiva
+            </span>
 
+        {% endif %}
 
+    </div>
 
-<a href="{{ url_for('admin_dashboard') }}"
-class="btn btn-light">
+</td>
+<!-- ======================================================
+     JAVASCRIPT
+======================================================= -->
 
-🏠 Regresar Dashboard
+<script>
 
-</a>
+function confirmarEliminacion(codigo) {
 
+    if (!codigo) {
 
+        alert(
+            "No se encontró el código de la matrícula."
+        );
 
-</div>
+        return false;
+    }
 
 
-</div>
+    return confirm(
 
+        "¿Está seguro de eliminar la matrícula " +
+        codigo +
+        "?\n\n" +
 
+        "Esta acción debe realizarse únicamente " +
+        "si realmente desea retirar el registro."
 
+    );
 
+}
 
-<form method="POST">
-
-
-
-
-
-<!-- INFORMACION MATRICULA -->
-
-<div class="card">
-
-
-<div class="card-header">
-
-📌 Información de Matrícula
-
-</div>
-
-
-<div class="card-body">
-
-
-<div class="row">
-
-
-<div class="col-md-4">
-
-<label>
-Fecha de matrícula
-</label>
-
-<input type="date"
-name="fecha_matricula"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-4">
-
-<label>
-Código del estudiante
-</label>
-
-<input type="text"
-name="codigo_estudiante"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-2">
-
-<label>
-Grado
-</label>
-
-<input type="text"
-name="grado"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-2">
-
-<label>
-Sección
-</label>
-
-<input type="text"
-name="seccion"
-class="form-control">
-
-</div>
-
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<!-- INFORMACION ESTUDIANTE -->
-
-<div class="card">
-
-
-<div class="card-header">
-
-👦 Información del Estudiante
-
-</div>
-
-
-<div class="card-body">
-
-
-<div class="row">
-
-
-<div class="col-md-3">
-
-<label>
-1er Apellido
-</label>
-
-<input name="primer_apellido"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-3">
-
-<label>
-2do Apellido
-</label>
-
-<input name="segundo_apellido"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-3">
-
-<label>
-1er Nombre
-</label>
-
-<input name="primer_nombre"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-3">
-
-<label>
-2do Nombre
-</label>
-
-<input name="segundo_nombre"
-class="form-control">
-
-</div>
-
-
-
-
-<div class="col-md-2 mt-3">
-
-<label>
-Día nacimiento
-</label>
-
-<input type="number"
-name="dia"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-2 mt-3">
-
-<label>
-Mes
-</label>
-
-<input type="number"
-name="mes"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-2 mt-3">
-
-<label>
-Año
-</label>
-
-<input type="number"
-name="anio"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-2 mt-3">
-
-<label>
-Edad
-</label>
-
-<input type="number"
-name="edad"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-2 mt-3">
-
-<label>
-Género
-</label>
-
-
-<select name="genero"
-class="form-select">
-
-<option>M</option>
-<option>F</option>
-
-</select>
-
-
-</div>
-
-
-
-<div class="col-md-4 mt-3">
-
-<label>
-Lugar de nacimiento
-</label>
-
-<input name="lugar_nacimiento"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-2 mt-3">
-
-<label>
-Talla
-</label>
-
-<input name="talla"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-2 mt-3">
-
-<label>
-Peso
-</label>
-
-<input name="peso"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-2 mt-3">
-
-<label>
-Tipo de sangre
-</label>
-
-<input name="tipo_sangre"
-class="form-control">
-
-</div>
-
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-<!-- UBICACION -->
-
-
-<div class="card">
-
-
-<div class="card-header">
-
-📍 Ubicación del Estudiante
-
-</div>
-
-
-<div class="card-body">
-
-
-<div class="row">
-
-
-<div class="col-md-4">
-
-<label>
-Dirección
-</label>
-
-<input name="direccion"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-3">
-
-<label>
-Barrio
-</label>
-
-<input name="barrio"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-2">
-
-<label>
-Teléfono
-</label>
-
-<input name="telefono"
-class="form-control">
-
-</div>
-
-
-
-<div class="col-md-3">
-
-<label>
-Celular
-</label>
-
-<input name="celular"
-class="form-control">
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<!-- PADRES -->
-
-
-<div class="card">
-
-
-<div class="card-header">
-
-👨‍👩‍👦 Información de Padres, Madres y Tutor
-
-</div>
-
-
-<div class="card-body">
-
-
-<h6>Padre</h6>
-
-
-<div class="row">
-
-
-<div class="col-md-3">
-<input name="padre_nombre"
-placeholder="Nombre Padre"
-class="form-control">
-</div>
-
-
-<div class="col-md-3">
-<input name="padre_cedula"
-placeholder="Cédula"
-class="form-control">
-</div>
-
-
-<div class="col-md-3">
-<input name="padre_profesion"
-placeholder="Profesión"
-class="form-control">
-</div>
-
-
-<div class="col-md-3">
-<input name="padre_celular"
-placeholder="Celular"
-class="form-control">
-</div>
-
-
-</div>
-
-
-<hr>
-
-
-<h6>Madre</h6>
-
-
-<div class="row">
-
-
-<div class="col-md-3">
-<input name="madre_nombre"
-placeholder="Nombre Madre"
-class="form-control">
-</div>
-
-
-<div class="col-md-3">
-<input name="madre_cedula"
-placeholder="Cédula"
-class="form-control">
-</div>
-
-
-<div class="col-md-3">
-<input name="madre_profesion"
-placeholder="Profesión"
-class="form-control">
-</div>
-
-
-<div class="col-md-3">
-<input name="madre_celular"
-placeholder="Celular"
-class="form-control">
-</div>
-
-
-</div>
-
-
-
-<hr>
-
-
-<h6>Tutor</h6>
-
-
-<div class="row">
-
-
-<div class="col-md-3">
-<input name="tutor_nombre"
-placeholder="Nombre Tutor"
-class="form-control">
-</div>
-
-
-<div class="col-md-3">
-<input name="tutor_cedula"
-placeholder="Cédula"
-class="form-control">
-</div>
-
-
-<div class="col-md-3">
-<input name="tutor_profesion"
-placeholder="Profesión"
-class="form-control">
-</div>
-
-
-<div class="col-md-3">
-<input name="tutor_celular"
-placeholder="Celular"
-class="form-control">
-</div>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-<!-- POLITICAS -->
-
-
-<div class="card">
-
-
-<div class="card-body">
-
-
-<input type="checkbox" required>
-
-Acepto cumplir con el Plan Educativo Institucional, Manual de Convivencia Escolar y políticas internas del Colegio Integral Emanuel Matagalpa.
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-<button type="submit"
-class="btn btn-ciem btn-lg">
-
-💾 Guardar Matrícula
-
-</button>
-
-
-
-<a href="{{ url_for('listar_matriculas') }}"
-class="btn btn-secondary btn-lg">
-
-⬅ Regresar Matrículas
-
-</a>
-
-
-
-<a href="{{ url_for('admin_dashboard') }}"
-class="btn btn-dark btn-lg">
-
-🏠 Dashboard
-
-</a>
-
-
-
-
-</form>
-
-
-</div>
+</script>
 
 
 </body>

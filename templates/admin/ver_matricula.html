@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+    Ver Matrícula | CIEM Académico
+</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f3f6fa;
+        color: #1d3256;
+    }
+
+    /* ==========================================
+       CONTENEDOR
+    ========================================== */
+
+    .contenedor {
+        width: 94%;
+        max-width: 1250px;
+        margin: 30px auto;
+    }
+
+    /* ==========================================
+       ENCABEZADO
+    ========================================== */
+
+    .encabezado {
+
+        background: linear-gradient(
+            135deg,
+            #08142C,
+            #0D2A52
+        );
+
+        color: white;
+
+        padding: 25px 30px;
+
+        border-radius: 14px 14px 0 0;
+
+        box-shadow:
+            0 5px 18px rgba(0,0,0,.12);
+    }
+
+    .encabezado-contenido {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        gap: 20px;
+    }
+
+    .identidad {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 18px;
+    }
+
+    .logo {
+
+        width: 75px;
+
+        height: 75px;
+
+        object-fit: contain;
+
+        background: white;
+
+        padding: 5px;
+
+        border-radius: 10px;
+    }
+
+    .titulo h1 {
+
+        margin: 0;
+
+        font-size: 27px;
+    }
+
+    .titulo p {
+
+        margin: 5px 0 0;
+
+        font-size: 14px;
+
+        opacity: .85;
+    }
+
+    .codigo-principal {
+
+        background: #FFC107;
+
+        color: #08142C;
+
+        padding: 11px 20px;
+
+        border-radius: 22px;
+
+        font-weight: 700;
+
+        white-space: nowrap;
+    }
+
+    /* ==========================================
+       CONTENIDO
+    ========================================== */
+
+    .contenido {
+
+        background: white;
+
+        padding: 30px;
+
+        border-radius: 0 0 14px 14px;
+
+        box-shadow:
+            0 5px 18px rgba(0,0,0,.08);
+    }
+
+    /* ==========================================
+       BARRA
+    ========================================== */
+
+    .barra {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-bottom: 25px;
+
+        gap: 15px;
+
+        flex-wrap: wrap;
+    }
+
+    .barra h2 {
+
+        margin: 0;
+
+        color: #0D2A52;
+
+        font-size: 21px;
+    }
+
+    .barra p {
+
+        margin: 5px 0 0;
+
+        color: #6c757d;
+
+        font-size: 13px;
+    }
+
+    .botones {
+
+        display: flex;
+
+        gap: 10px;
+
+        flex-wrap: wrap;
+    }
+
+    .btn {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 7px;
+
+        padding: 10px 16px;
+
+        border-radius: 7px;
+
+        text-decoration: none;
+
+        font-size: 13px;
+
+        font-weight: 600;
+
+        border: none;
+
+        cursor: pointer;
+    }
+
+    .btn-volver {
+
+        background: #6c757d;
+
+        color: white;
+    }
+
+    .btn-editar {
+
+        background: #FFC107;
+
+        color: #08142C;
+    }
+
+    .btn:hover {
+
+        opacity: .88;
+    }
+
+    /* ==========================================
+       ESTADO
+    ========================================== */
+
+    .estado-contenedor {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        padding: 16px 20px;
+
+        background: #f8f9fa;
+
+        border: 1px solid #e1e6eb;
+
+        border-radius: 10px;
+
+        margin-bottom: 25px;
+    }
+
+    .estado-titulo {
+
+        font-weight: 700;
+
+        color: #0D2A52;
+    }
+
+    .estado {
+
+        padding: 7px 15px;
+
+        border-radius: 20px;
+
+        font-size: 12px;
+
+        font-weight: 700;
+    }
+
+    .estado-activa {
+
+        background: #d1e7dd;
+
+        color: #0f5132;
+    }
+
+    .estado-inactiva {
+
+        background: #f8d7da;
+
+        color: #842029;
+    }
+
+    /* ==========================================
+       SECCIONES
+    ========================================== */
+
+    .seccion {
+
+        margin-bottom: 25px;
+
+        border: 1px solid #e0e5eb;
+
+        border-radius: 11px;
+
+        overflow: hidden;
+    }
+
+    .seccion-titulo {
+
+        background: #0D2A52;
+
+        color: white;
+
+        padding: 13px 18px;
+
+        font-size: 15px;
+
+        font-weight: 700;
+    }
+
+    .seccion-contenido {
+
+        padding: 20px;
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 18px;
+    }
+
+    .campo {
+
+        min-width: 0;
+    }
+
+    .campo-completo {
+
+        grid-column: 1 / -1;
+    }
+
+    .campo label {
+
+        display: block;
+
+        font-size: 11px;
+
+        color: #7a8793;
+
+        text-transform: uppercase;
+
+        font-weight: 700;
+
+        margin-bottom: 5px;
+    }
+
+    .campo .valor {
+
+        color: #26384d;
+
+        font-size: 14px;
+
+        font-weight: 500;
+
+        min-height: 20px;
+
+    }
+
+    .valor-vacio {
+
+        color: #9aa5af !important;
+
+        font-style: italic;
+
+    }
+
+    /* ==========================================
+       CÓDIGO
+    ========================================== */
+
+    .codigo {
+
+        display: inline-block;
+
+        background: #eef3f8;
+
+        color: #0D2A52;
+
+        padding: 6px 10px;
+
+        border-radius: 6px;
+
+        font-weight: 700;
+
+        font-size: 13px;
+    }
+
+    /* ==========================================
+       BADGES
+    ========================================== */
+
+    .badge {
+
+        display: inline-block;
+
+        padding: 5px 10px;
+
+        border-radius: 15px;
+
+        font-size: 11px;
+
+        font-weight: 700;
+    }
+
+    .badge-grado {
+
+        background: #e7f1ff;
+
+        color: #164a8a;
+    }
+
+    /* ==========================================
+       CAPACIDADES
+    ========================================== */
+
+    .capacidades {
+
+        display: flex;
+
+        gap: 8px;
+
+        flex-wrap: wrap;
+    }
+
+    .capacidad {
+
+        background: #eef3f8;
+
+        color: #0D2A52;
+
+        padding: 6px 10px;
+
+        border-radius: 15px;
+
+        font-size: 12px;
+
+        font-weight: 600;
+    }
+
+    /* ==========================================
+       OBSERVACIONES
+    ========================================== */
+
+    .observaciones {
+
+        background: #f8f9fa;
+
+        border: 1px solid #e1e6eb;
+
+        border-radius: 8px;
+
+        padding: 14px;
+
+        line-height: 1.6;
+
+        color: #495057;
+
+        font-size: 13px;
+    }
+
+    /* ==========================================
+       PIE
+    ========================================== */
+
+    .pie {
+
+        text-align: center;
+
+        margin-top: 30px;
+
+        padding-top: 18px;
+
+        border-top: 1px solid #e3e7eb;
+
+        color: #7a8793;
+
+        font-size: 12px;
+    }
+
+    /* ==========================================
+       RESPONSIVE
+    ========================================== */
+
+    @media (max-width: 900px) {
+
+        .seccion-contenido {
+
+            grid-template-columns: 1fr 1fr;
+        }
+
+    }
+
+    @media (max-width: 600px) {
+
+        .contenedor {
+
+            width: 96%;
+
+            margin: 15px auto;
+        }
+
+        .contenido {
+
+            padding: 18px;
+        }
+
+        .encabezado {
+
+            padding: 18px;
+        }
+
+        .encabezado-contenido {
+
+            flex-direction: column;
+
+            align-items: flex-start;
+        }
+
+        .seccion-contenido {
+
+            grid-template-columns: 1fr;
+        }
+
+        .campo-completo {
+
+            grid-column: auto;
+        }
+
+        .barra {
+
+            flex-direction: column;
+
+            align-items: stretch;
+        }
+
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+```
+<!-- ==================================================
+     ENCABEZADO
+================================================== -->
+
+<div class="encabezado">
+
+    <div class="encabezado-contenido">
+
+        <div class="identidad">
+
+            <img
+                src="{{ url_for(
+                    'static',
+                    filename='img/logo.jpg'
+                ) }}"
+                alt="Logo CIEM"
+                class="logo"
+            >
+
+            <div class="titulo">
+
+                <h1>
+                    👁️ Detalle de Matrícula
+                </h1>
+
+                <p>
+                    Colegio Integral Emanuel Matagalpa
+                </p>
+
+                <p>
+                    Sistema Académico CIEM
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="codigo-principal">
+
+            {{ matricula.codigo
+               or estudiante.codigo
+               or "SIN CÓDIGO"
+            }}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ==================================================
+     CONTENIDO
+================================================== -->
+
+<div class="contenido">
+
+
+    <!-- ==================================================
+         BARRA
+    ================================================== -->
+
+    <div class="barra">
+
+        <div>
+
+            <h2>
+                Información de la Matrícula
+            </h2>
+
+            <p>
+                Consulta completa de los datos registrados
+            </p>
+
+        </div>
+
+
+        <div class="botones">
+
+            <a
+                href="{{ url_for('listar_matriculas') }}"
+                class="btn btn-volver"
+            >
+                ← Volver a Matrículas
+            </a>
+
+
+            <a
+                href="{{ url_for(
+                    'editar_matricula',
+                    codigo=matricula.codigo
+                ) }}"
+                class="btn btn-editar"
+            >
+                ✏️ Editar Matrícula
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         ESTADO
+    ================================================== -->
+
+    <div class="estado-contenedor">
+
+        <span class="estado-titulo">
+            Estado de la matrícula
+        </span>
+
+
+        {% if matricula.estado == "activa" %}
+
+            <span class="estado estado-activa">
+                🟢 ACTIVA
+            </span>
+
+        {% else %}
+
+            <span class="estado estado-inactiva">
+                🔴 INACTIVA
+            </span>
+
+        {% endif %}
+
+    </div>
+
+
+
+    <!-- ==================================================
+         DATOS DEL ESTUDIANTE
+    ================================================== -->
+
+    <div class="seccion">
+
+        <div class="seccion-titulo">
+            👤 Datos del Estudiante
+        </div>
+
+
+        <div class="seccion-contenido">
+
+
+            <div class="campo">
+
+                <label>
+                    Código
+                </label>
+
+                <div class="valor">
+
+                    <span class="codigo">
+                        {{ matricula.codigo or "—" }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Primer Nombre
+                </label>
+
+                <div class="valor">
+                    {{ estudiante.primer_nombre or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Segundo Nombre
+                </label>
+
+                <div class="valor">
+                    {{ estudiante.segundo_nombre or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Primer Apellido
+                </label>
+
+                <div class="valor">
+                    {{ estudiante.primer_apellido or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Segundo Apellido
+                </label>
+
+                <div class="valor">
+                    {{ estudiante.segundo_apellido or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Nombre Completo
+                </label>
+
+                <div class="valor">
+                    {{ estudiante.nombre or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Fecha de Nacimiento
+                </label>
+
+                <div class="valor">
+                    {{ estudiante.fecha_nacimiento or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Edad
+                </label>
+
+                <div class="valor">
+                    {{ estudiante.edad or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Género
+                </label>
+
+                <div class="valor">
+                    {{ estudiante.genero or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Lugar de Nacimiento
+                </label>
+
+                <div class="valor">
+                    {{ estudiante.lugar_nacimiento or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Tipo de Sangre
+                </label>
+
+                <div class="valor">
+                    {{ estudiante.tipo_sangre or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Talla
+                </label>
+
+                <div class="valor">
+                    {{ estudiante.talla or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Peso
+                </label>
+
+                <div class="valor">
+                    {{ estudiante.peso or "—" }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         DATOS ACADÉMICOS
+    ================================================== -->
+
+    <div class="seccion">
+
+        <div class="seccion-titulo">
+            🎓 Información Académica
+        </div>
+
+
+        <div class="seccion-contenido">
+
+
+            <div class="campo">
+
+                <label>
+                    Grado
+                </label>
+
+                <div class="valor">
+
+                    <span class="badge badge-grado">
+
+                        {{ matricula.grado
+                           or estudiante.grado
+                           or "—"
+                        }}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Sección
+                </label>
+
+                <div class="valor">
+                    {{ matricula.seccion
+                       or estudiante.seccion
+                       or "—"
+                    }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Año Lectivo
+                </label>
+
+                <div class="valor">
+                    {{ matricula.anio_lectivo or "2026" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Fecha de Matrícula
+                </label>
+
+                <div class="valor">
+                    {{ matricula.fecha_matricula or "—" }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         UBICACIÓN
+    ================================================== -->
+
+    <div class="seccion">
+
+        <div class="seccion-titulo">
+            🏠 Ubicación y Contacto
+        </div>
+
+
+        <div class="seccion-contenido">
+
+
+            <div class="campo campo-completo">
+
+                <label>
+                    Dirección
+                </label>
+
+                <div class="valor">
+                    {{ matricula.ubicacion.direccion
+                       or estudiante.direccion
+                       or "—"
+                    }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Barrio
+                </label>
+
+                <div class="valor">
+                    {{ matricula.ubicacion.barrio
+                       or estudiante.barrio
+                       or "—"
+                    }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Teléfono
+                </label>
+
+                <div class="valor">
+                    {{ matricula.ubicacion.telefono
+                       or estudiante.telefono
+                       or "—"
+                    }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Celular
+                </label>
+
+                <div class="valor">
+                    {{ matricula.ubicacion.celular
+                       or estudiante.celular
+                       or "—"
+                    }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         PADRE
+    ================================================== -->
+
+    <div class="seccion">
+
+        <div class="seccion-titulo">
+            👨 Información del Padre
+        </div>
+
+
+        <div class="seccion-contenido">
+
+
+            <div class="campo campo-completo">
+
+                <label>
+                    Nombre Completo
+                </label>
+
+                <div class="valor">
+                    {{ matricula.padre.nombre or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Cédula
+                </label>
+
+                <div class="valor">
+                    {{ matricula.padre.cedula or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Teléfono
+                </label>
+
+                <div class="valor">
+                    {{ matricula.padre.telefono or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Celular
+                </label>
+
+                <div class="valor">
+                    {{ matricula.padre.celular or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Ocupación
+                </label>
+
+                <div class="valor">
+                    {{ matricula.padre.ocupacion or "—" }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         MADRE
+    ================================================== -->
+
+    <div class="seccion">
+
+        <div class="seccion-titulo">
+            👩 Información de la Madre
+        </div>
+
+
+        <div class="seccion-contenido">
+
+
+            <div class="campo campo-completo">
+
+                <label>
+                    Nombre Completo
+                </label>
+
+                <div class="valor">
+                    {{ matricula.madre.nombre or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Cédula
+                </label>
+
+                <div class="valor">
+                    {{ matricula.madre.cedula or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Teléfono
+                </label>
+
+                <div class="valor">
+                    {{ matricula.madre.telefono or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Celular
+                </label>
+
+                <div class="valor">
+                    {{ matricula.madre.celular or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Ocupación
+                </label>
+
+                <div class="valor">
+                    {{ matricula.madre.ocupacion or "—" }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         TUTOR
+    ================================================== -->
+
+    <div class="seccion">
+
+        <div class="seccion-titulo">
+            👨‍👩‍👧 Información del Tutor
+        </div>
+
+
+        <div class="seccion-contenido">
+
+
+            <div class="campo campo-completo">
+
+                <label>
+                    Nombre Completo
+                </label>
+
+                <div class="valor">
+                    {{ matricula.tutor.nombre or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Parentesco
+                </label>
+
+                <div class="valor">
+                    {{ matricula.tutor.parentesco or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Cédula
+                </label>
+
+                <div class="valor">
+                    {{ matricula.tutor.cedula or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Celular
+                </label>
+
+                <div class="valor">
+                    {{ matricula.tutor.celular or "—" }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Ocupación
+                </label>
+
+                <div class="valor">
+                    {{ matricula.tutor.ocupacion or "—" }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         INFORMACIÓN LINGÜÍSTICA
+    ================================================== -->
+
+    <div class="seccion">
+
+        <div class="seccion-titulo">
+            🌎 Información Lingüística
+        </div>
+
+
+        <div class="seccion-contenido">
+
+
+            <div class="campo">
+
+                <label>
+                    Lengua Materna
+                </label>
+
+                <div class="valor">
+                    {{ matricula.informacion_linguistica.lengua_materna
+                       or "—"
+                    }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Idioma
+                </label>
+
+                <div class="valor">
+                    {{ matricula.informacion_linguistica.idioma
+                       or "—"
+                    }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Curso de Inglés
+                </label>
+
+                <div class="valor">
+                    {{ matricula.informacion_linguistica.curso_ingles
+                       or "—"
+                    }}
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Grupo Étnico
+                </label>
+
+                <div class="valor">
+                    {{ matricula.informacion_linguistica.grupo_etnico
+                       or "—"
+                    }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         CAPACIDADES
+    ================================================== -->
+
+    <div class="seccion">
+
+        <div class="seccion-titulo">
+            ⭐ Capacidades del Estudiante
+        </div>
+
+
+        <div class="seccion-contenido">
+
+
+            <div class="campo campo-completo">
+
+                <label>
+                    Capacidades
+                </label>
+
+
+                {% if matricula.capacidades %}
+
+                    <div class="capacidades">
+
+                        {% for capacidad in matricula.capacidades %}
+
+                            <span class="capacidad">
+                                {{ capacidad }}
+                            </span>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="valor valor-vacio">
+                        No se registraron capacidades.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         OBSERVACIONES
+    ================================================== -->
+
+    <div class="seccion">
+
+        <div class="seccion-titulo">
+            📝 Observaciones
+        </div>
+
+
+        <div class="seccion-contenido">
+
+            <div class="campo campo-completo">
+
+                <div class="observaciones">
+
+                    {{ matricula.observaciones
+                       or
+                       "No se registraron observaciones."
+                    }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         PIE
+    ================================================== -->
+
+    <div class="pie">
+
+        Colegio Integral Emanuel Matagalpa - CIEM
+
+        <br>
+
+        Sistema Académico CIEM © 2026
+
+    </div>
+
+
+</div>
+```
+
+</div>
+
+</body>
+
+</html>

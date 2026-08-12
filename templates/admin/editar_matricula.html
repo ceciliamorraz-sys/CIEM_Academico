@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Editar Matrícula - CIEM</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    <style>
+
+        body {
+            background: #f4f6f9;
+            font-family: Arial, sans-serif;
+        }
+
+        .header-ciem {
+            background: #08142C;
+            color: white;
+            padding: 18px 25px;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .header-ciem img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            background: white;
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .titulo {
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .subtitulo {
+            margin: 0;
+            color: #dbe5f5;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.08);
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            background: #0D2A52;
+            color: white;
+            font-weight: bold;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 14px 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #1D3256;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 8px;
+            min-height: 42px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #1E4E8C;
+            box-shadow: 0 0 0 .2rem rgba(30,78,140,.15);
+        }
+
+        .btn-ciem {
+            background: #1E4E8C;
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .btn-ciem:hover {
+            background: #0D2A52;
+            color: white;
+        }
+
+        .btn-regresar {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .btn-regresar:hover {
+            background: #495057;
+            color: white;
+        }
+
+        .codigo {
+            background: #e9eef5;
+            font-weight: bold;
+            color: #0D2A52;
+        }
+
+        .acciones {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 -3px 12px rgba(0,0,0,.10);
+            z-index: 100;
+        }
+
+        .seccion-info {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     ENCABEZADO
+===================================================== -->
+
+<div class="header-ciem">
+
+    <div class="container">
+
+        <div class="d-flex align-items-center gap-3">
+
+            <img
+                src="{{ url_for('static', filename='img/logo.jpg') }}"
+                alt="Logo CIEM"
+            >
+
+            <div>
+
+                <h3 class="titulo">
+                    Colegio Integral Emanuel Matagalpa
+                </h3>
+
+                <p class="subtitulo">
+                    CIEM Académico
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     CONTENIDO
+===================================================== -->
+
+<div class="container py-4">
+
+
+    <!-- =================================================
+         TÍTULO
+    ================================================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold text-dark">
+                <i class="bi bi-pencil-square"></i>
+                Editar Matrícula
+            </h2>
+
+            <p class="text-muted mb-0">
+                Modifique la información del estudiante y su matrícula.
+            </p>
+
+        </div>
+
+        <a
+            href="{{ url_for('listar_matriculas') }}"
+            class="btn btn-regresar"
+        >
+            <i class="bi bi-arrow-left"></i>
+            Regresar
+        </a>
+
+    </div>
+
+
+    <!-- =================================================
+         FORMULARIO
+    ================================================== -->
+<form
+    method="POST"
+    action="{{ url_for('editar_matricula', codigo=matricula.codigo) }}"
+>
+
+
+        <!-- =================================================
+             INFORMACIÓN DE MATRÍCULA
+        ================================================== -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <i class="bi bi-card-checklist"></i>
+
+                Información de Matrícula
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Código del estudiante
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control codigo"
+                            value="{{ matricula.codigo }}"
+                            readonly
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Fecha de matrícula
+                        </label>
+
+                        <input
+                            type="date"
+                            name="fecha_matricula"
+                            class="form-control"
+                            value="{{ matricula.fecha_matricula }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Año lectivo
+                        </label>
+
+                        <input
+                            type="number"
+                            name="anio_lectivo"
+                            class="form-control"
+                            value="{{ matricula.anio_lectivo or 2026 }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Grado
+                        </label>
+
+                        <select
+                            name="grado"
+                            class="form-select"
+                        >
+
+                            <option value="">
+                                Seleccione el grado
+                            </option>
+
+                            <option value="Preescolar"
+                                {% if matricula.grado == "Preescolar" %}selected{% endif %}>
+                                Preescolar
+                            </option>
+
+                            <option value="Primero"
+                                {% if matricula.grado == "Primero" %}selected{% endif %}>
+                                Primero
+                            </option>
+
+                            <option value="Segundo"
+                                {% if matricula.grado == "Segundo" %}selected{% endif %}>
+                                Segundo
+                            </option>
+
+                            <option value="Tercero"
+                                {% if matricula.grado == "Tercero" %}selected{% endif %}>
+                                Tercero
+                            </option>
+
+                            <option value="Cuarto"
+                                {% if matricula.grado == "Cuarto" %}selected{% endif %}>
+                                Cuarto
+                            </option>
+
+                            <option value="Quinto"
+                                {% if matricula.grado == "Quinto" %}selected{% endif %}>
+                                Quinto
+                            </option>
+
+                            <option value="Sexto"
+                                {% if matricula.grado == "Sexto" %}selected{% endif %}>
+                                Sexto
+                            </option>
+
+                            <option value="Primer año"
+                                {% if matricula.grado == "Primer año" %}selected{% endif %}>
+                                Primer año
+                            </option>
+
+                            <option value="Segundo año"
+                                {% if matricula.grado == "Segundo año" %}selected{% endif %}>
+                                Segundo año
+                            </option>
+
+                            <option value="Tercer año"
+                                {% if matricula.grado == "Tercer año" %}selected{% endif %}>
+                                Tercer año
+                            </option>
+
+                            <option value="Cuarto año"
+                                {% if matricula.grado == "Cuarto año" %}selected{% endif %}>
+                                Cuarto año
+                            </option>
+
+                            <option value="Quinto año"
+                                {% if matricula.grado == "Quinto año" %}selected{% endif %}>
+                                Quinto año
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            Sección
+                        </label>
+
+                        <select
+                            name="seccion"
+                            class="form-select"
+                        >
+
+                            <option value="">
+                                Seleccione
+                            </option>
+
+                            <option value="A"
+                                {% if matricula.seccion == "A" %}selected{% endif %}>
+                                A
+                            </option>
+
+                            <option value="B"
+                                {% if matricula.seccion == "B" %}selected{% endif %}>
+                                B
+                            </option>
+
+                            <option value="C"
+                                {% if matricula.seccion == "C" %}selected{% endif %}>
+                                C
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            Estado
+                        </label>
+
+                        <select
+                            name="estado"
+                            class="form-select"
+                        >
+
+                            <option value="activa"
+                                {% if matricula.estado == "activa" %}selected{% endif %}>
+                                Activa
+                            </option>
+
+                            <option value="cancelada"
+                                {% if matricula.estado == "cancelada" %}selected{% endif %}>
+                                Cancelada
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             INFORMACIÓN DEL ESTUDIANTE
+        ================================================== -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <i class="bi bi-person-fill"></i>
+
+                Información del Estudiante
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Primer apellido
+                        </label>
+
+                        <input
+                            type="text"
+                            name="primer_apellido"
+                            class="form-control"
+                            value="{{ matricula.estudiante.primer_apellido }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Segundo apellido
+                        </label>
+
+                        <input
+                            type="text"
+                            name="segundo_apellido"
+                            class="form-control"
+                            value="{{ matricula.estudiante.segundo_apellido }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Primer nombre
+                        </label>
+
+                        <input
+                            type="text"
+                            name="primer_nombre"
+                            class="form-control"
+                            value="{{ matricula.estudiante.primer_nombre }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Segundo nombre
+                        </label>
+
+                        <input
+                            type="text"
+                            name="segundo_nombre"
+                            class="form-control"
+                            value="{{ matricula.estudiante.segundo_nombre }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Fecha de nacimiento
+                        </label>
+
+                        <input
+                            type="date"
+                            name="fecha_nacimiento"
+                            class="form-control"
+                            value="{{ matricula.estudiante.fecha_nacimiento }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Edad
+                        </label>
+
+                        <input
+                            type="number"
+                            name="edad"
+                            class="form-control"
+                            value="{{ matricula.estudiante.edad }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Género
+                        </label>
+
+                        <select
+                            name="genero"
+                            class="form-select"
+                        >
+
+                            <option value="">
+                                Seleccione
+                            </option>
+
+                            <option value="Masculino"
+                                {% if matricula.estudiante.genero == "Masculino" %}selected{% endif %}>
+                                Masculino
+                            </option>
+
+                            <option value="Femenino"
+                                {% if matricula.estudiante.genero == "Femenino" %}selected{% endif %}>
+                                Femenino
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Lugar de nacimiento
+                        </label>
+
+                        <input
+                            type="text"
+                            name="lugar_nacimiento"
+                            class="form-control"
+                            value="{{ matricula.estudiante.lugar_nacimiento }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            Talla
+                        </label>
+
+                        <input
+                            type="text"
+                            name="talla"
+                            class="form-control"
+                            value="{{ matricula.estudiante.talla }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            Peso
+                        </label>
+
+                        <input
+                            type="text"
+                            name="peso"
+                            class="form-control"
+                            value="{{ matricula.estudiante.peso }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Tipo de sangre
+                        </label>
+
+                        <select
+                            name="tipo_sangre"
+                            class="form-select"
+                        >
+
+                            <option value="">
+                                Seleccione
+                            </option>
+
+                            <option value="A+"
+                                {% if matricula.estudiante.tipo_sangre == "A+" %}selected{% endif %}>
+                                A+
+                            </option>
+
+                            <option value="A-"
+                                {% if matricula.estudiante.tipo_sangre == "A-" %}selected{% endif %}>
+                                A-
+                            </option>
+
+                            <option value="B+"
+                                {% if matricula.estudiante.tipo_sangre == "B+" %}selected{% endif %}>
+                                B+
+                            </option>
+
+                            <option value="B-"
+                                {% if matricula.estudiante.tipo_sangre == "B-" %}selected{% endif %}>
+                                B-
+                            </option>
+
+                            <option value="AB+"
+                                {% if matricula.estudiante.tipo_sangre == "AB+" %}selected{% endif %}>
+                                AB+
+                            </option>
+
+                            <option value="AB-"
+                                {% if matricula.estudiante.tipo_sangre == "AB-" %}selected{% endif %}>
+                                AB-
+                            </option>
+
+                            <option value="O+"
+                                {% if matricula.estudiante.tipo_sangre == "O+" %}selected{% endif %}>
+                                O+
+                            </option>
+
+                            <option value="O-"
+                                {% if matricula.estudiante.tipo_sangre == "O-" %}selected{% endif %}>
+                                O-
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             CONTACTO Y UBICACIÓN
+        ================================================== -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <i class="bi bi-geo-alt-fill"></i>
+
+                Contacto y Ubicación
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Dirección
+                        </label>
+
+                        <input
+                            type="text"
+                            name="direccion"
+                            class="form-control"
+                            value="{{ matricula.ubicacion.direccion }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Barrio
+                        </label>
+
+                        <input
+                            type="text"
+                            name="barrio"
+                            class="form-control"
+                            value="{{ matricula.ubicacion.barrio }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Teléfono
+                        </label>
+
+                        <input
+                            type="text"
+                            name="telefono"
+                            class="form-control"
+                            value="{{ matricula.ubicacion.telefono }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Celular
+                        </label>
+
+                        <input
+                            type="text"
+                            name="celular"
+                            class="form-control"
+                            value="{{ matricula.ubicacion.celular }}"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             INFORMACIÓN LINGÜÍSTICA
+        ================================================== -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <i class="bi bi-translate"></i>
+
+                Información Lingüística
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Lengua materna
+                        </label>
+
+                        <input
+                            type="text"
+                            name="lengua_materna"
+                            class="form-control"
+                            value="{{ matricula.informacion_linguistica.lengua_materna }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Idioma
+                        </label>
+
+                        <input
+                            type="text"
+                            name="idioma"
+                            class="form-control"
+                            value="{{ matricula.informacion_linguistica.idioma }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Curso de inglés
+                        </label>
+
+                        <input
+                            type="text"
+                            name="curso_ingles"
+                            class="form-control"
+                            value="{{ matricula.informacion_linguistica.curso_ingles }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Grupo étnico
+                        </label>
+
+                        <input
+                            type="text"
+                            name="grupo_etnico"
+                            class="form-control"
+                            value="{{ matricula.informacion_linguistica.grupo_etnico }}"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PADRE
+        ================================================== -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <i class="bi bi-person-badge-fill"></i>
+
+                Información del Padre
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Nombre completo
+                        </label>
+
+                        <input
+                            type="text"
+                            name="padre_nombre"
+                            class="form-control"
+                            value="{{ matricula.padre.nombre }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Cédula
+                        </label>
+
+                        <input
+                            type="text"
+                            name="padre_cedula"
+                            class="form-control"
+                            value="{{ matricula.padre.cedula }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Teléfono
+                        </label>
+
+                        <input
+                            type="text"
+                            name="padre_telefono"
+                            class="form-control"
+                            value="{{ matricula.padre.telefono }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Celular
+                        </label>
+
+                        <input
+                            type="text"
+                            name="padre_celular"
+                            class="form-control"
+                            value="{{ matricula.padre.celular }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-12">
+
+                        <label class="form-label">
+                            Ocupación
+                        </label>
+
+                        <input
+                            type="text"
+                            name="padre_ocupacion"
+                            class="form-control"
+                            value="{{ matricula.padre.ocupacion }}"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             MADRE
+        ================================================== -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <i class="bi bi-person-heart"></i>
+
+                Información de la Madre
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Nombre completo
+                        </label>
+
+                        <input
+                            type="text"
+                            name="madre_nombre"
+                            class="form-control"
+                            value="{{ matricula.madre.nombre }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Cédula
+                        </label>
+
+                        <input
+                            type="text"
+                            name="madre_cedula"
+                            class="form-control"
+                            value="{{ matricula.madre.cedula }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Teléfono
+                        </label>
+
+                        <input
+                            type="text"
+                            name="madre_telefono"
+                            class="form-control"
+                            value="{{ matricula.madre.telefono }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Celular
+                        </label>
+
+                        <input
+                            type="text"
+                            name="madre_celular"
+                            class="form-control"
+                            value="{{ matricula.madre.celular }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-12">
+
+                        <label class="form-label">
+                            Ocupación
+                        </label>
+
+                        <input
+                            type="text"
+                            name="madre_ocupacion"
+                            class="form-control"
+                            value="{{ matricula.madre.ocupacion }}"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             TUTOR
+        ================================================== -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <i class="bi bi-people-fill"></i>
+
+                Información del Tutor
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Nombre completo
+                        </label>
+
+                        <input
+                            type="text"
+                            name="tutor_nombre"
+                            class="form-control"
+                            value="{{ matricula.tutor.nombre }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Parentesco
+                        </label>
+
+                        <input
+                            type="text"
+                            name="tutor_parentesco"
+                            class="form-control"
+                            value="{{ matricula.tutor.parentesco }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Cédula
+                        </label>
+
+                        <input
+                            type="text"
+                            name="tutor_cedula"
+                            class="form-control"
+                            value="{{ matricula.tutor.cedula }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Celular
+                        </label>
+
+                        <input
+                            type="text"
+                            name="tutor_celular"
+                            class="form-control"
+                            value="{{ matricula.tutor.celular }}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Ocupación
+                        </label>
+
+                        <input
+                            type="text"
+                            name="tutor_ocupacion"
+                            class="form-control"
+                            value="{{ matricula.tutor.ocupacion }}"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             CAPACIDADES Y OBSERVACIONES
+        ================================================== -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <i class="bi bi-clipboard-check"></i>
+
+                Capacidades y Observaciones
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Capacidades / Limitaciones
+                    </label>
+
+                    <input
+                        type="text"
+                        name="capacidades"
+                        class="form-control"
+                        value="{{ matricula.capacidades | join(', ') if matricula.capacidades else '' }}"
+                    >
+
+                    <div class="seccion-info mt-1">
+                        Puede separar varias capacidades utilizando comas.
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <label class="form-label">
+                        Observaciones
+                    </label>
+
+                    <textarea
+                        name="observaciones"
+                        class="form-control"
+                        rows="5"
+                    >{{ matricula.observaciones or '' }}</textarea>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             BOTONES
+        ================================================== -->
+
+        <div class="acciones d-flex justify-content-between align-items-center">
+
+            <a
+                href="{{ url_for('listar_matriculas') }}"
+                class="btn btn-regresar"
+            >
+
+                <i class="bi bi-x-circle"></i>
+
+                Cancelar
+
+            </a>
+
+
+            <button
+                type="submit"
+                class="btn btn-ciem"
+            >
+
+                <i class="bi bi-save"></i>
+
+                Guardar cambios
+
+            </button>
+
+        </div>
+
+
+    </form>
+
+</div>
+
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+</body>
+</html>

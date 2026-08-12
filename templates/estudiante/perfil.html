@@ -1,0 +1,876 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Mi Perfil | CIEM ONE</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #F3F6FA;
+            color: #1D3256;
+        }
+
+        /* ==========================================
+           CONTENEDOR
+        ========================================== */
+
+        .pagina {
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .contenedor {
+            max-width: 1050px;
+            margin: auto;
+        }
+
+        /* ==========================================
+           BOTÓN VOLVER
+        ========================================== */
+
+        .volver {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 18px;
+
+            background: white;
+            color: #1E4E8C;
+
+            text-decoration: none;
+            border-radius: 10px;
+
+            font-weight: 600;
+
+            box-shadow:
+                0 4px 12px rgba(0,0,0,.08);
+
+            transition: .2s;
+        }
+
+        .volver:hover {
+            background: #1E4E8C;
+            color: white;
+        }
+
+        /* ==========================================
+           TARJETA PRINCIPAL
+        ========================================== */
+
+        .perfil {
+
+            background: white;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 10px 35px rgba(0,0,0,.10);
+
+            border: 1px solid #E1E6ED;
+        }
+
+        /* ==========================================
+           ENCABEZADO
+        ========================================== */
+
+        .encabezado {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #08142C,
+                    #1E4E8C
+                );
+
+            color: white;
+
+            padding: 35px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 25px;
+        }
+
+        /* ==========================================
+           FOTO
+        ========================================== */
+
+        .foto {
+
+            width: 105px;
+            height: 105px;
+
+            border-radius: 50%;
+
+            background: white;
+
+            border: 4px solid rgba(255,255,255,.75);
+
+            overflow: hidden;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+        }
+
+        .foto img {
+
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+        }
+
+        .foto-placeholder {
+
+            font-size: 45px;
+            color: #1E4E8C;
+        }
+
+        /* ==========================================
+           INFORMACIÓN PRINCIPAL
+        ========================================== */
+
+        .nombre {
+
+            flex: 1;
+        }
+
+        .nombre h1 {
+
+            margin: 0;
+
+            font-size: 28px;
+
+            letter-spacing: .3px;
+        }
+
+        .nombre p {
+
+            margin: 7px 0 0;
+
+            color: #D8E2F0;
+
+            font-size: 14px;
+        }
+
+        .estado {
+
+            background: #D1E7DD;
+
+            color: #0F5132;
+
+            padding: 8px 14px;
+
+            border-radius: 20px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+        /* ==========================================
+           TITULO
+        ========================================== */
+
+        .titulo {
+
+            padding: 25px 30px 10px;
+        }
+
+        .titulo h2 {
+
+            margin: 0;
+
+            color: #08142C;
+
+            font-size: 20px;
+        }
+
+        .titulo p {
+
+            margin: 5px 0 0;
+
+            color: #7A8494;
+
+            font-size: 13px;
+        }
+
+        /* ==========================================
+           INFORMACIÓN
+        ========================================== */
+
+        .informacion {
+
+            padding: 20px 30px 30px;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 18px;
+        }
+
+        .dato {
+
+            background: #F8FAFC;
+
+            border: 1px solid #E2E7EF;
+
+            border-radius: 12px;
+
+            padding: 16px;
+
+            transition: .2s;
+        }
+
+        .dato:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 5px 15px rgba(0,0,0,.06);
+        }
+
+        .dato span {
+
+            display: block;
+
+            color: #7A8494;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            margin-bottom: 6px;
+        }
+
+        .dato strong {
+
+            display: block;
+
+            color: #08142C;
+
+            font-size: 15px;
+
+            word-break: break-word;
+        }
+
+        /* ==========================================
+           SECCIÓN ACADÉMICA
+        ========================================== */
+
+        .seccion {
+
+            margin: 0 30px 30px;
+
+            padding: 22px;
+
+            background: #F7F9FC;
+
+            border: 1px solid #E2E7EF;
+
+            border-radius: 14px;
+        }
+
+        .seccion h3 {
+
+            margin: 0 0 18px;
+
+            color: #08142C;
+
+            font-size: 17px;
+        }
+
+        .academico {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+        }
+
+        .academico-card {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 15px;
+
+            border: 1px solid #E3E8EF;
+
+            text-align: center;
+        }
+
+        .academico-card span {
+
+            display: block;
+
+            font-size: 11px;
+
+            color: #7A8494;
+
+            text-transform: uppercase;
+
+            font-weight: 700;
+
+            margin-bottom: 6px;
+        }
+
+        .academico-card strong {
+
+            font-size: 17px;
+
+            color: #1E4E8C;
+        }
+
+        /* ==========================================
+           AVISO INFORMATIVO
+        ========================================== */
+
+        .aviso {
+
+            margin: 0 30px 30px;
+
+            padding: 17px 20px;
+
+            border-left: 5px solid #FFC107;
+
+            background: #FFF9E6;
+
+            border-radius: 10px;
+
+            color: #667085;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+        .aviso strong {
+
+            color: #08142C;
+        }
+
+        /* ==========================================
+           PIE
+        ========================================== */
+
+        .pie {
+
+            background: #08142C;
+
+            color: #C8D2E8;
+
+            text-align: center;
+
+            padding: 15px;
+
+            font-size: 12px;
+        }
+
+        /* ==========================================
+           RESPONSIVE
+        ========================================== */
+
+        @media (max-width: 750px) {
+
+            .pagina {
+                padding: 15px;
+            }
+
+            .encabezado {
+
+                flex-direction: column;
+
+                text-align: center;
+
+                padding: 30px 20px;
+            }
+
+            .estado {
+                margin-top: 5px;
+            }
+
+            .informacion {
+
+                grid-template-columns: 1fr;
+
+                padding: 20px;
+            }
+
+            .seccion {
+
+                margin: 0 20px 20px;
+            }
+
+            .academico {
+
+                grid-template-columns: 1fr;
+            }
+
+            .aviso {
+
+                margin: 0 20px 20px;
+            }
+
+        }
+
+        /* ==========================================
+           IMPRESIÓN
+        ========================================== */
+
+        @media print {
+
+            body {
+                background: white;
+            }
+
+            .pagina {
+                padding: 0;
+            }
+
+            .volver {
+                display: none;
+            }
+
+            .perfil {
+
+                box-shadow: none;
+
+                border: none;
+            }
+
+            .encabezado,
+            .pie {
+
+                print-color-adjust: exact;
+
+                -webkit-print-color-adjust: exact;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="pagina">
+
+    <div class="contenedor">
+
+
+        <!-- ======================================
+             VOLVER
+        ======================================= -->
+
+        <a
+            href="{{ url_for('estudiante.dashboard') }}"
+            class="volver"
+        >
+            ← Volver al dashboard
+        </a>
+
+
+        <!-- ======================================
+             PERFIL
+        ======================================= -->
+
+        <div class="perfil">
+
+
+            <!-- ==================================
+                 ENCABEZADO
+            =================================== -->
+
+            <div class="encabezado">
+
+
+                <div class="foto">
+
+                    {% if estudiante.foto %}
+
+                        <img
+                            src="{{ url_for('static', filename='uploads/' ~ estudiante.foto) }}"
+                            alt="Foto del estudiante"
+                        >
+
+                    {% else %}
+
+                        <div class="foto-placeholder">
+                            👤
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="nombre">
+
+                    <h1>
+                        {{ estudiante.nombre or 'Estudiante' }}
+                    </h1>
+
+                    <p>
+                        Información personal y académica
+                    </p>
+
+                </div>
+
+
+                <div class="estado">
+
+                    {% if estudiante.estado %}
+                        {{ estudiante.estado|capitalize }}
+                    {% else %}
+                        Activo
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================
+                 INFORMACIÓN PERSONAL
+            =================================== -->
+
+            <div class="titulo">
+
+                <h2>
+                    👤 Información personal
+                </h2>
+
+                <p>
+                    Datos registrados en el sistema académico CIEM ONE
+                </p>
+
+            </div>
+
+
+            <div class="informacion">
+
+
+                <div class="dato">
+
+                    <span>
+                        Nombre completo
+                    </span>
+
+                    <strong>
+                        {{ estudiante.nombre or 'No registrado' }}
+                    </strong>
+
+                </div>
+
+
+                <div class="dato">
+
+                    <span>
+                        Código del estudiante
+                    </span>
+
+                    <strong>
+                        {{ estudiante._id or 'No registrado' }}
+                    </strong>
+
+                </div>
+
+
+                <div class="dato">
+
+                    <span>
+                        Fecha de nacimiento
+                    </span>
+
+                    <strong>
+                        {{ estudiante.fecha_nacimiento or 'No registrado' }}
+                    </strong>
+
+                </div>
+
+
+                <div class="dato">
+
+                    <span>
+                        Edad
+                    </span>
+
+                    <strong>
+                        {{ estudiante.edad or 'No registrada' }}
+                    </strong>
+
+                </div>
+
+
+                <div class="dato">
+
+                    <span>
+                        Dirección
+                    </span>
+
+                    <strong>
+                        {{ estudiante.direccion or 'No registrada' }}
+                    </strong>
+
+                </div>
+
+
+                <div class="dato">
+
+                    <span>
+                        Teléfono
+                    </span>
+
+                    <strong>
+                        {{ estudiante.telefono or 'No registrado' }}
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ==================================
+                 INFORMACIÓN ACADÉMICA
+            =================================== -->
+
+            <div class="seccion">
+
+                <h3>
+                    🎓 Información académica
+                </h3>
+
+
+                <div class="academico">
+
+
+                    <div class="academico-card">
+
+                        <span>
+                            Grado
+                        </span>
+
+                        <strong>
+                            {{ estudiante.grado or 'No registrado' }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="academico-card">
+
+                        <span>
+                            Sección
+                        </span>
+
+                        <strong>
+                            {{ estudiante.seccion or 'No registrada' }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="academico-card">
+
+                        <span>
+                            Año lectivo
+                        </span>
+
+                        <strong>
+                            2026
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================
+                 INFORMACIÓN DEL TUTOR
+            =================================== -->
+
+            <div class="titulo">
+
+                <h2>
+                    👨‍👩‍👧 Información familiar
+                </h2>
+
+                <p>
+                    Datos del padre, madre o tutor registrado
+                </p>
+
+            </div>
+
+
+            <div class="informacion">
+
+
+                <div class="dato">
+
+                    <span>
+                        Padre / Tutor
+                    </span>
+
+                    <strong>
+                        {{ estudiante.tutor or 'No registrado' }}
+                    </strong>
+
+                </div>
+
+
+                <div class="dato">
+
+                    <span>
+                        Teléfono del tutor
+                    </span>
+
+                    <strong>
+                        {{ estudiante.telefono_tutor or estudiante.telefono or 'No registrado' }}
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ==================================
+                 INFORMACIÓN DE CUENTA
+            =================================== -->
+
+            <div class="seccion">
+
+                <h3>
+                    🔐 Información de la cuenta
+                </h3>
+
+
+                <div class="academico">
+
+
+                    <div class="academico-card">
+
+                        <span>
+                            Usuario
+                        </span>
+
+                        <strong>
+                            {{ usuario.usuario if usuario else 'No registrado' }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="academico-card">
+
+                        <span>
+                            Correo electrónico
+                        </span>
+
+                        <strong>
+                            {{ usuario.correo if usuario and usuario.correo else 'No registrado' }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="academico-card">
+
+                        <span>
+                            Rol
+                        </span>
+
+                        <strong>
+                            {% if session.get('rol') == 'padre' %}
+                                Padre / Tutor
+                            {% else %}
+                                Estudiante
+                            {% endif %}
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================
+                 AVISO
+            =================================== -->
+
+            <div class="aviso">
+
+                <strong>ℹ️ Información:</strong>
+
+                Esta sección es únicamente informativa.
+                Los datos personales y académicos mostrados
+                corresponden a la información registrada en
+                CIEM ONE.
+
+                Para modificar el correo electrónico o la
+                contraseña de acceso, utilice la opción
+                <strong>“Cambiar correo y contraseña”</strong>
+                del menú principal.
+
+            </div>
+
+
+            <!-- ==================================
+                 PIE
+            =================================== -->
+
+            <div class="pie">
+
+                CIEM ONE · Perfil del estudiante · Año Lectivo 2026
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

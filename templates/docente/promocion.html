@@ -114,15 +114,29 @@ class="logo">
 
 
 
-<a href="{{ url_for('docente.informes_mined') }}"
-class="btn btn-secondary mb-3">
+<div style="
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+">
 
-Regresar
+    <a
+        href="{{ url_for('docente.informes_mined') }}"
+        class="btn btn-secondary"
+    >
+        ← Regresar
+    </a>
 
-</a>
+    <a
+        href="{{ url_for('docente.reporte_promocion_pdf') }}"
+        class="btn btn-danger"
+        target="_blank"
+    >
+        📄 Generar PDF
+    </a>
 
-
-
+</div>
 
 
 <table class="table table-bordered">

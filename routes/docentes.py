@@ -8,20 +8,20 @@ from flask import (
     session,
     flash,
     send_file
+    
    
 )
-
+from io import BytesIO
 from datetime import datetime
 from flask_pymongo import PyMongo
 from routes.mined import datos_mined, estadistica_grado
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
 
 
-
+import os
 from bson import ObjectId
 
-
 from reportlab.lib.styles import getSampleStyleSheet
-
 
 from reportlab.platypus import (
     SimpleDocTemplate,
@@ -32,12 +32,15 @@ from reportlab.platypus import (
     Image
 )
 
-
 from reportlab.lib import colors
 
+from reportlab.lib.pagesizes import letter
+
+from reportlab.lib.enums import TA_CENTER
+
+from io import BytesIO
 
 from config.database import db
-
 
 from routes.mined import (
     datos_mined,
@@ -45,9 +48,7 @@ from routes.mined import (
     informe_retencion
 )
 
-
 from functools import wraps
-
 
 from datetime import datetime
 
@@ -78,6 +79,7 @@ def role_required(rol):
         return wrapper
     return decorator
 
+
 # ==========================
 # DASHBOARD DOCENTE
 # ==========================
@@ -88,13 +90,17 @@ def dashboard_docente():
 
     usuario = session.get("usuario")
 
+    # ==========================================
+    # BUSCAR DOCENTE
+    # ==========================================
+
     docente = db.docentes.find_one({
         "usuario": usuario
     })
 
-    # ==========================
+    # ==========================================
     # VALIDAR DOCENTE
-    # ==========================
+    # ==========================================
 
     if not docente:
 
@@ -107,11 +113,15 @@ def dashboard_docente():
             url_for("login")
         )
 
-    # =====================================
-    # MENSAJES PENDIENTES DE FAMILIAS
-    # =====================================
+    # ==========================================
+    # IDENTIFICAR DOCENTE
+    # ==========================================
 
-    docente_id = docente["_id"]
+    docente_id = docente.get("_id")
+
+    # ==========================================
+    # CONVERSACIONES DEL DOCENTE
+    # ==========================================
 
     conversaciones = list(
         db.conversaciones.find({
@@ -122,6 +132,10 @@ def dashboard_docente():
         )
     )
 
+    # ==========================================
+    # MENSAJES PENDIENTES
+    # ==========================================
+
     mensajes_pendientes = db.conversaciones.count_documents({
         "docente_id": docente_id,
         "no_leidos_docente": {
@@ -129,112 +143,167 @@ def dashboard_docente():
         }
     })
 
-    # ==========================
-    # CLASES
-    # ==========================
+    # ==========================================
+    # CLASES DEL DOCENTE
+    # ==========================================
 
     clases = list(
         db.asignaturas.find({
             "docente_id": docente_id
         })
     )
-
-    # ... el resto de tu código ...
-
-    # ==========================
-    # CLASES
-    # ==========================
-
-    clases = list(
-
-        db.asignaturas.find({
-
-            "docente_id": docente_id
-
-        })
-
-    )
-
 
     total_asignaturas = len(clases)
 
+    # ==========================================
+    # OBTENER ESTUDIANTES
+    # SEGÚN GRADO Y SECCIÓN
+    # ==========================================
 
+    estudiantes = []
 
-    # ==========================
-    # ESTUDIANTES
-    # ==========================
-
-    total_estudiantes = 0
-
+    ids_estudiantes = set()
 
     for clase in clases:
 
+        grado = clase.get("grado")
+        seccion = clase.get("seccion")
 
-        total_estudiantes += db.estudiantes.count_documents({
+        print("====================================")
+        print("BUSCANDO ESTUDIANTES")
+        print("GRADO:", grado)
+        print("SECCIÓN:", seccion)
+        print("====================================")
 
-            "grado": clase.get("grado"),
+        lista_estudiantes = db.estudiantes.find({
 
-            "seccion": clase.get("seccion"),
+            "grado": grado,
 
-            "estado":"activo"
+            "seccion": seccion,
+
+            "estado": "activo"
 
         })
 
+        for estudiante in lista_estudiantes:
 
+            estudiante_id = str(
+                estudiante.get("_id")
+            )
 
-    # ==========================
-    # ASISTENCIA
-    # ==========================
+            if estudiante_id not in ids_estudiantes:
 
+                estudiantes.append(
+                    estudiante
+                )
+
+                ids_estudiantes.add(
+                    estudiante_id
+                )
+
+    # ==========================================
+    # TOTAL DE ESTUDIANTES
+    # ==========================================
+
+    total_estudiantes = len(estudiantes)
+
+    # ==========================================
+    # DEPURACIÓN
+    # ==========================================
+
+    print("==========================================")
+    print("DASHBOARD DOCENTE")
+    print("==========================================")
+
+    print(
+        "DOCENTE:",
+        docente.get("nombre")
+    )
+
+    print(
+        "USUARIO:",
+        usuario
+    )
+
+    print(
+        "ID DOCENTE:",
+        docente_id
+    )
+
+    print(
+        "TOTAL ASIGNATURAS:",
+        total_asignaturas
+    )
+
+    print(
+        "TOTAL ESTUDIANTES:",
+        total_estudiantes
+    )
+
+    for estudiante in estudiantes:
+
+        print(
+            "ESTUDIANTE:",
+            estudiante.get("_id"),
+            estudiante.get("nombre"),
+            estudiante.get("grado"),
+            estudiante.get("seccion")
+        )
+
+    print("==========================================")
+
+    # ==========================================
+    # ASISTENCIAS
+    # ==========================================
 
     total_asistencias = db.asistencias.count_documents({
-
         "docente": usuario
-
     })
 
-
+    # ==========================================
+    # ASISTENCIAS PENDIENTES
+    # ==========================================
 
     pendientes = list(
-
         db.asistencias.find({
-
             "docente": usuario
-
         })
     )
-    
 
-
-    # ==========================
-    # ESTADISTICA
-    # ==========================
+    # ==========================================
+    # ESTADÍSTICA
+    # ==========================================
 
     estadistica = {
 
-        "total_asignaturas": total_asignaturas,
+        "total_asignaturas":
+            total_asignaturas,
 
-        "total_estudiantes": total_estudiantes,
+        "total_estudiantes":
+            total_estudiantes,
 
-        "promedio_general":"0.0",
+        "promedio_general":
+            "0.0",
 
-        "progreso_notas":0,
+        "progreso_notas":
+            0,
 
-        "progreso_asistencia":0,
+        "progreso_asistencia":
+            0,
 
-        "aprobados":0,
+        "aprobados":
+            0,
 
-        "reprobados":0,
+        "reprobados":
+            0,
 
-        "presentes":total_asistencias
-
+        "presentes":
+            total_asistencias
     }
 
-
-
-    # ==========================
+    # ==========================================
     # AVISOS
-    # ==========================
+    # ==========================================
 
     avisos = [
 
@@ -246,42 +315,36 @@ def dashboard_docente():
 
     ]
 
-
+    # ==========================================
+    # CLASES DE HOY
+    # ==========================================
 
     clases_hoy = clases
 
-
+    # ==========================================
+    # RENDER DASHBOARD
+    # ==========================================
 
     return render_template(
-
     "docente/dashboard_docente.html",
 
     docente=docente,
-
     fecha_hoy=datetime.now(),
-
     estadistica=estadistica,
-
     pendientes=pendientes,
-
     avisos=avisos,
-
     clases_hoy=clases_hoy,
-
     mensajes_pendientes=mensajes_pendientes,
+    conversaciones=conversaciones,
 
-    conversaciones=conversaciones
-
+    estudiantes=estudiantes,
+    total_estudiantes=total_estudiantes
 )
 
 
-
-
-
-
-# ==========================
+# ==========================================================
 # MIS CLASES
-# ==========================
+# ==========================================================
 
 @docente_bp.route("/mis_clases")
 @role_required("docente")
@@ -289,43 +352,56 @@ def mis_clases():
 
     usuario = session.get("usuario")
 
-
     docente = db.docentes.find_one({
         "usuario": usuario
     })
 
+    if not docente:
+
+        flash(
+            "Docente no encontrado.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("login")
+        )
 
     clases = list(
         db.asignaciones.aggregate([
+
             {
-                "$match":{
+                "$match": {
                     "docente_id": docente["_id"]
                 }
             },
+
             {
-                "$lookup":{
-                    "from":"asignaturas",
-                    "localField":"asignatura_id",
-                    "foreignField":"_id",
-                    "as":"asignatura"
+                "$lookup": {
+                    "from": "asignaturas",
+                    "localField": "asignatura_id",
+                    "foreignField": "_id",
+                    "as": "asignatura"
                 }
             },
+
             {
-                "$lookup":{
-                    "from":"cursos",
-                    "localField":"curso_id",
-                    "foreignField":"_id",
-                    "as":"curso"
+                "$lookup": {
+                    "from": "cursos",
+                    "localField": "curso_id",
+                    "foreignField": "_id",
+                    "as": "curso"
                 }
             }
+
         ])
     )
-
 
     return render_template(
         "docente/mis_clases.html",
         clases=clases
     )
+
 
 # ==============================
 # DETALLE DE UNA CLASE
@@ -398,10 +474,20 @@ def logout():
 @role_required("docente")
 def asistencia(asignatura_id):
 
+    print("========================================")
+    print("🔥 ASISTENCIA")
+    print("ASIGNATURA ID:", asignatura_id)
+    print("========================================")
+
+    # =====================================
+    # BUSCAR ASIGNATURA
+    # =====================================
+
     asignatura = db.asignaturas.find_one({
         "_id": asignatura_id
     })
 
+    print("📚 ASIGNATURA:", asignatura)
 
     if not asignatura:
 
@@ -414,22 +500,87 @@ def asistencia(asignatura_id):
             url_for("docente.aulas")
         )
 
+    grado = asignatura.get("grado")
+    seccion = asignatura.get("seccion")
+
+    print("🎓 GRADO ASIGNATURA:", grado)
+    print("🏫 SECCIÓN ASIGNATURA:", seccion)
+
+
+    # =====================================
+    # CONVERTIR GRADO DE ASIGNATURA
+    # AL FORMATO UTILIZADO POR ESTUDIANTES
+    # =====================================
+
+    mapa_grados = {
+
+        "1": "1er Grado",
+        "2": "2do Grado",
+        "3": "3er Grado",
+        "4": "4to Grado",
+        "5": "5to Grado",
+        "6": "6to Grado"
+
+    }
+
+    grado_estudiante = mapa_grados.get(
+        str(grado),
+        grado
+    )
+
+    print(
+        "🔄 GRADO PARA ESTUDIANTES:",
+        grado_estudiante
+    )
+
+
+    # =====================================
+    # BUSCAR ESTUDIANTES
+    # =====================================
 
     estudiantes = list(
         db.estudiantes.find({
 
-            "grado": asignatura["grado"],
+            "grado": grado_estudiante,
 
-            "seccion": asignatura["seccion"],
+            "seccion": seccion,
 
-            "estado":"activo"
+            "estado": "activo"
 
         })
     )
 
 
+    print("========================================")
+    print("👥 ESTUDIANTES ENCONTRADOS")
+    print("TOTAL:", len(estudiantes))
+    print("========================================")
+
+
+    for estudiante in estudiantes:
+
+        print(
+            "➡️",
+            estudiante.get("_id"),
+            "|",
+            estudiante.get("nombre"),
+            "|",
+            estudiante.get("grado"),
+            "|",
+            estudiante.get("seccion")
+        )
+
+
+    # =====================================
+    # FECHA
+    # =====================================
+
     fecha = datetime.now().strftime("%Y-%m-%d")
 
+
+    # =====================================
+    # MOSTRAR ASISTENCIA
+    # =====================================
 
     return render_template(
         "docente/asistencia.html",
@@ -447,39 +598,94 @@ def asistencia(asignatura_id):
 @role_required("docente")
 def guardar_asistencia():
 
-    asignatura_id = request.form.get("asignatura_id")
+    print("========================================")
+    print("💾 GUARDANDO ASISTENCIA")
+    print("========================================")
 
+    asignatura_id = request.form.get("asignatura_id")
     fecha = request.form.get("fecha")
 
     if not fecha:
         fecha = datetime.now().strftime("%Y-%m-%d")
 
-    # Buscar la asignatura por su ID (STRING)
+    print("📚 ASIGNATURA:", asignatura_id)
+    print("📅 FECHA:", fecha)
+
     asignatura = db.asignaturas.find_one({
         "_id": asignatura_id
     })
 
     if not asignatura:
-        flash("Asignatura no encontrada", "danger")
-        return redirect(url_for("docente.aulas"))
+
+        flash(
+            "Asignatura no encontrada",
+            "danger"
+        )
+
+        return redirect(
+            url_for("docente.aulas")
+        )
+
+    # =====================================
+    # CONVERTIR GRADO
+    # =====================================
+
+    mapa_grados = {
+        "1": "1er Grado",
+        "2": "2do Grado",
+        "3": "3er Grado",
+        "4": "4to Grado",
+        "5": "5to Grado",
+        "6": "6to Grado"
+    }
+
+    grado = asignatura.get("grado")
+    seccion = asignatura.get("seccion")
+
+    grado_estudiante = mapa_grados.get(
+        str(grado),
+        grado
+    )
+
+    # =====================================
+    # BUSCAR ESTUDIANTES
+    # =====================================
 
     estudiantes = list(
         db.estudiantes.find({
-            "grado": asignatura.get("grado"),
-            "seccion": asignatura.get("seccion"),
+            "grado": grado_estudiante,
+            "seccion": seccion,
             "estado": "activo"
         })
     )
 
+    print(
+        "👥 ESTUDIANTES A GUARDAR:",
+        len(estudiantes)
+    )
+
+    # =====================================
+    # GUARDAR
+    # =====================================
+
     for estudiante in estudiantes:
 
-        estudiante_id = estudiante["_id"]   # Ya es un string
+        estudiante_id = estudiante.get("_id")
 
-        estado = request.form.get(f"estado_{estudiante_id}")
+        estado = request.form.get(
+            f"estado_{estudiante_id}"
+        )
 
         observacion = request.form.get(
             f"observacion_{estudiante_id}",
             ""
+        )
+
+        print(
+            "➡️",
+            estudiante.get("nombre"),
+            "|",
+            estado
         )
 
         db.asistencias.update_one(
@@ -502,13 +708,19 @@ def guardar_asistencia():
             },
 
             upsert=True
-
         )
 
-    flash("Asistencia guardada correctamente", "success")
+    flash(
+        "Asistencia guardada correctamente",
+        "success"
+    )
 
-    return redirect(url_for("docente.aulas"))
-
+    return redirect(
+        url_for(
+            "docente.asistencia",
+            asignatura_id=asignatura_id
+        )
+    )
 # =====================================
 # NOTAS
 # =====================================
@@ -517,55 +729,88 @@ def guardar_asistencia():
 @role_required("docente")
 def notas(asignatura_id):
 
+    print("========================================")
+    print("📝 NOTAS")
+    print("ASIGNATURA ID:", asignatura_id)
+    print("========================================")
+
+    # =====================================
+    # BUSCAR ASIGNATURA
+    # =====================================
+
     asignatura = db.asignaturas.find_one({
         "_id": asignatura_id
     })
 
-    if not asignatura:
-        flash("Asignatura no encontrada", "danger")
-        return redirect(url_for("docente.aulas"))
+    print("📚 ASIGNATURA:", asignatura)
 
+    if not asignatura:
+
+        flash(
+            "Asignatura no encontrada",
+            "danger"
+        )
+
+        return redirect(
+            url_for("docente.aulas")
+        )
+
+    grado = asignatura.get("grado")
+    seccion = asignatura.get("seccion")
+
+    print("🎓 GRADO:", grado)
+    print("🏫 SECCIÓN:", seccion)
+
+
+    # =====================================
+    # CONVERTIR GRADO
+    # =====================================
+
+    mapa_grados = {
+
+        "1": "1er Grado",
+        "2": "2do Grado",
+        "3": "3er Grado",
+        "4": "4to Grado",
+        "5": "5to Grado",
+        "6": "6to Grado"
+
+    }
+
+    grado_estudiante = mapa_grados.get(
+        str(grado),
+        grado
+    )
+
+    print(
+        "🔄 GRADO PARA ESTUDIANTES:",
+        grado_estudiante
+    )
+
+
+    # =====================================
+    # BUSCAR ESTUDIANTES
+    # =====================================
 
     estudiantes = list(
         db.estudiantes.find({
-            "grado": asignatura["grado"],
-            "seccion": asignatura["seccion"],
+
+            "grado": grado_estudiante,
+
+            "seccion": seccion,
+
             "estado": "activo"
+
         })
     )
 
 
-    notas_db = list(
-        db.notas.find({
-            "asignatura_id": asignatura_id
-        })
-    )
+    print("👥 TOTAL ESTUDIANTES:", len(estudiantes))
 
 
-    notas_estudiantes = {}
-
-    for nota in notas_db:
-
-        clave = (
-            nota["estudiante_id"],
-            nota["periodo"],
-            nota["evaluacion"]
-        )
-
-        notas_estudiantes[clave] = nota
-
-
-    return render_template(
-        "docente/notas.html",
-        asignatura=asignatura,
-        estudiantes=estudiantes,
-        notas_estudiantes=notas_estudiantes
-    )
-
-    # ===============================
-    # BUSCAR CORTES
-    # ===============================
-
+    # =====================================
+    # BUSCAR NOTAS EXISTENTES
+    # =====================================
 
     notas_cortes = db.notas.find_one({
 
@@ -574,34 +819,28 @@ def notas(asignatura_id):
     })
 
 
-
     corte1 = 0
     corte2 = 0
     corte3 = 0
     corte4 = 0
 
 
-
     if notas_cortes:
-
 
         corte1 = notas_cortes.get(
             "corte1",
             0
         )
 
-
         corte2 = notas_cortes.get(
             "corte2",
             0
         )
 
-
         corte3 = notas_cortes.get(
             "corte3",
             0
         )
-
 
         corte4 = notas_cortes.get(
             "corte4",
@@ -609,18 +848,27 @@ def notas(asignatura_id):
         )
 
 
+    # =====================================
+    # NOTA FINAL
+    # =====================================
 
     nota_final = round(
+
         (
             corte1 +
             corte2 +
             corte3 +
             corte4
         ) / 4,
+
         2
+
     )
 
 
+    # =====================================
+    # MOSTRAR PANTALLA
+    # =====================================
 
     return render_template(
 
@@ -650,20 +898,58 @@ def notas(asignatura_id):
 @role_required("docente")
 def guardar_notas():
 
+    print("========================================")
+    print("💾 ENTRE A guardar_notas")
+    print("========================================")
+
+    # =====================================
+    # DATOS DEL FORMULARIO
+    # =====================================
+
     asignatura_id = request.form.get("asignatura_id")
     periodo = request.form.get("periodo")
     evaluacion = request.form.get("evaluacion")
 
+    print("📚 ASIGNATURA ID:", asignatura_id)
+    print("📅 PERIODO:", periodo)
+    print("📊 EVALUACIÓN:", evaluacion)
+
+    # =====================================
+    # MOSTRAR FORMULARIO RECIBIDO
+    # =====================================
+
+    print("========================================")
+    print("📦 DATOS RECIBIDOS DEL FORMULARIO")
+    print("========================================")
+
+    for clave, valor in request.form.items():
+
+        print(
+            "CAMPO:",
+            clave,
+            "| VALOR:",
+            valor
+        )
+
+    print("========================================")
+
+    # =====================================
+    # BUSCAR ASIGNATURA
+    # =====================================
 
     asignatura = db.asignaturas.find_one({
         "_id": asignatura_id
     })
 
+    print(
+        "📚 ASIGNATURA ENCONTRADA:",
+        asignatura
+    )
 
     if not asignatura:
 
         flash(
-            "Asignatura no encontrada",
+            "Asignatura no encontrada.",
             "danger"
         )
 
@@ -671,223 +957,364 @@ def guardar_notas():
             url_for("docente.aulas")
         )
 
+    # =====================================
+    # OBTENER GRADO Y SECCIÓN
+    # =====================================
 
+    mapa_grados = {
+
+        "1": "1er Grado",
+        "2": "2do Grado",
+        "3": "3er Grado",
+        "4": "4to Grado",
+        "5": "5to Grado",
+        "6": "6to Grado"
+
+    }
+
+    grado = asignatura.get("grado")
+
+    seccion = asignatura.get("seccion")
+
+    grado_estudiante = mapa_grados.get(
+        str(grado),
+        grado
+    )
+
+    print("🎓 GRADO ASIGNATURA:", grado)
+    print("🎓 GRADO ESTUDIANTE:", grado_estudiante)
+    print("🏫 SECCIÓN:", seccion)
+
+    # =====================================
+    # BUSCAR ESTUDIANTES
+    # =====================================
 
     estudiantes = list(
         db.estudiantes.find({
 
-            "grado": asignatura["grado"],
-            "seccion": asignatura["seccion"],
-            "estado":"activo"
+            "grado": grado_estudiante,
+
+            "seccion": seccion,
+
+            "estado": "activo"
 
         })
     )
 
+    print(
+        "👥 ESTUDIANTES A PROCESAR:",
+        len(estudiantes)
+    )
 
-
-    # ===============================
+    # =====================================
     # DETERMINAR CORTE
-    # ===============================
+    # =====================================
 
     campo_corte = None
 
-
-    if periodo == "I Semestre" and evaluacion == "Primer Parcial":
+    if (
+        periodo == "I Semestre"
+        and
+        evaluacion == "Primer Parcial"
+    ):
 
         campo_corte = "corte1"
 
-
-    elif periodo == "I Semestre" and evaluacion == "Segundo Parcial":
+    elif (
+        periodo == "I Semestre"
+        and
+        evaluacion == "Segundo Parcial"
+    ):
 
         campo_corte = "corte2"
 
-
-    elif periodo == "II Semestre" and evaluacion == "Tercer Parcial":
+    elif (
+        periodo == "II Semestre"
+        and
+        evaluacion == "Tercer Parcial"
+    ):
 
         campo_corte = "corte3"
 
-
-    elif periodo == "II Semestre" and evaluacion == "Cuarto Parcial":
+    elif (
+        periodo == "II Semestre"
+        and
+        evaluacion == "Cuarto Parcial"
+    ):
 
         campo_corte = "corte4"
 
+    # =====================================
+    # VALIDAR CORTE
+    # =====================================
 
+    if not campo_corte:
 
+        print("❌ NO SE PUDO DETERMINAR EL CORTE")
 
-    # ===============================
-    # RECORRER ESTUDIANTES
-    # ===============================
+        flash(
+            "Debe seleccionar un período y una evaluación válidos.",
+            "warning"
+        )
 
+        return redirect(
+            url_for(
+                "docente.notas",
+                asignatura_id=asignatura_id
+            )
+        )
+
+    print(
+        "📌 CAMPO DE CORTE:",
+        campo_corte
+    )
+
+    # =====================================
+    # GUARDAR NOTAS
+    # =====================================
+
+    guardados = 0
 
     for estudiante in estudiantes:
 
+        estudiante_id = str(
+            estudiante.get("_id")
+        )
 
-        estudiante_id = str(estudiante["_id"])
+        print("----------------------------------------")
+        print(
+            "👤 ESTUDIANTE:",
+            estudiante.get("nombre")
+        )
+        print(
+            "🆔 ID:",
+            estudiante_id
+        )
 
-
-        datos = {}
-
-        acumulado = 0
-
-
-
-        # ===============================
+        # =================================
         # LEER EP1 - EP10
-        # ===============================
+        # =================================
 
-        for i in range(1,11):
+        acumulados = {}
 
-            valor = request.form.get(
-                f"ep{i}_{estudiante_id}",
-                0
+        for numero in range(1, 11):
+
+            campo = (
+                f"ep{numero}_{estudiante_id}"
             )
 
+            valor = request.form.get(
+                campo,
+                "0"
+            )
 
             try:
 
-                valor = float(valor)
+                nota = float(valor)
 
-            except:
+            except (
+                ValueError,
+                TypeError
+            ):
 
-                valor = 0
+                nota = 0
 
+            # =============================
+            # VALIDAR 0 - 10
+            # =============================
 
+            if nota < 0:
 
-            datos[f"ep{i}"] = valor
+                nota = 0
 
-            acumulado += valor
+            if nota > 10:
 
+                nota = 10
 
+            acumulados[
+                f"ep{numero}"
+            ] = nota
 
+            print(
+                f"EP{numero}:",
+                nota
+            )
 
-        # ===============================
-        # CALCULO DEL CORTE
-        # ===============================
+        # =================================
+        # CALCULAR ACUMULADO
+        # =================================
 
-        nota_corte = acumulado
+        acumulado = round(
+            sum(
+                acumulados.values()
+            ),
+            2
+        )
 
+        # =================================
+        # CALCULAR PROMEDIO
+        # =================================
 
-        estado = "Aprobado"
+        promedio = round(
+            acumulado / 10,
+            2
+        )
 
-        if nota_corte < 60:
+        print(
+            "📊 ACUMULADO:",
+            acumulado
+        )
 
-            estado = "Reforzamiento"
+        print(
+            "📊 PROMEDIO:",
+            promedio
+        )
 
+        print(
+            "📌 CORTE:",
+            campo_corte
+        )
 
-
-
-        # ===============================
-        # DOCUMENTO MONGO
-        # ===============================
-
+        # =================================
+        # DATOS A GUARDAR
+        # =================================
 
         datos_guardar = {
 
+            "asignatura_id":
+                asignatura_id,
 
-            "docente": session.get("usuario"),
+            "estudiante_id":
+                estudiante_id,
 
-            "asignatura_id": asignatura_id,
+            "grado":
+                grado_estudiante,
 
-            "estudiante_id": estudiante_id,
+            "seccion":
+                seccion,
 
-            "periodo": periodo,
+            "periodo":
+                periodo,
 
-            "evaluacion": evaluacion,
+            "evaluacion":
+                evaluacion,
 
+            "docente":
+                session.get("usuario"),
 
-            **datos,
+            "acumulado":
+                acumulado,
 
+            "promedio":
+                promedio,
 
-            "acumulado": acumulado,
+            "nota":
+                acumulado,
 
-            "promedio": nota_corte,
+            "estado":
+                (
+                    "Aprobado"
+                    if acumulado >= 60
+                    else "Reforzamiento"
+                ),
 
-            "nota": nota_corte,
-
-            "estado": estado,
-
-            "fecha": datetime.now()
-
-
+            "fecha":
+                datetime.now()
         }
 
+        # =================================
+        # AGREGAR EP1 - EP10
+        # =================================
 
-
-        # ===============================
-        # GUARDAR CORTE
-        # ===============================
-
-
-        if campo_corte:
-
-
-            datos_guardar[campo_corte] = nota_corte
-
-
-
-        print("==============================")
-        print("ESTUDIANTE:", estudiante_id)
-        print("PERIODO:", periodo)
-        print("EVALUACION:", evaluacion)
-        print("CORTE:", campo_corte)
-        print("NOTA:", nota_corte)
-        print("==============================")
-
-
-
-        # ===============================
-        # GUARDAR EN MONGO
-        # ===============================
-
-
-        db.notas.update_one(
-
-            {
-
-                "asignatura_id": asignatura_id,
-
-                "estudiante_id": estudiante_id,
-
-                "periodo": periodo,
-
-                "evaluacion": evaluacion
-
-            },
-
-
-            {
-
-                "$set": datos_guardar
-
-            },
-
-
-            upsert=True
-
+        datos_guardar.update(
+            acumulados
         )
 
+        # =================================
+        # GUARDAR CORTE
+        # =================================
 
+        datos_guardar[
+            campo_corte
+        ] = acumulado
+
+        # =================================
+        # GUARDAR EN MONGODB
+        # =================================
+
+        resultado = db.notas.update_one(
+
+            {
+                "asignatura_id":
+                    asignatura_id,
+
+                "estudiante_id":
+                    estudiante_id,
+
+                "periodo":
+                    periodo,
+
+                "evaluacion":
+                    evaluacion
+            },
+
+            {
+                "$set":
+                    datos_guardar
+            },
+
+            upsert=True
+        )
+
+        print(
+            "📝 DOCUMENTOS MODIFICADOS:",
+            resultado.modified_count
+        )
+
+        print(
+            "🆕 DOCUMENTO CREADO:",
+            resultado.upserted_id
+        )
+
+        print("----------------------------------------")
+
+        guardados += 1
+
+    # =====================================
+    # RESULTADO FINAL
+    # =====================================
+
+    print("========================================")
+    print(
+        "✅ NOTAS PROCESADAS:",
+        guardados
+    )
+    print(
+        "📌 PERIODO:",
+        periodo
+    )
+    print(
+        "📊 EVALUACIÓN:",
+        evaluacion
+    )
+    print(
+        "📌 CORTE:",
+        campo_corte
+    )
+    print("========================================")
 
     flash(
-        "Notas guardadas correctamente.",
+        f"Notas guardadas correctamente. "
+        f"Registros: {guardados}",
         "success"
     )
 
-
     return redirect(
-
         url_for(
-
             "docente.notas",
-
             asignatura_id=asignatura_id
-
         )
-
     )
-
-
-    
 
 # =====================================
 # AULAS DEL DOCENTE
@@ -922,6 +1349,7 @@ def aulas():
         "docente/aulas.html",
         clases=clases
     )
+
 # =====================================
 # ESTUDIANTES DEL DOCENTE
 # =====================================
@@ -932,11 +1360,13 @@ def estudiantes():
 
     usuario = session.get("usuario")
 
+    # =====================================
+    # BUSCAR DOCENTE
+    # =====================================
 
     docente = db.docentes.find_one({
         "usuario": usuario
     })
-
 
     if not docente:
 
@@ -949,67 +1379,278 @@ def estudiantes():
             url_for("login")
         )
 
+    # =====================================
+    # ID DEL DOCENTE
+    # =====================================
 
+    docente_id = docente.get("_id")
+
+    print("=====================================")
+    print("PRUEBA DOCENTE ACTUAL")
+    print("USUARIO:", usuario)
+    print("DOCENTE ID:", docente_id)
+    print("DOCENTE NOMBRE:", docente.get("nombre"))
+    print("=====================================")
+
+    # =====================================
+    # BUSCAR CLASES DEL DOCENTE
+    # =====================================
 
     clases = list(
         db.asignaturas.find({
-            "docente_id": docente["_id"]
+            "docente_id": docente_id
         })
     )
 
+    print(
+        "CLASES ENCONTRADAS:",
+        len(clases)
+    )
 
+    # =====================================
+    # LISTA DE ESTUDIANTES
+    # =====================================
 
     estudiantes = []
 
-    ids = set()
+    ids_estudiantes = set()
 
+    # =====================================
+    # OBTENER ESTUDIANTES DE LAS CLASES
+    # DEL DOCENTE
+    # =====================================
 
+    estudiantes = []
+
+    ids_estudiantes = set()
+
+    # =====================================
+    # CONVERSIÓN DE GRADOS
+    # =====================================
+
+    mapa_grados = {
+        "1": "1er Grado",
+        "2": "2do Grado",
+        "3": "3er Grado",
+        "4": "4to Grado",
+        "5": "5to Grado",
+        "6": "6to Grado"
+    }
+
+    # =====================================
+    # RECORRER CLASES DEL DOCENTE
+    # =====================================
 
     for clase in clases:
 
+        grado = str(
+            clase.get("grado", "")
+        ).strip()
 
-        lista = db.estudiantes.find({
+        seccion = str(
+            clase.get("seccion", "")
+        ).strip()
 
-            "grado": clase.get("grado"),
+        grado_busqueda = mapa_grados.get(
+            grado,
+            grado
+        )
 
-            "seccion": clase.get("seccion"),
+        print("=====================================")
+        print("BUSCANDO ESTUDIANTES")
+        print(
+            "GRADO ASIGNATURA:",
+            grado
+        )
+        print(
+            "GRADO ESTUDIANTE:",
+            grado_busqueda
+        )
+        print(
+            "SECCIÓN:",
+            seccion
+        )
+        print("=====================================")
 
-            "estado":"activo"
+        # =====================================
+        # BUSCAR ESTUDIANTES
+        # =====================================
+
+        lista_estudiantes = db.estudiantes.find({
+
+            "grado": grado_busqueda,
+
+            "seccion": seccion,
+
+            "estado": "activo"
 
         })
 
+        encontrados = 0
 
+        for estudiante in lista_estudiantes:
 
-        for estudiante in lista:
+            encontrados += 1
 
+            estudiante_id = str(
+                estudiante.get("_id")
+            )
 
-            if str(estudiante["_id"]) not in ids:
+            # =================================
+            # EVITAR DUPLICADOS
+            # =================================
 
+            if estudiante_id not in ids_estudiantes:
 
-                estudiantes.append(estudiante)
-
-
-                ids.add(
-                    str(estudiante["_id"])
+                estudiantes.append(
+                    estudiante
                 )
 
+                ids_estudiantes.add(
+                    estudiante_id
+                )
 
+                print(
+                    "ESTUDIANTE ENCONTRADO:",
+                    estudiante.get("nombre")
+                )
 
-    import os
+        print(
+            "TOTAL ENCONTRADOS:",
+            encontrados
+        )
 
-    print("========== PRUEBA TEMPLATE ==========")
-    print(os.getcwd())
-    print(os.path.exists("templates"))
-    print(os.path.exists("templates/docente"))
-    print(os.path.exists("templates/docente/estudiante.html"))
-    print("====================================")
+    # =====================================
+    # TOTAL DE ESTUDIANTES
+    # =====================================
 
-    return render_template(
-    "docente/estudiante.html",
-    estudiantes=estudiantes
+    total_estudiantes = len(
+        estudiantes
     )
 
+    print("=====================================")
+    print(
+        "TOTAL ESTUDIANTES:",
+        total_estudiantes
+    )
+    print("=====================================")
 
+
+    # =====================================
+    # MOSTRAR ESTUDIANTES
+    # =====================================
+
+    for estudiante in estudiantes:
+
+        print(
+            "ID:",
+            estudiante.get("_id"),
+            "| NOMBRE:",
+            estudiante.get("nombre"),
+            "| GRADO:",
+            estudiante.get("grado"),
+            "| SECCIÓN:",
+            estudiante.get("seccion")
+        )
+
+    print("=====================================")
+
+
+    # =====================================
+    # BUSCAR ESTUDIANTES
+    # =====================================
+
+    for clase in clases:
+
+        grado = clase.get("grado")
+        seccion = clase.get("seccion")
+
+        print("=====================================")
+        print("BUSCANDO ESTUDIANTES")
+        print("GRADO:", repr(grado))
+        print("SECCIÓN:", repr(seccion))
+        print("=====================================")
+
+        lista_estudiantes = db.estudiantes.find({
+            "grado": grado,
+            "seccion": seccion,
+            "estado": "activo"
+        })
+
+        encontrados = 0
+
+        for estudiante in lista_estudiantes:
+
+            encontrados += 1
+
+            estudiante_id = str(
+                estudiante.get("_id")
+            )
+
+            if estudiante_id not in ids_estudiantes:
+
+                estudiantes.append(
+                    estudiante
+                )
+
+                ids_estudiantes.add(
+                    estudiante_id
+                )
+
+                print(
+                    "ESTUDIANTE ENCONTRADO:",
+                    estudiante.get("nombre")
+                )
+
+        print(
+            "TOTAL ENCONTRADOS:",
+            encontrados
+        )
+
+    # =====================================
+    # TOTAL ESTUDIANTES
+    # =====================================
+
+    total_estudiantes = len(
+        estudiantes
+    )
+
+    print("=====================================")
+    print(
+        "TOTAL ESTUDIANTES:",
+        total_estudiantes
+    )
+    print("=====================================")
+
+    # =====================================
+    # MOSTRAR ESTUDIANTES
+    # =====================================
+
+    for estudiante in estudiantes:
+
+        print(
+            "ID:",
+            estudiante.get("_id"),
+            "| NOMBRE:",
+            estudiante.get("nombre"),
+            "| GRADO:",
+            estudiante.get("grado"),
+            "| SECCIÓN:",
+            estudiante.get("seccion")
+        )
+
+    print("=====================================")
+
+    # =====================================
+    # RENDERIZAR PÁGINA
+    # =====================================
+
+    return render_template(
+        "docente/estudiante.html",
+        estudiantes=estudiantes,
+        total_estudiantes=total_estudiantes,
+        docente=docente
+    )
 # =====================================
 # SELECCIONAR CLASE PARA ASISTENCIA
 # =====================================
@@ -1096,6 +1737,7 @@ def lista_calificaciones():
         clases=clases
     )
 
+
 # =====================================
 # SELECCIONAR CLASE PARA INCIDENCIAS
 # =====================================
@@ -1104,72 +1746,172 @@ def lista_calificaciones():
 @role_required("docente")
 def lista_incidencias():
 
+    print("========================================")
+    print("⚠️ LISTA DE INCIDENCIAS")
+    print("========================================")
+
     usuario = session.get("usuario")
+
+    # =====================================
+    # BUSCAR DOCENTE
+    # =====================================
 
     docente = db.docentes.find_one({
         "usuario": usuario
     })
 
-
     if not docente:
+
         flash(
             "Docente no encontrado",
             "danger"
         )
-        return redirect(url_for("login"))
 
+        return redirect(
+            url_for("login")
+        )
+
+    print(
+        "👨‍🏫 DOCENTE:",
+        docente.get("_id")
+    )
+
+
+    # =====================================
+    # BUSCAR CLASES DEL DOCENTE
+    # =====================================
 
     clases = list(
         db.asignaturas.find({
-            "docente_id": docente["_id"]
+            "docente_id": docente.get("_id"),
+            "activo": True
         })
     )
 
+
+    print(
+        "📚 TOTAL DE CLASES:",
+        len(clases)
+    )
+
+
+    # =====================================
+    # MOSTRAR CLASES
+    # =====================================
 
     return render_template(
         "docente/seleccionar_incidencias.html",
         clases=clases
     )
+
+
 # =====================================
 # GUARDAR INCIDENCIA
 # =====================================
 
-@docente_bp.route("/incidencias/guardar", methods=["POST"])
+@docente_bp.route(
+    "/incidencias/guardar",
+    methods=["POST"]
+)
 @role_required("docente")
 def guardar_incidencia():
 
+    print("========================================")
+    print("💾 GUARDANDO INCIDENCIA")
+    print("========================================")
+
+
+    estudiante_id = request.form.get(
+        "estudiante_id"
+    )
+
+    tipo = request.form.get(
+        "tipo"
+    )
+
+    descripcion = request.form.get(
+        "descripcion"
+    )
+
+    fecha = request.form.get(
+        "fecha"
+    )
+
+
+    print(
+        "👤 ESTUDIANTE:",
+        estudiante_id
+    )
+
+    print(
+        "⚠️ TIPO:",
+        tipo
+    )
+
+    print(
+        "📅 FECHA:",
+        fecha
+    )
+
+
+    # =====================================
+    # VALIDAR ESTUDIANTE
+    # =====================================
+
+    if not estudiante_id:
+
+        flash(
+            "Debe seleccionar un estudiante.",
+            "warning"
+        )
+
+        return redirect(
+            url_for(
+                "docente.lista_incidencias"
+            )
+        )
+
+
+    # =====================================
+    # CREAR INCIDENCIA
+    # =====================================
 
     incidencia = {
 
         "estudiante_id":
-            request.form.get("estudiante_id"),
-
+            estudiante_id,
 
         "docente":
             session.get("usuario"),
 
-
         "tipo":
-            request.form.get("tipo"),
-
+            tipo,
 
         "descripcion":
-            request.form.get("descripcion"),
-
+            descripcion,
 
         "fecha":
-            request.form.get("fecha")
+            fecha
 
     }
 
+
+    # =====================================
+    # GUARDAR EN MONGODB
+    # =====================================
 
     db.incidencias.insert_one(
         incidencia
     )
 
 
+    print(
+        "✅ INCIDENCIA GUARDADA"
+    )
+
+
     flash(
-        "Incidencia registrada correctamente",
+        "Incidencia registrada correctamente.",
         "success"
     )
 
@@ -1180,14 +1922,30 @@ def guardar_incidencia():
         )
     )
 
+
 # =====================================
 # ESTUDIANTES DE UNA CLASE
 # =====================================
 
-@docente_bp.route("/incidencias/<asignatura_id>")
+@docente_bp.route(
+    "/incidencias/<asignatura_id>"
+)
 @role_required("docente")
 def incidencia(asignatura_id):
 
+    print("========================================")
+    print("⚠️ ESTUDIANTES PARA INCIDENCIAS")
+    print("========================================")
+
+    print(
+        "📚 ASIGNATURA ID:",
+        asignatura_id
+    )
+
+
+    # =====================================
+    # BUSCAR ASIGNATURA
+    # =====================================
 
     asignatura = db.asignaturas.find_one({
 
@@ -1196,25 +1954,119 @@ def incidencia(asignatura_id):
     })
 
 
+    if not asignatura:
+
+        flash(
+            "Asignatura no encontrada.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "docente.lista_incidencias"
+            )
+        )
+
+
+    print(
+        "📚 ASIGNATURA:",
+        asignatura
+    )
+
+
+    grado = asignatura.get(
+        "grado"
+    )
+
+    seccion = asignatura.get(
+        "seccion"
+    )
+
+
+    print(
+        "🎓 GRADO ASIGNATURA:",
+        grado
+    )
+
+    print(
+        "🏫 SECCIÓN:",
+        seccion
+    )
+
+
+    # =====================================
+    # CONVERTIR GRADO
+    # =====================================
+
+    mapa_grados = {
+
+        "1": "1er Grado",
+        "2": "2do Grado",
+        "3": "3er Grado",
+        "4": "4to Grado",
+        "5": "5to Grado",
+        "6": "6to Grado"
+
+    }
+
+
+    grado_estudiante = mapa_grados.get(
+
+        str(grado),
+
+        grado
+
+    )
+
+
+    print(
+        "🔄 GRADO BUSCADO:",
+        grado_estudiante
+    )
+
+
+    # =====================================
+    # BUSCAR ESTUDIANTES ACTIVOS
+    # =====================================
+
     estudiantes = list(
+
         db.estudiantes.find({
 
-            "grado": asignatura["grado"],
+            "grado":
+                grado_estudiante,
 
-            "seccion": asignatura["seccion"],
+            "seccion":
+                seccion,
 
-            "estado":"activo"
+            "estado":
+                "activo"
 
         })
+
     )
 
 
+    print(
+        "👥 TOTAL ESTUDIANTES:",
+        len(estudiantes)
+    )
+
+
+    # =====================================
+    # MOSTRAR ESTUDIANTES
+    # =====================================
 
     return render_template(
+
         "docente/incidencias.html",
+
         asignatura=asignatura,
+
         estudiantes=estudiantes
+
     )
+
 
 
 
@@ -2548,6 +3400,333 @@ def vista_promocion():
         totales=datos["totales"]
 
     )
+
+# ======================================================
+# PDF INFORME DE PROMOCIÓN ESCOLAR
+# ======================================================
+
+@docente_bp.route("/informes/promocion/pdf")
+@role_required("docente")
+def reporte_promocion_pdf():
+
+    datos = informe_promocion()
+
+    detalle = datos["detalle"]
+    totales = datos["totales"]
+
+    archivo = "Promocion_Escolar_CIEM.pdf"
+
+    doc = SimpleDocTemplate(
+        archivo,
+        rightMargin=30,
+        leftMargin=30,
+        topMargin=30,
+        bottomMargin=30
+    )
+
+    elementos = []
+
+    estilos = getSampleStyleSheet()
+
+    # ==================================================
+    # LOGOS
+    # ==================================================
+
+    logo_ciem = Image(
+        "static/img/logo.jpg",
+        width=65,
+        height=65
+    )
+
+    logo_mined = Image(
+        "static/img/MINED.jpg",
+        width=65,
+        height=65
+    )
+
+    # ==================================================
+    # TÍTULO
+    # ==================================================
+
+    titulo = Paragraph(
+        """
+        <b>COLEGIO INTEGRAL EMANUEL</b><br/>
+        INFORME DE PROMOCIÓN ESCOLAR<br/>
+        Año Lectivo 2026
+        """,
+        estilos["Title"]
+    )
+
+    encabezado = Table(
+        [
+            [
+                logo_ciem,
+                titulo,
+                logo_mined
+            ]
+        ],
+        colWidths=[80, 320, 80]
+    )
+
+    encabezado.setStyle(
+        TableStyle([
+            (
+                "VALIGN",
+                (0, 0),
+                (-1, -1),
+                "MIDDLE"
+            ),
+            (
+                "ALIGN",
+                (0, 0),
+                (-1, -1),
+                "CENTER"
+            )
+        ])
+    )
+
+    elementos.append(encabezado)
+
+    elementos.append(
+        Spacer(1, 20)
+    )
+
+    # ==================================================
+    # RESUMEN
+    # ==================================================
+
+    elementos.append(
+        Paragraph(
+            "Resumen de Promoción Escolar",
+            estilos["Heading2"]
+        )
+    )
+
+    elementos.append(
+        Spacer(1, 10)
+    )
+
+    # ==================================================
+    # TABLA DE PROMOCIÓN
+    # ==================================================
+
+    tabla_promocion = [
+
+        [
+            "Grado",
+            "Matrícula",
+            "Promovidos",
+            "No Promovidos",
+            "% Promoción"
+        ]
+
+    ]
+
+    for fila in detalle:
+
+        tabla_promocion.append(
+
+            [
+                fila["grado"],
+                fila["matricula"],
+                fila["promovidos"],
+                fila["no_promovidos"],
+                f'{fila["porcentaje"]}%'
+            ]
+
+        )
+
+    # ==================================================
+    # TOTAL GENERAL
+    # ==================================================
+
+    tabla_promocion.append(
+
+        [
+            "TOTAL",
+            totales["matricula"],
+            totales["promovidos"],
+            totales["no_promovidos"],
+            f'{totales["porcentaje"]}%'
+        ]
+
+    )
+
+    tabla = Table(
+        tabla_promocion,
+        repeatRows=1
+    )
+
+    tabla.setStyle(
+
+        TableStyle([
+
+            (
+                "BACKGROUND",
+                (0, 0),
+                (-1, 0),
+                colors.HexColor("#0D2A52")
+            ),
+
+            (
+                "TEXTCOLOR",
+                (0, 0),
+                (-1, 0),
+                colors.white
+            ),
+
+            (
+                "FONTNAME",
+                (0, 0),
+                (-1, 0),
+                "Helvetica-Bold"
+            ),
+
+            (
+                "BACKGROUND",
+                (0, -1),
+                (-1, -1),
+                colors.lightgrey
+            ),
+
+            (
+                "FONTNAME",
+                (0, -1),
+                (-1, -1),
+                "Helvetica-Bold"
+            ),
+
+            (
+                "GRID",
+                (0, 0),
+                (-1, -1),
+                0.5,
+                colors.black
+            ),
+
+            (
+                "ALIGN",
+                (0, 0),
+                (-1, -1),
+                "CENTER"
+            ),
+
+            (
+                "VALIGN",
+                (0, 0),
+                (-1, -1),
+                "MIDDLE"
+            ),
+
+            (
+                "PADDING",
+                (0, 0),
+                (-1, -1),
+                7
+            )
+
+        ])
+
+    )
+
+    elementos.append(tabla)
+
+    elementos.append(
+        Spacer(1, 20)
+    )
+
+    # ==================================================
+    # RESUMEN GENERAL
+    # ==================================================
+
+    elementos.append(
+
+        Paragraph(
+
+            f"""
+            <b>Total de estudiantes:</b>
+            {totales["matricula"]}
+            <br/>
+            <b>Total promovidos:</b>
+            {totales["promovidos"]}
+            <br/>
+            <b>Total no promovidos:</b>
+            {totales["no_promovidos"]}
+            <br/>
+            <b>Porcentaje general de promoción:</b>
+            {totales["porcentaje"]}%
+            """,
+
+            estilos["Normal"]
+
+        )
+
+    )
+
+    elementos.append(
+        Spacer(1, 30)
+    )
+
+    # ==================================================
+    # FIRMAS
+    # ==================================================
+
+    firmas = Table(
+
+        [
+
+            [
+                "________________________",
+                "________________________"
+            ],
+
+            [
+                "Dirección Académica",
+                "Responsable del Informe"
+            ]
+
+        ],
+
+        colWidths=[220, 220]
+
+    )
+
+    firmas.setStyle(
+
+        TableStyle([
+
+            (
+                "ALIGN",
+                (0, 0),
+                (-1, -1),
+                "CENTER"
+            ),
+
+            (
+                "FONTNAME",
+                (0, 1),
+                (-1, 1),
+                "Helvetica-Bold"
+            )
+
+        ])
+
+    )
+
+    elementos.append(firmas)
+
+    # ==================================================
+    # GENERAR PDF
+    # ==================================================
+
+    doc.build(elementos)
+
+    return send_file(
+        archivo,
+        as_attachment=True,
+        download_name="Promocion_Escolar_CIEM_2026.pdf",
+        mimetype="application/pdf"
+    )
 # ======================================================
 # CIEM ASISTE IA
 # ======================================================
@@ -2748,21 +3927,23 @@ def asistencia_estudiante(estudiante_id):
         estudiante=estudiante,
         asistencias=asistencias
     )
-# =====================================
+
+
+# ==========================================
 # BOLETÍN DEL ESTUDIANTE
-# =====================================
+# ==========================================
 
 @docente_bp.route("/boletin-estudiante/<estudiante_id>")
 @role_required("docente")
 def boletin_estudiante(estudiante_id):
 
+    # ==========================================
+    # BUSCAR ESTUDIANTE
+    # ==========================================
 
-    estudiante = db.estudiantes.find_one(
-    {
+    estudiante = db.estudiantes.find_one({
         "_id": estudiante_id
-    }
-    )
-
+    })
 
     if not estudiante:
 
@@ -2775,20 +3956,800 @@ def boletin_estudiante(estudiante_id):
             url_for("docente.estudiantes")
         )
 
+    # ==========================================
+    # BUSCAR NOTAS
+    # ==========================================
 
     notas = list(
-        db.notas.find(
-            {
-                "estudiante_id": estudiante_id
-            }
-        )
+        db.notas.find({
+            "estudiante_id": estudiante_id
+        })
     )
 
+    # ==========================================
+    # CONSTRUIR BOLETÍN
+    # ==========================================
+
+    boletin = []
+
+    for nota in notas:
+
+        asignatura_id = nota.get(
+            "asignatura_id"
+        )
+
+        asignatura = db.asignaturas.find_one({
+            "_id": asignatura_id
+        })
+
+        if asignatura:
+
+            nombre_asignatura = (
+                asignatura.get("nombre")
+                or asignatura.get("asignatura")
+                or asignatura.get("nombre_asignatura")
+                or asignatura_id
+            )
+
+        else:
+
+            nombre_asignatura = (
+                asignatura_id
+                or "Sin asignatura"
+            )
+
+        boletin.append({
+
+            "asignatura": nombre_asignatura,
+
+            "corte1": nota.get("corte1"),
+
+            "corte2": nota.get("corte2"),
+
+            "corte3": nota.get("corte3"),
+
+            "corte4": nota.get("corte4"),
+
+            "promedio": nota.get("promedio"),
+
+            "estado": nota.get("estado")
+        })
+
+    # ==========================================
+    # PROMEDIO GENERAL
+    # ==========================================
+
+    promedios = [
+
+        b["promedio"]
+
+        for b in boletin
+
+        if b["promedio"] is not None
+    ]
+
+    if promedios:
+
+        promedio_general = round(
+            sum(promedios) / len(promedios),
+            2
+        )
+
+    else:
+
+        promedio_general = None
+
+    # ==========================================
+    # DEBUG
+    # ==========================================
+
+    print("====================================")
+    print("BOLETÍN DOCENTE")
+    print(
+        "ESTUDIANTE:",
+        estudiante.get("nombre")
+    )
+    print(
+        "ESTUDIANTE ID:",
+        estudiante_id
+    )
+    print(
+        "BOLETÍN:",
+        boletin
+    )
+    print(
+        "PROMEDIO GENERAL:",
+        promedio_general
+    )
+    print("====================================")
+
+    # ==========================================
+    # MOSTRAR BOLETÍN
+    # ==========================================
 
     return render_template(
         "docente/boletin_estudiante.html",
+
         estudiante=estudiante,
-        notas=notas
+
+        boletin=boletin,
+
+        promedio_general=promedio_general
+    )
+
+
+# ==========================================================
+# GENERAR PDF DEL BOLETÍN DEL ESTUDIANTE - DOCENTE
+# ==========================================================
+
+@docente_bp.route(
+    "/boletin-pdf-estudiante/<estudiante_id>"
+)
+@role_required("docente")
+def boletin_pdf_estudiante(estudiante_id):
+
+    # ==========================================
+    # BUSCAR ESTUDIANTE
+    # ==========================================
+
+    estudiante = db.estudiantes.find_one({
+        "_id": estudiante_id
+    })
+
+    if not estudiante:
+
+        flash(
+            "Estudiante no encontrado",
+            "danger"
+        )
+
+        return redirect(
+            url_for("docente.estudiantes")
+        )
+
+    # ==========================================
+    # BUSCAR NOTAS
+    # ==========================================
+
+    notas = list(
+        db.notas.find({
+            "estudiante_id": estudiante_id
+        })
+    )
+
+    # ==========================================
+    # CONSTRUIR BOLETÍN
+    # ==========================================
+
+    boletin = []
+
+    for nota in notas:
+
+        asignatura_id = nota.get(
+            "asignatura_id"
+        )
+
+        asignatura = db.asignaturas.find_one({
+            "_id": asignatura_id
+        })
+
+        if asignatura:
+
+            nombre_asignatura = (
+                asignatura.get("nombre")
+                or asignatura.get("asignatura")
+                or asignatura.get("nombre_asignatura")
+                or asignatura_id
+            )
+
+        else:
+
+            nombre_asignatura = (
+                asignatura_id
+                or "Sin asignatura"
+            )
+
+        boletin.append({
+
+            "asignatura": nombre_asignatura,
+
+            "corte1": nota.get("corte1"),
+
+            "corte2": nota.get("corte2"),
+
+            "corte3": nota.get("corte3"),
+
+            "corte4": nota.get("corte4"),
+
+            "promedio": nota.get("promedio"),
+
+            "estado": nota.get("estado")
+        })
+
+    # ==========================================
+    # PROMEDIO GENERAL
+    # ==========================================
+
+    promedios = [
+
+        b["promedio"]
+
+        for b in boletin
+
+        if b["promedio"] is not None
+    ]
+
+    if promedios:
+
+        promedio_general = round(
+            sum(promedios) / len(promedios),
+            2
+        )
+
+    else:
+
+        promedio_general = None
+
+    # ==========================================
+    # CREAR PDF
+    # ==========================================
+
+    buffer = BytesIO()
+
+    documento = SimpleDocTemplate(
+
+        buffer,
+
+        pagesize=letter,
+
+        rightMargin=35,
+        leftMargin=35,
+        topMargin=35,
+        bottomMargin=35
+    )
+
+    estilos = getSampleStyleSheet()
+
+    titulo = estilos["Title"]
+    titulo.alignment = TA_CENTER
+
+    subtitulo = estilos["Heading2"]
+    subtitulo.alignment = TA_CENTER
+
+    normal = estilos["Normal"]
+
+    elementos = []
+
+    # ==========================================
+    # ENCABEZADO INSTITUCIONAL
+    # ==========================================
+
+    logo_path = os.path.join(
+
+        current_app.root_path,
+
+        "static",
+
+        "img",
+
+        "logo.jpg"
+    )
+
+    if os.path.exists(logo_path):
+
+        logo = Image(
+
+            logo_path,
+
+            width=70,
+
+            height=70
+        )
+
+        logo.hAlign = "CENTER"
+
+        elementos.append(
+            logo
+        )
+
+        elementos.append(
+            Spacer(1, 8)
+        )
+
+    elementos.append(
+        Paragraph(
+            "COLEGIO INTEGRAL EMANUEL",
+            titulo
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            "CIEM ONE",
+            subtitulo
+        )
+    )
+
+    estilo_centro = estilos["Normal"]
+    estilo_centro.alignment = TA_CENTER
+
+    elementos.append(
+        Paragraph(
+            "Formación Integral para una Educación de Excelencia",
+            estilo_centro
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            "Matagalpa, Nicaragua",
+            normal
+        )
+    )
+
+    elementos.append(
+        Spacer(1, 10)
+    )
+
+    elementos.append(
+        Paragraph(
+            "BOLETÍN ACADÉMICO",
+            subtitulo
+        )
+    )
+
+    elementos.append(
+        Spacer(1, 15)
+    )
+
+    # ==========================================
+    # DATOS DEL ESTUDIANTE
+    # ==========================================
+
+    datos_estudiante = [
+
+        [
+            "Estudiante",
+            estudiante.get(
+                "nombre",
+                "No disponible"
+            )
+        ],
+
+        [
+            "Grado",
+            estudiante.get(
+                "grado",
+                "No disponible"
+            )
+        ],
+
+        [
+            "Sección",
+            estudiante.get(
+                "seccion",
+                "No disponible"
+            )
+        ],
+
+        [
+            "Año lectivo",
+            "2026"
+        ]
+    ]
+
+    tabla_datos = Table(
+
+        datos_estudiante,
+
+        colWidths=[
+            120,
+            350
+        ]
+    )
+
+    tabla_datos.setStyle(
+        TableStyle([
+
+            (
+                "BACKGROUND",
+                (0, 0),
+                (0, -1),
+                colors.HexColor(
+                    "#08142C"
+                )
+            ),
+
+            (
+                "TEXTCOLOR",
+                (0, 0),
+                (0, -1),
+                colors.white
+            ),
+
+            (
+                "FONTNAME",
+                (0, 0),
+                (-1, -1),
+                "Helvetica"
+            ),
+
+            (
+                "FONTNAME",
+                (0, 0),
+                (0, -1),
+                "Helvetica-Bold"
+            ),
+
+            (
+                "GRID",
+                (0, 0),
+                (-1, -1),
+                0.5,
+                colors.grey
+            ),
+
+            (
+                "PADDING",
+                (0, 0),
+                (-1, -1),
+                8
+            )
+        ])
+    )
+
+    elementos.append(
+        tabla_datos
+    )
+
+    elementos.append(
+        Spacer(1, 20)
+    )
+
+    # ==========================================
+    # TABLA DE NOTAS
+    # ==========================================
+
+    encabezados = [
+
+        "Asignatura",
+        "I Corte",
+        "II Corte",
+        "III Corte",
+        "IV Corte",
+        "Promedio",
+        "Estado"
+    ]
+
+    filas = [
+        encabezados
+    ]
+
+    for item in boletin:
+
+        promedio = item.get(
+            "promedio"
+        )
+
+        if promedio is not None:
+
+            estado = (
+
+                "Aprobado"
+
+                if promedio >= 60
+
+                else "Reforzamiento"
+            )
+
+        else:
+
+            estado = "Pendiente"
+
+        filas.append([
+
+            item["asignatura"],
+
+            item["corte1"]
+            if item["corte1"] is not None
+            else "—",
+
+            item["corte2"]
+            if item["corte2"] is not None
+            else "—",
+
+            item["corte3"]
+            if item["corte3"] is not None
+            else "—",
+
+            item["corte4"]
+            if item["corte4"] is not None
+            else "—",
+
+            promedio
+            if promedio is not None
+            else "—",
+
+            estado
+        ])
+
+    if not boletin:
+
+        filas.append([
+
+            "Sin asignatura",
+
+            "—",
+
+            "—",
+
+            "—",
+
+            "—",
+
+            "—",
+
+            "Pendiente"
+        ])
+
+    tabla_notas = Table(
+
+        filas,
+
+        repeatRows=1
+    )
+
+    tabla_notas.setStyle(
+        TableStyle([
+
+            (
+                "BACKGROUND",
+                (0, 0),
+                (-1, 0),
+                colors.HexColor(
+                    "#08142C"
+                )
+            ),
+
+            (
+                "TEXTCOLOR",
+                (0, 0),
+                (-1, 0),
+                colors.white
+            ),
+
+            (
+                "FONTNAME",
+                (0, 0),
+                (-1, 0),
+                "Helvetica-Bold"
+            ),
+
+            (
+                "ALIGN",
+                (1, 0),
+                (-1, -1),
+                "CENTER"
+            ),
+
+            (
+                "GRID",
+                (0, 0),
+                (-1, -1),
+                0.5,
+                colors.grey
+            ),
+
+            (
+                "PADDING",
+                (0, 0),
+                (-1, -1),
+                7
+            )
+        ])
+    )
+
+    elementos.append(
+        tabla_notas
+    )
+
+    elementos.append(
+        Spacer(1, 20)
+    )
+
+    # ==========================================
+    # RESUMEN
+    # ==========================================
+
+    promedio_texto = (
+
+        str(promedio_general)
+
+        if promedio_general is not None
+
+        else "—"
+    )
+
+    if promedio_general is None:
+
+        estado_general = "Pendiente"
+
+    elif promedio_general >= 60:
+
+        estado_general = "Aprobado"
+
+    else:
+
+        estado_general = "Reforzamiento"
+
+    resumen = [
+
+        [
+            "Promedio general",
+            promedio_texto
+        ],
+
+        [
+            "Asignaturas",
+            str(len(boletin))
+        ],
+
+        [
+            "Estado académico",
+            estado_general
+        ]
+    ]
+
+    tabla_resumen = Table(
+
+        resumen,
+
+        colWidths=[
+            180,
+            150
+        ]
+    )
+
+    tabla_resumen.setStyle(
+        TableStyle([
+
+            (
+                "BACKGROUND",
+                (0, 0),
+                (0, -1),
+                colors.HexColor(
+                    "#EAF1FA"
+                )
+            ),
+
+            (
+                "FONTNAME",
+                (0, 0),
+                (0, -1),
+                "Helvetica-Bold"
+            ),
+
+            (
+                "ALIGN",
+                (1, 0),
+                (1, -1),
+                "CENTER"
+            ),
+
+            (
+                "GRID",
+                (0, 0),
+                (-1, -1),
+                0.5,
+                colors.grey
+            ),
+
+            (
+                "PADDING",
+                (0, 0),
+                (-1, -1),
+                8
+            )
+        ])
+    )
+
+    elementos.append(
+        tabla_resumen
+    )
+
+    elementos.append(
+        Spacer(1, 30)
+    )
+
+    # ==========================================
+    # FIRMAS
+    # ==========================================
+
+    firmas = Table(
+
+        [
+
+            [
+                "________________________",
+                "________________________"
+            ],
+
+            [
+                "Docente / Tutor",
+                "Dirección Académica"
+            ]
+
+        ],
+
+        colWidths=[
+            220,
+            220
+        ]
+    )
+
+    firmas.setStyle(
+        TableStyle([
+
+            (
+                "ALIGN",
+                (0, 0),
+                (-1, -1),
+                "CENTER"
+            ),
+
+            (
+                "FONTNAME",
+                (0, 1),
+                (-1, 1),
+                "Helvetica-Bold"
+            )
+        ])
+    )
+
+    elementos.append(
+        firmas
+    )
+
+    # ==========================================
+    # GENERAR PDF
+    # ==========================================
+
+    documento.build(
+        elementos
+    )
+
+    buffer.seek(0)
+
+    # ==========================================
+    # DESCARGAR PDF
+    # ==========================================
+
+    nombre_estudiante = (
+
+        estudiante.get(
+            "nombre",
+            "estudiante"
+        )
+        .replace(
+            " ",
+            "_"
+        )
+    )
+
+    return send_file(
+
+        buffer,
+
+        as_attachment=True,
+
+        download_name=(
+
+            f"Boletin_"
+            f"{nombre_estudiante}"
+            f"_2026.pdf"
+        ),
+
+        mimetype="application/pdf"
     )
 # =====================================
 # MATERIALES DEL ESTUDIANTE
@@ -3000,4 +4961,57 @@ def responder_mensaje(id):
 
         )
 
+    )
+
+
+# ==========================================
+# CONFIGURACIÓN DEL DOCENTE
+# ==========================================
+
+@docente_bp.route("/configuracion")
+@role_required("docente")
+def configuracion():
+
+    usuario = session.get("usuario")
+
+    # ==========================================
+    # BUSCAR USUARIO
+    # ==========================================
+
+    datos_usuario = db.usuarios.find_one({
+        "usuario": usuario
+    })
+
+    # ==========================================
+    # VALIDAR USUARIO
+    # ==========================================
+
+    if not datos_usuario:
+
+        flash(
+            "No se encontró la información de la cuenta.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("docente.dashboard_docente")
+        )
+
+    # ==========================================
+    # DEPURACIÓN
+    # ==========================================
+
+    print("=====================================")
+    print("CONFIGURACIÓN DOCENTE")
+    print("USUARIO:", usuario)
+    print("CORREO:", datos_usuario.get("correo"))
+    print("=====================================")
+
+    # ==========================================
+    # MOSTRAR CONFIGURACIÓN
+    # ==========================================
+
+    return render_template(
+        "docente/configuracion.html",
+        usuario=datos_usuario
     )

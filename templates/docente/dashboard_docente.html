@@ -77,23 +77,20 @@ Mis clases
 </a>
 
 
-
 <a href="{{ url_for('docente.lista_asistencia') }}">
 
-<i class="bi bi-calendar-check"></i>
+    <i class="bi bi-calendar-check"></i>
 
-Asistencia
+    Asistencia
 
 </a>
 
 
-
-
 <a href="{{ url_for('docente.lista_calificaciones') }}">
 
-<i class="bi bi-pencil-square"></i>
+    <i class="bi bi-pencil-square"></i>
 
-Calificaciones
+    Calificaciones
 
 </a>
 
@@ -125,12 +122,6 @@ Comunicación Padres
 
 
 
-<a href="#">
-<i class="bi bi-bar-chart"></i>
-Reportes
-</a>
-
-
 
 <li>
 <a href="{{ url_for('ciem_ai.inicio') }}">
@@ -139,21 +130,20 @@ Reportes
 </a>
 </li>
 
-<a href="#">
-<i class="bi bi-gear"></i>
-Configuración
+
+
+<a href="{{ url_for('docente.configuracion') }}">
+    <i class="bi bi-gear"></i>
+    Configuración
 </a>
 
-<a href="/docente/mensajes">
 
-<i class="bi bi-chat-dots"></i>
 
-Mensajes de padres
 
+<a href="/mensajes/docente">
+    <i class="bi bi-chat-dots"></i>
+    Mensajes de padres
 </a>
-</nav>
-
-
 
 <div class="salir-container">
 
@@ -171,6 +161,34 @@ Mensajes de padres
 
 <main class="contenido">
 
+{% if mensajes_pendientes > 0 %}
+
+<div class="alerta-mensaje-familia">
+
+    <div class="alerta-icono">
+        🔔
+    </div>
+
+    <div class="alerta-contenido">
+        <strong>Mensaje pendiente de familia</strong>
+
+        <span>
+            Tienes {{ mensajes_pendientes }}
+            mensaje{% if mensajes_pendientes != 1 %}s{% endif %}
+            pendiente{% if mensajes_pendientes != 1 %}s{% endif %}.
+        </span>
+    </div>
+
+    <a
+        href="{{ url_for('mensajes.bandeja_docente') }}"
+        class="alerta-boton"
+    >
+        Ver mensajes
+    </a>
+
+</div>
+
+{% endif %}
 
 
 <header>

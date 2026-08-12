@@ -1,853 +1,1350 @@
 <!DOCTYPE html>
+
 <html lang="es">
 
 <head>
 
+```
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>
-CIEM ONE - Estudiante
-</title>
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
+<title>CIEM ONE - Estudiante</title>
 
 <link rel="stylesheet"
-href="{{ url_for('static', filename='css/estudiante_dashboard.css') }}">
+      href="{{ url_for('static', filename='css/estudiante_dashboard.css') }}">
+```
 
 </head>
 
-
 <body>
-
 
 <div class="dashboard">
 
-
-<!-- ================= SIDEBAR ================= -->
-
+```
+<!-- =====================================================
+     SIDEBAR
+====================================================== -->
 
 <aside class="sidebar">
 
 
-<div class="logo-box">
+    <!-- LOGO -->
+
+    <div class="logo-box">
+
+        <img
+            src="{{ url_for('static', filename='img/logo.jpg') }}"
+            class="logo"
+            alt="CIEM ONE"
+        >
+
+        <h2>CIEM ONE</h2>
+
+        <p>Colegio Integral Emanuel</p>
+
+    </div>
 
 
-<img src="{{ url_for('static', filename='img/logo.jpg') }}"
-class="logo">
+    <!-- PERFIL -->
+
+    <div class="perfil">
+
+        <div class="avatar">
+
+            {% if estudiante and estudiante.nombre %}
+
+                {{ estudiante.nombre[0]|upper }}
+
+            {% else %}
+
+                E
+
+            {% endif %}
+
+        </div>
 
 
-<h2>
-CIEM ONE
-</h2>
+        <h3>
+
+            {{ estudiante.nombre
+               if estudiante
+               else "Estudiante" }}
+
+        </h3>
 
 
-<p>
-Colegio Integral Emanuel
-</p>
+        <p>
+
+            {{ estudiante.grado
+               if estudiante
+               else "Estudiante" }}
+
+            {% if estudiante and estudiante.seccion %}
+
+                - Sección {{ estudiante.seccion }}
+
+            {% endif %}
+
+        </p>
+
+    </div>
 
 
-</div>
+    <!-- =================================================
+         MENÚ
+    ================================================== -->
+
+    <nav>
 
 
+        <a
+            href="{{ url_for('estudiante.dashboard') }}"
+            class="activo"
+        >
+
+            🏠 Dashboard
+
+        </a>
 
 
+        <a
+            href="{{ url_for('estudiante.boletin_pdf') }}"
+        >
 
-<div class="perfil">
+            📄 Boletín
 
-
-<div class="avatar">
-
-{{ estudiante.nombre[0] if estudiante else 'A' }}
-
-</div>
+        </a>
 
 
+        <a
+            href="{{ url_for('estudiante.rendimiento') }}"
+        >
 
-<h3>
+            📊 Rendimiento
 
-{{ estudiante.nombre if estudiante else 'ALMA MORRAZ' }}
-
-</h3>
-
-
-
-<p>
-Estudiante de Plataforma
-</p>
+        </a>
 
 
-</div>
+        <a
+            href="{{ url_for('mensajes.bandeja_padre') }}"
+        >
+
+            💬 Mensajes
+
+            {% if mensajes %}
+
+                <span class="menu-contador">
+
+                    {{ mensajes|length }}
+
+                </span>
+
+            {% endif %}
+
+        </a>
 
 
+        <a
+            href="{{ url_for('estudiante.perfil') }}"
+        >
+
+            👤 Perfil
+
+        </a>
 
 
+        <a
+            href="{{ url_for('estudiante.configuracion') }}"
+        >
 
-<nav>
+            🔐 Configuración
 
-
-<a class="activo">
-🏠 Dashboard
-</a>
-
-
-<a>
-📚 Evaluaciones
-</a>
+        </a>
 
 
-<a>
-📄 Boletín
-</a>
+        <a href="/logout">
+
+            🚪 Cerrar sesión
+
+        </a>
 
 
-<a>
-📊 Rendimiento
-</a>
-
-
-<a>
-💬 Mensajes
-</a>
-
-
-<a>
-👤 Mi Perfil
-</a>
-
-
-<a>
-⚙ Configuración
-</a>
-
-
-<a href="/logout">
-🚪 Cerrar sesión
-</a>
-
-
-
-</nav>
-
+    </nav>
 
 
 </aside>
 
 
 
-
-
-
-<!-- ================= CONTENIDO ================= -->
-
-
+<!-- =====================================================
+     CONTENIDO PRINCIPAL
+====================================================== -->
 
 <main class="contenido">
 
 
+    <!-- =================================================
+         ENCABEZADO
+    ================================================== -->
 
-<header class="top">
+    <header class="top">
 
 
-<div>
+        <div>
 
-<h1>
+            <h1>
 
-Bienvenida,
-{{ estudiante.nombre }}
+                Bienvenido,
 
-👋
+                {{ estudiante.nombre
+                   if estudiante
+                   else "Estudiante" }}
 
-</h1>
+                👋
 
+            </h1>
 
-<p>
-Seguimiento académico CIEM ONE
-</p>
 
+            <p>
 
-</div>
+                Seguimiento académico · CIEM ONE
 
+            </p>
 
-<div class="fecha">
+        </div>
 
-📅 2026
 
-</div>
+        <div class="fecha">
 
+            📅 Año lectivo 2026
 
-</header>
+        </div>
 
 
+    </header>
 
 
 
+    <!-- =================================================
+         CALCULAR INFORMACIÓN ACADÉMICA
+    ================================================== -->
 
+    {% set ns = namespace(
+        asignaturas=[],
+        total_promedios=0,
+        cantidad_promedios=0,
+        aprobadas=0,
+        reforzamiento=0
+    ) %}
 
-<!-- TARJETAS -->
 
+    {% for nota in notas %}
 
-<section class="cards">
+        {% set nombre_asignatura =
+            nota.asignatura_nombre
+            or nota.asignatura
+        %}
 
 
+        {% if nombre_asignatura
+              and nombre_asignatura not in ns.asignaturas %}
 
-<div class="card azul">
+            {% set _ =
+                ns.asignaturas.append(nombre_asignatura)
+            %}
 
-<span>
-📚
-</span>
+        {% endif %}
 
 
-<h3>
-Asignaturas
-</h3>
+        {% if nota.promedio is not none %}
 
+            {% set ns.total_promedios =
+                ns.total_promedios + (nota.promedio|float) %}
 
-<h2>
-{{ notas|length }}
-</h2>
+            {% set ns.cantidad_promedios =
+                ns.cantidad_promedios + 1 %}
 
 
-</div>
+            {% if nota.promedio|float >= 60 %}
 
+                {% set ns.aprobadas =
+                    ns.aprobadas + 1 %}
 
+            {% else %}
 
+                {% set ns.reforzamiento =
+                    ns.reforzamiento + 1 %}
 
+            {% endif %}
 
-<div class="card dorado">
+        {% endif %}
 
+    {% endfor %}
 
-<span>
-⭐
-</span>
 
+    {% if ns.cantidad_promedios > 0 %}
 
-<h3>
-Promedio general
-</h3>
+        {% set promedio_general =
+            ns.total_promedios / ns.cantidad_promedios %}
 
+    {% else %}
 
-<h2>
--
-</h2>
+        {% set promedio_general = none %}
 
+    {% endif %}
 
-</div>
 
 
+    <!-- =================================================
+         TARJETAS RESUMEN
+    ================================================== -->
 
+    <section class="cards">
 
 
-<div class="card verde">
+        <!-- ASIGNATURAS -->
 
+        <div class="card azul">
 
-<span>
-🏆
-</span>
+            <span>📚</span>
 
+            <h3>Asignaturas</h3>
 
-<h3>
-Estado académico
-</h3>
+            <h2>
 
+                {{ ns.asignaturas|length }}
 
-<h2>
-Activo
-</h2>
+            </h2>
 
+            <p>
+                Registradas
+            </p>
 
-</div>
+        </div>
 
 
-</section>
+        <!-- PROMEDIO -->
 
+        <div class="card dorado">
 
+            <span>⭐</span>
 
+            <h3>Promedio general</h3>
 
+            <h2>
 
+                {% if promedio_general is not none %}
 
+                    {{ "%.2f"|format(promedio_general) }}
 
+                {% else %}
 
-<!-- PERFIL -->
+                    —
 
+                {% endif %}
 
-<section class="panel">
+            </h2>
 
+            <p>
+                Rendimiento académico
+            </p>
 
-<h2>
-👤 Información del estudiante
-</h2>
+        </div>
 
 
+        <!-- APROBADAS -->
 
-<div class="info">
+        <div class="card verde">
 
+            <span>🏆</span>
 
-<p>
+            <h3>Aprobadas</h3>
 
-<strong>
-Nombre:
-</strong>
+            <h2>
 
-{{ estudiante.nombre }}
+                {{ ns.aprobadas }}
 
-</p>
+            </h2>
 
+            <p>
+                Asignaturas
+            </p>
 
+        </div>
 
-<p>
 
-<strong>
-Grado:
-</strong>
+        <!-- REFORZAMIENTO -->
 
-{{ estudiante.grado }}
+        <div class="card azul">
 
-</p>
+            <span>📘</span>
 
+            <h3>Reforzamiento</h3>
 
+            <h2>
 
-<p>
+                {{ ns.reforzamiento }}
 
-<strong>
-Estado:
-</strong>
+            </h2>
 
-<span class="badge">
-Activo
-</span>
+            <p>
+                Requieren atención
+            </p>
 
-</p>
+        </div>
 
 
-</div>
+    </section>
 
 
 
+    <!-- =================================================
+         ESTADO ACADÉMICO
+    ================================================== -->
 
-<div class="acciones">
+    <section class="panel">
 
 
-<button>
-🔐 Cambiar contraseña
-</button>
+        <div class="panel-header">
 
+            <div>
 
-<button>
-📧 Cambiar correo electrónico
-</button>
+                <h2>
+                    🎓 Estado académico
+                </h2>
 
+                <p>
+                    Resumen de tu desempeño actual.
+                </p>
 
-</div>
+            </div>
 
+        </div>
 
-</section>
 
+        <div style="
+            padding:25px;
+            text-align:center;
+        ">
 
 
+            {% if promedio_general is not none %}
 
 
+                {% if promedio_general >= 60 %}
 
+                    <div>
 
+                        <div style="font-size:48px;">
+                            🏆
+                        </div>
 
+                        <h2 style="margin:10px 0;">
 
-<!-- ================= EVALUACION ================= -->
+                            ¡Excelente!
 
+                        </h2>
 
-<section class="panel">
+                        <p>
 
+                            Tu promedio general es de
 
-<div class="panel-header">
+                            <strong>
+                                {{ "%.2f"|format(promedio_general) }}
+                            </strong>
 
+                            puntos.
 
-<div>
+                        </p>
 
-<h2>
-📘 Evaluación en proceso
-</h2>
+                        <span class="badge bg-success">
 
+                            APROBADO
 
-<p>
-Nota del boletín por corte
-</p>
+                        </span>
 
+                    </div>
 
-</div>
 
+                {% else %}
 
+                    <div>
 
-<select>
+                        <div style="font-size:48px;">
+                            📘
+                        </div>
 
+                        <h2 style="margin:10px 0;">
 
-<option>
-Seleccione Corte
-</option>
+                            Reforzamiento
 
+                        </h2>
 
-<option>
-1EP
-</option>
+                        <p>
 
+                            Algunas asignaturas requieren
+                            mayor atención.
 
-<option>
-2EP
-</option>
+                        </p>
 
+                        <span class="badge bg-danger">
 
-<option>
-3EP
-</option>
+                            REFORZAMIENTO
 
+                        </span>
 
-<option>
-4EP
-</option>
+                    </div>
 
+                {% endif %}
 
-<option>
-5EP
-</option>
 
+            {% else %}
 
-<option>
-6EP
-</option>
+                <div>
 
+                    <div style="font-size:48px;">
+                        📚
+                    </div>
 
-<option>
-7EP
-</option>
+                    <h2 style="margin:10px 0;">
 
+                        Información pendiente
 
-<option>
-8EP
-</option>
+                    </h2>
 
+                    <p>
 
-<option>
-9EP
-</option>
+                        Todavía no existen suficientes
+                        calificaciones para calcular
+                        tu promedio general.
 
+                    </p>
 
-<option>
-10EP
-</option>
+                    <span class="badge bg-secondary">
 
+                        PENDIENTE
 
-</select>
+                    </span>
 
+                </div>
 
+            {% endif %}
 
-</div>
 
+        </div>
 
 
+    </section>
 
 
 
-<div class="tabla">
+    <!-- =================================================
+         MIS CALIFICACIONES
+    ================================================== -->
 
+    <section class="panel">
 
-<table>
 
+        <div class="panel-header">
 
-<thead>
+            <div>
 
+                <h2>
+                    📊 Mis calificaciones
+                </h2>
 
-<tr>
+                <p>
+                    Evaluaciones registradas por tus docentes.
+                </p>
 
-<th>
-DISCIPLINA
-</th>
+            </div>
 
-<th>1EP</th>
-<th>2EP</th>
-<th>3EP</th>
-<th>4EP</th>
-<th>5EP</th>
-<th>6EP</th>
-<th>7EP</th>
-<th>8EP</th>
-<th>9EP</th>
-<th>10EP</th>
-<th>ACUM</th>
 
+            {% if notas %}
 
-</tr>
+                <span>
 
+                    {{ notas|length }} registro{% if notas|length != 1 %}s{% endif %}
 
-</thead>
+                </span>
 
+            {% endif %}
 
+        </div>
 
-<tbody>
 
 
+        {% if notas %}
 
-{% if notas %}
 
+        <div style="overflow-x:auto;">
 
-{% for nota in notas %}
 
+            <table class="tabla-notas">
 
-<tr>
 
+                <thead>
 
-<td>
-{{ nota.disciplina }}
-</td>
+                    <tr>
 
+                        <th>Asignatura</th>
 
-<td>{{nota.ep1}}</td>
-<td>{{nota.ep2}}</td>
-<td>{{nota.ep3}}</td>
-<td>{{nota.ep4}}</td>
-<td>{{nota.ep5}}</td>
-<td>{{nota.ep6}}</td>
-<td>{{nota.ep7}}</td>
-<td>{{nota.ep8}}</td>
-<td>{{nota.ep9}}</td>
-<td>{{nota.ep10}}</td>
+                        <th>EP1</th>
+                        <th>EP2</th>
+                        <th>EP3</th>
+                        <th>EP4</th>
+                        <th>EP5</th>
+                        <th>EP6</th>
+                        <th>EP7</th>
+                        <th>EP8</th>
+                        <th>EP9</th>
+                        <th>EP10</th>
 
+                        <th>Acumulado</th>
 
-<td class="acum">
+                        <th>Promedio</th>
 
-{{nota.acum}}
+                        <th>Periodo</th>
 
-</td>
+                        <th>Evaluación</th>
 
+                        <th>Docente</th>
 
+                        <th>Estado</th>
 
-</tr>
+                    </tr>
 
+                </thead>
 
-{% endfor %}
 
 
-{% else %}
+                <tbody>
 
 
-<tr>
+                {% for nota in notas %}
 
-<td colspan="12">
 
-No hay datos en la tabla
+                    <tr>
 
-</td>
 
+                        <!-- ASIGNATURA -->
 
-</tr>
+                        <td>
 
+                            <strong>
 
-{% endif %}
+                                {{ nota.asignatura_nombre
+                                   or nota.asignatura
+                                   or "Asignatura" }}
 
+                            </strong>
 
+                        </td>
 
-</tbody>
 
+                        <!-- EP1 -->
 
-</table>
+                        <td>
 
+                            {{ nota.ep1
+                               if nota.ep1 is not none
+                               else "—" }}
 
-</div>
+                        </td>
 
 
+                        <!-- EP2 -->
 
-</section>
+                        <td>
 
+                            {{ nota.ep2
+                               if nota.ep2 is not none
+                               else "—" }}
 
+                        </td>
 
 
+                        <!-- EP3 -->
 
+                        <td>
 
+                            {{ nota.ep3
+                               if nota.ep3 is not none
+                               else "—" }}
 
+                        </td>
 
-<!-- ================= BOLETIN ================= -->
 
+                        <!-- EP4 -->
 
-<section class="panel">
+                        <td>
 
+                            {{ nota.ep4
+                               if nota.ep4 is not none
+                               else "—" }}
 
-<h2>
-📄 Nota del boletín por corte
-</h2>
+                        </td>
 
 
+                        <!-- EP5 -->
 
-<table>
+                        <td>
 
+                            {{ nota.ep5
+                               if nota.ep5 is not none
+                               else "—" }}
 
-<thead>
+                        </td>
 
-<tr>
 
-<th>
-DISCIPLINA
-</th>
+                        <!-- EP6 -->
 
-<th>
-I Corte
-</th>
+                        <td>
 
+                            {{ nota.ep6
+                               if nota.ep6 is not none
+                               else "—" }}
 
-<th>
-II Corte
-</th>
+                        </td>
 
 
-<th>
-III Corte
-</th>
+                        <!-- EP7 -->
 
+                        <td>
 
-<th>
-IV Corte
-</th>
+                            {{ nota.ep7
+                               if nota.ep7 is not none
+                               else "—" }}
 
+                        </td>
 
-<th>
-Nota Final
-</th>
 
+                        <!-- EP8 -->
 
-</tr>
+                        <td>
 
+                            {{ nota.ep8
+                               if nota.ep8 is not none
+                               else "—" }}
 
-</thead>
+                        </td>
 
 
+                        <!-- EP9 -->
 
+                        <td>
 
-<tbody>
+                            {{ nota.ep9
+                               if nota.ep9 is not none
+                               else "—" }}
 
+                        </td>
 
-{% if boletin is defined and boletin %}
 
+                        <!-- EP10 -->
 
-{% for b in boletin %}
+                        <td>
 
+                            {{ nota.ep10
+                               if nota.ep10 is not none
+                               else "—" }}
 
-<tr>
+                        </td>
 
 
-<td>
-{{b.disciplina}}
-</td>
+                        <!-- ACUMULADO -->
 
+                        <td>
 
-<td>
-{{b.corte1}}
-</td>
+                            <strong>
 
+                                {{ nota.acumulado
+                                   if nota.acumulado is not none
+                                   else "—" }}
 
-<td>
-{{b.corte2}}
-</td>
+                            </strong>
 
+                        </td>
 
-<td>
-{{b.corte3}}
-</td>
 
+                        <!-- PROMEDIO -->
 
-<td>
-{{b.corte4}}
-</td>
+                        <td>
 
+                            <strong>
 
-<td class="final">
-{{b.final}}
-</td>
+                                {% if nota.promedio is not none %}
 
+                                    {{ "%.2f"|format(
+                                        nota.promedio|float
+                                    ) }}
 
-</tr>
+                                {% else %}
 
+                                    —
 
-{% endfor %}
+                                {% endif %}
 
+                            </strong>
 
+                        </td>
 
-{% else %}
 
+                        <!-- PERIODO -->
 
-<tr>
+                        <td>
 
-<td colspan="6">
+                            {{ nota.periodo
+                               if nota.periodo
+                               else "—" }}
 
-No hay datos en la tabla
+                        </td>
 
-</td>
 
-</tr>
+                        <!-- EVALUACIÓN -->
 
+                        <td>
 
-{% endif %}
+                            {{ nota.evaluacion
+                               if nota.evaluacion
+                               else "—" }}
 
+                        </td>
 
 
-</tbody>
+                        <!-- DOCENTE -->
 
+                        <td>
 
-</table>
+                            {{ nota.docente
+                               if nota.docente
+                               else "No registrado" }}
 
+                        </td>
 
-</section>
 
+                        <!-- ESTADO -->
 
+                        <td>
 
 
+                            {% if nota.promedio is not none %}
 
 
+                                {% if nota.promedio|float >= 60 %}
 
+                                    <span class="badge bg-success">
 
+                                        Aprobado
 
-<!-- ================= COMUNICACION ================= -->
+                                    </span>
 
+                                {% else %}
 
-<section class="panel">
+                                    <span class="badge bg-danger">
 
+                                        Reforzamiento
 
-<h2>
-💬 Comunicación con docentes
-</h2>
+                                    </span>
 
+                                {% endif %}
 
-<p>
-Seleccione el docente con quien desea comunicarse
-</p>
 
+                            {% else %}
 
+                                <span class="badge bg-secondary">
 
+                                    Pendiente
 
+                                </span>
 
-<form method="POST"
-action="{{ url_for('mensajes.crear') }}">
+                            {% endif %}
 
 
+                        </td>
 
-<select name="docente_id"
-required>
 
+                    </tr>
 
-<option value="">
-Seleccione docente
-</option>
 
+                {% endfor %}
 
 
+                </tbody>
 
-{% for docente in docentes %}
 
+            </table>
 
 
-<option value="{{docente._id}}">
+        </div>
 
-{{docente.nombre}}
 
-</option>
+        {% else %}
 
 
+            <div class="sin-notas">
 
-{% endfor %}
+                <p>
 
+                    📘 No hay calificaciones registradas
+                    todavía.
 
+                </p>
 
-</select>
+            </div>
 
 
+        {% endif %}
 
 
+    </section>
 
-<textarea
-name="mensaje"
-placeholder="Escriba su mensaje..."
-required></textarea>
 
 
+    <!-- =================================================
+         ACCIONES ACADÉMICAS
+    ================================================== -->
 
+    <section class="panel">
 
 
-<button class="btn-enviar">
+        <div class="panel-header">
 
-📩 Enviar mensaje
+            <div>
 
-</button>
+                <h2>
+                    ⚡ Acciones académicas
+                </h2>
 
+                <p>
+                    Consulta rápidamente tu información.
+                </p>
 
+            </div>
 
-</form>
+        </div>
 
 
-</section>
+        <div style="
+            display:flex;
+            flex-wrap:wrap;
+            gap:15px;
+            padding:20px;
+        ">
 
 
+            <a
+                href="{{ url_for('estudiante.rendimiento') }}"
+                class="btn btn-primary"
+            >
 
+                📊 Ver rendimiento
 
+            </a>
 
 
+            <a
+                href="{{ url_for('estudiante.boletin_pdf') }}"
+                class="btn btn-primary"
+            >
 
+                📄 Descargar boletín
 
-<!-- HISTORIAL -->
+            </a>
 
 
-<section class="panel">
+            <a
+                href="{{ url_for('estudiante.perfil') }}"
+                class="btn btn-primary"
+            >
 
+                👤 Ver perfil
 
-<h2>
-📨 Conversaciones
-</h2>
+            </a>
 
 
+        </div>
 
-{% for mensaje in conversaciones if conversaciones is defined %}
 
-<div class="mensaje">
+    </section>
 
 
-<h4>
-👨‍🏫 {{mensaje.docente}}
-</h4>
 
+    <!-- =================================================
+         COMUNICACIÓN CON DOCENTES
+    ================================================== -->
 
-<p>
+    <section class="panel">
 
-{{mensaje.mensaje}}
 
-</p>
+        <div class="panel-header">
 
 
-<small>
+            <div>
 
-{{mensaje.fecha}}
+                <h2>
+                    💬 Comunicación con docentes
+                </h2>
 
-</small>
+                <p>
+                    Envía un mensaje al docente seleccionado.
+                </p>
 
+            </div>
 
-</div>
 
+        </div>
 
 
-{% else %}
-<p>
-No hay conversaciones disponibles.
-</p>
-{% endfor %}
 
+        <form
+            method="POST"
+            action="{{ url_for('mensajes.crear') }}"
+            style="padding:20px;"
+        >
 
 
-</section>
+            <select
+                name="docente_id"
+                required
+            >
 
+                <option value="">
 
+                    Seleccione docente
+
+                </option>
+
+
+                {% for docente in docentes %}
+
+                    <option value="{{ docente._id }}">
+
+                        {{ docente.nombre }}
+
+                    </option>
+
+                {% endfor %}
+
+
+            </select>
+
+
+
+            <textarea
+                name="mensaje"
+                placeholder="Escriba su mensaje..."
+                required
+            ></textarea>
+
+
+
+            <button
+                type="submit"
+                class="btn-enviar"
+            >
+
+                📩 Enviar mensaje
+
+            </button>
+
+
+        </form>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         CONVERSACIONES
+    ================================================== -->
+
+    <section class="panel">
+
+
+        <div class="panel-header">
+
+
+            <div>
+
+                <h2>
+                    📨 Mis conversaciones
+                </h2>
+
+                <p>
+                    Historial de comunicación con docentes.
+                </p>
+
+            </div>
+
+
+            {% if conversaciones %}
+
+                <span>
+
+                    {{ conversaciones|length }}
+
+                </span>
+
+            {% endif %}
+
+
+        </div>
+
+
+
+        {% if conversaciones %}
+
+
+            {% for conversacion in conversaciones %}
+
+
+                <div class="mensaje">
+
+
+                    <h4>
+
+                        👨‍🏫
+
+                        {{ conversacion.docente
+                           or "Docente" }}
+
+                    </h4>
+
+
+                    <p>
+
+                        <strong>
+                            Último mensaje:
+                        </strong>
+
+                        {{ conversacion.ultimo_mensaje
+                           or "Sin mensajes" }}
+
+                    </p>
+
+
+                    <small>
+
+                        Última actualización:
+
+                        {{ conversacion.ultima_actualizacion
+                           or "-" }}
+
+                    </small>
+
+
+                    <div style="margin-top:15px;">
+
+
+                        <a
+                            href="{{ url_for(
+                                'mensajes.chat',
+                                conversacion_id=conversacion._id
+                            ) }}"
+                            class="btn btn-primary"
+                        >
+
+                            💬 Ver conversación
+
+                        </a>
+
+
+                    </div>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <div class="sin-notas">
+
+                <p>
+
+                    📭 No hay conversaciones disponibles.
+
+                </p>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         AVISOS INSTITUCIONALES
+    ================================================== -->
+
+    <section class="panel">
+
+
+        <div class="panel-header">
+
+
+            <div>
+
+                <h2>
+                    📢 Avisos institucionales
+                </h2>
+
+                <p>
+                    Comunicados importantes de CIEM ONE.
+                </p>
+
+            </div>
+
+
+            {% if avisos %}
+
+                <span class="contador-avisos">
+
+                    {{ avisos|length }}
+
+                    aviso{% if avisos|length != 1 %}s{% endif %}
+
+                </span>
+
+            {% endif %}
+
+
+        </div>
+
+
+
+        {% if avisos %}
+
+
+            <div class="lista-avisos">
+
+
+                {% for aviso in avisos %}
+
+
+                    <div class="aviso-card">
+
+
+                        <div class="aviso-icono">
+
+                            📢
+
+                        </div>
+
+
+                        <div class="aviso-contenido">
+
+
+                            <h3>
+
+                                {{ aviso.get(
+                                    "titulo",
+                                    "Aviso Institucional"
+                                ) }}
+
+                            </h3>
+
+
+                            <p>
+
+                                {{ aviso.get(
+                                    "contenido",
+                                    ""
+                                ) }}
+
+                            </p>
+
+
+                            <div class="aviso-pie">
+
+
+                                <span>
+
+                                    🏫 Dirección Académica
+
+                                </span>
+
+
+                                {% if aviso.get("fecha") %}
+
+                                    <span>
+
+                                        📅
+
+                                        {{ aviso.get("fecha") }}
+
+                                    </span>
+
+                                {% endif %}
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+        {% else %}
+
+
+            <div class="sin-avisos">
+
+
+                <div>
+
+                    📭
+
+                </div>
+
+
+                <strong>
+
+                    No hay avisos institucionales
+
+                </strong>
+
+
+                <p>
+
+                    Cuando Dirección publique un comunicado,
+                    aparecerá aquí.
+
+                </p>
+
+
+            </div>
+
+
+        {% endif %}
+
+
+    </section>
 
 
 </main>
-
-
+```
 
 </div>
 
-
-
 </body>
-
 
 </html>

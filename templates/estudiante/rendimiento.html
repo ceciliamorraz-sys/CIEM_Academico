@@ -1,0 +1,1676 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Rendimiento Académico | CIEM ONE</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            background: #F3F6FA;
+
+            color: #1D3256;
+
+        }
+
+
+        /* ==========================================
+           CONTENEDOR
+        ========================================== */
+
+        .pagina {
+
+            min-height: 100vh;
+
+            padding: 30px;
+
+        }
+
+
+        .contenedor {
+
+            max-width: 1150px;
+
+            margin: auto;
+
+        }
+
+
+        /* ==========================================
+           BOTÓN VOLVER
+        ========================================== */
+
+        .volver {
+
+            display: inline-block;
+
+            margin-bottom: 20px;
+
+            padding: 10px 18px;
+
+            background: white;
+
+            color: #1E4E8C;
+
+            text-decoration: none;
+
+            border-radius: 10px;
+
+            font-weight: 600;
+
+            box-shadow:
+                0 4px 12px rgba(0,0,0,.08);
+
+            transition: .2s;
+
+        }
+
+
+        .volver:hover {
+
+            background: #1E4E8C;
+
+            color: white;
+
+        }
+
+
+        /* ==========================================
+           ENCABEZADO
+        ========================================== */
+
+        .encabezado {
+
+            background:
+
+                linear-gradient(
+                    135deg,
+                    #08142C,
+                    #1E4E8C
+                );
+
+            color: white;
+
+            padding: 30px;
+
+            border-radius: 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 25px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 10px 30px rgba(0,0,0,.12);
+
+        }
+
+
+        .logo {
+
+            width: 75px;
+
+            height: 75px;
+
+            background: white;
+
+            border-radius: 15px;
+
+            overflow: hidden;
+
+            flex-shrink: 0;
+
+        }
+
+
+        .logo img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: contain;
+
+        }
+
+
+        .encabezado-texto {
+
+            flex: 1;
+
+        }
+
+
+        .encabezado h1 {
+
+            margin: 0 0 7px;
+
+            font-size: 28px;
+
+        }
+
+
+        .encabezado p {
+
+            margin: 0;
+
+            color: #D8E2F0;
+
+            font-size: 14px;
+
+        }
+
+
+        .icono-rendimiento {
+
+            width: 65px;
+
+            height: 65px;
+
+            border-radius: 17px;
+
+            background: #FFC107;
+
+            color: #08142C;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 30px;
+
+        }
+
+
+        /* ==========================================
+           INFORMACIÓN ESTUDIANTE
+        ========================================== */
+
+        .datos-estudiante {
+
+            background: white;
+
+            border-radius: 18px;
+
+            padding: 22px 25px;
+
+            margin-bottom: 25px;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+
+            box-shadow:
+                0 6px 22px rgba(0,0,0,.07);
+
+        }
+
+
+        .dato {
+
+            background: #F7F9FC;
+
+            border: 1px solid #E2E7EF;
+
+            border-radius: 10px;
+
+            padding: 13px 15px;
+
+        }
+
+
+        .dato span {
+
+            display: block;
+
+            color: #7A8494;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            font-weight: 600;
+
+            margin-bottom: 4px;
+
+        }
+
+
+        .dato strong {
+
+            color: #08142C;
+
+            font-size: 15px;
+
+        }
+
+
+        /* ==========================================
+           TARJETAS RESUMEN
+        ========================================== */
+
+        .resumen {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .resumen-card {
+
+            background: white;
+
+            border-radius: 17px;
+
+            padding: 22px;
+
+            box-shadow:
+                0 6px 22px rgba(0,0,0,.07);
+
+            border-top: 4px solid #1E4E8C;
+
+            text-align: center;
+
+        }
+
+
+        .resumen-card.promedio {
+
+            border-top-color: #FFC107;
+
+        }
+
+
+        .resumen-card.aprobadas {
+
+            border-top-color: #198754;
+
+        }
+
+
+        .resumen-card.reforzamiento {
+
+            border-top-color: #DC3545;
+
+        }
+
+
+        .resumen-icono {
+
+            font-size: 27px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .resumen-card span {
+
+            display: block;
+
+            font-size: 12px;
+
+            color: #667085;
+
+            text-transform: uppercase;
+
+            font-weight: 600;
+
+        }
+
+
+        .resumen-card strong {
+
+            display: block;
+
+            margin-top: 5px;
+
+            font-size: 28px;
+
+            color: #08142C;
+
+        }
+
+
+        /* ==========================================
+           SECCIÓN PRINCIPAL
+        ========================================== */
+
+        .seccion {
+
+            background: white;
+
+            border-radius: 18px;
+
+            padding: 25px 30px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 7px 25px rgba(0,0,0,.08);
+
+        }
+
+
+        .seccion-titulo {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 18px;
+
+        }
+
+
+        .seccion-titulo h2 {
+
+            margin: 0;
+
+            color: #08142C;
+
+            font-size: 20px;
+
+        }
+
+
+        .seccion-titulo span {
+
+            background: #EAF1FA;
+
+            color: #1E4E8C;
+
+            padding: 7px 12px;
+
+            border-radius: 8px;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+        }
+
+
+        /* ==========================================
+           TABLA
+        ========================================== */
+
+        .tabla-contenedor {
+
+            overflow-x: auto;
+
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 750px;
+
+        }
+
+
+        thead {
+
+            background: #08142C;
+
+            color: white;
+
+        }
+
+
+        th {
+
+            padding: 13px 10px;
+
+            font-size: 13px;
+
+            text-align: center;
+
+        }
+
+
+        th:first-child {
+
+            text-align: left;
+
+            padding-left: 15px;
+
+        }
+
+
+        td {
+
+            padding: 14px 10px;
+
+            border-bottom:
+                1px solid #E5E9EF;
+
+            text-align: center;
+
+            font-size: 14px;
+
+        }
+
+
+        td:first-child {
+
+            text-align: left;
+
+            padding-left: 15px;
+
+            font-weight: 600;
+
+            color: #1D3256;
+
+        }
+
+
+        tbody tr:hover {
+
+            background: #F7F9FC;
+
+        }
+
+
+        /* ==========================================
+           NOTAS
+        ========================================== */
+
+        .nota {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-width: 45px;
+
+            padding: 6px 9px;
+
+            border-radius: 7px;
+
+            font-weight: 700;
+
+        }
+
+
+        .nota.aprobado {
+
+            background: #D1E7DD;
+
+            color: #0F5132;
+
+        }
+
+
+        .nota.reprobado {
+
+            background: #F8D7DA;
+
+            color: #842029;
+
+        }
+
+
+        .nota.sin-nota {
+
+            background: #EEF1F5;
+
+            color: #667085;
+
+        }
+
+
+        /* ==========================================
+           BARRA DE RENDIMIENTO
+        ========================================== */
+
+        .barra {
+
+            width: 100%;
+
+            height: 8px;
+
+            background: #E9EDF3;
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+            margin-top: 7px;
+
+        }
+
+
+        .barra-progreso {
+
+            height: 100%;
+
+            border-radius: 10px;
+
+            background: #1E4E8C;
+
+        }
+
+
+        /* ==========================================
+           MEJOR ASIGNATURA
+        ========================================== */
+
+        .fortaleza {
+
+            background: #F0F8F4;
+
+            border-left: 5px solid #198754;
+
+            border-radius: 12px;
+
+            padding: 18px 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+        }
+
+
+        .fortaleza-icono {
+
+            font-size: 30px;
+
+        }
+
+
+        .fortaleza h3 {
+
+            margin: 0 0 5px;
+
+            color: #0F5132;
+
+            font-size: 17px;
+
+        }
+
+
+        .fortaleza p {
+
+            margin: 0;
+
+            color: #667085;
+
+            font-size: 14px;
+
+        }
+
+
+        /* ==========================================
+           REFORZAMIENTO
+        ========================================== */
+
+        .alerta-rendimiento {
+
+            background: #FFF5F5;
+
+            border-left: 5px solid #DC3545;
+
+            border-radius: 12px;
+
+            padding: 18px 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+        }
+
+
+        .alerta-icono {
+
+            font-size: 30px;
+
+        }
+
+
+        .alerta-rendimiento h3 {
+
+            margin: 0 0 5px;
+
+            color: #842029;
+
+            font-size: 17px;
+
+        }
+
+
+        .alerta-rendimiento p {
+
+            margin: 0;
+
+            color: #667085;
+
+            font-size: 14px;
+
+        }
+
+
+        /* ==========================================
+           SIN DATOS
+        ========================================== */
+
+        .sin-datos {
+
+            text-align: center;
+
+            padding: 45px 20px;
+
+            color: #667085;
+
+        }
+
+
+        .sin-datos-icono {
+
+            display: block;
+
+            font-size: 45px;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .sin-datos h3 {
+
+            margin: 0 0 7px;
+
+            color: #08142C;
+
+        }
+
+
+        .sin-datos p {
+
+            margin: 0;
+
+            font-size: 14px;
+
+        }
+
+
+        /* ==========================================
+           OBSERVACIÓN
+        ========================================== */
+
+        .observacion {
+
+            background: #FFF9E6;
+
+            border-left: 5px solid #FFC107;
+
+            border-radius: 12px;
+
+            padding: 18px 20px;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .observacion h3 {
+
+            margin: 0 0 7px;
+
+            color: #08142C;
+
+            font-size: 17px;
+
+        }
+
+
+        .observacion p {
+
+            margin: 0;
+
+            color: #667085;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+        }
+
+
+        /* ==========================================
+           PIE
+        ========================================== */
+
+        .pie {
+
+            background: #08142C;
+
+            color: #C8D2E8;
+
+            text-align: center;
+
+            padding: 15px;
+
+            border-radius: 0 0 18px 18px;
+
+            font-size: 12px;
+
+        }
+
+
+        /* ==========================================
+           RESPONSIVE
+        ========================================== */
+
+        @media (max-width: 900px) {
+
+            .resumen {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+            .datos-estudiante {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .pagina {
+
+                padding: 15px;
+
+            }
+
+            .encabezado {
+
+                flex-direction: column;
+
+                text-align: center;
+
+            }
+
+            .icono-rendimiento {
+
+                width: 55px;
+
+                height: 55px;
+
+            }
+
+            .datos-estudiante {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .resumen {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .seccion {
+
+                padding: 20px;
+
+            }
+
+        }
+
+
+        /* ==========================================
+           IMPRESIÓN
+        ========================================== */
+
+        @media print {
+
+            body {
+
+                background: white;
+
+            }
+
+            .pagina {
+
+                padding: 0;
+
+            }
+
+            .volver {
+
+                display: none;
+
+            }
+
+            .encabezado {
+
+                print-color-adjust: exact;
+
+                -webkit-print-color-adjust: exact;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="pagina">
+
+
+    <div class="contenedor">
+
+
+        <!-- ======================================
+             VOLVER
+        ======================================= -->
+
+        <a
+            href="{{ url_for('estudiante.dashboard') }}"
+            class="volver"
+        >
+
+            ← Volver al dashboard
+
+        </a>
+
+
+        <!-- ======================================
+             ENCABEZADO
+        ======================================= -->
+
+        <div class="encabezado">
+
+
+            <div class="logo">
+
+                <img
+                    src="{{ url_for('static', filename='img/logo.jpg') }}"
+                    alt="Logo CIEM"
+                >
+
+            </div>
+
+
+            <div class="encabezado-texto">
+
+                <h1>
+                    📊 Rendimiento Académico
+                </h1>
+
+                <p>
+                    Seguimiento del desempeño académico
+                    del estudiante.
+                </p>
+
+            </div>
+
+
+            <div class="icono-rendimiento">
+
+                📈
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ======================================
+             DATOS ESTUDIANTE
+        ======================================= -->
+
+        <div class="datos-estudiante">
+
+
+            <div class="dato">
+
+                <span>
+                    Estudiante
+                </span>
+
+                <strong>
+
+                    {{ estudiante.nombre
+                       if estudiante
+                       else 'No disponible' }}
+
+                </strong>
+
+            </div>
+
+
+            <div class="dato">
+
+                <span>
+                    Grado
+                </span>
+
+                <strong>
+
+                    {{ estudiante.grado
+                       if estudiante
+                       else 'No disponible' }}
+
+                </strong>
+
+            </div>
+
+
+            <div class="dato">
+
+                <span>
+                    Sección
+                </span>
+
+                <strong>
+
+                    {{ estudiante.seccion
+                       if estudiante and estudiante.seccion
+                       else 'No disponible' }}
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================
+             RESUMEN
+        ======================================= -->
+
+        <div class="resumen">
+
+
+            <!-- PROMEDIO -->
+
+            <div class="resumen-card promedio">
+
+                <div class="resumen-icono">
+                    📊
+                </div>
+
+                <span>
+                    Promedio general
+                </span>
+
+                <strong>
+
+                    {% if promedio_general is not none %}
+
+                        {{ promedio_general }}
+
+                    {% else %}
+
+                        —
+
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+
+            <!-- ASIGNATURAS -->
+
+            <div class="resumen-card">
+
+                <div class="resumen-icono">
+                    📚
+                </div>
+
+                <span>
+                    Asignaturas evaluadas
+                </span>
+
+                <strong>
+                    {{ rendimiento|length }}
+                </strong>
+
+            </div>
+
+
+            <!-- APROBADAS -->
+
+            <div class="resumen-card aprobadas">
+
+                <div class="resumen-icono">
+                    ✅
+                </div>
+
+                <span>
+                    Aprobadas
+                </span>
+
+                <strong>
+                    {{ aprobadas }}
+                </strong>
+
+            </div>
+
+
+            <!-- REFORZAMIENTO -->
+
+            <div class="resumen-card reforzamiento">
+
+                <div class="resumen-icono">
+                    ⚠️
+                </div>
+
+                <span>
+                    Reforzamiento
+                </span>
+
+                <strong>
+                    {{ reforzamiento }}
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ======================================
+             RENDIMIENTO POR ASIGNATURA
+        ======================================= -->
+
+        <div class="seccion">
+
+
+            <div class="seccion-titulo">
+
+                <h2>
+                    📚 Rendimiento por asignatura
+                </h2>
+
+                <span>
+                    Datos reales
+                </span>
+
+            </div>
+
+
+            {% if rendimiento %}
+
+
+                <div class="tabla-contenedor">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Asignatura
+                                </th>
+
+                                <th>
+                                    I Corte
+                                </th>
+
+                                <th>
+                                    II Corte
+                                </th>
+
+                                <th>
+                                    III Corte
+                                </th>
+
+                                <th>
+                                    IV Corte
+                                </th>
+
+                                <th>
+                                    Promedio
+                                </th>
+
+                                <th>
+                                    Estado
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                            {% for item in rendimiento %}
+
+
+                                <tr>
+
+
+                                    <!-- ASIGNATURA -->
+
+                                    <td>
+
+                                        {{ item.asignatura }}
+
+                                    </td>
+
+
+                                    <!-- CORTE 1 -->
+
+                                    <td>
+
+                                        {% if item.corte1 is not none %}
+
+                                            {% if item.corte1 >= 60 %}
+
+                                                <span class="nota aprobado">
+                                                    {{ item.corte1 }}
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="nota reprobado">
+                                                    {{ item.corte1 }}
+                                                </span>
+
+                                            {% endif %}
+
+                                        {% else %}
+
+                                            <span class="nota sin-nota">
+                                                —
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <!-- CORTE 2 -->
+
+                                    <td>
+
+                                        {% if item.corte2 is not none %}
+
+                                            {% if item.corte2 >= 60 %}
+
+                                                <span class="nota aprobado">
+                                                    {{ item.corte2 }}
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="nota reprobado">
+                                                    {{ item.corte2 }}
+                                                </span>
+
+                                            {% endif %}
+
+                                        {% else %}
+
+                                            <span class="nota sin-nota">
+                                                —
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <!-- CORTE 3 -->
+
+                                    <td>
+
+                                        {% if item.corte3 is not none %}
+
+                                            {% if item.corte3 >= 60 %}
+
+                                                <span class="nota aprobado">
+                                                    {{ item.corte3 }}
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="nota reprobado">
+                                                    {{ item.corte3 }}
+                                                </span>
+
+                                            {% endif %}
+
+                                        {% else %}
+
+                                            <span class="nota sin-nota">
+                                                —
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <!-- CORTE 4 -->
+
+                                    <td>
+
+                                        {% if item.corte4 is not none %}
+
+                                            {% if item.corte4 >= 60 %}
+
+                                                <span class="nota aprobado">
+                                                    {{ item.corte4 }}
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="nota reprobado">
+                                                    {{ item.corte4 }}
+                                                </span>
+
+                                            {% endif %}
+
+                                        {% else %}
+
+                                            <span class="nota sin-nota">
+                                                —
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <!-- PROMEDIO -->
+
+                                    <td>
+
+                                        {% if item.promedio is not none %}
+
+                                            <strong>
+                                                {{ item.promedio }}
+                                            </strong>
+
+                                            <div class="barra">
+
+                                                <div
+                                                    class="barra-progreso"
+                                                    style="width: {{ item.promedio }}%;"
+                                                ></div>
+
+                                            </div>
+
+                                        {% else %}
+
+                                            <span class="nota sin-nota">
+                                                —
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <!-- ESTADO -->
+
+                                    <td>
+
+                                        {% if item.promedio is not none %}
+
+                                            {% if item.promedio >= 60 %}
+
+                                                <span class="nota aprobado">
+                                                    Aprobado
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="nota reprobado">
+                                                    Reforzamiento
+                                                </span>
+
+                                            {% endif %}
+
+                                        {% else %}
+
+                                            <span class="nota sin-nota">
+                                                —
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                </tr>
+
+
+                            {% endfor %}
+
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+            {% else %}
+
+
+                <!-- ==================================
+                     SIN INFORMACIÓN
+                =================================== -->
+
+                <div class="sin-datos">
+
+                    <span class="sin-datos-icono">
+                        📊
+                    </span>
+
+                    <h3>
+                        Aún no hay información de rendimiento
+                    </h3>
+
+                    <p>
+                        El rendimiento aparecerá aquí cuando
+                        el docente registre las primeras
+                        calificaciones del estudiante.
+                    </p>
+
+                </div>
+
+
+            {% endif %}
+
+
+        </div>
+
+
+        <!-- ======================================
+             MEJOR ASIGNATURA
+        ======================================= -->
+
+        {% if mejor_asignatura %}
+
+            <div class="seccion">
+
+
+                <div class="seccion-titulo">
+
+                    <h2>
+                        ⭐ Fortaleza académica
+                    </h2>
+
+                </div>
+
+
+                <div class="fortaleza">
+
+
+                    <div class="fortaleza-icono">
+                        🏆
+                    </div>
+
+
+                    <div>
+
+                        <h3>
+
+                            {{ mejor_asignatura.asignatura }}
+
+                        </h3>
+
+
+                        <p>
+
+                            Es la asignatura con el mejor
+                            promedio registrado actualmente:
+
+                            <strong>
+
+                                {{ mejor_asignatura.promedio }}
+
+                            </strong>
+
+                            puntos.
+
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- ======================================
+             REFORZAMIENTO
+        ======================================= -->
+
+        {% if reforzamiento > 0 %}
+
+
+            <div class="seccion">
+
+
+                <div class="seccion-titulo">
+
+                    <h2>
+                        ⚠️ Áreas que requieren atención
+                    </h2>
+
+                </div>
+
+
+                <div class="alerta-rendimiento">
+
+
+                    <div class="alerta-icono">
+                        ⚠️
+                    </div>
+
+
+                    <div>
+
+                        <h3>
+                            Reforzamiento académico
+                        </h3>
+
+
+                        <p>
+
+                            Se han identificado
+                            <strong>
+                                {{ reforzamiento }}
+                            </strong>
+
+                            asignatura(s) con promedio
+                            inferior a 60 puntos.
+
+                            Se recomienda brindar
+                            acompañamiento académico.
+
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        {% endif %}
+
+
+        <!-- ======================================
+             OBSERVACIÓN GENERAL
+        ======================================= -->
+
+        <div class="observacion">
+
+
+            <h3>
+                📘 Observación académica
+            </h3>
+
+
+            {% if promedio_general is none %}
+
+
+                <p>
+
+                    Todavía no existen suficientes
+                    calificaciones para generar una
+                    valoración del rendimiento académico.
+
+                </p>
+
+
+            {% elif promedio_general >= 90 %}
+
+
+                <p>
+
+                    El estudiante presenta un
+                    <strong>excelente desempeño académico</strong>.
+                    Se recomienda mantener los hábitos de
+                    estudio y continuar participando
+                    activamente en las actividades escolares.
+
+                </p>
+
+
+            {% elif promedio_general >= 80 %}
+
+
+                <p>
+
+                    El estudiante presenta un
+                    <strong>buen desempeño académico</strong>.
+                    Se recomienda continuar fortaleciendo
+                    sus hábitos de estudio y participación.
+
+                </p>
+
+
+            {% elif promedio_general >= 60 %}
+
+
+                <p>
+
+                    El estudiante presenta un desempeño
+                    académico satisfactorio.
+                    Se recomienda continuar trabajando en
+                    las áreas que necesiten fortalecimiento.
+
+                </p>
+
+
+            {% else %}
+
+
+                <p>
+
+                    El estudiante requiere
+                    <strong>acompañamiento académico</strong>.
+                    Se recomienda fortalecer los hábitos
+                    de estudio y establecer estrategias
+                    de reforzamiento.
+
+                </p>
+
+
+            {% endif %}
+
+
+        </div>
+
+
+        <!-- ======================================
+             PIE
+        ======================================= -->
+
+        <div class="pie">
+
+            CIEM ONE · Rendimiento Académico · Año Lectivo 2026
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>
+```

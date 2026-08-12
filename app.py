@@ -2,6 +2,8 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
+from flask import request, url_for
+from datetime import datetime
 from bson import ObjectId
 from functools import wraps
 from datetime import datetime
@@ -178,6 +180,57 @@ def admin_dashboard():
         total_asignaturas=total_asignaturas,
         total_matriculas=total_matriculas
     )
+# ======================================================
+# COMUNICADOS DEL ADMINISTRADOR
+# ======================================================
+
+@app.route("/admin/comunicados")
+@role_required("admin")
+def admin_comunicados():
+
+    comunicados = list(
+        db.comunicados.find().sort(
+            "fecha_creacion",
+            -1
+        )
+    )
+
+    return render_template(
+        "admin/comunicados.html",
+        comunicados=comunicados
+    )
+# ======================================================
+# CREAR COMUNICADO
+# ======================================================
+
+@app.route("/admin/comunicados/crear", methods=["POST"])
+@role_required("admin")
+def crear_comunicado():
+
+    titulo = request.form.get("titulo", "").strip()
+    mensaje = request.form.get("mensaje", "").strip()
+    destinatario = request.form.get("destinatario", "").strip()
+    grado = request.form.get("grado", "").strip()
+    fecha = request.form.get("fecha", "").strip()
+    hora = request.form.get("hora", "").strip()
+
+    if not titulo or not mensaje or not destinatario:
+        return redirect(url_for("admin_comunicados"))
+
+    comunicado = {
+        "titulo": titulo,
+        "mensaje": mensaje,
+        "destinatario": destinatario,
+        "grado": grado,
+        "fecha": fecha,
+        "hora": hora,
+        "fecha_creacion": datetime.now(),
+        "estado": "publicado"
+    }
+
+    db.comunicados.insert_one(comunicado)
+
+    return redirect(url_for("admin_comunicados"))
 
 # =========================
 # EDITAR ESTUDIANTE
@@ -553,596 +606,1320 @@ def agregar_docente():
         "admin/agregar_docente.html"
     )
 
-# =========================
-# AGREGAR ESTUDIANTE
-# =========================
-
-@app.route("/admin/estudiante/agregar", methods=["GET","POST"])
-@role_required("admin")
-def agregar_estudiante():
-
-    if request.method == "POST":
-
-        db.estudiantes.insert_one({
-
-            "_id": request.form["codigo"],
-            "codigo": request.form["codigo"],
-            "nombre": request.form["nombre"],
-            "fecha_nacimiento": request.form["fecha_nacimiento"],
-            "grado": request.form["grado"],
-            "seccion": request.form["seccion"],
-            "padre": request.form["padre"],
-            "telefono": request.form["telefono"],
-            "usuario": request.form["usuario"],
-            "password": request.form["password"],
-            "estado": "activo",
-            "foto": "usuario.png"
-
-        })
-
-        flash(
-            "Estudiante agregado correctamente",
-            "success"
-        )
-
-        return redirect(
-            url_for("listar_estudiantes_admin")
-        )
-
-
-    return render_template(
-        "admin/agregar_estudiante.html"
-    )
-# =========================
-# MATRICULA
-# =========================
+# ==========================================================
+# LISTAR MATRÍCULAS
+# ==========================================================
 
 @app.route("/matriculas")
 @role_required("admin")
 def listar_matriculas():
 
+    try:
 
-    matriculas = list(
+        matriculas = list(
+            db.matriculas.aggregate([
 
-        db.matriculas.aggregate([
+                {
+                    "$lookup": {
+                        "from": "estudiantes",
+                        "localField": "estudiante_id",
+                        "foreignField": "_id",
+                        "as": "estudiante"
+                    }
+                },
 
+                {
+                    "$unwind": {
+                        "path": "$estudiante",
+                        "preserveNullAndEmptyArrays": True
+                    }
+                },
 
-            {
-                "$lookup":{
-
-                    "from":"estudiantes",
-
-                    "localField":"estudiante_id",
-
-                    "foreignField":"_id",
-
-                    "as":"estudiante"
-
+                {
+                    "$sort": {
+                        "fecha_matricula": -1
+                    }
                 }
 
-            },
+            ])
+        )
 
+        print("==========================================")
+        print("LISTADO DE MATRÍCULAS")
+        print("TOTAL MATRÍCULAS:", len(matriculas))
+        print("==========================================")
 
-            {
+        return render_template(
+            "admin/matriculas.html",
+            matriculas=matriculas
+        )
 
-                "$unwind":{
+    except Exception as e:
 
-                    "path":"$estudiante",
+        print("==========================================")
+        print("ERROR AL LISTAR MATRÍCULAS")
+        print("TIPO:", type(e).__name__)
+        print("ERROR:", repr(e))
+        print("==========================================")
 
-                    "preserveNullAndEmptyArrays":True
+        flash(
+            f"No se pudieron cargar las matrículas: {e}",
+            "danger"
+        )
 
-                }
-
-            },
-
-
-            {
-
-                "$sort":{
-
-                    "fecha_matricula":-1
-
-                }
-
-            }
-
-
-        ])
-
-    )
-
-
-    return render_template(
-
-        "admin/matriculas.html",
-
-        matriculas=matriculas
-
-    )
-
-
-
-    # =====================================
-    # BUSCAR ESTUDIANTE DEL PADRE
-    # =====================================
-
-    estudiante = db.estudiantes.find_one({
-
-        "padre":{
-            "$regex":usuario,
-            "$options":"i"
-        }
-
-    })
-
-
-    if not estudiante:
-
-        return "Estudiante no encontrado"
-
-
-
-    print(
-        "ESTUDIANTE:",
-        estudiante.get("nombre")
-    )
-
-
-    # =====================================
-    # CARGAR NOTAS DEL ESTUDIANTE
-    # MISMAS QUE REGISTRA EL DOCENTE
-    # =====================================
-
-    notas = list(
-
-        db.notas.find({
-
-            "estudiante_id":
-
-            estudiante.get("codigo")
-
-        })
-
-    )
-
-
-
-    print(
-        "TOTAL NOTAS:",
-        len(notas)
-    )
-
-
-
-    # =====================================
-    # CALCULAR ACUMULADO Y PROMEDIO
-    # =====================================
-
-    for n in notas:
-
-
-        acumulado = (
-
-            n.get("ep1",0) +
-            n.get("ep2",0) +
-            n.get("ep3",0) +
-            n.get("ep4",0) +
-            n.get("ep5",0) +
-            n.get("ep6",0) +
-            n.get("ep7",0) +
-            n.get("ep8",0) +
-            n.get("ep9",0) +
-            n.get("ep10",0)
-
+        return redirect(
+            url_for("admin_dashboard")
         )
 
 
-        n["acumulado"] = acumulado
+# ==========================================================
+# AGREGAR MATRÍCULA
+# ==========================================================
 
+@app.route(
+    "/admin/matricula/agregar",
+    methods=["GET", "POST"]
+)
+@role_required("admin")
+def agregar_matricula():
 
+    # ======================================================
+    # MOSTRAR FORMULARIO
+    # ======================================================
 
-        n["promedio"] = round(
+    if request.method == "GET":
 
-            acumulado / 10,
-
-            2
-
+        return render_template(
+            "admin/agregar_matricula.html"
         )
 
+    # ======================================================
+    # PROCESAR FORMULARIO
+    # ======================================================
 
+    try:
 
-        if n["promedio"] >= 60:
+        print("==========================================")
+        print("POST DE MATRÍCULA RECIBIDO")
+        print("DATOS RECIBIDOS:")
+        print(request.form.to_dict())
+        print("==========================================")
 
-            n["estado"] = "Aprobado"
+        # ==================================================
+        # NOMBRES Y APELLIDOS
+        # ==================================================
 
-        else:
+        primer_apellido = request.form.get(
+            "primer_apellido",
+            ""
+        ).strip()
 
-            n["estado"] = "Pendiente"
+        segundo_apellido = request.form.get(
+            "segundo_apellido",
+            ""
+        ).strip()
 
+        primer_nombre = request.form.get(
+            "primer_nombre",
+            ""
+        ).strip()
 
+        segundo_nombre = request.form.get(
+            "segundo_nombre",
+            ""
+        ).strip()
 
+        # ==================================================
+        # VALIDACIONES
+        # ==================================================
 
+        if not primer_nombre:
 
-    # =====================================
-    # RESUMEN ACADÉMICO
-    # =====================================
-
-    promedio_general = 0
-
-
-
-    if notas:
-
-
-        promedio_general = round(
-
-            sum(
-
-                n["promedio"]
-
-                for n in notas
-
+            flash(
+                "Debe ingresar el primer nombre.",
+                "warning"
             )
 
-            /
+            return redirect(
+                url_for("agregar_matricula")
+            )
 
-            len(notas),
+        if not primer_apellido:
 
-            2
+            flash(
+                "Debe ingresar el primer apellido.",
+                "warning"
+            )
 
-        )
+            return redirect(
+                url_for("agregar_matricula")
+            )
 
+        # ==================================================
+        # GENERAR CÓDIGO
+        # ==================================================
 
+        iniciales = (
+            primer_nombre[:1]
+            + segundo_nombre[:1]
+            + primer_apellido[:1]
+            + segundo_apellido[:1]
+        ).upper()
 
+        iniciales = (
+            iniciales + "XXXX"
+        )[:4]
 
-    resumen = {
+        codigo = f"CBM-{iniciales}"
 
+        print("CÓDIGO GENERADO:", codigo)
 
-        "promedio":
+        # ==================================================
+        # VERIFICAR ESTUDIANTE EXISTENTE
+        # ==================================================
 
-        promedio_general,
-
-
-        "asistencia":
-
-        0,
-
-
-        "estado":
-
-        "Aprobado"
-
-        if promedio_general >= 60
-
-        else
-
-        "Pendiente"
-
-
-    }
-
-
-
-
-    # =====================================
-    # DOCENTES
-    # =====================================
-
-    docentes = list(
-
-        db.docentes.find()
-
-    )
-
-
-
-
-    return render_template(
-
-        "estudiante_dashboard.html",
-
-        estudiante=estudiante,
-
-        resumen=resumen,
-
-        notas=notas,
-
-        docentes=docentes
-
-    )
-
-# =====================================
-# ENVIAR MENSAJE AL DOCENTE
-# =====================================
-
-@app.route("/enviar_mensaje_docente", methods=["POST"])
-def enviar_mensaje_docente():
-
-
-    usuario = session.get("usuario")
-
-
-    estudiante = db.estudiantes.find_one({
-
-        "padre":{
-
-            "$regex": usuario,
-
-            "$options":"i"
-
-        }
-
-    })
-
-
-    if not estudiante:
-
-        return "Estudiante no encontrado"
-
-
-
-    db.mensajes.insert_one({
-
-        "padre": usuario,
-
-        "estudiante": estudiante.get("nombre"),
-
-        "docente": request.form.get("docente_id"),
-
-        "mensaje": request.form.get("mensaje"),
-
-        "fecha": datetime.now(),
-
-        "estado": "Pendiente"
-
-    })
-
-
-    flash(
-        "Mensaje enviado correctamente al docente",
-        "success"
-    )
-
-
-    return redirect("/estudiante")
-
-    # =====================================
-    # BUSCAR ESTUDIANTE
-    # =====================================
-
-    estudiante = db.estudiantes.find_one({
-
-        "padre": {
-            "$regex": usuario,
-            "$options": "i"
-        }
-
-    })
-
-
-
-    if not estudiante:
-
-        return "Estudiante no encontrado"
-
-
-
-    print("ESTUDIANTE ENCONTRADO:", estudiante["nombre"])
-
-
-
-
-    # =====================================
-    # NOTAS DEL ESTUDIANTE
-    # =====================================
-
-    notas = list(
-
-        db.notas.find({
-
-            "estudiante_id": estudiante["codigo"]
-
+        estudiante_existente = db.estudiantes.find_one({
+            "_id": codigo
         })
 
-    )
+        # ==================================================
+        # VERIFICAR MATRÍCULA EXISTENTE
+        # ==================================================
 
+        matricula_existente = db.matriculas.find_one({
+            "estudiante_id": codigo,
+            "anio_lectivo": 2026
+        })
 
+        if matricula_existente:
 
-    for n in notas:
+            flash(
+                f"El estudiante {codigo} ya tiene "
+                f"una matrícula registrada para 2026.",
+                "warning"
+            )
 
+            print(
+                "MATRÍCULA YA EXISTE:",
+                codigo
+            )
 
-        acumulado = sum([
+            return redirect(
+                url_for("listar_matriculas")
+            )
 
-            n.get("ep1",0),
-            n.get("ep2",0),
-            n.get("ep3",0),
-            n.get("ep4",0),
-            n.get("ep5",0),
-            n.get("ep6",0),
-            n.get("ep7",0),
-            n.get("ep8",0),
-            n.get("ep9",0),
-            n.get("ep10",0)
+        # ==================================================
+        # NOMBRE COMPLETO
+        # ==================================================
 
-        ])
-
-
-
-        n["acumulado"] = acumulado
-
-
-        n["promedio"] = round(
-
-            acumulado / 10,
-
-            2
-
+        nombre_completo = " ".join(
+            parte
+            for parte in [
+                primer_nombre,
+                segundo_nombre,
+                primer_apellido,
+                segundo_apellido
+            ]
+            if parte
         )
 
+        # ==================================================
+        # FECHA DE NACIMIENTO
+        # ==================================================
 
+        dia = request.form.get(
+            "dia_nacimiento",
+            ""
+        ).strip()
 
-        if n["promedio"] >= 60:
+        mes = request.form.get(
+            "mes_nacimiento",
+            ""
+        ).strip()
 
-            n["estado"] = "Aprobado"
+        anio = request.form.get(
+            "anio_nacimiento",
+            ""
+        ).strip()
+
+        if dia and mes and anio:
+
+            fecha_nacimiento = (
+                f"{anio}-"
+                f"{mes.zfill(2)}-"
+                f"{dia.zfill(2)}"
+            )
 
         else:
 
-            n["estado"] = "Pendiente"
+            fecha_nacimiento = ""
 
+        # ==================================================
+        # DATOS GENERALES
+        # ==================================================
 
+        grado = request.form.get(
+            "grado",
+            ""
+        ).strip()
 
+        seccion = request.form.get(
+            "seccion",
+            ""
+        ).strip()
 
+        edad = request.form.get(
+            "edad",
+            ""
+        ).strip()
 
+        genero = request.form.get(
+            "genero",
+            ""
+        ).strip()
 
+        lugar_nacimiento = request.form.get(
+            "lugar_nacimiento",
+            ""
+        ).strip()
 
-    # =====================================
-    # DOCENTES DEL ESTUDIANTE
-    # =====================================
+        talla = request.form.get(
+            "talla",
+            ""
+        ).strip()
 
-    docentes = []
+        peso = request.form.get(
+            "peso",
+            ""
+        ).strip()
 
+        tipo_sangre = request.form.get(
+            "tipo_sangre",
+            ""
+        ).strip()
 
+        # ==================================================
+        # UBICACIÓN
+        # ==================================================
 
-    asignaturas = list(
+        direccion = request.form.get(
+            "direccion",
+            ""
+        ).strip()
 
-        db.asignaturas.find({
+        barrio = request.form.get(
+            "barrio",
+            ""
+        ).strip()
 
-            "grado": estudiante.get("grado"),
+        telefono = request.form.get(
+            "telefono",
+            ""
+        ).strip()
 
-            "seccion": estudiante.get("seccion")
+        celular = request.form.get(
+            "celular",
+            ""
+        ).strip()
 
-        })
+        # ==================================================
+        # INFORMACIÓN LINGÜÍSTICA
+        # ==================================================
 
-    )
+        lengua_materna = request.form.get(
+            "lengua_materna",
+            ""
+        ).strip()
 
+        idioma = request.form.get(
+            "idioma",
+            ""
+        ).strip()
 
+        curso_ingles = request.form.get(
+            "curso_ingles",
+            ""
+        ).strip()
 
-    for asignatura in asignaturas:
+        grupo_etnico = request.form.get(
+            "grupo_etnico",
+            ""
+        ).strip()
 
+        # ==================================================
+        # CAPACIDADES
+        # ==================================================
 
+        capacidades = request.form.getlist(
+            "capacidades"
+        )
 
-        docente = db.docentes.find_one({
+        observaciones = request.form.get(
+            "observaciones",
+            ""
+        ).strip()
 
-            "_id": asignatura.get("docente_id")
+        # ==================================================
+        # PADRE
+        # ==================================================
 
-        })
+        padre_nombre = request.form.get(
+            "padre_nombre",
+            ""
+        ).strip()
 
+        padre_cedula = request.form.get(
+            "padre_cedula",
+            ""
+        ).strip()
 
+        padre_telefono = request.form.get(
+            "padre_telefono",
+            ""
+        ).strip()
 
-        if docente:
+        padre_celular = request.form.get(
+            "padre_celular",
+            ""
+        ).strip()
 
+        padre_ocupacion = request.form.get(
+            "padre_ocupacion",
+            ""
+        ).strip()
 
-            docentes.append({
+        # ==================================================
+        # MADRE
+        # ==================================================
 
-                "nombre":
-                    docente.get("nombre"),
+        madre_nombre = request.form.get(
+            "madre_nombre",
+            ""
+        ).strip()
 
+        madre_cedula = request.form.get(
+            "madre_cedula",
+            ""
+        ).strip()
+
+        madre_telefono = request.form.get(
+            "madre_telefono",
+            ""
+        ).strip()
+
+        madre_celular = request.form.get(
+            "madre_celular",
+            ""
+        ).strip()
+
+        madre_ocupacion = request.form.get(
+            "madre_ocupacion",
+            ""
+        ).strip()
+
+        # ==================================================
+        # TUTOR
+        # ==================================================
+
+        tutor_nombre = request.form.get(
+            "tutor_nombre",
+            ""
+        ).strip()
+
+        tutor_parentesco = request.form.get(
+            "tutor_parentesco",
+            ""
+        ).strip()
+
+        tutor_cedula = request.form.get(
+            "tutor_cedula",
+            ""
+        ).strip()
+
+        tutor_celular = request.form.get(
+            "tutor_celular",
+            ""
+        ).strip()
+
+        tutor_ocupacion = request.form.get(
+            "tutor_ocupacion",
+            ""
+        ).strip()
+
+        # ==================================================
+        # FECHA DE MATRÍCULA
+        # ==================================================
+
+        fecha_matricula = request.form.get(
+            "fecha_matricula",
+            ""
+        ).strip()
+
+        # ==================================================
+        # CREAR ESTUDIANTE
+        # ==================================================
+
+        if not estudiante_existente:
+
+            estudiante = {
+
+                "_id": codigo,
+
+                "codigo": codigo,
+
+                "nombre": nombre_completo,
+
+                "primer_nombre":
+                    primer_nombre,
+
+                "segundo_nombre":
+                    segundo_nombre,
+
+                "primer_apellido":
+                    primer_apellido,
+
+                "segundo_apellido":
+                    segundo_apellido,
+
+                "fecha_nacimiento":
+                    fecha_nacimiento,
+
+                "grado":
+                    grado,
+
+                "seccion":
+                    seccion,
+
+                "edad":
+                    edad,
+
+                "genero":
+                    genero,
+
+                "lugar_nacimiento":
+                    lugar_nacimiento,
+
+                "talla":
+                    talla,
+
+                "peso":
+                    peso,
+
+                "tipo_sangre":
+                    tipo_sangre,
+
+                "direccion":
+                    direccion,
+
+                "barrio":
+                    barrio,
 
                 "telefono":
-                    docente.get("telefono"),
+                    telefono,
 
+                "celular":
+                    celular,
 
-                "materia":
-                    asignatura.get("nombre")
+                "padre":
+                    padre_nombre,
 
-            })
+                "madre":
+                    madre_nombre,
 
+                "tutor":
+                    tutor_nombre,
 
+                "estado":
+                    "activo",
 
-    print("DOCENTES ENCONTRADOS:")
+                "foto":
+                    "usuario.png"
+            }
 
-    print(docentes)
-
-
-
-
-
-
-
-    # =====================================
-    # RESUMEN ACADÉMICO
-    # =====================================
-
-
-    promedio_general = 0
-
-
-
-    if notas:
-
-
-        promedio_general = round(
-
-            sum(
-
-                n["promedio"]
-
-                for n in notas
-
+            resultado_estudiante = (
+                db.estudiantes.insert_one(
+                    estudiante
+                )
             )
 
-            /
+            print(
+                "ESTUDIANTE CREADO:",
+                resultado_estudiante.inserted_id
+            )
 
-            len(notas)
+        else:
 
-        ,2)
+            print(
+                "ESTUDIANTE YA EXISTÍA:",
+                codigo
+            )
+
+        # ==================================================
+        # CREAR MATRÍCULA
+        # ==================================================
+
+        matricula = {
+
+            "estudiante_id":
+                codigo,
+
+            "codigo":
+                codigo,
+
+            "fecha_matricula":
+                fecha_matricula,
+
+            "anio_lectivo":
+                2026,
+
+            "grado":
+                grado,
+
+            "seccion":
+                seccion,
+
+            # ==============================================
+            # ESTUDIANTE
+            # ==============================================
+
+            "estudiante": {
+
+                "primer_apellido":
+                    primer_apellido,
+
+                "segundo_apellido":
+                    segundo_apellido,
+
+                "primer_nombre":
+                    primer_nombre,
+
+                "segundo_nombre":
+                    segundo_nombre,
+
+                "fecha_nacimiento":
+                    fecha_nacimiento,
+
+                "edad":
+                    edad,
+
+                "genero":
+                    genero,
+
+                "lugar_nacimiento":
+                    lugar_nacimiento,
+
+                "talla":
+                    talla,
+
+                "peso":
+                    peso,
+
+                "tipo_sangre":
+                    tipo_sangre
+            },
+
+            # ==============================================
+            # UBICACIÓN
+            # ==============================================
+
+            "ubicacion": {
+
+                "direccion":
+                    direccion,
+
+                "barrio":
+                    barrio,
+
+                "telefono":
+                    telefono,
+
+                "celular":
+                    celular
+            },
+
+            # ==============================================
+            # INFORMACIÓN LINGÜÍSTICA
+            # ==============================================
+
+            "informacion_linguistica": {
+
+                "lengua_materna":
+                    lengua_materna,
+
+                "idioma":
+                    idioma,
+
+                "curso_ingles":
+                    curso_ingles,
+
+                "grupo_etnico":
+                    grupo_etnico
+            },
+
+            # ==============================================
+            # CAPACIDADES
+            # ==============================================
+
+            "capacidades":
+                capacidades,
+
+            "observaciones":
+                observaciones,
+
+            # ==============================================
+            # PADRE
+            # ==============================================
+
+            "padre": {
+
+                "nombre":
+                    padre_nombre,
+
+                "cedula":
+                    padre_cedula,
+
+                "telefono":
+                    padre_telefono,
+
+                "celular":
+                    padre_celular,
+
+                "ocupacion":
+                    padre_ocupacion
+            },
+
+            # ==============================================
+            # MADRE
+            # ==============================================
+
+            "madre": {
+
+                "nombre":
+                    madre_nombre,
+
+                "cedula":
+                    madre_cedula,
+
+                "telefono":
+                    madre_telefono,
+
+                "celular":
+                    madre_celular,
+
+                "ocupacion":
+                    madre_ocupacion
+            },
+
+            # ==============================================
+            # TUTOR
+            # ==============================================
+
+            "tutor": {
+
+                "nombre":
+                    tutor_nombre,
+
+                "parentesco":
+                    tutor_parentesco,
+
+                "cedula":
+                    tutor_cedula,
+
+                "celular":
+                    tutor_celular,
+
+                "ocupacion":
+                    tutor_ocupacion
+            },
+
+            # ==============================================
+            # COMPROMISO
+            # ==============================================
+
+            "compromiso":
+                True,
+
+            "estado":
+                "activa"
+        }
+
+        # ==================================================
+        # GUARDAR MATRÍCULA
+        # ==================================================
+
+        resultado_matricula = (
+            db.matriculas.insert_one(
+                matricula
+            )
+        )
+
+        print("==========================================")
+        print("MATRÍCULA GUARDADA CORRECTAMENTE")
+        print("CÓDIGO:", codigo)
+        print(
+            "ID MATRÍCULA:",
+            resultado_matricula.inserted_id
+        )
+        print("==========================================")
+
+        # ==================================================
+        # MENSAJE
+        # ==================================================
+
+        flash(
+            f"¡Matrícula registrada correctamente! "
+            f"Código: {codigo}",
+            "success"
+        )
+
+        # ==================================================
+        # REGRESAR AL LISTADO
+        # ==================================================
+
+        return redirect(
+            url_for("listar_matriculas")
+        )
+
+    except Exception as e:
+
+        print("==========================================")
+        print("ERROR AL GUARDAR MATRÍCULA")
+        print("TIPO:", type(e).__name__)
+        print("ERROR:", repr(e))
+        print("==========================================")
+
+        flash(
+            f"No se pudo registrar la matrícula: {e}",
+            "danger"
+        )
+
+        return redirect(
+            url_for("agregar_matricula")
+        )
 
 
+# ==========================================================
+# VER MATRÍCULA
+# ==========================================================
+
+@app.route(
+    "/admin/matricula/ver/<codigo>"
+)
+@role_required("admin")
+def ver_matricula(codigo):
+
+    try:
+
+        print("==========================================")
+        print("VER MATRÍCULA")
+        print("CÓDIGO:", codigo)
+        print("==========================================")
+
+        matricula = db.matriculas.find_one({
+            "codigo": codigo
+        })
+
+        if not matricula:
+
+            flash(
+                "No se encontró la matrícula solicitada.",
+                "warning"
+            )
+
+            return redirect(
+                url_for("listar_matriculas")
+            )
+
+        estudiante = db.estudiantes.find_one({
+            "_id": codigo
+        })
+
+        return render_template(
+            "admin/ver_matricula.html",
+            matricula=matricula,
+            estudiante=estudiante
+        )
+
+    except Exception as e:
+
+        print("==========================================")
+        print("ERROR AL VER MATRÍCULA")
+        print("TIPO:", type(e).__name__)
+        print("ERROR:", repr(e))
+        print("==========================================")
+
+        flash(
+            f"No se pudo cargar la matrícula: {e}",
+            "danger"
+        )
+
+        return redirect(
+            url_for("listar_matriculas")
+        )
 
 
+# ==========================================================
+# EDITAR MATRÍCULA
+# ==========================================================
 
-    resumen = {
+@app.route(
+    "/admin/matricula/editar/<codigo>",
+    methods=["GET", "POST"]
+)
+@role_required("admin")
+def editar_matricula(codigo):
+
+    try:
+
+        print("==========================================")
+        print("EDITAR MATRÍCULA")
+        print("CÓDIGO:", codigo)
+        print("==========================================")
+
+        # ==================================================
+        # BUSCAR ESTUDIANTE
+        # ==================================================
+
+        estudiante = db.estudiantes.find_one({
+            "_id": codigo
+        })
+
+        if not estudiante:
+
+            flash(
+                "No se encontró el estudiante.",
+                "warning"
+            )
+
+            return redirect(
+                url_for("listar_matriculas")
+            )
+
+        # ==================================================
+        # BUSCAR MATRÍCULA
+        # ==================================================
+
+        matricula = db.matriculas.find_one({
+            "codigo": codigo
+        })
+
+        if not matricula:
+
+            flash(
+                "No se encontró la matrícula.",
+                "warning"
+            )
+
+            return redirect(
+                url_for("listar_matriculas")
+            )
+
+        # ==================================================
+        # GUARDAR CAMBIOS
+        # ==================================================
+
+        if request.method == "POST":
+
+            primer_nombre = request.form.get(
+                "primer_nombre",
+                ""
+            ).strip()
+
+            segundo_nombre = request.form.get(
+                "segundo_nombre",
+                ""
+            ).strip()
+
+            primer_apellido = request.form.get(
+                "primer_apellido",
+                ""
+            ).strip()
+
+            segundo_apellido = request.form.get(
+                "segundo_apellido",
+                ""
+            ).strip()
+
+            grado = request.form.get(
+                "grado",
+                ""
+            ).strip()
+
+            seccion = request.form.get(
+                "seccion",
+                ""
+            ).strip()
+
+            edad = request.form.get(
+                "edad",
+                ""
+            ).strip()
+
+            genero = request.form.get(
+                "genero",
+                ""
+            ).strip()
+
+            fecha_nacimiento = request.form.get(
+                "fecha_nacimiento",
+                ""
+            ).strip()
+
+            lugar_nacimiento = request.form.get(
+                "lugar_nacimiento",
+                ""
+            ).strip()
+
+            direccion = request.form.get(
+                "direccion",
+                ""
+            ).strip()
+
+            barrio = request.form.get(
+                "barrio",
+                ""
+            ).strip()
+
+            telefono = request.form.get(
+                "telefono",
+                ""
+            ).strip()
+
+            celular = request.form.get(
+                "celular",
+                ""
+            ).strip()
+
+            padre_nombre = request.form.get(
+                "padre_nombre",
+                ""
+            ).strip()
+
+            madre_nombre = request.form.get(
+                "madre_nombre",
+                ""
+            ).strip()
+
+            tutor_nombre = request.form.get(
+                "tutor_nombre",
+                ""
+            ).strip()
+
+            tutor_parentesco = request.form.get(
+                "tutor_parentesco",
+                ""
+            ).strip()
+
+            fecha_matricula = request.form.get(
+                "fecha_matricula",
+                ""
+            ).strip()
+
+            # ==================================================
+            # NOMBRE COMPLETO
+            # ==================================================
+
+            nombre_completo = " ".join(
+                parte
+                for parte in [
+                    primer_nombre,
+                    segundo_nombre,
+                    primer_apellido,
+                    segundo_apellido
+                ]
+                if parte
+            )
+
+            # ==================================================
+            # ACTUALIZAR ESTUDIANTE
+            # ==================================================
+
+            db.estudiantes.update_one(
+                {
+                    "_id": codigo
+                },
+                {
+                    "$set": {
+
+                        "nombre":
+                            nombre_completo,
+
+                        "primer_nombre":
+                            primer_nombre,
+
+                        "segundo_nombre":
+                            segundo_nombre,
+
+                        "primer_apellido":
+                            primer_apellido,
+
+                        "segundo_apellido":
+                            segundo_apellido,
+
+                        "fecha_nacimiento":
+                            fecha_nacimiento,
+
+                        "grado":
+                            grado,
+
+                        "seccion":
+                            seccion,
+
+                        "edad":
+                            edad,
+
+                        "genero":
+                            genero,
+
+                        "lugar_nacimiento":
+                            lugar_nacimiento,
+
+                        "direccion":
+                            direccion,
+
+                        "barrio":
+                            barrio,
+
+                        "telefono":
+                            telefono,
+
+                        "celular":
+                            celular,
+
+                        "padre":
+                            padre_nombre,
+
+                        "madre":
+                            madre_nombre,
+
+                        "tutor":
+                            tutor_nombre
+                    }
+                }
+            )
+
+            # ==================================================
+            # ACTUALIZAR MATRÍCULA
+            # ==================================================
+
+            db.matriculas.update_one(
+                {
+                    "codigo": codigo
+                },
+                {
+                    "$set": {
+
+                        "grado":
+                            grado,
+
+                        "seccion":
+                            seccion,
+
+                        "fecha_matricula":
+                            fecha_matricula,
+
+                        "estudiante.primer_nombre":
+                            primer_nombre,
+
+                        "estudiante.segundo_nombre":
+                            segundo_nombre,
+
+                        "estudiante.primer_apellido":
+                            primer_apellido,
+
+                        "estudiante.segundo_apellido":
+                            segundo_apellido,
+
+                        "estudiante.fecha_nacimiento":
+                            fecha_nacimiento,
+
+                        "estudiante.edad":
+                            edad,
+
+                        "estudiante.genero":
+                            genero,
+
+                        "estudiante.lugar_nacimiento":
+                            lugar_nacimiento,
+
+                        "ubicacion.direccion":
+                            direccion,
+
+                        "ubicacion.barrio":
+                            barrio,
+
+                        "ubicacion.telefono":
+                            telefono,
+
+                        "ubicacion.celular":
+                            celular,
+
+                        "padre.nombre":
+                            padre_nombre,
+
+                        "madre.nombre":
+                            madre_nombre,
+
+                        "tutor.nombre":
+                            tutor_nombre,
+
+                        "tutor.parentesco":
+                            tutor_parentesco
+                    }
+                }
+            )
+
+            print(
+                "MATRÍCULA ACTUALIZADA:",
+                codigo
+            )
+
+            flash(
+                f"Los datos de {nombre_completo} "
+                f"fueron actualizados correctamente.",
+                "success"
+            )
+
+            return redirect(
+                url_for("listar_matriculas")
+            )
+
+        # ==================================================
+        # MOSTRAR FORMULARIO DE EDICIÓN
+        # ==================================================
+
+        return render_template(
+            "admin/editar_matricula.html",
+            estudiante=estudiante,
+            matricula=matricula
+        )
+
+    except Exception as e:
+
+        print("==========================================")
+        print("ERROR AL EDITAR MATRÍCULA")
+        print("TIPO:", type(e).__name__)
+        print("ERROR:", repr(e))
+        print("==========================================")
+
+        flash(
+            f"No se pudo editar la matrícula: {e}",
+            "danger"
+        )
+
+        return redirect(
+            url_for("listar_matriculas")
+        )
 
 
-        "promedio":
+# ==========================================================
+# DESACTIVAR MATRÍCULA
+# ==========================================================
 
-            promedio_general,
+@app.route(
+    "/admin/matricula/desactivar/<matricula_id>",
+    methods=["POST"]
+)
+@role_required("admin")
+def desactivar_matricula(matricula_id):
 
+    try:
 
+        print("==========================================")
+        print("DESACTIVAR MATRÍCULA")
+        print("ID:", matricula_id)
+        print("==========================================")
 
-        "asistencia":
+        # ==================================================
+        # VALIDAR OBJECTID
+        # ==================================================
 
-            0,
+        if not ObjectId.is_valid(matricula_id):
 
+            flash(
+                "El identificador de la matrícula no es válido.",
+                "danger"
+            )
 
+            return redirect(
+                url_for("listar_matriculas")
+            )
 
-        "estado":
+        object_id = ObjectId(matricula_id)
 
-            "Aprobado"
+        # ==================================================
+        # BUSCAR MATRÍCULA
+        # ==================================================
 
-            if promedio_general >= 60
+        matricula = db.matriculas.find_one({
+            "_id": object_id
+        })
 
-            else
+        if not matricula:
 
-            "Pendiente"
+            flash(
+                "No se encontró la matrícula.",
+                "warning"
+            )
 
+            return redirect(
+                url_for("listar_matriculas")
+            )
 
-    }
+        # ==================================================
+        # DESACTIVAR
+        # ==================================================
 
+        resultado = db.matriculas.update_one(
+            {
+                "_id": object_id
+            },
+            {
+                "$set": {
+                    "estado": "inactiva"
+                }
+            }
+        )
 
+        if resultado.modified_count > 0:
 
+            flash(
+                "Matrícula desactivada correctamente.",
+                "success"
+            )
 
+            print(
+                "MATRÍCULA DESACTIVADA:",
+                matricula.get("codigo")
+            )
 
-    # =====================================
-    # CARGAR DASHBOARD
-    # =====================================
+        else:
 
+            flash(
+                "La matrícula ya estaba inactiva.",
+                "info"
+            )
 
-    return render_template(
+        return redirect(
+            url_for("listar_matriculas")
+        )
 
-        "estudiante_dashboard.html",
+    except Exception as e:
 
-        estudiante=estudiante,
+        print("==========================================")
+        print("ERROR AL DESACTIVAR MATRÍCULA")
+        print("TIPO:", type(e).__name__)
+        print("ERROR:", repr(e))
+        print("==========================================")
 
-        notas=notas,
+        flash(
+            f"No se pudo desactivar la matrícula: {e}",
+            "danger"
+        )
 
-        docentes=docentes,
-
-        resumen=resumen,
-
-        mensajes=mensajes
-
-    )
+        return redirect(
+            url_for("listar_matriculas")
+        )
 # =========================
 # LISTAR-ASIGNATURA
 # =========================
@@ -1633,9 +2410,6 @@ def guardar_nota_clase():
         )
     )
 
-# ==================================================
-# REPORTES ADMINISTRATIVOS CIEM
-# ==================================================
 
 
 # =========================

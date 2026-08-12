@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -572,17 +571,20 @@
              BOTÓN VOLVER
         ======================================= -->
 
-        <a href="{{ url_for('docente.estudiantes') }}"
-        class="volver">
-            ← Volver a Mis Estudiantes
+        <a
+            href="{{ url_for('estudiante.dashboard') }}"
+            class="volver"
+        >
+            ← Volver al dashboard
         </a>
     
-<a
-    href="{{ url_for('docente.boletin_pdf_estudiante', estudiante_id=estudiante._id) }}"
-    class="volver"
->
-    📄 Generar PDF
-</a>
+    <a
+        href="{{ url_for('estudiante.boletin_pdf') }}"
+        class="volver"
+    >
+        📄 Generar PDF
+    </a>
+
         <!-- ======================================
              BOLETÍN
         ======================================= -->

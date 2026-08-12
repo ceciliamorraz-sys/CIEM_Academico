@@ -1,0 +1,1884 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Nueva Matrícula | CIEM Académico</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            background: #f3f6fa;
+
+            color: #1d3256;
+
+        }
+
+
+        /* ==========================================
+           CONTENEDOR
+        ========================================== */
+
+        .contenedor {
+
+            width: 94%;
+
+            max-width: 1300px;
+
+            margin: 30px auto;
+
+        }
+
+
+        /* ==========================================
+           ENCABEZADO
+        ========================================== */
+
+        .encabezado {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #08142C,
+                    #0D2A52
+                );
+
+            color: white;
+
+            padding: 28px 35px;
+
+            border-radius:
+                14px 14px 0 0;
+
+            box-shadow:
+                0 5px 18px
+                rgba(0,0,0,.12);
+
+        }
+
+
+        .encabezado-superior {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            gap: 20px;
+
+        }
+
+
+        .titulo h1 {
+
+            margin: 0;
+
+            font-size: 28px;
+
+        }
+
+
+        .titulo p {
+
+            margin:
+                7px 0 0;
+
+            font-size: 14px;
+
+            opacity: .85;
+
+        }
+
+
+        .anio {
+
+            background: #FFC107;
+
+            color: #08142C;
+
+            padding:
+                8px 18px;
+
+            border-radius: 20px;
+
+            font-weight: bold;
+
+            white-space: nowrap;
+
+        }
+
+
+        /* ==========================================
+           CONTENIDO
+        ========================================== */
+
+        .contenido {
+
+            background: white;
+
+            padding: 30px;
+
+            border-radius:
+                0 0 14px 14px;
+
+            box-shadow:
+                0 5px 18px
+                rgba(0,0,0,.08);
+
+        }
+
+
+        /* ==========================================
+           SECCIONES
+        ========================================== */
+
+        .seccion {
+
+            border:
+                1px solid #dfe5ec;
+
+            border-radius: 11px;
+
+            margin-bottom: 25px;
+
+            overflow: hidden;
+
+        }
+
+
+        .titulo-seccion {
+
+            background: #0D2A52;
+
+            color: white;
+
+            padding:
+                14px 20px;
+
+            font-size: 17px;
+
+            font-weight: 600;
+
+        }
+
+
+        .contenido-seccion {
+
+            padding: 22px;
+
+        }
+
+
+        /* ==========================================
+           GRID
+        ========================================== */
+
+        .grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+
+        }
+
+
+        .grid-3 {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+
+        }
+
+
+        .grid-2 {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 18px;
+
+        }
+
+
+        .campo {
+
+            display: flex;
+
+            flex-direction: column;
+
+        }
+
+
+        .campo label {
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            margin-bottom: 7px;
+
+            color: #1d3256;
+
+        }
+
+
+        .campo input,
+        .campo select,
+        .campo textarea {
+
+            width: 100%;
+
+            padding:
+                10px 12px;
+
+            border:
+                1px solid #ccd5df;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+
+            background: white;
+
+            outline: none;
+
+        }
+
+
+        .campo input:focus,
+        .campo select:focus,
+        .campo textarea:focus {
+
+            border-color: #1E4E8C;
+
+            box-shadow:
+                0 0 0 2px
+                rgba(30,78,140,.10);
+
+        }
+
+
+        .campo textarea {
+
+            min-height: 90px;
+
+            resize: vertical;
+
+        }
+
+
+        /* ==========================================
+           CHECKBOXES
+        ========================================== */
+
+        .opciones {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 10px;
+
+        }
+
+
+        .check {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 10px;
+
+            border:
+                1px solid #e0e5eb;
+
+            border-radius: 7px;
+
+            background: #f8fafc;
+
+            font-size: 13px;
+
+            cursor: pointer;
+
+        }
+
+
+        .check input {
+
+            accent-color:
+                #1E4E8C;
+
+        }
+
+
+        /* ==========================================
+           PADRES / TUTOR
+        ========================================== */
+
+        .familia {
+
+            border:
+                1px solid #dce3eb;
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+        }
+
+
+        .familia-titulo {
+
+            background: #eef3f8;
+
+            padding: 12px 15px;
+
+            font-weight: bold;
+
+            color: #0D2A52;
+
+        }
+
+
+        .familia-contenido {
+
+            padding: 18px;
+
+        }
+
+
+        /* ==========================================
+           NOTA
+        ========================================== */
+
+        .nota {
+
+            background: #fff8df;
+
+            border-left:
+                4px solid #FFC107;
+
+            padding:
+                12px 15px;
+
+            margin-top: 18px;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+        }
+
+
+        /* ==========================================
+           COMPROMISO
+        ========================================== */
+
+        .compromiso {
+
+            background: #f7f9fb;
+
+            border:
+                1px solid #dce3eb;
+
+            padding: 20px;
+
+            border-radius: 10px;
+
+            line-height: 1.6;
+
+            font-size: 14px;
+
+        }
+
+
+        .aceptacion {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-top: 15px;
+
+            font-weight: 600;
+
+        }
+
+
+        .aceptacion input {
+
+            width: 18px;
+
+            height: 18px;
+
+            accent-color:
+                #0D2A52;
+
+        }
+
+
+        /* ==========================================
+           BOTONES
+        ========================================== */
+
+        .acciones {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-top: 25px;
+
+            padding-top: 20px;
+
+            border-top:
+                1px solid #e1e5ea;
+
+        }
+
+
+        .grupo-botones {
+
+            display: flex;
+
+            gap: 10px;
+
+        }
+
+
+        .btn {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding:
+                11px 22px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            text-decoration: none;
+
+            cursor: pointer;
+
+        }
+
+
+        .btn-regresar {
+
+            background: #6c757d;
+
+            color: white;
+
+        }
+
+
+        .btn-limpiar {
+
+            background: #e9ecef;
+
+            color: #1d3256;
+
+        }
+
+
+        .btn-guardar {
+
+            background: #0D2A52;
+
+            color: white;
+
+        }
+
+
+        .btn-guardar:hover {
+
+            background: #1E4E8C;
+
+        }
+
+
+        /* ==========================================
+           RESPONSIVE
+        ========================================== */
+
+        @media (max-width: 1000px) {
+
+            .grid,
+            .grid-3,
+            .opciones {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .grid,
+            .grid-2,
+            .grid-3,
+            .opciones {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .encabezado-superior {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+            }
+
+
+            .contenido {
+
+                padding: 15px;
+
+            }
+
+
+            .acciones {
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+            }
+
+
+            .grupo-botones {
+
+                width: 100%;
+
+            }
+
+
+            .btn {
+
+                flex: 1;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="contenedor">
+
+
+    <!-- ==========================================
+         ENCABEZADO
+    =========================================== -->
+
+    <div class="encabezado">
+
+        <div class="encabezado-superior">
+
+            <div class="titulo">
+
+                <h1>
+                    📋 Hoja de Matrícula
+                </h1>
+
+                <p>
+                    Colegio Integral Emanuel Matagalpa - CIEM
+                </p>
+
+            </div>
+
+
+            <div class="anio">
+                Año Lectivo 2026
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==========================================
+         FORMULARIO
+    =========================================== -->
+
+    <div class="contenido">
+
+
+        <form
+            method="POST"
+            action="{{ url_for('agregar_matricula') }}"
+        >
+
+
+            <!-- ======================================
+                 INFORMACIÓN DE MATRÍCULA
+            ======================================= -->
+
+            <div class="seccion">
+
+                <div class="titulo-seccion">
+                    📌 Información de Matrícula
+                </div>
+
+
+                <div class="contenido-seccion">
+
+                    <div class="grid">
+
+
+                        <div class="campo">
+
+                            <label>
+                                Fecha de matrícula
+                            </label>
+
+                            <input
+                                type="date"
+                                name="fecha_matricula"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Código del estudiante
+                            </label>
+
+                            <input
+                                type="text"
+                                name="codigo"
+                                placeholder="Ej. CIEM-2026-001"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Grado
+                            </label>
+
+                            <select
+                                name="grado"
+                                required
+                            >
+
+                                <option value="">
+                                    Seleccione
+                                </option>
+
+                                <option>Preescolar</option>
+                                <option>1er Grado</option>
+                                <option>2do Grado</option>
+                                <option>3er Grado</option>
+                                <option>4to Grado</option>
+                                <option>5to Grado</option>
+                                <option>6to Grado</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Sección
+                            </label>
+
+                            <select
+                                name="seccion"
+                                required
+                            >
+
+                                <option value="">
+                                    Seleccione
+                                </option>
+
+                                <option>A</option>
+                                <option>B</option>
+                                <option>C</option>
+
+                            </select>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ======================================
+                 INFORMACIÓN DEL ESTUDIANTE
+            ======================================= -->
+
+            <div class="seccion">
+
+                <div class="titulo-seccion">
+                    👦 Información del Estudiante
+                </div>
+
+
+                <div class="contenido-seccion">
+
+
+                    <div class="grid-2">
+
+
+                        <div class="campo">
+
+                            <label>
+                                1er Apellido
+                            </label>
+
+                            <input
+                                type="text"
+                                name="primer_apellido"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                2do Apellido
+                            </label>
+
+                            <input
+                                type="text"
+                                name="segundo_apellido"
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                1er Nombre
+                            </label>
+
+                            <input
+                                type="text"
+                                name="primer_nombre"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                2do Nombre
+                            </label>
+
+                            <input
+                                type="text"
+                                name="segundo_nombre"
+                            >
+
+                        </div>
+
+
+                    </div>
+
+
+                    <br>
+
+
+                    <div class="grid">
+
+
+                        <div class="campo">
+
+                            <label>
+                                Día de nacimiento
+                            </label>
+
+                            <input
+                                type="number"
+                                name="dia_nacimiento"
+                                min="1"
+                                max="31"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Mes
+                            </label>
+
+                            <select
+                                name="mes_nacimiento"
+                                required
+                            >
+
+                                <option value="">
+                                    Seleccione
+                                </option>
+
+                                <option value="01">Enero</option>
+                                <option value="02">Febrero</option>
+                                <option value="03">Marzo</option>
+                                <option value="04">Abril</option>
+                                <option value="05">Mayo</option>
+                                <option value="06">Junio</option>
+                                <option value="07">Julio</option>
+                                <option value="08">Agosto</option>
+                                <option value="09">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Año
+                            </label>
+
+                            <input
+                                type="number"
+                                name="anio_nacimiento"
+                                min="1900"
+                                max="2026"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Edad
+                            </label>
+
+                            <input
+                                type="number"
+                                name="edad"
+                                min="1"
+                                max="100"
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Género
+                            </label>
+
+                            <select name="genero">
+
+                                <option value="">
+                                    Seleccione
+                                </option>
+
+                                <option value="M">
+                                    Masculino
+                                </option>
+
+                                <option value="F">
+                                    Femenino
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Lugar de nacimiento
+                            </label>
+
+                            <input
+                                type="text"
+                                name="lugar_nacimiento"
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Talla
+                            </label>
+
+                            <input
+                                type="text"
+                                name="talla"
+                                placeholder="Ej. 1.35 m"
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Peso
+                            </label>
+
+                            <input
+                                type="text"
+                                name="peso"
+                                placeholder="Ej. 35 kg"
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Tipo de sangre
+                            </label>
+
+                            <select name="tipo_sangre">
+
+                                <option value="">
+                                    Seleccione
+                                </option>
+
+                                <option>O+</option>
+                                <option>O-</option>
+                                <option>A+</option>
+                                <option>A-</option>
+                                <option>B+</option>
+                                <option>B-</option>
+                                <option>AB+</option>
+                                <option>AB-</option>
+
+                            </select>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ======================================
+                 UBICACIÓN
+            ======================================= -->
+
+            <div class="seccion">
+
+                <div class="titulo-seccion">
+                    📍 Ubicación del Estudiante
+                </div>
+
+
+                <div class="contenido-seccion">
+
+                    <div class="grid-2">
+
+
+                        <div class="campo">
+
+                            <label>
+                                Dirección
+                            </label>
+
+                            <input
+                                type="text"
+                                name="direccion"
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Barrio
+                            </label>
+
+                            <input
+                                type="text"
+                                name="barrio"
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Teléfono
+                            </label>
+
+                            <input
+                                type="tel"
+                                name="telefono"
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Celular
+                            </label>
+
+                            <input
+                                type="tel"
+                                name="celular"
+                            >
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ======================================
+                 INFORMACIÓN LINGÜÍSTICA
+            ======================================= -->
+
+            <div class="seccion">
+
+                <div class="titulo-seccion">
+                    🌎 Información Lingüística y Cultural
+                </div>
+
+
+                <div class="contenido-seccion">
+
+                    <div class="grid-2">
+
+
+                        <div class="campo">
+
+                            <label>
+                                Lengua materna
+                            </label>
+
+                            <input
+                                type="text"
+                                name="lengua_materna"
+                                placeholder="Ej. Español"
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Grupo étnico
+                            </label>
+
+                            <input
+                                type="text"
+                                name="grupo_etnico"
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Idioma
+                            </label>
+
+                            <select name="idioma">
+
+                                <option value="Español">
+                                    Español
+                                </option>
+
+                                <option value="Inglés">
+                                    Inglés
+                                </option>
+
+                                <option value="Español e Inglés">
+                                    Español e Inglés
+                                </option>
+
+                                <option value="Otro">
+                                    Otro
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                ¿Ha recibido curso de inglés?
+                            </label>
+
+                            <select
+                                name="curso_ingles"
+                            >
+
+                                <option value="">
+                                    Seleccione
+                                </option>
+
+                                <option value="Si">
+                                    Sí
+                                </option>
+
+                                <option value="No">
+                                    No
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ======================================
+                 CAPACIDADES
+            ======================================= -->
+
+            <div class="seccion">
+
+                <div class="titulo-seccion">
+                    ♿ Limitaciones o Capacidades Excepcionales
+                </div>
+
+
+                <div class="contenido-seccion">
+
+
+                    <div class="opciones">
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="Discapacidades"
+                            >
+                            Discapacidades
+                        </label>
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="Síndrome de Down"
+                            >
+                            Síndrome de Down
+                        </label>
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="TDAH"
+                            >
+                            TDAH
+                        </label>
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="Baja Visión"
+                            >
+                            Baja Visión
+                        </label>
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="Altas Capacidades"
+                            >
+                            Altas Capacidades
+                        </label>
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="Superdotado"
+                            >
+                            Superdotado
+                        </label>
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="Tecnológico"
+                            >
+                            Tecnológico
+                        </label>
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="TEA"
+                            >
+                            TEA
+                        </label>
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="Hiperactividad"
+                            >
+                            Hiperactividad
+                        </label>
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="Ceguera"
+                            >
+                            Ceguera
+                        </label>
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="Científico"
+                            >
+                            Científico
+                        </label>
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="Musical"
+                            >
+                            Musical
+                        </label>
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="TDA"
+                            >
+                            TDA
+                        </label>
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="Sordera"
+                            >
+                            Sordera
+                        </label>
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="Artístico"
+                            >
+                            Artístico
+                        </label>
+
+
+                        <label class="check">
+                            <input
+                                type="checkbox"
+                                name="capacidades"
+                                value="Deportivo"
+                            >
+                            Deportivo
+                        </label>
+
+
+                    </div>
+
+
+                    <div class="nota">
+
+                        <strong>
+                            Nota:
+                        </strong>
+
+                        En caso de discapacidad o condición
+                        que requiera documentación, se debe
+                        anexar el diagnóstico correspondiente.
+
+                    </div>
+
+
+                    <br>
+
+
+                    <div class="campo">
+
+                        <label>
+                            Observaciones / diagnóstico
+                        </label>
+
+                        <textarea
+                            name="observaciones"
+                            placeholder="Escriba aquí información adicional relevante..."
+                        ></textarea>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ======================================
+                 PADRE / MADRE / TUTOR
+            ======================================= -->
+
+            <div class="seccion">
+
+                <div class="titulo-seccion">
+                    👨‍👩‍👦 Información de Padres, Madres y/o Tutor
+                </div>
+
+
+                <div class="contenido-seccion">
+
+                    <div class="grid-3">
+
+
+                        <!-- PADRE -->
+
+                        <div class="familia">
+
+                            <div class="familia-titulo">
+                                👨 Padre
+                            </div>
+
+
+                            <div class="familia-contenido">
+
+
+                                <div class="campo">
+
+                                    <label>
+                                        Nombre completo
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="padre_nombre"
+                                    >
+
+                                </div>
+
+
+                                <br>
+
+
+                                <div class="campo">
+
+                                    <label>
+                                        Cédula
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="padre_cedula"
+                                    >
+
+                                </div>
+
+
+                                <br>
+
+
+                                <div class="campo">
+
+                                    <label>
+                                        Teléfono
+                                    </label>
+
+                                    <input
+                                        type="tel"
+                                        name="padre_telefono"
+                                    >
+
+                                </div>
+
+
+                                <br>
+
+
+                                <div class="campo">
+
+                                    <label>
+                                        Celular
+                                    </label>
+
+                                    <input
+                                        type="tel"
+                                        name="padre_celular"
+                                    >
+
+                                </div>
+
+
+                                <br>
+
+
+                                <div class="campo">
+
+                                    <label>
+                                        Ocupación
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="padre_ocupacion"
+                                    >
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- MADRE -->
+
+                        <div class="familia">
+
+                            <div class="familia-titulo">
+                                👩 Madre
+                            </div>
+
+
+                            <div class="familia-contenido">
+
+
+                                <div class="campo">
+
+                                    <label>
+                                        Nombre completo
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="madre_nombre"
+                                    >
+
+                                </div>
+
+
+                                <br>
+
+
+                                <div class="campo">
+
+                                    <label>
+                                        Cédula
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="madre_cedula"
+                                    >
+
+                                </div>
+
+
+                                <br>
+
+
+                                <div class="campo">
+
+                                    <label>
+                                        Teléfono
+                                    </label>
+
+                                    <input
+                                        type="tel"
+                                        name="madre_telefono"
+                                    >
+
+                                </div>
+
+
+                                <br>
+
+
+                                <div class="campo">
+
+                                    <label>
+                                        Celular
+                                    </label>
+
+                                    <input
+                                        type="tel"
+                                        name="madre_celular"
+                                    >
+
+                                </div>
+
+
+                                <br>
+
+
+                                <div class="campo">
+
+                                    <label>
+                                        Ocupación
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="madre_ocupacion"
+                                    >
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- TUTOR -->
+
+                        <div class="familia">
+
+                            <div class="familia-titulo">
+                                👤 Tutor
+                            </div>
+
+
+                            <div class="familia-contenido">
+
+
+                                <div class="campo">
+
+                                    <label>
+                                        Nombre completo
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="tutor_nombre"
+                                    >
+
+                                </div>
+
+
+                                <br>
+
+
+                                <div class="campo">
+
+                                    <label>
+                                        Parentesco
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="tutor_parentesco"
+                                    >
+
+                                </div>
+
+
+                                <br>
+
+
+                                <div class="campo">
+
+                                    <label>
+                                        Cédula
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="tutor_cedula"
+                                    >
+
+                                </div>
+
+
+                                <br>
+
+
+                                <div class="campo">
+
+                                    <label>
+                                        Celular
+                                    </label>
+
+                                    <input
+                                        type="tel"
+                                        name="tutor_celular"
+                                    >
+
+                                </div>
+
+
+                                <br>
+
+
+                                <div class="campo">
+
+                                    <label>
+                                        Ocupación
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="tutor_ocupacion"
+                                    >
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ======================================
+                 COMPROMISO
+            ======================================= -->
+
+            <div class="seccion">
+
+                <div class="titulo-seccion">
+                    ✅ Compromiso Institucional
+                </div>
+
+
+                <div class="contenido-seccion">
+
+
+                    <div class="compromiso">
+
+                        Acepto cumplir con el Plan Educativo
+                        Institucional, Manual de Convivencia
+                        Escolar y políticas internas del
+                        Colegio Integral Emanuel Matagalpa.
+
+
+                        <div class="aceptacion">
+
+                            <input
+                                type="checkbox"
+                                id="acepto"
+                                name="acepto"
+                                value="si"
+                                required
+                            >
+
+                            <label for="acepto">
+
+                                Acepto los términos y condiciones
+                                institucionales.
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ======================================
+                 BOTONES
+            ======================================= -->
+
+            <div class="acciones">
+
+
+                <div class="grupo-botones">
+
+                    <a
+                        href="{{ url_for('listar_matriculas') }}"
+                        class="btn btn-regresar"
+                    >
+                        ← Cancelar
+                    </a>
+
+                </div>
+
+
+                <div class="grupo-botones">
+
+                    <button
+                        type="reset"
+                        class="btn btn-limpiar"
+                    >
+                        Limpiar
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-guardar"
+                    >
+                        💾 Guardar Matrícula
+                    </button>
+
+                </div>
+
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>
+```
