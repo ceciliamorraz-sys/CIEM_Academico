@@ -4,7 +4,7 @@
 
 <head>
 
-```
+
 <meta charset="UTF-8">
 
 <meta name="viewport"
@@ -1000,58 +1000,44 @@
 
 
         <form
-            method="POST"
-            action="{{ url_for('mensajes.crear') }}"
-            style="padding:20px;"
-        >
+    method="POST"
+    action="{{ url_for('mensajes.crear') }}"
+    style="padding:20px;"
+>
 
+    <select
+        name="docente_id"
+        required
+    >
 
-            <select
-                name="docente_id"
-                required
-            >
+        <option value="">
+            Seleccione docente
+        </option>
 
-                <option value="">
+        {% for docente in docentes %}
 
-                    Seleccione docente
+            <option value="{{ docente._id }}">
+                {{ docente.nombre }}
+            </option>
 
-                </option>
+        {% endfor %}
 
+    </select>
 
-                {% for docente in docentes %}
+    <textarea
+        name="mensaje"
+        placeholder="Escriba su mensaje..."
+        required
+    ></textarea>
 
-                    <option value="{{ docente._id }}">
+    <button
+        type="submit"
+        class="btn-enviar"
+    >
+        📩 Enviar mensaje
+    </button>
 
-                        {{ docente.nombre }}
-
-                    </option>
-
-                {% endfor %}
-
-
-            </select>
-
-
-
-            <textarea
-                name="mensaje"
-                placeholder="Escriba su mensaje..."
-                required
-            ></textarea>
-
-
-
-            <button
-                type="submit"
-                class="btn-enviar"
-            >
-
-                📩 Enviar mensaje
-
-            </button>
-
-
-        </form>
+</form>
 
 
     </section>
@@ -1341,7 +1327,6 @@
 
 
 </main>
-```
 
 </div>
 

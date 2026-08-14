@@ -1,190 +1,677 @@
+/* =========================================================
+   CIEM ACADÉMICO
+   AULAS / MIS CLASES
+   VERSIÓN ALTO CONTRASTE
+========================================================= */
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+:root {
+    --azul-oscuro: #08142C;
+    --azul-profundo: #0D2A52;
+    --azul: #1E4E8C;
+    --azul-claro: #E8F1FC;
+    --amarillo: #FFC107;
+    --verde: #198754;
+    --rojo: #C62828;
+    --blanco: #FFFFFF;
+    --fondo: #F3F6FA;
+    --texto: #172033;
+    --texto-secundario: #475569;
+    --texto-claro: #64748B;
+    --borde: #D5DDE8;
+    --sombra: 0 6px 20px rgba(8, 20, 44, 0.12);
+}
+
+
+/* =========================================================
+   REINICIO
+========================================================= */
+
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
+}
+
+html {
+    min-height: 100%;
 }
 
 body {
-    background: #F5F7FB;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: var(--fondo);
+    color: var(--texto);
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 16px;
 }
 
 
-/* ==========================
- ENCABEZADO
-========================== */
+/* =========================================================
+   PAGINA
+========================================================= */
 
-.header-page {
-    background: white;
-    padding: 25px;
-    border-radius: 18px;
-    margin-bottom: 30px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, .06);
-}
-
-.header-page h2 {
-    color: #08142C;
-    font-weight: 700;
-}
-
-.header-page h2 i {
-    color: #FFC107;
-    margin-right: 10px;
-}
-
-.header-page p {
-    color: #777;
-    margin: 5px 0 0;
+.pagina-aulas {
+    width: 100%;
+    min-height: 100vh;
 }
 
 
-/* ==========================
- TARJETAS DE CLASE
-========================== */
+/* =========================================================
+   ENCABEZADO
+========================================================= */
 
-.class-card {
-    background: white;
-    border-radius: 20px;
-    padding: 25px;
-    height: 100%;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, .07);
-    transition: .3s;
-    border-top: 5px solid #FFC107;
-}
-
-.class-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, .12);
+.encabezado-aulas {
+    width: 100%;
+    background: var(--azul-oscuro);
+    border-bottom: 5px solid var(--amarillo);
+    padding: 22px 35px;
 }
 
 
-/* ENCABEZADO TARJETA */
+/* =========================================================
+   CONTENIDO ENCABEZADO
+========================================================= */
 
-.class-header {
+.encabezado-contenido {
+    width: 100%;
+    max-width: 1450px;
+    margin: 0 auto;
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 20px;
+    gap: 24px;
 }
 
-.class-header i {
-    width: 50px;
-    height: 50px;
-    background: #08142C;
-    color: #FFC107;
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.logo-contenedor {
+    width: 78px;
+    height: 78px;
+    min-width: 78px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 15px;
-    font-size: 25px;
+    padding: 7px;
+    background: #FFFFFF;
+    border-radius: 14px;
+    overflow: hidden;
 }
 
-.class-header h4 {
+.logo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 64px;
+    max-height: 64px;
+    object-fit: contain;
+    border-radius: 7px;
+}
+
+
+/* =========================================================
+   TITULO
+========================================================= */
+
+.titulo-aulas {
+    flex: 1;
+}
+
+.etiqueta-docente {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 12px;
+    margin-bottom: 6px;
+    background: #183B6B;
+    border: 1px solid #3E6596;
+    border-radius: 20px;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.titulo-aulas h1 {
     margin: 0;
-    color: #08142C;
+    color: #FFFFFF;
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.titulo-aulas p {
+    margin: 8px 0 0;
+    color: #E4EAF2;
+    font-size: 16px;
+    line-height: 1.5;
+    max-width: 750px;
+}
+
+
+/* =========================================================
+   USUARIO
+========================================================= */
+
+.usuario {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 16px;
+    background: #132A4C;
+    border: 1px solid #31527A;
+    border-radius: 12px;
+}
+
+.usuario-icono {
+    width: 45px;
+    height: 45px;
+    min-width: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--amarillo);
+    color: var(--azul-oscuro);
+    font-size: 21px;
+}
+
+.usuario-datos {
+    display: flex;
+    flex-direction: column;
+}
+
+.usuario-label {
+    color: #C9D4E3;
+    font-size: 12px;
+}
+
+.usuario strong {
+    color: #FFFFFF;
+    font-size: 15px;
     font-weight: 700;
 }
 
 
-/* INFORMACION */
+/* =========================================================
+   CONTENIDO
+========================================================= */
 
-.class-info {
-    margin-bottom: 25px;
-}
-
-.class-info p {
-    color: #555;
-    margin-bottom: 12px;
-}
-
-.class-info i {
-    color: #1D4E89;
-    margin-right: 8px;
-}
-
-.class-info strong {
-    color: #08142C;
+.contenido-aulas {
+    width: 100%;
+    max-width: 1450px;
+    margin: 0 auto;
+    padding: 40px 35px;
 }
 
 
-/* ==========================
- BOTONES
-========================== */
+/* =========================================================
+   TITULO SECCION
+========================================================= */
 
-.actions {
+.seccion-titulo {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    margin-bottom: 30px;
 }
 
-.actions a {
-    flex: 1;
-    min-width: 120px;
-    border-radius: 10px;
-    font-size: 14px;
+.seccion-texto h2 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    color: var(--azul-oscuro);
+    font-size: 27px;
+    font-weight: 700;
 }
 
-.btn-primary {
-    background: #08142C;
-    border: none;
+.seccion-texto h2 i {
+    color: var(--azul);
 }
 
-.btn-primary:hover {
-    background: #1D4E89;
-}
-
-.btn-success {
-    background: #1D4E89;
-    border: none;
-}
-
-.btn-warning {
-    background: #FFC107;
-    border: none;
-    color: #08142C;
-}
-
-.btn-warning:hover {
-    background: #e6ae00;
+.seccion-texto p {
+    margin: 8px 0 0;
+    color: var(--texto-secundario);
+    font-size: 16px;
 }
 
 
-/* ==========================
- ESTADO VACÍO
-========================== */
+/* =========================================================
+   CONTADOR
+========================================================= */
 
-.empty-state {
-    background: white;
-    padding: 50px;
+.contador-clases {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    background: #FFFFFF;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(8, 20, 44, 0.06);
+}
+
+.contador-icono {
+    width: 43px;
+    height: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: var(--azul);
+    color: #FFFFFF;
+    font-size: 19px;
+}
+
+.contador-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.contador-info strong {
+    color: var(--azul-oscuro);
+    font-size: 21px;
+    line-height: 1;
+}
+
+.contador-info span {
+    margin-top: 4px;
+    color: var(--texto-secundario);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   TARJETA
+========================================================= */
+
+.clase-card {
+    height: 100%;
+    background: #FFFFFF;
+    border: 1px solid var(--borde);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--sombra);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.clase-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 32px rgba(8, 20, 44, 0.18);
+}
+
+
+/* =========================================================
+   FRANJA
+========================================================= */
+
+.franja {
+    height: 6px;
+    background: var(--azul);
+}
+
+
+/* =========================================================
+   CABECERA TARJETA
+========================================================= */
+
+.clase-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 22px 0;
+}
+
+.icono-clase {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: var(--azul);
+    color: #FFFFFF;
+    font-size: 23px;
+}
+
+.codigo-clase {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 11px;
+    background: #E8EDF4;
+    border: 1px solid #CDD6E2;
+    border-radius: 7px;
+    color: var(--azul-oscuro);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+
+/* =========================================================
+   CONTENIDO TARJETA
+========================================================= */
+
+.clase-contenido {
+    padding: 20px 22px 22px;
+}
+
+.clase-contenido h3 {
+    min-height: 52px;
+    margin: 0 0 21px;
+    color: var(--azul-oscuro);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+
+/* =========================================================
+   INFORMACION
+========================================================= */
+
+.informacion {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.dato {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dato-icono {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    font-size: 16px;
+}
+
+.dato-icono.celeste {
+    background: #DDF5FA;
+    color: #006D7A;
+}
+
+.dato-icono.amarillo {
+    background: #FFF0B8;
+    color: #7A5800;
+}
+
+.dato-icono.verde {
+    background: #D9F0DF;
+    color: #176B36;
+}
+
+.dato-texto {
+    display: flex;
+    flex-direction: column;
+}
+
+.dato-texto span {
+    color: var(--texto-claro);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.dato-texto strong {
+    margin-top: 2px;
+    color: var(--texto);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   DIVISOR
+========================================================= */
+
+.divisor {
+    width: 100%;
+    height: 1px;
+    background: #D8E0EA;
+    margin: 21px 0 17px;
+}
+
+
+/* =========================================================
+   ACCIONES
+========================================================= */
+
+.acciones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+}
+
+.accion {
+    min-height: 72px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 9px 5px;
+    border-radius: 9px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.accion:hover {
+    transform: translateY(-2px);
+    filter: brightness(0.96);
+}
+
+.accion i {
+    font-size: 21px;
+}
+
+.accion span {
+    color: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+
+/* =========================================================
+   ASISTENCIA
+========================================================= */
+
+.accion-asistencia {
+    background: #D9F0DF;
+    color: #155C2F;
+}
+
+
+/* =========================================================
+   CALIFICACIONES
+========================================================= */
+
+.accion-notas {
+    background: #DCEAF8;
+    color: #123F73;
+}
+
+
+/* =========================================================
+   INCIDENCIAS
+========================================================= */
+
+.accion-incidencias {
+    background: #FFF0C2;
+    color: #704F00;
+}
+
+
+/* =========================================================
+   SIN CLASES
+========================================================= */
+
+.sin-clases {
+    padding: 70px 30px;
     text-align: center;
-    border-radius: 20px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, .06);
+    background: #FFFFFF;
+    border: 1px solid var(--borde);
+    border-radius: 16px;
+    box-shadow: var(--sombra);
 }
 
-.empty-state i {
-    font-size: 60px;
-    color: #FFC107;
+.sin-clases-icono {
+    width: 78px;
+    height: 78px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--azul);
+    color: #FFFFFF;
+    font-size: 32px;
 }
 
-.empty-state h4 {
-    color: #08142C;
-    margin-top: 20px;
+.sin-clases h3 {
+    margin: 0 0 10px;
+    color: var(--azul-oscuro);
+    font-size: 24px;
 }
 
-.empty-state p {
-    color: #777;
+.sin-clases p {
+    max-width: 550px;
+    margin: 0 auto 25px;
+    color: var(--texto-secundario);
+    font-size: 16px;
+    line-height: 1.6;
 }
 
 
-/* ==========================
- RESPONSIVE
-========================== */
+/* =========================================================
+   BOTON VOLVER
+========================================================= */
 
-@media(max-width:768px) {
-    .actions {
+.volver-contenedor {
+    display: flex;
+    justify-content: center;
+    margin-top: 35px;
+}
+
+.btn-volver {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 12px 20px;
+    background: var(--azul-oscuro);
+    color: #FFFFFF;
+    border-radius: 9px;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 700;
+    transition: 0.2s ease;
+}
+
+.btn-volver:hover {
+    background: var(--azul);
+    color: #FFFFFF;
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 992px) {
+    .encabezado-aulas {
+        padding: 20px 25px;
+    }
+    .encabezado-contenido {
+        flex-wrap: wrap;
+    }
+    .usuario {
+        margin-left: auto;
+    }
+    .contenido-aulas {
+        padding: 32px 25px;
+    }
+}
+
+@media (max-width: 768px) {
+    .encabezado-aulas {
+        padding: 18px;
+    }
+    .encabezado-contenido {
+        gap: 15px;
+    }
+    .logo-contenedor {
+        width: 65px;
+        height: 65px;
+        min-width: 65px;
+    }
+    .logo {
+        max-width: 52px;
+        max-height: 52px;
+    }
+    .titulo-aulas h1 {
+        font-size: 27px;
+    }
+    .titulo-aulas p {
+        font-size: 14px;
+    }
+    .usuario {
+        width: 100%;
+        margin-left: 0;
+    }
+    .seccion-titulo {
+        align-items: flex-start;
         flex-direction: column;
     }
-    .actions a {
+    .contador-clases {
         width: 100%;
+    }
+    .contenido-aulas {
+        padding: 28px 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .titulo-aulas h1 {
+        font-size: 24px;
+    }
+    .titulo-aulas p {
+        display: none;
+    }
+    .seccion-texto h2 {
+        font-size: 22px;
+    }
+    .seccion-texto p {
+        font-size: 14px;
+    }
+    .acciones {
+        grid-template-columns: 1fr;
+    }
+    .accion {
+        min-height: 52px;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 11px 15px;
+    }
+    .accion span {
+        font-size: 14px;
     }
 }

@@ -11,6 +11,7 @@ import os
 
 from config.database import db
 
+
 app = Flask(__name__)
 
 app.secret_key = "CIEM_clave_segura_2026"
@@ -180,142 +181,374 @@ def admin_dashboard():
         total_asignaturas=total_asignaturas,
         total_matriculas=total_matriculas
     )
-# ======================================================
-# COMUNICADOS DEL ADMINISTRADOR
-# ======================================================
+
+# ==========================================================
+# ADMIN - CREAR COMUNICADO
+# ==========================================================
+
+@app.route(
+    "/admin/comunicados/crear",
+    methods=["POST"]
+)
+@role_required("admin")
+def crear_comunicado():
+
+    try:
+
+        print("==========================================")
+        print("📢 CREANDO COMUNICADO")
+        print("==========================================")
+
+        print("DATOS RECIBIDOS:")
+        print(request.form.to_dict())
+
+        # ==================================================
+        # DATOS DEL FORMULARIO
+        # ==================================================
+
+        titulo = request.form.get(
+            "titulo",
+            ""
+        ).strip()
+
+        destinatario = request.form.get(
+            "destinatario",
+            ""
+        ).strip()
+
+        grado = request.form.get(
+            "grado",
+            ""
+        ).strip()
+
+        fecha = request.form.get(
+            "fecha",
+            ""
+        ).strip()
+
+        hora = request.form.get(
+            "hora",
+            ""
+        ).strip()
+
+        mensaje = request.form.get(
+            "mensaje",
+            ""
+        ).strip()
+
+        # ==================================================
+        # VALIDACIONES
+        # ==================================================
+
+        if not titulo:
+            flash(
+                "Debe ingresar el título.",
+                "warning"
+            )
+            return redirect(
+                url_for("admin_comunicados")
+            )
+
+        if not destinatario:
+            flash(
+                "Debe seleccionar los destinatarios.",
+                "warning"
+            )
+            return redirect(
+                url_for("admin_comunicados")
+            )
+
+        if destinatario == "grado" and not grado:
+            flash(
+                "Debe seleccionar el grado.",
+                "warning"
+            )
+            return redirect(
+                url_for("admin_comunicados")
+            )
+
+        if not fecha:
+            flash(
+                "Debe seleccionar la fecha.",
+                "warning"
+            )
+            return redirect(
+                url_for("admin_comunicados")
+            )
+
+        if not hora:
+            flash(
+                "Debe seleccionar la hora.",
+                "warning"
+            )
+            return redirect(
+                url_for("admin_comunicados")
+            )
+
+        if not mensaje:
+            flash(
+                "Debe escribir el mensaje.",
+                "warning"
+            )
+            return redirect(
+                url_for("admin_comunicados")
+            )
+
+        # ==================================================
+        # CREAR COMUNICADO
+        # ==================================================
+
+        comunicacion = {
+
+            "titulo": titulo,
+            "mensaje": mensaje,
+            "destinatario": destinatario,
+            "grado": grado,
+            "fecha": fecha,
+            "hora": hora,
+            "estado": "publicado",
+            "fecha_creacion": datetime.now()
+
+        }
+
+        # ==================================================
+        # GUARDAR EN MONGODB
+        # ==================================================
+
+        resultado = db.comunicaciones.insert_one(
+            comunicacion
+        )
+        print("==========================================")
+        print("🔎 VERIFICANDO COMUNICADOS")
+        print("==========================================")
+
+        print(
+            "TOTAL COMUNICADOS:",
+            db.comunicaciones.count_documents({})
+        )
+
+        ultimo = db.comunicaciones.find_one(
+            {"_id": resultado.inserted_id}
+        )
+
+        print("ÚLTIMO COMUNICADO:")
+        print(ultimo)
+
+        print("==========================================")
+        # ==================================================
+        # VERIFICAR COMUNICADO GUARDADO
+        # ==================================================
+
+        print("==========================================")
+        print("🔎 VERIFICANDO COLECCIÓN comunicaciones")
+        print("==========================================")
+
+        total_comunicados = db.comunicaciones.count_documents({})
+
+        print(
+            "TOTAL COMUNICADOS EN MONGODB:",
+            total_comunicados
+        )
+
+        for comunicado_db in db.comunicaciones.find():
+            print("COMUNICADO ENCONTRADO:")
+            print(comunicado_db)
+
+        print("==========================================")
+        print("==========================================")
+        print("✅ COMUNICADO GUARDADO")
+        print("ID:", resultado.inserted_id)
+        print("TÍTULO:", titulo)
+        print("DESTINATARIO:", destinatario)
+        print("GRADO:", grado)
+        print("==========================================")
+
+        flash(
+            "Comunicado publicado correctamente.",
+            "success"
+        )
+
+        return redirect(
+            url_for("admin_comunicados")
+        )
+
+    except Exception as e:
+
+        print("==========================================")
+        print("❌ ERROR AL CREAR COMUNICADO")
+        print("TIPO:", type(e).__name__)
+        print("ERROR:", repr(e))
+        print("==========================================")
+
+        flash(
+            f"Error al publicar el comunicado: {e}",
+            "danger"
+        )
+
+        return redirect(
+            url_for("admin_comunicados")
+        )
+
+
+# ==========================================================
+# ADMIN - LISTAR COMUNICADOS
+# ==========================================================
 
 @app.route("/admin/comunicados")
 @role_required("admin")
 def admin_comunicados():
 
-    comunicados = list(
-        db.comunicados.find().sort(
-            "fecha_creacion",
-            -1
+    try:
+
+        print("==========================================")
+        print("📢 ADMIN - COMUNICADOS")
+        print("==========================================")
+
+        comunicados = list(
+            db.comunicaciones.find().sort(
+                "fecha_creacion",
+                -1
+            )
         )
-    )
 
-    return render_template(
-        "admin/comunicados.html",
-        comunicados=comunicados
-    )
-# ======================================================
-# CREAR COMUNICADO
-# ======================================================
+        print(
+            "TOTAL COMUNICADOS:",
+            len(comunicados)
+        )
 
-@app.route("/admin/comunicados/crear", methods=["POST"])
+        return render_template(
+            "admin/comunicados.html",
+            comunicados=comunicados
+        )
+
+    except Exception as e:
+
+        print("==========================================")
+        print("❌ ERROR AL CARGAR COMUNICADOS")
+        print("TIPO:", type(e).__name__)
+        print("ERROR:", repr(e))
+        print("==========================================")
+
+        flash(
+            f"No se pudieron cargar los comunicados: {e}",
+            "danger"
+        )
+
+        return redirect(
+            url_for("admin_dashboard")
+        )
+# ==========================================================
+# ADMIN - LISTAR ESTUDIANTES
+# ==========================================================
+
+@app.route("/admin/estudiantes")
 @role_required("admin")
-def crear_comunicado():
+def listar_estudiantes_admin():
 
-    titulo = request.form.get("titulo", "").strip()
-    mensaje = request.form.get("mensaje", "").strip()
-    destinatario = request.form.get("destinatario", "").strip()
-    grado = request.form.get("grado", "").strip()
-    fecha = request.form.get("fecha", "").strip()
-    hora = request.form.get("hora", "").strip()
+    try:
 
-    if not titulo or not mensaje or not destinatario:
-        return redirect(url_for("admin_comunicados"))
+        estudiantes = list(
+            db.estudiantes.find().sort(
+                "nombre",
+                1
+            )
+        )
+        print("==========================================")
+        print("CÓDIGOS QUE REALMENTE EXISTEN")
+        print("==========================================")
 
-    comunicado = {
-        "titulo": titulo,
-        "mensaje": mensaje,
-        "destinatario": destinatario,
-        "grado": grado,
-        "fecha": fecha,
-        "hora": hora,
-        "fecha_creacion": datetime.now(),
-        "estado": "publicado"
-    }
+        for e in estudiantes[:10]:
 
-    db.comunicados.insert_one(comunicado)
+            print("NOMBRE:", e.get("nombre"))
+            print("_id:", e.get("_id"))
+            print("codigo:", e.get("codigo"))
+            print("------------------------------------------")
+        print("\n")
+        print("==================================================")
+        print("PRUEBA LISTAR ESTUDIANTES ADMIN")
+        print("==================================================")
 
-    return redirect(url_for("admin_comunicados"))
+        for e in estudiantes:
 
-# =========================
-# EDITAR ESTUDIANTE
-# =========================
-@app.route("/admin/estudiante/editar/<id>", methods=["GET", "POST"])
+            print("------------------------------------------")
+
+            print("NOMBRE:", repr(e.get("nombre")))
+
+            print("_id:", repr(e.get("_id")))
+
+            print("codigo:", repr(e.get("codigo")))
+
+            print("grado:", repr(e.get("grado")))
+
+            print("seccion:", repr(e.get("seccion")))
+
+            print("TIPO _id:", type(e.get("_id")).__name__)
+
+            print("TIPO codigo:", type(e.get("codigo")).__name__)
+
+            print("------------------------------------------")
+
+        print("==================================================")
+        print("TOTAL:", len(estudiantes))
+        print("==================================================")
+        print("\n")
+
+        return render_template(
+            "admin/estudiantes.html",
+            estudiantes=estudiantes
+        )
+
+    except Exception as e:
+
+        print("==================================================")
+        print("ERROR LISTANDO ESTUDIANTES")
+        print("TIPO:", type(e).__name__)
+        print("ERROR:", repr(e))
+        print("==================================================")
+
+        flash(
+            f"No se pudieron cargar los estudiantes: {e}",
+            "danger"
+        )
+
+        return redirect(
+            url_for("admin_dashboard")
+        )
+# ==========================================================
+# ADMIN - EDITAR ESTUDIANTE
+# ==========================================================
+
+@app.route(
+    "/admin/estudiantes/editar/<id>",
+    methods=["GET", "POST"]
+)
 @role_required("admin")
 def editar_estudiante(id):
 
+    print("==========================================")
+    print("✏️ EDITAR ESTUDIANTE")
     print("ID RECIBIDO:", id)
+    print("==========================================")
+
+    # ======================================================
+    # BUSCAR ESTUDIANTE
+    # ======================================================
 
     estudiante = db.estudiantes.find_one({
         "_id": id
     })
 
-    print("ESTUDIANTE ENCONTRADO:", estudiante)
-
-    if estudiante is None:
-
-        flash("Estudiante no encontrado", "danger")
-
-        return redirect(
-            url_for("listar_estudiantes_admin")
-        )
-
-    if request.method == "POST":
-
-        db.estudiantes.update_one(
-
-            {
-                "_id": id
-            },
-
-            {
-                "$set":{
-
-                    "codigo":request.form["codigo"],
-                    "nombre":request.form["nombre"],
-                    "grado":request.form["grado"],
-                    "seccion":request.form["seccion"],
-                    "padre":request.form["padre"],
-                    "telefono":request.form.get("telefono","")
-
-                }
-
-            }
-
-        )
-
-        flash(
-            "Estudiante actualizado correctamente",
-            "success"
-        )
-
-        return redirect(
-            url_for("listar_estudiantes_admin")
-        )
-
-    return render_template(
-
-        "admin/editar_estudiante.html",
-
-        estudiante=estudiante
-
-    )
-# =========================
-# ELIMINAR ESTUDIANTE
-# =========================
-
-@app.route("/admin/estudiante/eliminar/<id>")
-@role_required("admin")
-def eliminar_estudiante(id):
-
-    print("ID RECIBIDO:", id)
-
-    estudiante = db.estudiantes.find_one({
-        "_id": id
-    })
-
-    print("ESTUDIANTE A ELIMINAR:")
+    print("ESTUDIANTE ENCONTRADO:")
     print(estudiante)
 
+    # ======================================================
+    # VALIDAR EXISTENCIA
+    # ======================================================
+
     if estudiante is None:
 
         flash(
-            "Estudiante no encontrado",
+            "Estudiante no encontrado.",
             "danger"
         )
 
@@ -323,50 +556,333 @@ def eliminar_estudiante(id):
             url_for("listar_estudiantes_admin")
         )
 
-    db.estudiantes.delete_one({
+    # ======================================================
+    # PROCESAR POST
+    # ======================================================
+
+    if request.method == "POST":
+
+        primer_nombre = request.form.get(
+            "primer_nombre",
+            ""
+        ).strip()
+
+        segundo_nombre = request.form.get(
+            "segundo_nombre",
+            ""
+        ).strip()
+
+        primer_apellido = request.form.get(
+            "primer_apellido",
+            ""
+        ).strip()
+
+        segundo_apellido = request.form.get(
+            "segundo_apellido",
+            ""
+        ).strip()
+
+        grado = request.form.get(
+            "grado",
+            ""
+        ).strip()
+
+        seccion = request.form.get(
+            "seccion",
+            ""
+        ).strip()
+
+        edad = request.form.get(
+            "edad",
+            ""
+        ).strip()
+
+        genero = request.form.get(
+            "genero",
+            ""
+        ).strip()
+
+        telefono = request.form.get(
+            "telefono",
+            ""
+        ).strip()
+
+        celular = request.form.get(
+            "celular",
+            ""
+        ).strip()
+
+        direccion = request.form.get(
+            "direccion",
+            ""
+        ).strip()
+
+        barrio = request.form.get(
+            "barrio",
+            ""
+        ).strip()
+
+        padre = request.form.get(
+            "padre",
+            ""
+        ).strip()
+
+        madre = request.form.get(
+            "madre",
+            ""
+        ).strip()
+
+        tutor = request.form.get(
+            "tutor",
+            ""
+        ).strip()
+
+        # ==================================================
+        # NOMBRE COMPLETO
+        # ==================================================
+
+        nombre_completo = " ".join(
+            parte
+            for parte in [
+                primer_nombre,
+                segundo_nombre,
+                primer_apellido,
+                segundo_apellido
+            ]
+            if parte
+        )
+
+        # ==================================================
+        # ACTUALIZAR MONGODB
+        # ==================================================
+
+        db.estudiantes.update_one(
+            {
+                "_id": id
+            },
+            {
+                "$set": {
+                    "nombre": nombre_completo,
+                    "primer_nombre": primer_nombre,
+                    "segundo_nombre": segundo_nombre,
+                    "primer_apellido": primer_apellido,
+                    "segundo_apellido": segundo_apellido,
+                    "grado": grado,
+                    "seccion": seccion,
+                    "edad": edad,
+                    "genero": genero,
+                    "telefono": telefono,
+                    "celular": celular,
+                    "direccion": direccion,
+                    "barrio": barrio,
+                    "padre": padre,
+                    "madre": madre,
+                    "tutor": tutor
+                }
+            }
+        )
+
+        flash(
+            "Estudiante actualizado correctamente.",
+            "success"
+        )
+
+        return redirect(
+            url_for("listar_estudiantes_admin")
+        )
+
+    # ======================================================
+    # MOSTRAR FORMULARIO
+    # ======================================================
+
+    return render_template(
+        "admin/editar_estudiante.html",
+        estudiante=estudiante
+    )
+        
+# ==========================================================
+# ADMIN - ELIMINAR ESTUDIANTE
+# ==========================================================
+
+@app.route(
+    "/admin/estudiantes/eliminar/<id>",
+    methods=["GET"]
+)
+@role_required("admin")
+def eliminar_estudiante(id):
+
+    print("==========================================")
+    print("🗑️ ELIMINAR ESTUDIANTE")
+    print("ID RECIBIDO:", id)
+    print("==========================================")
+
+    # ======================================================
+    # BUSCAR ESTUDIANTE
+    # ======================================================
+
+    estudiante = db.estudiantes.find_one({
         "_id": id
     })
 
+    print("ESTUDIANTE ENCONTRADO:")
+    print(estudiante)
+
+    # ======================================================
+    # VALIDAR EXISTENCIA
+    # ======================================================
+
+    if estudiante is None:
+
+        flash(
+            "Estudiante no encontrado.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("listar_estudiantes_admin")
+        )
+
+    # ======================================================
+    # ELIMINAR ESTUDIANTE
+    # ======================================================
+
+    resultado = db.estudiantes.delete_one({
+        "_id": id
+    })
+
+    print(
+        "ESTUDIANTES ELIMINADOS:",
+        resultado.deleted_count
+    )
+
+    # ======================================================
+    # ELIMINAR MATRÍCULA RELACIONADA
+    # ======================================================
+
+    resultado_matricula = db.matriculas.delete_many({
+        "estudiante_id": id
+    })
+
+    print(
+        "MATRÍCULAS ELIMINADAS:",
+        resultado_matricula.deleted_count
+    )
+
+    # ======================================================
+    # MENSAJE
+    # ======================================================
+
     flash(
-        "Estudiante eliminado correctamente",
+        "Estudiante eliminado correctamente.",
+        "success"
+    )
+
+    # ======================================================
+    # REGRESAR AL LISTADO
+    # ======================================================
+
+    return redirect(
+        url_for("listar_estudiantes_admin")
+    )
+    # ==================================================
+    # ACTUALIZAR EN MONGODB
+    # ==================================================
+
+    db.estudiantes.update_one(
+
+        {
+            "_id": id
+        },
+
+        {
+            "$set": {
+
+                "nombre":
+                    nombre_completo,
+
+                "primer_nombre":
+                    primer_nombre,
+
+                "segundo_nombre":
+                    segundo_nombre,
+
+                "primer_apellido":
+                    primer_apellido,
+
+                "segundo_apellido":
+                    segundo_apellido,
+
+                "grado":
+                    grado,
+
+                "seccion":
+                    seccion,
+
+                "edad":
+                    edad,
+
+                "genero":
+                    genero,
+
+                "telefono":
+                    telefono,
+
+                "celular":
+                    celular,
+
+                "direccion":
+                    direccion,
+
+                "barrio":
+                    barrio,
+
+                "padre":
+                    padre,
+
+                "madre":
+                    madre,
+
+                "tutor":
+                    tutor
+            }
+        }
+    )
+
+    flash(
+        "Estudiante actualizado correctamente.",
         "success"
     )
 
     return redirect(
         url_for("listar_estudiantes_admin")
     )
-@app.route("/admin/estudiantes")
-@role_required("admin")
-def listar_estudiantes_admin():
 
-    estudiantes = list(
-        db.estudiantes.find().sort("nombre", 1)
-    )
 
-    print("\n========== ESTUDIANTES ==========")
-
-    for e in estudiantes:
-        print("DOCUMENTO COMPLETO:")
-        print(e)
-        print("TIPO DEL ID:", type(e["_id"]))
-        print("--------------------------")
-
-    print("=================================\n")
+# ======================================================
+# MOSTRAR FORMULARIO
+# ======================================================
 
     return render_template(
-        "admin/estudiantes.html",
-        estudiantes=estudiantes
+        "admin/editar_estudiante.html",
+        estudiante=estudiante
     )
+
+       
+
 
 # =========================
 # ADMIN - DOCENTES
 # =========================
+
 @app.route("/admin/docentes")
 @role_required("admin")
 def listar_docentes():
 
     docentes = list(
-        db.docentes.find().sort("nombre",1)
+        db.docentes.find().sort(
+            "nombre",
+            1
+        )
     )
 
     print("\n========== DOCENTES ==========")
@@ -383,7 +899,6 @@ def listar_docentes():
 
     print("==============================\n")
 
-
     return render_template(
         "admin/docente.html",
         docentes=docentes
@@ -394,8 +909,10 @@ def listar_docentes():
 
 from bson.objectid import ObjectId
 
-
-@app.route("/admin/docentes/editar/<id>", methods=["GET","POST"])
+@app.route(
+    "/admin/docentes/editar/<id>",
+    methods=["GET", "POST"]
+)
 @role_required("admin")
 def editar_docente(id):
 
@@ -403,30 +920,36 @@ def editar_docente(id):
     print("EDITAR DOCENTE")
     print("ID RECIBIDO:", id)
 
+    # ==================================================
+    # BUSCAR DOCENTE
+    # ==================================================
 
-    # Buscar primero como texto
     docente = db.docentes.find_one({
         "_id": id
     })
 
+    # ==================================================
+    # SI NO EXISTE, PROBAR ObjectId
+    # ==================================================
 
-    # Si no existe buscar como ObjectId
     if docente is None:
 
         try:
+
             docente = db.docentes.find_one({
                 "_id": ObjectId(id)
             })
 
-        except:
+        except Exception:
+
             docente = None
-
-
 
     print("DOCENTE ENCONTRADO:")
     print(docente)
 
-
+    # ==================================================
+    # DOCENTE NO ENCONTRADO
+    # ==================================================
 
     if docente is None:
 
@@ -439,130 +962,156 @@ def editar_docente(id):
             url_for("listar_docentes")
         )
 
-
+    # ==================================================
+    # GUARDAR CAMBIOS
+    # ==================================================
 
     if request.method == "POST":
-
 
         filtro = {
             "_id": docente["_id"]
         }
-
-
 
         db.docentes.update_one(
 
             filtro,
 
             {
-                "$set":{
+                "$set": {
 
                     "nombre":
-                    request.form["nombre"],
-
+                        request.form.get(
+                            "nombre",
+                            ""
+                        ).strip(),
 
                     "usuario":
-                    request.form["usuario"],
-
+                        request.form.get(
+                            "usuario",
+                            ""
+                        ).strip(),
 
                     "telefono":
-                    request.form["telefono"],
-
+                        request.form.get(
+                            "telefono",
+                            ""
+                        ).strip(),
 
                     "especialidad":
-                    request.form["especialidad"]
+                        request.form.get(
+                            "especialidad",
+                            ""
+                        ).strip()
 
                 }
             }
 
         )
 
-
         flash(
             "Docente actualizado correctamente",
             "success"
         )
 
-
         return redirect(
             url_for("listar_docentes")
         )
 
-
+    # ==================================================
+    # MOSTRAR FORMULARIO
+    # ==================================================
 
     return render_template(
         "admin/editar_docente.html",
         docente=docente
     )
+
 # =========================
 # ELIMINAR DOCENTE
 # =========================
-
-from bson.objectid import ObjectId
-
 
 @app.route("/admin/docentes/eliminar/<id>")
 @role_required("admin")
 def eliminar_docente(id):
 
+    print("==========================")
+    print("ELIMINAR DOCENTE")
+    print("ID RECIBIDO:", id)
+    print("==========================")
 
-    print("DOCENTE A ELIMINAR:", id)
+    try:
 
-
-
-    docente = db.docentes.find_one({
-        "_id": id
-    })
-
-
-    if docente is None:
-
-        try:
-
-            docente = db.docentes.find_one({
-                "_id": ObjectId(id)
-            })
-
-        except:
-
-            docente = None
-
-
-
-    print("DOCENTE ENCONTRADO:")
-    print(docente)
-
-
-
-    if docente:
-
-
-        db.docentes.delete_one({
-
-            "_id": docente["_id"]
-
+        # Buscar primero como texto
+        docente = db.docentes.find_one({
+            "_id": id
         })
 
+        # Si no existe, probar como ObjectId
+        if docente is None:
+
+            try:
+
+                docente = db.docentes.find_one({
+                    "_id": ObjectId(id)
+                })
+
+            except Exception:
+
+                docente = None
+
+        # ==============================================
+        # NO ENCONTRADO
+        # ==============================================
+
+        if docente is None:
+
+            flash(
+                "Docente no encontrado.",
+                "warning"
+            )
+
+            return redirect(
+                url_for("listar_docentes")
+            )
+
+        # ==============================================
+        # ELIMINAR
+        # ==============================================
+
+        db.docentes.delete_one({
+            "_id": docente["_id"]
+        })
 
         flash(
-            "Docente eliminado correctamente",
+            "Docente eliminado correctamente.",
             "success"
         )
 
+        print(
+            "DOCENTE ELIMINADO:",
+            docente["_id"]
+        )
 
-    else:
+        return redirect(
+            url_for("listar_docentes")
+        )
 
+    except Exception as e:
+
+        print("==========================")
+        print("ERROR AL ELIMINAR DOCENTE")
+        print("TIPO:", type(e).__name__)
+        print("ERROR:", repr(e))
+        print("==========================")
 
         flash(
-            "Docente no encontrado",
+            f"No se pudo eliminar el docente: {e}",
             "danger"
         )
 
-
-
-    return redirect(
-        url_for("listar_docentes")
-    )
+        return redirect(
+            url_for("listar_docentes")
+        )
 # =========================
 # AGREGAR DOCENTE
 # =========================
@@ -693,6 +1242,7 @@ def agregar_matricula():
             "admin/agregar_matricula.html"
         )
 
+
     # ======================================================
     # PROCESAR FORMULARIO
     # ======================================================
@@ -704,6 +1254,7 @@ def agregar_matricula():
         print("DATOS RECIBIDOS:")
         print(request.form.to_dict())
         print("==========================================")
+
 
         # ==================================================
         # NOMBRES Y APELLIDOS
@@ -729,6 +1280,7 @@ def agregar_matricula():
             ""
         ).strip()
 
+
         # ==================================================
         # VALIDACIONES
         # ==================================================
@@ -744,6 +1296,7 @@ def agregar_matricula():
                 url_for("agregar_matricula")
             )
 
+
         if not primer_apellido:
 
             flash(
@@ -755,24 +1308,31 @@ def agregar_matricula():
                 url_for("agregar_matricula")
             )
 
+
         # ==================================================
         # GENERAR CÓDIGO
         # ==================================================
 
         iniciales = (
+
             primer_nombre[:1]
             + segundo_nombre[:1]
             + primer_apellido[:1]
             + segundo_apellido[:1]
+
         ).upper()
 
         iniciales = (
             iniciales + "XXXX"
         )[:4]
 
-        codigo = f"CBM-{iniciales}"
+        codigo = f"CIEM-{iniciales}"
 
-        print("CÓDIGO GENERADO:", codigo)
+        print(
+            "CÓDIGO GENERADO:",
+            codigo
+        )
+
 
         # ==================================================
         # VERIFICAR ESTUDIANTE EXISTENTE
@@ -781,6 +1341,7 @@ def agregar_matricula():
         estudiante_existente = db.estudiantes.find_one({
             "_id": codigo
         })
+
 
         # ==================================================
         # VERIFICAR MATRÍCULA EXISTENTE
@@ -808,6 +1369,7 @@ def agregar_matricula():
                 url_for("listar_matriculas")
             )
 
+
         # ==================================================
         # NOMBRE COMPLETO
         # ==================================================
@@ -822,6 +1384,7 @@ def agregar_matricula():
             ]
             if parte
         )
+
 
         # ==================================================
         # FECHA DE NACIMIENTO
@@ -842,6 +1405,7 @@ def agregar_matricula():
             ""
         ).strip()
 
+
         if dia and mes and anio:
 
             fecha_nacimiento = (
@@ -853,6 +1417,7 @@ def agregar_matricula():
         else:
 
             fecha_nacimiento = ""
+
 
         # ==================================================
         # DATOS GENERALES
@@ -883,6 +1448,11 @@ def agregar_matricula():
             ""
         ).strip()
 
+
+        # ==================================================
+        # DATOS FÍSICOS
+        # ==================================================
+
         talla = request.form.get(
             "talla",
             ""
@@ -898,6 +1468,7 @@ def agregar_matricula():
             ""
         ).strip()
 
+
         # ==================================================
         # UBICACIÓN
         # ==================================================
@@ -912,6 +1483,11 @@ def agregar_matricula():
             ""
         ).strip()
 
+
+        # ==================================================
+        # CONTACTO
+        # ==================================================
+
         telefono = request.form.get(
             "telefono",
             ""
@@ -921,6 +1497,7 @@ def agregar_matricula():
             "celular",
             ""
         ).strip()
+
 
         # ==================================================
         # INFORMACIÓN LINGÜÍSTICA
@@ -946,6 +1523,23 @@ def agregar_matricula():
             ""
         ).strip()
 
+
+        informacion_linguistica = {
+
+            "lengua_materna":
+                lengua_materna,
+
+            "idioma":
+                idioma,
+
+            "curso_ingles":
+                curso_ingles,
+
+            "grupo_etnico":
+                grupo_etnico
+        }
+
+
         # ==================================================
         # CAPACIDADES
         # ==================================================
@@ -954,10 +1548,16 @@ def agregar_matricula():
             "capacidades"
         )
 
+
+        # ==================================================
+        # OBSERVACIONES
+        # ==================================================
+
         observaciones = request.form.get(
             "observaciones",
             ""
         ).strip()
+
 
         # ==================================================
         # PADRE
@@ -988,6 +1588,7 @@ def agregar_matricula():
             ""
         ).strip()
 
+
         # ==================================================
         # MADRE
         # ==================================================
@@ -1016,6 +1617,22 @@ def agregar_matricula():
             "madre_ocupacion",
             ""
         ).strip()
+
+
+        # ==================================================
+        # USUARIO DE LA MADRE
+        # ==================================================
+
+        madre_usuario = request.form.get(
+            "madre_usuario",
+            ""
+        ).strip()
+
+        print(
+            "USUARIO MADRE:",
+            madre_usuario
+        )
+
 
         # ==================================================
         # TUTOR
@@ -1046,6 +1663,7 @@ def agregar_matricula():
             ""
         ).strip()
 
+
         # ==================================================
         # FECHA DE MATRÍCULA
         # ==================================================
@@ -1055,6 +1673,7 @@ def agregar_matricula():
             ""
         ).strip()
 
+
         # ==================================================
         # CREAR ESTUDIANTE
         # ==================================================
@@ -1063,11 +1682,14 @@ def agregar_matricula():
 
             estudiante = {
 
-                "_id": codigo,
+                "_id":
+                    codigo,
 
-                "codigo": codigo,
+                "codigo":
+                    codigo,
 
-                "nombre": nombre_completo,
+                "nombre":
+                    nombre_completo,
 
                 "primer_nombre":
                     primer_nombre,
@@ -1120,21 +1742,108 @@ def agregar_matricula():
                 "celular":
                     celular,
 
-                "padre":
-                    padre_nombre,
 
-                "madre":
-                    madre_nombre,
+                # ==========================================
+                # INFORMACIÓN LINGÜÍSTICA
+                # ==========================================
 
-                "tutor":
-                    tutor_nombre,
+                "informacion_linguistica":
+                    informacion_linguistica,
+
+
+                # ==========================================
+                # CAPACIDADES
+                # ==========================================
+
+                "capacidades":
+                    capacidades,
+
+                "observaciones":
+                    observaciones,
+
+
+                # ==========================================
+                # PADRE
+                # ==========================================
+
+                "padre": {
+
+                    "nombre":
+                        padre_nombre,
+
+                    "cedula":
+                        padre_cedula,
+
+                    "telefono":
+                        padre_telefono,
+
+                    "celular":
+                        padre_celular,
+
+                    "ocupacion":
+                        padre_ocupacion
+                },
+
+
+                # ==========================================
+                # MADRE
+                # ==========================================
+
+                "madre": {
+
+                    "nombre":
+                        madre_nombre,
+
+                    "cedula":
+                        madre_cedula,
+
+                    "telefono":
+                        madre_telefono,
+
+                    "celular":
+                        madre_celular,
+
+                    "ocupacion":
+                        madre_ocupacion,
+
+                    "usuario":
+                        madre_usuario
+                },
+
+
+                # ==========================================
+                # TUTOR
+                # ==========================================
+
+                "tutor": {
+
+                    "nombre":
+                        tutor_nombre,
+
+                    "parentesco":
+                        tutor_parentesco,
+
+                    "cedula":
+                        tutor_cedula,
+
+                    "celular":
+                        tutor_celular,
+
+                    "ocupacion":
+                        tutor_ocupacion
+                },
+
 
                 "estado":
                     "activo",
 
                 "foto":
-                    "usuario.png"
+                    "usuario.png",
+
+                "fecha_creacion":
+                    datetime.now()
             }
+
 
             resultado_estudiante = (
                 db.estudiantes.insert_one(
@@ -1143,8 +1852,31 @@ def agregar_matricula():
             )
 
             print(
+                "=========================================="
+            )
+
+            print(
                 "ESTUDIANTE CREADO:",
                 resultado_estudiante.inserted_id
+            )
+
+            print(
+                "NOMBRE:",
+                nombre_completo
+            )
+
+            print(
+                "MADRE:",
+                madre_nombre
+            )
+
+            print(
+                "USUARIO MADRE:",
+                madre_usuario
+            )
+
+            print(
+                "=========================================="
             )
 
         else:
@@ -1153,6 +1885,7 @@ def agregar_matricula():
                 "ESTUDIANTE YA EXISTÍA:",
                 codigo
             )
+
 
         # ==================================================
         # CREAR MATRÍCULA
@@ -1178,8 +1911,9 @@ def agregar_matricula():
             "seccion":
                 seccion,
 
+
             # ==============================================
-            # ESTUDIANTE
+            # INFORMACIÓN DEL ESTUDIANTE
             # ==============================================
 
             "estudiante": {
@@ -1195,6 +1929,9 @@ def agregar_matricula():
 
                 "segundo_nombre":
                     segundo_nombre,
+
+                "nombre_completo":
+                    nombre_completo,
 
                 "fecha_nacimiento":
                     fecha_nacimiento,
@@ -1218,6 +1955,7 @@ def agregar_matricula():
                     tipo_sangre
             },
 
+
             # ==============================================
             # UBICACIÓN
             # ==============================================
@@ -1237,24 +1975,14 @@ def agregar_matricula():
                     celular
             },
 
+
             # ==============================================
             # INFORMACIÓN LINGÜÍSTICA
             # ==============================================
 
-            "informacion_linguistica": {
+            "informacion_linguistica":
+                informacion_linguistica,
 
-                "lengua_materna":
-                    lengua_materna,
-
-                "idioma":
-                    idioma,
-
-                "curso_ingles":
-                    curso_ingles,
-
-                "grupo_etnico":
-                    grupo_etnico
-            },
 
             # ==============================================
             # CAPACIDADES
@@ -1265,6 +1993,7 @@ def agregar_matricula():
 
             "observaciones":
                 observaciones,
+
 
             # ==============================================
             # PADRE
@@ -1288,6 +2017,7 @@ def agregar_matricula():
                     padre_ocupacion
             },
 
+
             # ==============================================
             # MADRE
             # ==============================================
@@ -1307,8 +2037,12 @@ def agregar_matricula():
                     madre_celular,
 
                 "ocupacion":
-                    madre_ocupacion
+                    madre_ocupacion,
+
+                "usuario":
+                    madre_usuario
             },
+
 
             # ==============================================
             # TUTOR
@@ -1332,6 +2066,7 @@ def agregar_matricula():
                     tutor_ocupacion
             },
 
+
             # ==============================================
             # COMPROMISO
             # ==============================================
@@ -1343,6 +2078,7 @@ def agregar_matricula():
                 "activa"
         }
 
+
         # ==================================================
         # GUARDAR MATRÍCULA
         # ==================================================
@@ -1353,6 +2089,7 @@ def agregar_matricula():
             )
         )
 
+
         print("==========================================")
         print("MATRÍCULA GUARDADA CORRECTAMENTE")
         print("CÓDIGO:", codigo)
@@ -1361,6 +2098,7 @@ def agregar_matricula():
             resultado_matricula.inserted_id
         )
         print("==========================================")
+
 
         # ==================================================
         # MENSAJE
@@ -1372,6 +2110,7 @@ def agregar_matricula():
             "success"
         )
 
+
         # ==================================================
         # REGRESAR AL LISTADO
         # ==================================================
@@ -1379,6 +2118,11 @@ def agregar_matricula():
         return redirect(
             url_for("listar_matriculas")
         )
+
+
+    # ======================================================
+    # ERROR
+    # ======================================================
 
     except Exception as e:
 
@@ -1388,16 +2132,16 @@ def agregar_matricula():
         print("ERROR:", repr(e))
         print("==========================================")
 
+
         flash(
             f"No se pudo registrar la matrícula: {e}",
             "danger"
         )
 
+
         return redirect(
             url_for("agregar_matricula")
         )
-
-
 # ==========================================================
 # VER MATRÍCULA
 # ==========================================================
@@ -1415,9 +2159,11 @@ def ver_matricula(codigo):
         print("CÓDIGO:", codigo)
         print("==========================================")
 
+
         matricula = db.matriculas.find_one({
             "codigo": codigo
         })
+
 
         if not matricula:
 
@@ -1430,15 +2176,18 @@ def ver_matricula(codigo):
                 url_for("listar_matriculas")
             )
 
+
         estudiante = db.estudiantes.find_one({
             "_id": codigo
         })
+
 
         return render_template(
             "admin/ver_matricula.html",
             matricula=matricula,
             estudiante=estudiante
         )
+
 
     except Exception as e:
 
@@ -1448,10 +2197,12 @@ def ver_matricula(codigo):
         print("ERROR:", repr(e))
         print("==========================================")
 
+
         flash(
             f"No se pudo cargar la matrícula: {e}",
             "danger"
         )
+
 
         return redirect(
             url_for("listar_matriculas")
@@ -2132,12 +2883,9 @@ def editar_asignatura(id):
 
 
 
-
-
     docentes = list(
         db.docentes.find().sort("nombre",1)
     )
-
 
 
     return render_template(
@@ -2178,7 +2926,6 @@ def editar_asignatura(id):
         }
 
 
-
         db.asignaturas.update_one(
 
             filtro,
@@ -2200,10 +2947,6 @@ def editar_asignatura(id):
         return redirect(
             url_for("listar_asignaturas")
         )
-
-
-
- 
 
 # =========================
 # ELIMINAR ASIGNATURA
@@ -2498,10 +3241,6 @@ def reporte_matriculas():
         matriculas=matriculas
     )
 
-
-
-
-
 # =========================
 # REPORTE ACADÉMICO
 # =========================
@@ -2563,10 +3302,43 @@ for ruta in app.url_map.iter_rules():
 print("====================================")
 
 
+# ==========================================================
+# MOSTRAR RUTAS DE COMUNICADOS
+# ==========================================================
+
+print("==========================================")
+print("📋 RUTAS DE COMUNICADOS")
+print("==========================================")
+
+for regla in app.url_map.iter_rules():
+
+    if "comunicado" in str(regla).lower():
+
+        print(
+            regla,
+            "=>",
+            regla.endpoint,
+            regla.methods
+        )
+
+print("==========================================")
+
+
 # =========================
 # RUN
 # =========================
 print("\n========= RUTAS REGISTRADAS =========")
+print("==========================================")
+print("📋 RUTAS REGISTRADAS")
+print("==========================================")
+
+for regla in app.url_map.iter_rules():
+    print(regla, "=>", regla.endpoint)
+
+print("==========================================")
+
+if __name__ == "__main__":
+    app.run(debug=True)
 
 for ruta in app.url_map.iter_rules():
     print(ruta.endpoint, " ---> ", ruta)

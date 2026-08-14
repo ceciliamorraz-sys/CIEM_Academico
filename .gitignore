@@ -29,3 +29,4 @@ Thumbs.db
 # Archivos de respaldo
 *.bak*
 crear_usuario.py
+migrar_cbm_a_ciem.py

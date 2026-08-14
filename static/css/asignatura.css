@@ -1,239 +1,732 @@
-/* =====================================================
-   CIEM - VER CLASE / ASIGNATURA
-===================================================== */
+:root {
+    --azul-oscuro: #08142C;
+    --azul-principal: #0D2A52;
+    --azul-medio: #1E4E8C;
+    --azul-claro: #2F6DB2;
+    --dorado: #FFC107;
+    --blanco: #FFFFFF;
+    --fondo: #F4F7FB;
+    --texto: #1D3256;
+    --texto-suave: #667085;
+    --borde: #E3E8EF;
+    --verde: #198754;
+    --sombra: 0 10px 30px rgba(8, 20, 44, 0.10);
+}
+
+
+/* ==================================================
+   GENERAL
+================================================== */
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
-    background: #eef3f8;
-    color: #2c3e50;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--fondo);
+    color: var(--texto);
+    min-height: 100vh;
+}
+
+.pagina-asignaturas {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 
-/*==========================
-CONTENEDOR
-==========================*/
+/* ==================================================
+   ENCABEZADO
+================================================== */
 
-.container {
-    width: 95%;
+.encabezado {
+    background: linear-gradient( 135deg, var(--azul-oscuro), var(--azul-principal));
+    color: var(--blanco);
+    padding: 22px 40px;
+    box-shadow: 0 5px 18px rgba(8, 20, 44, 0.18);
+}
+
+.encabezado-contenido {
     max-width: 1400px;
-    margin: 30px auto;
+    width: 100%;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
 }
 
 
-/*==========================
-ENCABEZADO
-==========================*/
+/* ==================================================
+   LOGO
+================================================== */
 
-.header-clase {
-    background: linear-gradient(135deg, #1D3256, #28497e);
-    color: #fff;
+.logo-contenedor {
+    width: 78px;
+    height: 78px;
+    background: var(--blanco);
+    border-radius: 16px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.18);
+}
+
+.logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 11px;
+}
+
+
+/* ==================================================
+   TITULO
+================================================== */
+
+.titulo {
+    flex: 1;
+}
+
+.etiqueta-institucion {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--dorado);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+}
+
+.titulo h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--blanco);
+    line-height: 1.2;
+    margin-bottom: 5px;
+}
+
+.titulo p {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 14px;
+}
+
+
+/* ==================================================
+   USUARIO
+================================================== */
+
+.usuario {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    min-width: 180px;
+}
+
+.usuario-icono {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--dorado);
+    color: var(--azul-oscuro);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+}
+
+.usuario-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.usuario-info span {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.60);
+    letter-spacing: 1px;
+}
+
+.usuario-info strong {
+    font-size: 14px;
+    color: var(--blanco);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* ==================================================
+   CONTENIDO
+================================================== */
+
+.contenido {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 35px 40px;
+    flex: 1;
+}
+
+
+/* ==================================================
+   PRESENTACION
+================================================== */
+
+.presentacion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    background: var(--blanco);
+    padding: 28px 30px;
     border-radius: 18px;
-    padding: 30px;
-    margin-bottom: 25px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, .15);
-}
-
-.header-clase h1 {
-    font-size: 34px;
-    margin-bottom: 10px;
-}
-
-.header-clase h1 i {
-    color: #FFC107;
-}
-
-.header-clase p {
-    font-size: 17px;
-    opacity: .95;
-}
-
-
-/*==========================
-BOTONES
-==========================*/
-
-.acciones-clase {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    border: 1px solid var(--borde);
+    box-shadow: var(--sombra);
     margin-bottom: 30px;
 }
 
-.btn-clase {
-    background: #fff;
-    text-decoration: none;
-    color: #1D3256;
-    border-radius: 15px;
-    padding: 25px;
-    text-align: center;
-    transition: .3s;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
-    border-top: 5px solid #FFC107;
+.presentacion-texto {
+    flex: 1;
 }
 
-.btn-clase:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, .18);
+.etiqueta-seccion {
+    display: inline-block;
+    color: var(--azul-medio);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
 }
 
-.btn-clase i {
-    font-size: 38px;
-    display: block;
-    margin-bottom: 12px;
+.presentacion h2 {
+    color: var(--azul-oscuro);
+    font-size: 25px;
+    margin-bottom: 7px;
 }
 
-.btn-clase.notas i {
-    color: #0d6efd;
-}
-
-.btn-clase.asistencia i {
-    color: #198754;
-}
-
-.btn-clase.incidencia i {
-    color: #dc3545;
+.presentacion p {
+    color: var(--texto-suave);
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 650px;
 }
 
 
-/*==========================
-CARD
-==========================*/
+/* ==================================================
+   CONTADOR
+================================================== */
 
-.card {
-    background: #fff;
+.contador {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 14px 20px;
+    background: #F1F6FC;
+    border: 1px solid #DCE8F5;
+    border-radius: 14px;
+    min-width: 190px;
+}
+
+.contador-icono {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--azul-principal);
+    color: var(--dorado);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.contador-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.contador-info strong {
+    color: var(--azul-oscuro);
+    font-size: 25px;
+    line-height: 1;
+}
+
+.contador-info span {
+    color: var(--texto-suave);
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+
+/* ==================================================
+   GRID
+================================================== */
+
+.asignaturas-grid {
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(290px, 1fr));
+    gap: 24px;
+}
+
+
+/* ==================================================
+   TARJETA
+================================================== */
+
+.asignatura-card {
+    position: relative;
+    background: var(--blanco);
     border-radius: 18px;
-    padding: 25px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
+    border: 1px solid var(--borde);
+    overflow: hidden;
+    box-shadow: var(--sombra);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
 }
 
-.card h2 {
-    color: #1D3256;
+.asignatura-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 38px rgba(8, 20, 44, 0.16);
+}
+
+
+/* ==================================================
+   NUMERO
+================================================== */
+
+.numero-card {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    color: var(--blanco);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    z-index: 3;
+}
+
+
+/* ==================================================
+   CABECERA TARJETA
+================================================== */
+
+.card-header {
+    min-height: 150px;
+    padding: 25px;
+    background: linear-gradient( 135deg, var(--azul-oscuro), var(--azul-principal));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-header::before {
+    content: "";
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(255, 193, 7, 0.08);
+    right: -60px;
+    top: -70px;
+}
+
+.card-header::after {
+    content: "";
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    left: -35px;
+    bottom: -50px;
+}
+
+
+/* ==================================================
+   ICONO
+================================================== */
+
+.icono-asignatura {
+    width: 62px;
+    height: 62px;
+    border-radius: 15px;
+    background: var(--dorado);
+    color: var(--azul-oscuro);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 27px;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+}
+
+
+/* ==================================================
+   ESTADO
+================================================== */
+
+.estado {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255, 255, 255, 0.10);
+    color: rgba(255, 255, 255, 0.88);
+    padding: 7px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    position: relative;
+    z-index: 2;
+}
+
+.estado-punto {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #48D597;
+    box-shadow: 0 0 8px rgba(72, 213, 151, 0.6);
+}
+
+
+/* ==================================================
+   CUERPO
+================================================== */
+
+.card-body {
+    padding: 24px 24px 20px;
+    flex: 1;
+}
+
+.tipo-asignatura {
+    display: inline-block;
+    color: var(--azul-medio);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+}
+
+.card-body h3 {
+    color: var(--azul-oscuro);
+    font-size: 21px;
+    line-height: 1.3;
+    min-height: 54px;
     margin-bottom: 20px;
 }
 
-.card h2 i {
-    color: #FFC107;
+
+/* ==================================================
+   DATOS
+================================================== */
+
+.datos-clase {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
 }
 
-
-/*==========================
-TABLA
-==========================*/
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-thead {
-    background: #1D3256;
-    color: white;
-}
-
-thead th {
-    padding: 15px;
-    text-align: center;
-}
-
-tbody td {
-    padding: 14px;
-    text-align: center;
-    border-bottom: 1px solid #e6e6e6;
-}
-
-tbody tr:nth-child(even) {
-    background: #f8f9fc;
-}
-
-tbody tr:hover {
-    background: #eaf2ff;
-    transition: .3s;
-}
-
-tbody td:nth-child(2) {
-    text-align: left;
-    font-weight: 600;
-}
-
-
-/*==========================
-ESTADO
-==========================*/
-
-.estado {
-    padding: 6px 12px;
-    border-radius: 25px;
-    color: white;
-    font-size: 13px;
-    font-weight: bold;
-}
-
-.activo {
-    background: #198754;
-}
-
-.inactivo {
-    background: #dc3545;
-}
-
-
-/*==========================
-VOLVER
-==========================*/
-
-.volver {
-    display: inline-block;
-    margin-top: 25px;
-    text-decoration: none;
-    background: #1D3256;
-    color: white;
-    padding: 14px 22px;
+.dato {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px;
+    background: #F7F9FC;
     border-radius: 10px;
-    transition: .3s;
 }
 
-.volver:hover {
-    background: #28497e;
+.dato-icono {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
 }
 
-.volver i {
-    margin-right: 8px;
+.dato-icono.grado {
+    background: #EAF2FB;
+    color: var(--azul-medio);
+}
+
+.dato-icono.seccion {
+    background: #FFF6D8;
+    color: #B78600;
+}
+
+.dato-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.dato-info span {
+    color: var(--texto-suave);
+    font-size: 10px;
+    margin-bottom: 2px;
+}
+
+.dato-info strong {
+    color: var(--azul-oscuro);
+    font-size: 13px;
 }
 
 
-/*==========================
-RESPONSIVE
-==========================*/
+/* ==================================================
+   HORARIO
+================================================== */
 
-@media(max-width:1100px) {
-    .acciones-clase {
+.horario {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    padding-top: 14px;
+    border-top: 1px solid var(--borde);
+    color: var(--texto-suave);
+    font-size: 13px;
+}
+
+.horario i {
+    color: var(--azul-medio);
+}
+
+
+/* ==================================================
+   FOOTER DE TARJETA
+================================================== */
+
+.card-footer {
+    padding: 0 24px 24px;
+}
+
+.btn-asistencia {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 13px 17px;
+    border-radius: 10px;
+    background: var(--azul-principal);
+    color: var(--blanco);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.25s ease;
+}
+
+.btn-asistencia:hover {
+    background: var(--azul-medio);
+    color: var(--blanco);
+    transform: translateX(2px);
+}
+
+.btn-asistencia i {
+    font-size: 17px;
+    color: var(--dorado);
+}
+
+
+/* ==================================================
+   SIN ASIGNATURAS
+================================================== */
+
+.sin-asignaturas {
+    grid-column: 1 / -1;
+    background: var(--blanco);
+    border: 1px dashed #B9C5D5;
+    border-radius: 18px;
+    padding: 60px 30px;
+    text-align: center;
+    box-shadow: var(--sombra);
+}
+
+.sin-icono {
+    width: 75px;
+    height: 75px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #EEF4FB;
+    color: var(--azul-medio);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 31px;
+}
+
+.sin-asignaturas h3 {
+    color: var(--azul-oscuro);
+    font-size: 21px;
+    margin-bottom: 8px;
+}
+
+.sin-asignaturas p {
+    color: var(--texto-suave);
+    font-size: 14px;
+}
+
+
+/* ==================================================
+   BOTON VOLVER
+================================================== */
+
+.volver-contenedor {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border-radius: 10px;
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    color: var(--azul-principal);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(8, 20, 44, 0.06);
+    transition: all 0.25s ease;
+}
+
+.btn-volver:hover {
+    background: var(--azul-principal);
+    color: var(--blanco);
+    border-color: var(--azul-principal);
+}
+
+
+/* ==================================================
+   FOOTER
+================================================== */
+
+footer {
+    margin-top: auto;
+    padding: 18px 40px;
+    background: var(--azul-oscuro);
+    color: rgba(255, 255, 255, 0.60);
+    font-size: 12px;
+}
+
+footer>div {
+    max-width: 1400px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+footer i {
+    color: var(--dorado);
+    margin-right: 3px;
+}
+
+footer strong {
+    color: var(--blanco);
+}
+
+
+/* ==================================================
+   RESPONSIVE
+================================================== */
+
+@media (max-width: 900px) {
+    .encabezado {
+        padding: 20px 25px;
+    }
+    .encabezado-contenido {
+        flex-wrap: wrap;
+    }
+    .usuario {
+        margin-left: auto;
+    }
+    .contenido {
+        padding: 28px 25px;
+    }
+}
+
+@media (max-width: 700px) {
+    .presentacion {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .contador {
+        width: 100%;
+    }
+    .usuario {
+        width: 100%;
+        margin-left: 0;
+    }
+    .titulo {
+        width: 100%;
+    }
+}
+
+@media (max-width: 500px) {
+    .encabezado {
+        padding: 18px 15px;
+    }
+    .encabezado-contenido {
+        gap: 15px;
+    }
+    .logo-contenedor {
+        width: 62px;
+        height: 62px;
+    }
+    .titulo h1 {
+        font-size: 24px;
+    }
+    .titulo p {
+        font-size: 12px;
+    }
+    .contenido {
+        padding: 20px 15px;
+    }
+    .presentacion {
+        padding: 22px;
+    }
+    .presentacion h2 {
+        font-size: 21px;
+    }
+    .asignaturas-grid {
         grid-template-columns: 1fr;
     }
-    .header-clase {
-        text-align: center;
+    .datos-clase {
+        grid-template-columns: 1fr;
     }
-    table {
-        font-size: 14px;
+    footer {
+        padding: 15px;
     }
-}
-
-@media(max-width:768px) {
-    .container {
-        width: 98%;
-    }
-    .card {
-        overflow-x: auto;
-    }
-    table {
-        min-width: 700px;
-    }
-    .header-clase h1 {
-        font-size: 26px;
+    footer>div {
+        flex-wrap: wrap;
     }
 }

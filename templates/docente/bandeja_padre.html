@@ -1,0 +1,971 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Mensajes | CIEM ONE</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #F3F6FA;
+            color: #1D3256;
+        }
+
+        .pagina {
+            min-height: 100vh;
+            padding: 35px 20px;
+        }
+
+        .contenedor {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        /* ==========================================
+           ENCABEZADO
+        ========================================== */
+
+        .encabezado {
+
+            background: linear-gradient(
+                135deg,
+                #08142C,
+                #1E4E8C
+            );
+
+            border-radius: 20px;
+
+            padding: 28px 30px;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 20px;
+
+            box-shadow:
+                0 10px 30px rgba(0,0,0,.12);
+
+            margin-bottom: 25px;
+        }
+
+        .icono-principal {
+
+            width: 65px;
+            height: 65px;
+
+            border-radius: 16px;
+
+            background: rgba(255,255,255,.15);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 30px;
+
+            flex-shrink: 0;
+        }
+
+        .encabezado h1 {
+
+            margin: 0;
+
+            font-size: 26px;
+        }
+
+        .encabezado p {
+
+            margin: 6px 0 0;
+
+            color: #D8E2F0;
+
+            font-size: 14px;
+        }
+
+        /* ==========================================
+           BOTÓN VOLVER
+        ========================================== */
+
+        .volver {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-bottom: 20px;
+
+            padding: 10px 16px;
+
+            background: white;
+
+            color: #1E4E8C;
+
+            text-decoration: none;
+
+            border-radius: 10px;
+
+            font-weight: 600;
+
+            box-shadow:
+                0 4px 12px rgba(0,0,0,.07);
+
+            transition: .2s;
+        }
+
+        .volver:hover {
+
+            background: #1E4E8C;
+
+            color: white;
+
+            transform: translateX(-2px);
+        }
+
+        /* ==========================================
+           NUEVO MENSAJE
+        ========================================== */
+
+        .nuevo-mensaje {
+
+            background: white;
+
+            border-radius: 18px;
+
+            padding: 25px;
+
+            margin-bottom: 25px;
+
+            border: 1px solid #E2E7EF;
+
+            box-shadow:
+                0 6px 20px rgba(0,0,0,.06);
+        }
+
+        .nuevo-mensaje h2 {
+
+            margin: 0 0 20px;
+
+            color: #08142C;
+
+            font-size: 20px;
+        }
+
+        .campo {
+
+            margin-bottom: 18px;
+        }
+
+        .campo label {
+
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-weight: 600;
+
+            color: #1D3256;
+        }
+
+        .campo select,
+        .campo textarea {
+
+            width: 100%;
+
+            padding: 12px 14px;
+
+            border: 1px solid #D6DCE5;
+
+            border-radius: 10px;
+
+            background: #FAFBFD;
+
+            font-family: inherit;
+
+            font-size: 14px;
+
+            outline: none;
+
+            transition: .2s;
+        }
+
+        .campo textarea {
+
+            min-height: 110px;
+
+            resize: vertical;
+        }
+
+        .campo select:focus,
+        .campo textarea:focus {
+
+            border-color: #1E4E8C;
+
+            background: white;
+
+            box-shadow:
+                0 0 0 3px rgba(30,78,140,.10);
+        }
+
+        .btn-enviar {
+
+            border: none;
+
+            padding: 12px 20px;
+
+            background: #1E4E8C;
+
+            color: white;
+
+            border-radius: 10px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            transition: .2s;
+        }
+
+        .btn-enviar:hover {
+
+            background: #08142C;
+
+            transform: translateY(-1px);
+        }
+
+        /* ==========================================
+           LISTA DE CONVERSACIONES
+        ========================================== */
+
+        .titulo-conversaciones {
+
+            background: white;
+
+            border-radius: 18px;
+
+            padding: 20px 25px;
+
+            margin-bottom: 15px;
+
+            border: 1px solid #E2E7EF;
+
+            box-shadow:
+                0 6px 20px rgba(0,0,0,.05);
+        }
+
+        .titulo-conversaciones h2 {
+
+            margin: 0;
+
+            color: #08142C;
+
+            font-size: 20px;
+        }
+
+        .lista {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 15px;
+        }
+
+        .conversacion {
+
+            background: white;
+
+            border: 1px solid #E2E7EF;
+
+            border-radius: 16px;
+
+            padding: 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 18px;
+
+            box-shadow:
+                0 6px 20px rgba(0,0,0,.06);
+
+            transition: .2s;
+        }
+
+        .conversacion:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 10px 25px rgba(0,0,0,.10);
+
+            border-color: #C9D7E8;
+        }
+
+        /* ==========================================
+           AVATAR
+        ========================================== */
+
+        .avatar {
+
+            width: 58px;
+
+            height: 58px;
+
+            border-radius: 50%;
+
+            background: #EAF1FA;
+
+            color: #1E4E8C;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 25px;
+
+            flex-shrink: 0;
+        }
+
+        /* ==========================================
+           INFORMACIÓN
+        ========================================== */
+
+        .informacion {
+
+            flex: 1;
+
+            min-width: 0;
+        }
+
+        .informacion h3 {
+
+            margin: 0 0 5px;
+
+            color: #08142C;
+
+            font-size: 17px;
+        }
+
+        .ultimo {
+
+            margin: 0;
+
+            color: #667085;
+
+            font-size: 14px;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+            max-width: 550px;
+        }
+
+        .etiqueta {
+
+            display: inline-block;
+
+            margin-top: 8px;
+
+            padding: 4px 9px;
+
+            background: #EEF4FB;
+
+            color: #1E4E8C;
+
+            border-radius: 6px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+        }
+
+        .no-leidos {
+
+            display: inline-block;
+
+            margin-top: 8px;
+
+            margin-left: 5px;
+
+            padding: 4px 9px;
+
+            background: #FFF0F0;
+
+            color: #D32F2F;
+
+            border-radius: 6px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+        /* ==========================================
+           BOTÓN CHAT
+        ========================================== */
+
+        .btn-chat {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            padding: 11px 17px;
+
+            background: #1E4E8C;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 10px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            transition: .2s;
+
+            flex-shrink: 0;
+        }
+
+        .btn-chat:hover {
+
+            background: #08142C;
+
+            transform: translateY(-1px);
+        }
+
+        /* ==========================================
+           SIN MENSAJES
+        ========================================== */
+
+        .vacio {
+
+            background: white;
+
+            border-radius: 18px;
+
+            padding: 55px 25px;
+
+            text-align: center;
+
+            border: 1px solid #E2E7EF;
+
+            box-shadow:
+                0 6px 20px rgba(0,0,0,.05);
+        }
+
+        .vacio-icono {
+
+            font-size: 50px;
+
+            margin-bottom: 12px;
+        }
+
+        .vacio h3 {
+
+            margin: 0 0 7px;
+
+            color: #08142C;
+        }
+
+        .vacio p {
+
+            margin: 0;
+
+            color: #667085;
+
+            font-size: 14px;
+        }
+
+        /* ==========================================
+           MENSAJES FLASH
+        ========================================== */
+
+        .alerta {
+
+            padding: 14px 18px;
+
+            border-radius: 10px;
+
+            margin-bottom: 20px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+        .alerta.success {
+
+            background: #E8F5E9;
+
+            color: #2E7D32;
+        }
+
+        .alerta.danger {
+
+            background: #FFEBEE;
+
+            color: #C62828;
+        }
+
+        .alerta.warning {
+
+            background: #FFF8E1;
+
+            color: #F57F17;
+        }
+
+        /* ==========================================
+           RESPONSIVE
+        ========================================== */
+
+        @media (max-width: 650px) {
+
+            .pagina {
+
+                padding: 20px 12px;
+            }
+
+            .encabezado {
+
+                padding: 22px;
+
+                align-items: flex-start;
+            }
+
+            .encabezado h1 {
+
+                font-size: 22px;
+            }
+
+            .conversacion {
+
+                align-items: flex-start;
+
+                flex-wrap: wrap;
+            }
+
+            .informacion {
+
+                width: calc(100% - 78px);
+            }
+
+            .btn-chat {
+
+                width: 100%;
+
+                justify-content: center;
+            }
+
+            .btn-enviar {
+
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="pagina">
+
+    <div class="contenedor">
+
+
+        <!-- ======================================
+             VOLVER
+        ======================================= -->
+
+        <a
+            href="{{ url_for('estudiante.dashboard') }}"
+            class="volver"
+        >
+            ← Volver al dashboard
+        </a>
+
+
+        <!-- ======================================
+             MENSAJES FLASH
+        ======================================= -->
+
+        {% with mensajes_flash = get_flashed_messages(
+            with_categories=true
+        ) %}
+
+            {% if mensajes_flash %}
+
+                {% for categoria, mensaje in mensajes_flash %}
+
+                    <div class="alerta {{ categoria }}">
+
+                        {{ mensaje }}
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- ======================================
+             ENCABEZADO
+        ======================================= -->
+
+        <div class="encabezado">
+
+            <div class="icono-principal">
+
+                💬
+
+            </div>
+
+            <div>
+
+                <h1>
+                    Mensajes
+                </h1>
+
+                <p>
+                    Comunicación entre madre de familia
+                    y docentes
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================
+             NUEVO MENSAJE
+        ======================================= -->
+
+        <div class="nuevo-mensaje">
+
+            <h2>
+                ✉️ Enviar mensaje a un docente
+            </h2>
+
+
+            <form
+                method="POST"
+                action="{{ url_for('mensajes.crear') }}"
+            >
+
+
+                <!-- DOCENTE -->
+
+                <div class="campo">
+
+                    <label for="docente_id">
+
+                        Seleccione el docente
+
+                    </label>
+
+
+                    <select
+                        id="docente_id"
+                        name="docente_id"
+                        required
+                    >
+
+                        <option value="">
+
+                            -- Seleccione un docente --
+
+                        </option>
+
+
+                        {% if docentes %}
+
+                            {% for docente in docentes %}
+
+                                <option
+                                    value="{{ docente['_id'] }}"
+                                >
+
+                                    {{ docente.get(
+                                        "nombre",
+                                        "Docente"
+                                    ) }}
+
+                                    {% if docente.get("asignatura") %}
+
+                                        -
+                                        {{ docente.get(
+                                            "asignatura"
+                                        ) }}
+
+                                    {% endif %}
+
+                                </option>
+
+                            {% endfor %}
+
+                        {% endif %}
+
+
+                    </select>
+
+
+                    {% if not docentes %}
+
+                        <small
+                            style="
+                                display:block;
+                                margin-top:8px;
+                                color:#C62828;
+                            "
+                        >
+
+                            ⚠️ No hay docentes disponibles.
+
+                        </small>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- MENSAJE -->
+
+                <div class="campo">
+
+                    <label for="mensaje">
+
+                        Mensaje
+
+                    </label>
+
+
+                    <textarea
+                        id="mensaje"
+                        name="mensaje"
+                        placeholder="Escriba su mensaje al docente..."
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <!-- BOTÓN -->
+
+                <button
+                    type="submit"
+                    class="btn-enviar"
+                >
+
+                    📤 Enviar mensaje
+
+                </button>
+
+
+            </form>
+
+        </div>
+
+
+        <!-- ======================================
+             TÍTULO CONVERSACIONES
+        ======================================= -->
+
+        <div class="titulo-conversaciones">
+
+            <h2>
+
+                📬 Mis conversaciones
+
+            </h2>
+
+        </div>
+
+
+        <!-- ======================================
+             LISTA DE CONVERSACIONES
+        ======================================= -->
+
+        {% if conversaciones %}
+
+
+            <div class="lista">
+
+
+                {% for conversacion in conversaciones %}
+
+
+                    <div class="conversacion">
+
+
+                        <!-- AVATAR -->
+
+                        <div class="avatar">
+
+                            👨‍🏫
+
+                        </div>
+
+
+                        <!-- INFORMACIÓN -->
+
+                        <div class="informacion">
+
+
+                            <h3>
+
+                                {{ conversacion.get(
+                                    "docente",
+                                    "Docente"
+                                ) }}
+
+                            </h3>
+
+
+                            <p class="ultimo">
+
+                                {{ conversacion.get(
+                                    "ultimo_mensaje",
+                                    "Sin mensajes"
+                                ) }}
+
+                            </p>
+
+
+                            <span class="etiqueta">
+
+                                Docente
+
+                            </span>
+
+
+                            {% if conversacion.get(
+                                "no_leidos_padre", 0
+                            ) > 0 %}
+
+                                <span class="no-leidos">
+
+                                    🔴
+                                    {{ conversacion.get(
+                                        "no_leidos_padre",
+                                        0
+                                    ) }}
+                                    nuevo(s)
+
+                                </span>
+
+                            {% endif %}
+
+
+                        </div>
+
+
+                        <!-- BOTÓN CHAT -->
+
+                        <a
+                            href="{{ url_for(
+                                'mensajes.chat',
+                                conversacion_id=conversacion['_id']
+                            ) }}"
+                            class="btn-chat"
+                        >
+
+                            💬 Ver conversación
+
+                        </a>
+
+
+                    </div>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+        {% else %}
+
+
+            <!-- ==================================
+                 SIN CONVERSACIONES
+            =================================== -->
+
+            <div class="vacio">
+
+
+                <div class="vacio-icono">
+
+                    💬
+
+                </div>
+
+
+                <h3>
+
+                    No tienes conversaciones
+
+                </h3>
+
+
+                <p>
+
+                    Selecciona un docente arriba
+                    y envía tu primer mensaje.
+
+                </p>
+
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>
+```

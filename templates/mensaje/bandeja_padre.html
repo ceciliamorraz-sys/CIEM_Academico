@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -5,10 +6,13 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Mensajes | CIEM ONE</title>
+
 
     <style>
 
@@ -16,94 +20,48 @@
             box-sizing: border-box;
         }
 
+
         body {
+
             margin: 0;
-            font-family: "Segoe UI", Arial, sans-serif;
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
             background: #F3F6FA;
+
             color: #1D3256;
         }
 
-        /* ==========================================
+
+        /* ==================================================
            CONTENEDOR
-        ========================================== */
+        ================================================== */
 
         .pagina {
+
             min-height: 100vh;
+
             padding: 35px 20px;
         }
 
+
         .contenedor {
+
             max-width: 1000px;
+
             margin: auto;
         }
 
-        /* ==========================================
-           ENCABEZADO
-        ========================================== */
 
-        .encabezado {
-            background: linear-gradient(
-                135deg,
-                #08142C,
-                #1E4E8C
-            );
-
-            border-radius: 20px;
-
-            padding: 28px 30px;
-
-            color: white;
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 20px;
-
-            box-shadow:
-                0 10px 30px rgba(0,0,0,.12);
-
-            margin-bottom: 25px;
-        }
-
-        .icono-principal {
-            width: 65px;
-            height: 65px;
-
-            border-radius: 16px;
-
-            background: rgba(255,255,255,.15);
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 30px;
-
-            flex-shrink: 0;
-        }
-
-        .encabezado h1 {
-            margin: 0;
-
-            font-size: 26px;
-        }
-
-        .encabezado p {
-            margin: 6px 0 0;
-
-            color: #D8E2F0;
-
-            font-size: 14px;
-        }
-
-        /* ==========================================
+        /* ==================================================
            BOTÓN VOLVER
-        ========================================== */
+        ================================================== */
 
         .volver {
+
             display: inline-flex;
 
             align-items: center;
@@ -130,7 +88,9 @@
             transition: .2s;
         }
 
+
         .volver:hover {
+
             background: #1E4E8C;
 
             color: white;
@@ -138,17 +98,188 @@
             transform: translateX(-2px);
         }
 
-        /* ==========================================
-           TARJETA DE CONVERSACIÓN
-        ========================================== */
+
+        /* ==================================================
+           ENCABEZADO
+        ================================================== */
+
+        .encabezado {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #08142C,
+                    #1E4E8C
+                );
+
+            border-radius: 20px;
+
+            padding: 28px 30px;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 20px;
+
+            box-shadow:
+                0 10px 30px rgba(0,0,0,.12);
+
+            margin-bottom: 25px;
+        }
+
+
+        .icono-principal {
+
+            width: 65px;
+
+            height: 65px;
+
+            border-radius: 16px;
+
+            background:
+                rgba(255,255,255,.15);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 30px;
+
+            flex-shrink: 0;
+        }
+
+
+        .encabezado h1 {
+
+            margin: 0;
+
+            font-size: 26px;
+        }
+
+
+        .encabezado p {
+
+            margin: 6px 0 0;
+
+            color: #D8E2F0;
+
+            font-size: 14px;
+        }
+
+
+        /* ==================================================
+           INFORMACIÓN DE LA MADRE
+        ================================================== */
+
+        .madre-card {
+
+            background: white;
+
+            border: 1px solid #E2E7EF;
+
+            border-radius: 16px;
+
+            padding: 18px 20px;
+
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 6px 20px rgba(0,0,0,.05);
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+        }
+
+
+        .madre-avatar {
+
+            width: 52px;
+
+            height: 52px;
+
+            border-radius: 50%;
+
+            background: #EEF4FB;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 25px;
+
+            flex-shrink: 0;
+        }
+
+
+        .madre-datos {
+
+            flex: 1;
+        }
+
+
+        .madre-datos .titulo {
+
+            margin: 0;
+
+            color: #667085;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+        }
+
+
+        .madre-datos .nombre {
+
+            margin: 3px 0 0;
+
+            color: #08142C;
+
+            font-size: 17px;
+
+            font-weight: 700;
+        }
+
+
+        .madre-datos .usuario {
+
+            margin: 3px 0 0;
+
+            color: #667085;
+
+            font-size: 13px;
+        }
+
+
+        /* ==================================================
+           LISTA
+        ================================================== */
 
         .lista {
+
             display: flex;
 
             flex-direction: column;
 
             gap: 15px;
         }
+
+
+        /* ==================================================
+           CONVERSACIÓN
+        ================================================== */
 
         .conversacion {
 
@@ -172,6 +303,7 @@
             transition: .2s;
         }
 
+
         .conversacion:hover {
 
             transform: translateY(-2px);
@@ -182,13 +314,15 @@
             border-color: #C9D7E8;
         }
 
-        /* ==========================================
-           AVATAR
-        ========================================== */
+
+        /* ==================================================
+           AVATAR DOCENTE
+        ================================================== */
 
         .avatar {
 
             width: 58px;
+
             height: 58px;
 
             border-radius: 50%;
@@ -208,9 +342,10 @@
             flex-shrink: 0;
         }
 
-        /* ==========================================
+
+        /* ==================================================
            INFORMACIÓN
-        ========================================== */
+        ================================================== */
 
         .informacion {
 
@@ -218,6 +353,7 @@
 
             min-width: 0;
         }
+
 
         .informacion h3 {
 
@@ -227,6 +363,7 @@
 
             font-size: 17px;
         }
+
 
         .ultimo {
 
@@ -244,6 +381,7 @@
 
             max-width: 550px;
         }
+
 
         .etiqueta {
 
@@ -266,9 +404,34 @@
             text-transform: uppercase;
         }
 
-        /* ==========================================
+
+        /* ==================================================
+           MENSAJES NO LEÍDOS
+        ================================================== */
+
+        .no-leidos {
+
+            display: inline-block;
+
+            margin-left: 8px;
+
+            padding: 4px 8px;
+
+            background: #FFC107;
+
+            color: #08142C;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+
+        /* ==================================================
            BOTÓN CHAT
-        ========================================== */
+        ================================================== */
 
         .btn-chat {
 
@@ -297,6 +460,7 @@
             flex-shrink: 0;
         }
 
+
         .btn-chat:hover {
 
             background: #08142C;
@@ -304,9 +468,10 @@
             transform: translateY(-1px);
         }
 
-        /* ==========================================
+
+        /* ==================================================
            SIN MENSAJES
-        ========================================== */
+        ================================================== */
 
         .vacio {
 
@@ -324,6 +489,7 @@
                 0 6px 20px rgba(0,0,0,.05);
         }
 
+
         .vacio-icono {
 
             font-size: 50px;
@@ -331,12 +497,14 @@
             margin-bottom: 12px;
         }
 
+
         .vacio h3 {
 
             margin: 0 0 7px;
 
             color: #08142C;
         }
+
 
         .vacio p {
 
@@ -347,37 +515,56 @@
             font-size: 14px;
         }
 
-        /* ==========================================
+
+        /* ==================================================
            RESPONSIVE
-        ========================================== */
+        ================================================== */
 
         @media (max-width: 650px) {
 
             .pagina {
+
                 padding: 20px 12px;
             }
 
+
             .encabezado {
+
                 padding: 22px;
 
                 align-items: flex-start;
             }
 
+
             .encabezado h1 {
+
                 font-size: 22px;
             }
 
+
+            .madre-card {
+
+                align-items: flex-start;
+            }
+
+
             .conversacion {
+
                 align-items: flex-start;
 
                 flex-wrap: wrap;
             }
 
+
             .informacion {
-                width: calc(100% - 78px);
+
+                width:
+                    calc(100% - 78px);
             }
 
+
             .btn-chat {
+
                 width: 100%;
 
                 justify-content: center;
@@ -395,12 +582,13 @@
 
 <div class="pagina">
 
+
     <div class="contenedor">
 
 
-        <!-- ======================================
+        <!-- ==================================================
              VOLVER
-        ======================================= -->
+        ================================================== -->
 
         <a
             href="{{ url_for('estudiante.dashboard') }}"
@@ -410,9 +598,9 @@
         </a>
 
 
-        <!-- ======================================
+        <!-- ==================================================
              ENCABEZADO
-        ======================================= -->
+        ================================================== -->
 
         <div class="encabezado">
 
@@ -435,11 +623,62 @@
         </div>
 
 
-        <!-- ======================================
+        <!-- ==================================================
+             INFORMACIÓN DE LA MADRE
+        ================================================== -->
+
+        <div class="madre-card">
+
+
+            <div class="madre-avatar">
+                👩
+            </div>
+
+
+            <div class="madre-datos">
+
+                <p class="titulo">
+                    Madre
+                </p>
+
+
+                <p class="nombre">
+
+                    {{ estudiante.get(
+                        "madre",
+                        estudiante.get(
+                            "madre_nombre",
+                            "Madre"
+                        )
+                    ) }}
+
+                </p>
+
+
+                {% if estudiante.get("madre_usuario") %}
+
+                    <p class="usuario">
+
+                        Usuario:
+                        {{ estudiante.get(
+                            "madre_usuario"
+                        ) }}
+
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
              LISTA DE CONVERSACIONES
-        ======================================= -->
+        ================================================== -->
 
         {% if conversaciones %}
+
 
             <div class="lista">
 
@@ -450,7 +689,7 @@
                     <div class="conversacion">
 
 
-                        <!-- AVATAR -->
+                        <!-- AVATAR DOCENTE -->
 
                         <div class="avatar">
                             👨‍🏫
@@ -460,6 +699,7 @@
                         <!-- INFORMACIÓN -->
 
                         <div class="informacion">
+
 
                             <h3>
 
@@ -486,6 +726,21 @@
                                 Docente
 
                             </span>
+
+
+                            {% if conversacion.get(
+                                "no_leidos_padre",
+                                0
+                            ) > 0 %}
+
+                                <span class="no-leidos">
+
+                                    Nuevo mensaje
+
+                                </span>
+
+                            {% endif %}
+
 
                         </div>
 
@@ -517,24 +772,30 @@
         {% else %}
 
 
-            <!-- ==================================
+            <!-- ==================================================
                  SIN CONVERSACIONES
-            =================================== -->
+            ================================================== -->
 
             <div class="vacio">
+
 
                 <div class="vacio-icono">
                     💬
                 </div>
 
+
                 <h3>
                     No tienes conversaciones
                 </h3>
 
+
                 <p>
+
                     Cuando un docente se comunique contigo,
                     la conversación aparecerá aquí.
+
                 </p>
+
 
             </div>
 

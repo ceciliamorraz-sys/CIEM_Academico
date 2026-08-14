@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Configuración | CIEM ONE</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            background: #F4F7FB;
+
+            color: #1D3256;
+        }
+
+        .pagina {
+
+            min-height: 100vh;
+
+            padding: 35px;
+        }
+
+        .contenedor {
+
+            max-width: 1100px;
+
+            margin: auto;
+        }
+
+        /* ==========================================
+           ENCABEZADO
+        ========================================== */
+
+        .encabezado {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #08142C,
+                    #1E4E8C
+                );
+
+            color: white;
+
+            padding: 30px;
+
+            border-radius: 22px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(0, 0, 0, .12);
+
+            margin-bottom: 25px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 20px;
+        }
+
+        .encabezado h1 {
+
+            margin: 0 0 8px;
+
+            font-size: 30px;
+        }
+
+        .encabezado p {
+
+            margin: 0;
+
+            color: #D5DDEA;
+
+            font-size: 15px;
+        }
+
+        .icono-config {
+
+            width: 65px;
+
+            height: 65px;
+
+            background: #FFC107;
+
+            color: #08142C;
+
+            border-radius: 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 32px;
+        }
+
+        /* ==========================================
+           VOLVER
+        ========================================== */
+
+        .volver {
+
+            display: inline-block;
+
+            margin-bottom: 25px;
+
+            padding: 11px 18px;
+
+            background: white;
+
+            color: #1E4E8C;
+
+            text-decoration: none;
+
+            border-radius: 10px;
+
+            font-weight: 600;
+
+            box-shadow:
+                0 4px 12px
+                rgba(0, 0, 0, .08);
+
+            transition: .2s;
+        }
+
+        .volver:hover {
+
+            background: #1E4E8C;
+
+            color: white;
+
+            transform:
+                translateY(-2px);
+        }
+
+        /* ==========================================
+           MENSAJES FLASH
+        ========================================== */
+
+        .mensajes {
+
+            margin-bottom: 20px;
+        }
+
+        .mensaje {
+
+            padding: 14px 18px;
+
+            border-radius: 10px;
+
+            margin-bottom: 10px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+        .mensaje.success {
+
+            background: #DFF6E5;
+
+            color: #176B35;
+
+            border-left:
+                5px solid #28A745;
+        }
+
+        .mensaje.danger {
+
+            background: #FDE2E2;
+
+            color: #9B1C1C;
+
+            border-left:
+                5px solid #DC3545;
+        }
+
+        .mensaje.warning {
+
+            background: #FFF4CC;
+
+            color: #856404;
+
+            border-left:
+                5px solid #FFC107;
+        }
+
+        /* ==========================================
+           CUENTA
+        ========================================== */
+
+        .cuenta {
+
+            background: white;
+
+            border-radius: 18px;
+
+            padding: 25px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 5px 20px
+                rgba(0, 0, 0, .07);
+
+            border-left:
+                5px solid #FFC107;
+        }
+
+        .cuenta-titulo {
+
+            font-size: 14px;
+
+            color: #777;
+
+            margin-bottom: 8px;
+        }
+
+        .cuenta-usuario {
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+            color: #08142C;
+
+            margin-bottom: 8px;
+        }
+
+        .cuenta-correo {
+
+            color: #667085;
+
+            font-size: 15px;
+
+            margin-bottom: 7px;
+        }
+
+        .cuenta-rol {
+
+            color: #1E4E8C;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+        /* ==========================================
+           TARJETAS
+        ========================================== */
+
+        .informacion {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+
+            gap: 25px;
+
+            margin-bottom: 25px;
+        }
+
+        .tarjeta {
+
+            background: white;
+
+            border-radius: 20px;
+
+            padding: 28px;
+
+            box-shadow:
+                0 7px 25px
+                rgba(0, 0, 0, .08);
+
+            border-top:
+                5px solid #1E4E8C;
+        }
+
+        .tarjeta.seguridad-card {
+
+            border-top-color: #FFC107;
+        }
+
+        .tarjeta-icono {
+
+            width: 55px;
+
+            height: 55px;
+
+            border-radius: 15px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: #EAF1FA;
+
+            font-size: 27px;
+
+            margin-bottom: 15px;
+        }
+
+        .seguridad-card
+        .tarjeta-icono {
+
+            background: #FFF4CC;
+        }
+
+        .tarjeta h2 {
+
+            margin:
+                0 0 10px;
+
+            color: #08142C;
+
+            font-size: 21px;
+        }
+
+        .tarjeta-descripcion {
+
+            color: #667085;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+
+            margin-bottom: 15px;
+        }
+
+        /* ==========================================
+           FORMULARIOS
+        ========================================== */
+
+        .formulario {
+
+            margin-top: 20px;
+        }
+
+        .campo {
+
+            margin-bottom: 17px;
+        }
+
+        .campo label {
+
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            color: #1D3256;
+        }
+
+        .campo input {
+
+            width: 100%;
+
+            padding: 12px 14px;
+
+            border:
+                1px solid #D6DCE5;
+
+            border-radius: 10px;
+
+            font-size: 14px;
+
+            outline: none;
+
+            transition: .2s;
+
+            background: #FAFBFD;
+        }
+
+        .campo input:focus {
+
+            border-color: #1E4E8C;
+
+            background: white;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(
+                    30,
+                    78,
+                    140,
+                    .10
+                );
+        }
+
+        .boton {
+
+            border: none;
+
+            padding: 12px 20px;
+
+            border-radius: 10px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            transition: .2s;
+        }
+
+        .boton-correo {
+
+            background: #1E4E8C;
+
+            color: white;
+        }
+
+        .boton-correo:hover {
+
+            background: #08142C;
+
+            transform:
+                translateY(-1px);
+        }
+
+        .boton-password {
+
+            background: #FFC107;
+
+            color: #08142C;
+        }
+
+        .boton-password:hover {
+
+            background: #E0A800;
+
+            transform:
+                translateY(-1px);
+        }
+
+        .ayuda {
+
+            margin-top: 10px;
+
+            font-size: 12px;
+
+            color: #7A8494;
+
+            line-height: 1.5;
+        }
+
+        /* ==========================================
+           SEGURIDAD
+        ========================================== */
+
+        .seguridad {
+
+            background: #08142C;
+
+            color: white;
+
+            padding: 22px 25px;
+
+            border-radius: 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 18px;
+        }
+
+        .seguridad-icono {
+
+            font-size: 30px;
+        }
+
+        .seguridad h3 {
+
+            margin:
+                0 0 6px;
+
+            font-size: 18px;
+        }
+
+        .seguridad p {
+
+            margin: 0;
+
+            color: #C8D2E8;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        /* ==========================================
+           RESPONSIVE
+        ========================================== */
+
+        @media (max-width: 800px) {
+
+            .pagina {
+
+                padding: 18px;
+            }
+
+            .informacion {
+
+                grid-template-columns: 1fr;
+            }
+
+            .encabezado {
+
+                padding: 22px;
+            }
+
+            .encabezado h1 {
+
+                font-size: 24px;
+            }
+
+            .icono-config {
+
+                width: 52px;
+
+                height: 52px;
+
+                font-size: 25px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="pagina">
+
+<div class="contenedor">
+
+
+    <!-- ======================================
+         ENCABEZADO
+    ======================================= -->
+
+    <div class="encabezado">
+
+        <div>
+
+            <h1>
+                ⚙️ Configuración de cuenta
+            </h1>
+
+            <p>
+                Administra tu correo electrónico
+                y la seguridad de tu cuenta en CIEM ONE.
+            </p>
+
+        </div>
+
+        <div class="icono-config">
+            ⚙️
+        </div>
+
+    </div>
+
+
+    <!-- ======================================
+         VOLVER
+    ======================================= -->
+
+    <a
+        href="{{ url_for('docente.dashboard_docente') }}"
+        class="volver"
+    >
+        ← Volver al dashboard
+    </a>
+
+
+    <!-- ======================================
+         MENSAJES FLASH
+    ======================================= -->
+
+    {% with mensajes = get_flashed_messages(
+        with_categories=true
+    ) %}
+
+        {% if mensajes %}
+
+            <div class="mensajes">
+
+                {% for categoria, mensaje in mensajes %}
+
+                    <div
+                        class="mensaje {{ categoria }}"
+                    >
+
+                        {{ mensaje }}
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- ======================================
+         INFORMACIÓN DE CUENTA
+    ======================================= -->
+
+    <div class="cuenta">
+
+        <div class="cuenta-titulo">
+            Cuenta actual
+        </div>
+
+        <div class="cuenta-usuario">
+
+            👤 {{ usuario.usuario }}
+
+        </div>
+
+
+        {% if usuario.correo %}
+
+            <div class="cuenta-correo">
+
+                📧 {{ usuario.correo }}
+
+            </div>
+
+        {% else %}
+
+            <div class="cuenta-correo">
+
+                📧 No hay correo registrado
+
+            </div>
+
+        {% endif %}
+
+
+        {% if rol %}
+
+            <div class="cuenta-rol">
+
+                🔐 Tipo de cuenta:
+                {{ rol|capitalize }}
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ======================================
+         FORMULARIOS
+    ======================================= -->
+
+    <div class="informacion">
+
+
+        <!-- ==================================
+             CAMBIAR CORREO
+        ================================== -->
+
+        <div class="tarjeta">
+
+            <div class="tarjeta-icono">
+                📧
+            </div>
+
+            <h2>
+                Cambiar correo electrónico
+            </h2>
+
+            <div class="tarjeta-descripcion">
+
+                Actualiza el correo electrónico
+                asociado a tu cuenta docente.
+
+            </div>
+
+
+            <form
+                class="formulario"
+                method="POST"
+                action="{{ url_for('docente.cambiar_correo') }}"
+            >
+
+                <div class="campo">
+
+                    <label for="correo">
+
+                        Nuevo correo electrónico
+
+                    </label>
+
+                    <input
+                        type="email"
+                        id="correo"
+                        name="correo"
+                        placeholder="ejemplo@correo.com"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="boton boton-correo"
+                >
+
+                    💾 Guardar correo
+
+                </button>
+
+
+                <div class="ayuda">
+
+                    Utiliza un correo electrónico
+                    válido que puedas consultar.
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- ==================================
+             CAMBIAR CONTRASEÑA
+        ================================== -->
+
+        <div class="tarjeta seguridad-card">
+
+            <div class="tarjeta-icono">
+                🔐
+            </div>
+
+            <h2>
+                Cambiar contraseña
+            </h2>
+
+            <div class="tarjeta-descripcion">
+
+                Cambia tu contraseña para mantener
+                segura tu cuenta docente.
+
+            </div>
+
+
+            <form
+                class="formulario"
+                method="POST"
+                action="{{ url_for('docente.cambiar_password') }}"
+            >
+
+
+                <div class="campo">
+
+                    <label for="password_actual">
+
+                        Contraseña actual
+
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password_actual"
+                        name="password_actual"
+                        placeholder="Contraseña actual"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="password_nueva">
+
+                        Nueva contraseña
+
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password_nueva"
+                        name="password_nueva"
+                        placeholder="Nueva contraseña"
+                        minlength="6"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="password_confirmar">
+
+                        Confirmar nueva contraseña
+
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password_confirmar"
+                        name="password_confirmar"
+                        placeholder="Confirmar contraseña"
+                        minlength="6"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="boton boton-password"
+                >
+
+                    🔑 Cambiar contraseña
+
+                </button>
+
+
+                <div class="ayuda">
+
+                    La nueva contraseña debe tener
+                    al menos 6 caracteres.
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================
+         AVISO DE SEGURIDAD
+    ======================================= -->
+
+    <div class="seguridad">
+
+        <div class="seguridad-icono">
+            🛡️
+        </div>
+
+        <div>
+
+            <h3>
+                Seguridad de tu cuenta
+            </h3>
+
+            <p>
+
+                Nunca compartas tu contraseña.
+                Si sospechas que alguien conoce tus
+                credenciales, cámbiala inmediatamente.
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+</div>
+
+</body>
+
+</html>

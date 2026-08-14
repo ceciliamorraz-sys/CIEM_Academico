@@ -1,183 +1,1029 @@
-
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
-<title>
-CIEM Académico | Gestión de Estudiantes
-</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
+    <title>Estudiantes | CIEM Académico</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- ==================================================
+         BOOTSTRAP
+    =================================================== -->
 
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
 
-<style>
 
+    <!-- ==================================================
+         ICONOS
+    =================================================== -->
 
-body{
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
 
-    background:#f5f7fb;
-    font-family:'Segoe UI', sans-serif;
 
-}
+    <style>
 
+        :root {
 
-/* HEADER */
+            --azul-950: #061126;
+            --azul-900: #08142C;
+            --azul-800: #0D2A52;
+            --azul-700: #1E4E8C;
 
-.header-ciem{
+            --dorado: #FFC107;
+            --dorado-oscuro: #D89F00;
 
-    background:linear-gradient(135deg,#08142C,#1E4E8C);
-    color:white;
-    padding:30px;
-    border-radius:20px;
-    box-shadow:0 8px 25px rgba(0,0,0,.15);
+            --fondo: #F4F7FB;
+            --blanco: #FFFFFF;
 
-}
+            --texto: #172033;
+            --texto-suave: #667085;
 
+            --borde: #E5E9F0;
 
-.header-ciem h1{
+            --verde: #198754;
+            --rojo: #DC3545;
 
-    font-weight:700;
+            --sombra-suave:
+                0 6px 18px rgba(8, 20, 44, 0.06);
 
-}
+            --sombra:
+                0 12px 30px rgba(8, 20, 44, 0.10);
+        }
 
 
-/* TARJETAS */
+        /* ==================================================
+           GENERAL
+        ================================================== */
 
-.info-card{
+        * {
+            box-sizing: border-box;
+        }
 
-    border:none;
-    border-radius:18px;
-    padding:20px;
-    background:white;
-    box-shadow:0 5px 18px rgba(0,0,0,.08);
 
-}
+        body {
 
+            margin: 0;
 
-.icon-box{
+            min-height: 100vh;
 
-    width:55px;
-    height:55px;
-    border-radius:15px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:28px;
-    background:#FFC107;
-    color:#08142C;
+            background:
+                radial-gradient(
+                    circle at 10% 0%,
+                    rgba(30, 78, 140, 0.07),
+                    transparent 30%
+                ),
+                var(--fondo);
 
-}
+            color: var(--texto);
 
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+        }
 
 
-/* TABLA */
+        /* ==================================================
+           CONTENEDOR
+        ================================================== */
 
-.table-card{
+        .pagina-estudiantes {
 
-    background:white;
-    border-radius:20px;
-    padding:25px;
-    box-shadow:0 6px 20px rgba(0,0,0,.08);
+            max-width: 1450px;
 
-}
+            margin: 0 auto;
 
+            padding: 28px 24px 40px;
+        }
 
 
-.table thead{
+        /* ==================================================
+           HEADER
+        ================================================== */
 
-    background:#08142C;
-    color:white;
+        .header-ciem {
 
-}
+            position: relative;
 
+            overflow: hidden;
 
-.table thead th{
+            padding: 28px 32px;
 
-    padding:15px;
+            color: var(--blanco);
 
-}
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--azul-950),
+                    var(--azul-700)
+                );
 
+            border-radius: 22px;
 
-.table tbody tr:hover{
+            box-shadow: var(--sombra);
+        }
 
-    background:#f1f5ff;
 
-}
+        .header-ciem::before {
 
+            content: "";
 
+            position: absolute;
 
-.avatar{
+            width: 240px;
+            height: 240px;
 
-    width:40px;
-    height:40px;
-    border-radius:50%;
-    background:#0D2A52;
-    color:white;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:bold;
+            border-radius: 50%;
 
-}
+            right: -90px;
+            top: -140px;
 
+            background:
+                rgba(255, 193, 7, 0.09);
+        }
 
-/* BOTONES */
 
+        .header-ciem::after {
 
-.btn-ciem{
+            content: "";
 
-    background:#0D2A52;
-    color:white;
-    border-radius:10px;
+            position: absolute;
 
-}
+            width: 140px;
+            height: 140px;
 
+            border-radius: 50%;
 
-.btn-ciem:hover{
+            left: 38%;
+            bottom: -100px;
 
-    background:#1E4E8C;
-    color:white;
+            background:
+                rgba(255, 255, 255, 0.04);
+        }
 
-}
 
+        .header-contenido {
 
+            position: relative;
 
-.btn-warning{
+            z-index: 2;
 
-    border-radius:10px;
+            display: flex;
 
-}
+            align-items: center;
 
+            justify-content: space-between;
 
-.btn-danger{
+            gap: 25px;
+        }
 
-    border-radius:10px;
 
-}
+        .header-texto h1 {
 
+            margin: 0 0 7px;
 
+            font-size: 30px;
 
-/* BUSCADOR */
+            font-weight: 750;
 
-.search-box{
+            letter-spacing: -0.4px;
+        }
 
-    border-radius:12px;
-    border:1px solid #ddd;
-    padding:12px;
 
-}
+        .header-texto h1 i {
 
+            color: var(--dorado);
 
+            margin-right: 8px;
+        }
 
-</style>
 
+        .header-texto p {
+
+            margin: 0;
+
+            color:
+                rgba(255, 255, 255, 0.70);
+
+            font-size: 13px;
+        }
+
+
+        .btn-dashboard {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 8px;
+
+            padding: 11px 17px;
+
+            border-radius: 11px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.18);
+
+            background:
+                rgba(255, 255, 255, 0.10);
+
+            color: var(--blanco);
+
+            text-decoration: none;
+
+            font-size: 12px;
+
+            font-weight: 650;
+
+            backdrop-filter: blur(8px);
+
+            transition: 0.22s ease;
+        }
+
+
+        .btn-dashboard:hover {
+
+            background: var(--dorado);
+
+            border-color: var(--dorado);
+
+            color: var(--azul-950);
+
+            transform:
+                translateY(-2px);
+        }
+
+
+        /* ==================================================
+           RESUMEN
+        ================================================== */
+
+        .resumen {
+
+            margin-top: 22px;
+        }
+
+
+        .info-card {
+
+            height: 100%;
+
+            padding: 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            background:
+                var(--blanco);
+
+            border:
+                1px solid var(--borde);
+
+            border-radius: 17px;
+
+            box-shadow: var(--sombra-suave);
+
+            transition: 0.22s ease;
+        }
+
+
+        .info-card:hover {
+
+            transform:
+                translateY(-3px);
+
+            box-shadow: var(--sombra);
+        }
+
+
+        .icon-box {
+
+            width: 52px;
+            height: 52px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 14px;
+
+            background:
+                rgba(255, 193, 7, 0.16);
+
+            color:
+                var(--dorado-oscuro);
+
+            font-size: 22px;
+        }
+
+
+        .info-card h3 {
+
+            margin: 0 0 2px;
+
+            color:
+                var(--azul-900);
+
+            font-size: 25px;
+
+            font-weight: 750;
+        }
+
+
+        .info-card span {
+
+            color:
+                var(--texto-suave);
+
+            font-size: 12px;
+        }
+
+
+        .btn-nueva-matricula {
+
+            margin-left: auto;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            padding: 10px 15px;
+
+            border-radius: 10px;
+
+            border: none;
+
+            background:
+                var(--azul-800);
+
+            color: var(--blanco);
+
+            text-decoration: none;
+
+            font-size: 12px;
+
+            font-weight: 650;
+
+            transition: 0.22s ease;
+        }
+
+
+        .btn-nueva-matricula:hover {
+
+            background:
+                var(--azul-700);
+
+            color: var(--blanco);
+
+            transform:
+                translateY(-2px);
+        }
+
+
+        .btn-nueva-matricula i {
+
+            color: var(--dorado);
+        }
+
+
+        /* ==================================================
+           TABLA
+        ================================================== */
+
+        .table-card {
+
+            margin-top: 22px;
+
+            padding: 24px;
+
+            background: var(--blanco);
+
+            border:
+                1px solid var(--borde);
+
+            border-radius: 20px;
+
+            box-shadow: var(--sombra-suave);
+        }
+
+
+        .tabla-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .tabla-titulo {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .tabla-titulo-icono {
+
+            width: 40px;
+            height: 40px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 11px;
+
+            background:
+                #EEF4FB;
+
+            color:
+                var(--azul-700);
+
+            font-size: 17px;
+        }
+
+
+        .tabla-titulo h2 {
+
+            margin: 0;
+
+            color:
+                var(--azul-900);
+
+            font-size: 18px;
+
+            font-weight: 700;
+        }
+
+
+        .tabla-titulo p {
+
+            margin: 3px 0 0;
+
+            color:
+                var(--texto-suave);
+
+            font-size: 11px;
+        }
+
+
+        /* ==================================================
+           BUSCADOR
+        ================================================== */
+
+        .buscador {
+
+            position: relative;
+
+            width: 320px;
+        }
+
+
+        .buscador i {
+
+            position: absolute;
+
+            left: 13px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            color:
+                var(--texto-suave);
+
+            font-size: 14px;
+        }
+
+
+        .search-box {
+
+            width: 100%;
+
+            min-height: 42px;
+
+            padding:
+                10px 14px 10px 37px;
+
+            border:
+                1px solid var(--borde);
+
+            border-radius: 11px;
+
+            background:
+                #FAFBFC;
+
+            color:
+                var(--texto);
+
+            font-size: 12px;
+
+            outline: none;
+
+            transition:
+                border-color .2s ease,
+                box-shadow .2s ease;
+        }
+
+
+        .search-box:focus {
+
+            border-color:
+                var(--azul-700);
+
+            background:
+                var(--blanco);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(30, 78, 140, 0.09);
+        }
+
+
+        /* ==================================================
+           TABLA RESPONSIVE
+        ================================================== */
+
+        .table-responsive {
+
+            overflow-x: auto;
+
+            border-radius: 13px;
+        }
+
+
+        .table {
+
+            margin: 0;
+
+            min-width: 900px;
+        }
+
+
+        .table thead th {
+
+            padding: 14px 15px;
+
+            color:
+                rgba(255, 255, 255, 0.90);
+
+            background:
+                var(--azul-900);
+
+            border: none;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            letter-spacing: .2px;
+
+            white-space: nowrap;
+        }
+
+
+        .table thead th:first-child {
+
+            border-top-left-radius: 10px;
+        }
+
+
+        .table thead th:last-child {
+
+            border-top-right-radius: 10px;
+        }
+
+
+        .table tbody td {
+
+            padding: 13px 15px;
+
+            border-color:
+                var(--borde);
+
+            vertical-align: middle;
+
+            color:
+                var(--texto);
+
+            font-size: 12px;
+        }
+
+
+        .table tbody tr {
+
+            transition:
+                background .18s ease;
+        }
+
+
+        .table tbody tr:hover {
+
+            background:
+                #F8FAFC;
+        }
+
+
+        /* ==================================================
+           NÚMERO
+        ================================================== */
+
+        .numero {
+
+            width: 45px;
+
+            color:
+                var(--texto-suave);
+
+            font-size: 11px;
+
+            font-weight: 650;
+        }
+
+
+        /* ==================================================
+           ESTUDIANTE
+        ================================================== */
+
+        .estudiante-info {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            min-width: 260px;
+        }
+
+
+        .avatar {
+
+            width: 38px;
+            height: 38px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--azul-800),
+                    var(--azul-700)
+                );
+
+            color:
+                var(--blanco);
+
+            font-size: 12px;
+
+            font-weight: 750;
+
+            text-transform: uppercase;
+        }
+
+
+        .nombre-estudiante {
+
+            color:
+                var(--azul-900);
+
+            font-weight: 650;
+
+            font-size: 12px;
+        }
+
+
+        /* ==================================================
+           CÓDIGO
+        ================================================== */
+
+        .codigo-estudiante {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            padding: 7px 10px;
+
+            border-radius: 8px;
+
+            background:
+                #EEF4FB;
+
+            color:
+                var(--azul-800);
+
+            font-size: 10px;
+
+            font-weight: 750;
+
+            letter-spacing: .35px;
+
+            white-space: nowrap;
+        }
+
+
+        .codigo-estudiante i {
+
+            color:
+                var(--azul-700);
+
+            font-size: 12px;
+        }
+
+
+        /* ==================================================
+           GRADO
+        ================================================== */
+
+        .grado-badge {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            padding: 6px 9px;
+
+            border-radius: 8px;
+
+            background:
+                #F4F6F9;
+
+            color:
+                var(--azul-900);
+
+            font-size: 10px;
+
+            font-weight: 650;
+
+            white-space: nowrap;
+        }
+
+
+        /* ==================================================
+           SECCIÓN
+        ================================================== */
+
+        .seccion-badge {
+
+            width: 30px;
+            height: 30px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 8px;
+
+            background:
+                #FFF4CC;
+
+            color:
+                #826200;
+
+            font-size: 11px;
+
+            font-weight: 750;
+        }
+
+
+        /* ==================================================
+           ACCIONES
+        ================================================== */
+
+        .acciones {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 6px;
+        }
+
+
+        .btn-accion {
+
+            width: 34px;
+            height: 34px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 9px;
+
+            text-decoration: none;
+
+            transition:
+                transform .2s ease,
+                background .2s ease;
+        }
+
+
+        .btn-editar {
+
+            background:
+                #FFF4CC;
+
+            color:
+                #8A6500;
+        }
+
+
+        .btn-editar:hover {
+
+            background:
+                var(--dorado);
+
+            color:
+                var(--azul-950);
+
+            transform:
+                translateY(-2px);
+        }
+
+
+        .btn-eliminar {
+
+            background:
+                #FCEBEC;
+
+            color:
+                var(--rojo);
+        }
+
+
+        .btn-eliminar:hover {
+
+            background:
+                var(--rojo);
+
+            color:
+                var(--blanco);
+
+            transform:
+                translateY(-2px);
+        }
+
+
+        /* ==================================================
+           SIN ESTUDIANTES
+        ================================================== */
+
+        .sin-estudiantes {
+
+            padding: 48px 20px !important;
+
+            text-align: center;
+
+            color:
+                var(--texto-suave);
+        }
+
+
+        .sin-estudiantes i {
+
+            display: block;
+
+            margin-bottom: 9px;
+
+            color:
+                var(--azul-700);
+
+            font-size: 31px;
+        }
+
+
+        .sin-estudiantes p {
+
+            margin: 0;
+
+            font-size: 12px;
+        }
+
+
+        /* ==================================================
+           RESPONSIVE
+        ================================================== */
+
+        @media (max-width: 900px) {
+
+            .header-contenido {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+
+            .btn-dashboard {
+
+                width: 100%;
+            }
+
+
+            .tabla-header {
+
+                flex-direction: column;
+
+                align-items: stretch;
+            }
+
+
+            .buscador {
+
+                width: 100%;
+            }
+
+        }
+
+
+        @media (max-width: 768px) {
+
+            .pagina-estudiantes {
+
+                padding:
+                    15px 12px 30px;
+            }
+
+
+            .header-ciem {
+
+                padding: 22px;
+            }
+
+
+            .header-texto h1 {
+
+                font-size: 24px;
+            }
+
+
+            .table-card {
+
+                padding: 16px;
+            }
+
+
+            .info-card {
+
+                min-height: 90px;
+            }
+
+        }
+
+    </style>
 
 </head>
 
@@ -185,438 +1031,541 @@ body{
 <body>
 
 
-<div class="container-fluid px-4 py-4">
+<div class="pagina-estudiantes">
+
+
+    <!-- ==================================================
+         ENCABEZADO
+    ================================================== -->
+
+    <header class="header-ciem">
+
+        <div class="header-contenido">
+
+            <div class="header-texto">
+
+                <h1>
+
+                    <i class="bi bi-mortarboard-fill"></i>
+
+                    Gestión de Estudiantes
+
+                </h1>
+
+                <p>
+
+                    Administración académica de estudiantes
+                    registrados en CIEM.
+
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="btn-dashboard"
+            >
+
+                <i class="bi bi-house-fill"></i>
+
+                Dashboard
+
+            </a>
+
+        </div>
+
+    </header>
 
 
 
-<!-- ENCABEZADO -->
+    <!-- ==================================================
+         RESUMEN
+    ================================================== -->
+
+    <section class="resumen">
+
+        <div class="row g-4">
 
 
-<div class="header-ciem mb-4">
+            <!-- TOTAL -->
+
+            <div class="col-md-4">
+
+                <div class="info-card">
+
+                    <div class="icon-box">
+
+                        <i class="bi bi-people-fill"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h3>
+
+                            {{ estudiantes|length }}
+
+                        </h3>
+
+                        <span>
+
+                            Estudiantes registrados
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
 
 
-<div class="d-flex justify-content-between align-items-center">
+
+            <!-- COMUNIDAD -->
+
+            <div class="col-md-4">
+
+                <div class="info-card">
+
+                    <div class="icon-box">
+
+                        <i class="bi bi-building"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h3>
+
+                            CIEM
+
+                        </h3>
+
+                        <span>
+
+                            Comunidad educativa
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
 
 
-<div>
 
-<h1>
+            <!-- NUEVA MATRÍCULA -->
 
-<i class="bi bi-mortarboard-fill"></i>
+            <div class="col-md-4">
 
-Gestión de Estudiantes
+                <div class="info-card">
 
-</h1>
+                    <div class="icon-box">
+
+                        <i class="bi bi-person-plus-fill"></i>
+
+                    </div>
 
 
-<p class="mb-0">
+                    <a
+                        href="{{ url_for('agregar_matricula') }}"
+                        class="btn-nueva-matricula"
+                    >
 
-Administración académica de estudiantes registrados en CIEM
+                        <i class="bi bi-plus-circle"></i>
 
-</p>
+                        Nueva Matrícula
 
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         TABLA DE ESTUDIANTES
+    ================================================== -->
+
+    <section class="table-card">
+
+
+        <!-- ==================================================
+             CABECERA TABLA
+        ================================================== -->
+
+        <div class="tabla-header">
+
+
+            <div class="tabla-titulo">
+
+                <div class="tabla-titulo-icono">
+
+                    <i class="bi bi-list-check"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h2>
+
+                        Listado de estudiantes
+
+                    </h2>
+
+                    <p>
+
+                        Información académica básica
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- BUSCADOR -->
+
+            <div class="buscador">
+
+                <i class="bi bi-search"></i>
+
+                <input
+                    type="text"
+                    id="buscar"
+                    class="search-box"
+                    placeholder="Buscar estudiante..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             TABLA
+        ================================================== -->
+
+        <div class="table-responsive">
+
+
+            <table
+                class="table align-middle"
+                id="tablaEstudiantes"
+            >
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            Estudiante
+                        </th>
+
+                        <th>
+                            Código
+                        </th>
+
+                        <th>
+                            Grado
+                        </th>
+
+                        <th>
+                            Sección
+                        </th>
+
+                        <th>
+                            Acciones
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                    {% for e in estudiantes %}
+
+
+                    <tr>
+
+
+                        <!-- ==================================================
+                             NÚMERO
+                        ================================================== -->
+
+                        <td class="numero">
+
+                            {{ loop.index }}
+
+                        </td>
+
+
+
+                        <!-- ==================================================
+                             ESTUDIANTE
+                        ================================================== -->
+
+                        <td>
+
+                            <div class="estudiante-info">
+
+
+                                <div class="avatar">
+
+                                    {{ e.nombre[0]|upper }}
+
+                                </div>
+
+
+                                <span class="nombre-estudiante">
+
+                                    {{ e.nombre }}
+
+                                </span>
+
+
+                            </div>
+
+                        </td>
+
+
+
+                        <!-- ==================================================
+                             CÓDIGO
+                        ================================================== -->
+
+                        <td>
+
+                            <span class="codigo-estudiante">
+
+                                <i class="bi bi-person-badge-fill"></i>
+
+                                {{ e.codigo }}
+
+                            </span>
+
+                        </td>
+
+
+
+                        <!-- ==================================================
+                             GRADO
+                        ================================================== -->
+
+                        <td>
+
+                            <span class="grado-badge">
+
+                                {{ e.grado }}
+
+                            </span>
+
+                        </td>
+
+
+
+                        <!-- ==================================================
+                             SECCIÓN
+                        ================================================== -->
+
+                        <td>
+
+                            <span class="seccion-badge">
+
+                                {{ e.seccion }}
+
+                            </span>
+
+                        </td>
+
+
+
+                        <!-- ==================================================
+                             ACCIONES
+                        ================================================== -->
+
+                        <td>
+
+                            <div class="acciones">
+
+
+                                <!-- EDITAR -->
+
+                                <a
+                                    href="{{ url_for(
+                                        'editar_estudiante',
+                                        id=e._id
+                                    ) }}"
+                                    class="btn-accion btn-editar"
+                                    title="Editar estudiante"
+                                >
+
+                                    <i
+                                        class="bi bi-pencil-fill"
+                                    ></i>
+
+                                </a>
+
+
+
+                                <!-- ELIMINAR -->
+
+                                <a
+                                    href="{{ url_for(
+                                        'eliminar_estudiante',
+                                        id=e._id
+                                    ) }}"
+                                    class="btn-accion btn-eliminar"
+                                    title="Eliminar estudiante"
+                                    onclick="
+                                        return confirm(
+                                            '¿Desea eliminar este estudiante?'
+                                        )
+                                    "
+                                >
+
+                                    <i
+                                        class="bi bi-trash-fill"
+                                    ></i>
+
+                                </a>
+
+
+                            </div>
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% else %}
+
+
+                    <!-- ==================================================
+                         SIN ESTUDIANTES
+                    ================================================== -->
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="sin-estudiantes"
+                        >
+
+                            <i class="bi bi-people"></i>
+
+                            <p>
+
+                                No existen estudiantes registrados.
+
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
 
 </div>
 
 
-<a href="{{ url_for('admin_dashboard') }}"
-class="btn btn-light">
 
-<i class="bi bi-house-fill"></i>
-
-Dashboard
-
-</a>
-
-
-</div>
-
-
-</div>
-
-
-
-
-<!-- RESUMEN -->
-
-
-<div class="row mb-4">
-
-
-<div class="col-md-4">
-
-
-<div class="info-card d-flex align-items-center">
-
-
-<div class="icon-box me-3">
-
-<i class="bi bi-people-fill"></i>
-
-</div>
-
-
-<div>
-
-<h3 class="mb-0">
-
-{{ estudiantes|length }}
-
-</h3>
-
-
-<span>
-
-Estudiantes registrados
-
-</span>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-<div class="col-md-4">
-
-
-<div class="info-card d-flex align-items-center">
-
-
-<div class="icon-box me-3">
-
-<i class="bi bi-building"></i>
-
-</div>
-
-
-<div>
-
-<h3 class="mb-0">
-
-CIEM
-
-</h3>
-
-
-<span>
-
-Comunidad educativa
-
-</span>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-<div class="col-md-4">
-
-
-<div class="info-card d-flex align-items-center">
-
-
-<div class="icon-box me-3">
-
-<i class="bi bi-person-plus"></i>
-
-</div>
-
-
-<div>
-<a href="{{ url_for('agregar_matricula') }}"
-   class="btn btn-ciem">
-
-    <i class="bi bi-plus-circle"></i>
-
-    Nueva Matrícula
-
-</a>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-<!-- TABLA -->
-
-
-<div class="table-card">
-
-
-
-<div class="d-flex justify-content-between mb-3">
-
-
-<h4>
-
-<i class="bi bi-list-ul"></i>
-
-Listado de estudiantes
-
-</h4>
-
-
-
-<input type="text"
-id="buscar"
-class="form-control search-box"
-style="width:300px"
-placeholder="Buscar estudiante...">
-
-
-</div>
-
-
-
-
-
-<div class="table-responsive">
-
-
-<table class="table align-middle"
-id="tablaEstudiantes">
-
-
-<thead>
-
-
-<tr>
-
-<th>#</th>
-
-<th>Estudiante</th>
-
-<th>Código</th>
-
-<th>Grado</th>
-
-<th>Sección</th>
-
-<th>Tutor</th>
-
-<th>Teléfono</th>
-
-<th>Acciones</th>
-
-
-</tr>
-
-
-</thead>
-
-
-
-<tbody>
-
-
-
-{% for e in estudiantes %}
-
-
-
-<tr>
-
-
-<td>
-
-{{ loop.index }}
-
-</td>
-
-
-
-<td>
-
-
-<div class="d-flex align-items-center">
-
-
-<div class="avatar me-2">
-
-{{ e.nombre[0] }}
-
-</div>
-
-
-<strong>
-
-{{ e.nombre }}
-
-</strong>
-
-
-</div>
-
-
-</td>
-
-
-
-<td>
-
-{{ e.codigo if e.codigo else '---' }}
-
-</td>
-
-
-
-<td>
-
-{{ e.grado }}
-
-</td>
-
-
-
-<td>
-
-{{ e.seccion }}
-
-</td>
-
-
-
-<td>
-
-{{ e.padre if e.padre else '---' }}
-
-</td>
-
-
-
-<td>
-
-{{ e.telefono if e.telefono else '---' }}
-
-</td>
-
-
-
-<td>
-
-
-<a href="{{ url_for('editar_estudiante', id=e._id) }}"
-class="btn btn-warning btn-sm">
-
-<i class="bi bi-pencil-fill"></i>
-
-</a>
-
-
-<a href="{{ url_for('eliminar_estudiante', id=e._id) }}"
-class="btn btn-danger btn-sm"
-onclick="return confirm('¿Desea eliminar este estudiante?')">
-
-<i class="bi bi-trash-fill"></i>
-
-</a>
-
-
-
-{% else %}
-
-
-
-<tr>
-
-<td colspan="8"
-class="text-center">
-
-No existen estudiantes registrados
-
-</td>
-
-</tr>
-
-
-
-{% endfor %}
-
-
-
-</tbody>
-
-
-
-</table>
-
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
+<!-- ==================================================
+     BÚSQUEDA
+================================================== -->
 
 <script>
 
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-document.getElementById("buscar")
-.addEventListener("keyup",function(){
+        const buscador =
+            document.getElementById("buscar");
+
+        const tabla =
+            document.getElementById("tablaEstudiantes");
 
 
-let valor=this.value.toLowerCase();
+        if (!buscador || !tabla) {
+
+            return;
+
+        }
 
 
-let filas=document.querySelectorAll(
-"#tablaEstudiantes tbody tr"
+        buscador.addEventListener(
+            "keyup",
+            function () {
+
+                const valor =
+                    this.value
+                        .toLowerCase()
+                        .trim();
+
+
+                const filas =
+                    tabla.querySelectorAll(
+                        "tbody tr"
+                    );
+
+
+                filas.forEach(
+                    function (fila) {
+
+                        const contenido =
+                            fila.innerText
+                                .toLowerCase();
+
+
+                        fila.style.display =
+                            contenido.includes(valor)
+                                ? ""
+                                : "none";
+
+                    }
+                );
+
+            }
+        );
+
+    }
 );
 
-
-
-filas.forEach(function(fila){
-
-
-fila.style.display =
-fila.innerText.toLowerCase()
-.includes(valor)
-?
-""
-:
-"none";
-
-
-});
-
-
-});
-
-
 </script>
-
 
 
 </body>
 
 </html>
-```

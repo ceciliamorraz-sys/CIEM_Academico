@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -191,76 +191,67 @@
 
 
         <!-- ===================================== -->
-        <!-- MENSAJES -->
-        <!-- ===================================== -->
+<!-- MENSAJES -->
+<!-- ===================================== -->
 
-        <div
-            class="chat-body"
-            id="chatBody"
-        >
+<div
+    class="chat-body"
+    id="chatBody"
+>
 
-            {% if mensajes %}
+    {% if mensajes %}
 
-                {% for m in mensajes %}
+        {% for m in mensajes %}
 
+            {% if m.emisor == "docente" %}
 
-                    {% if m.emisor == "docente" %}
+                <div class="mensaje mensaje-docente">
 
-                        <div class="mensaje mensaje-docente">
+                    <div class="burbuja burbuja-docente">
 
-                            <div class="burbuja burbuja-docente">
+                        {{ m.mensaje }}
 
-                                {{ m.mensaje }}
+                        <span class="hora">
+                            {{ m.fecha.strftime("%d/%m/%Y %H:%M") }}
+                        </span>
 
-                                <span class="hora">
+                    </div>
 
-                                    {{ m.fecha.strftime("%d/%m/%Y %H:%M") }}
-
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                    {% else %}
-
-                        <div class="mensaje mensaje-padre">
-
-                            <div class="burbuja burbuja-padre">
-
-                                {{ m.mensaje }}
-
-                                <span class="hora">
-
-                                    {{ m.fecha.strftime("%d/%m/%Y %H:%M") }}
-
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                    {% endif %}
-
-
-                {% endfor %}
-
+                </div>
 
             {% else %}
 
-                <div class="sin-mensajes">
+                <div class="mensaje mensaje-padre">
 
-                    <p>
-                        No hay mensajes todavía.
-                    </p>
+                    <div class="burbuja burbuja-padre">
+
+                        {{ m.mensaje }}
+
+                        <span class="hora">
+                            {{ m.fecha.strftime("%d/%m/%Y %H:%M") }}
+                        </span>
+
+                    </div>
 
                 </div>
 
             {% endif %}
 
+        {% endfor %}
+
+    {% else %}
+
+        <div class="sin-mensajes">
+
+            <p>
+                No hay mensajes todavía.
+            </p>
+
         </div>
 
+    {% endif %}
+
+</div>
 
         <!-- ===================================== -->
         <!-- FORMULARIO DE RESPUESTA -->
@@ -351,4 +342,4 @@
 </body>
 
 </html>
-```
+

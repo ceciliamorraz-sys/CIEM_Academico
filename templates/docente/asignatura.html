@@ -1,138 +1,517 @@
+
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>CIEM | Clase</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/asignatura.css') }}">
+    <meta charset="UTF-8">
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Asignaturas | CIEM Académico</title>
+
+
+    <!-- Bootstrap Icons -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
+
+
+    <!-- CSS propio -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/asignaturas.css'
+        ) }}"
+    >
 
 </head>
 
+
 <body>
 
-<div class="container">
 
-    <div class="header-clase">
-
-        <h1>
-            <i class="bi bi-book"></i>
-            {{ asignatura.nombre }}
-        </h1>
-
-        <p>
-            Grado: {{ asignatura.grado }}
-            |
-            Sección: {{ asignatura.seccion }}
-        </p>
-
-    </div>
+<div class="pagina-asignaturas">
 
 
-    <div class="acciones-clase">
+    <!-- ==================================================
+         ENCABEZADO
+    =================================================== -->
 
-        <a href="{{ url_for('docente.docente_notas',
-        asignatura_id=asignatura._id) }}"
-        class="btn-clase notas">
-
-        <i class="bi bi-pencil-square"></i>
-        Notas
-
-        </a>
-
-        <a href="#" class="btn-clase asistencia">
-            <i class="bi bi-calendar-check"></i>
-            Asistencia
-        </a>
+    <header class="encabezado">
 
 
-        <a href="#" class="btn-clase incidencia">
-            <i class="bi bi-exclamation-triangle"></i>
-            Incidencias
-        </a>
-
-    </div>
+        <div class="encabezado-contenido">
 
 
+            <!-- LOGO -->
 
-    <div class="card">
+            <div class="logo-contenedor">
 
-        <h2>
-            <i class="bi bi-people"></i>
-            Estudiantes
-        </h2>
+                <img
+                    src="{{ url_for(
+                        'static',
+                        filename='img/logo.jpg'
+                    ) }}"
+                    alt="Logo CIEM"
+                    class="logo"
+                >
 
-
-        <table>
-
-            <thead>
-
-                <tr>
-                    <th>Código</th>
-                    <th>Nombre</th>
-                    <th>Grado</th>
-                    <th>Sección</th>
-                </tr>
-
-            </thead>
+            </div>
 
 
-            <tbody>
+            <!-- TITULO -->
 
-            {% for e in estudiantes %}
+            <div class="titulo">
 
-                <tr>
+                <span class="etiqueta-institucion">
 
-                    <td>
-                        {{ e.codigo }}
-                    </td>
+                    <i class="bi bi-mortarboard-fill"></i>
 
-                    <td>
-                        {{ e.nombre }}
-                    </td>
+                    CIEM ACADÉMICO
 
-                    <td>
-                        {{ e.grado }}
-                    </td>
+                </span>
 
-                    <td>
-                        {{ e.seccion }}
-                    </td>
 
-                </tr>
+                <h1>
+
+                    Asignaturas
+
+                </h1>
+
+
+                <p>
+
+                    Seleccione la asignatura para tomar asistencia
+
+                </p>
+
+            </div>
+
+
+            <!-- USUARIO -->
+
+            <div class="usuario">
+
+
+                <div class="usuario-icono">
+
+                    <i class="bi bi-person-fill"></i>
+
+                </div>
+
+
+                <div class="usuario-info">
+
+                    <span>
+
+                        DOCENTE
+
+                    </span>
+
+
+                    <strong>
+
+                        {{ session.get(
+                            'usuario',
+                            'Docente'
+                        ) }}
+
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </header>
+
+
+
+    <!-- ==================================================
+         CONTENIDO
+    =================================================== -->
+
+    <main class="contenido">
+
+
+        <!-- ==================================================
+             PRESENTACIÓN
+        =================================================== -->
+
+        <section class="presentacion">
+
+
+            <div class="presentacion-texto">
+
+
+                <span class="etiqueta-seccion">
+
+                    GESTIÓN DE ASISTENCIA
+
+                </span>
+
+
+                <h2>
+
+                    Seleccione una asignatura
+
+                </h2>
+
+
+                <p>
+
+                    Elija el grado y la sección correspondiente
+                    para registrar la asistencia de sus estudiantes.
+
+                </p>
+
+
+            </div>
+
+
+            <!-- CONTADOR -->
+
+            <div class="contador">
+
+
+                <div class="contador-icono">
+
+                    <i class="bi bi-journal-bookmark-fill"></i>
+
+                </div>
+
+
+                <div class="contador-info">
+
+                    <strong>
+
+                        {{ clases|length }}
+
+                    </strong>
+
+
+                    <span>
+
+                        grupos disponibles
+
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ==================================================
+             TARJETAS
+        =================================================== -->
+
+        <section class="asignaturas-grid">
+
+
+            {% if clases %}
+
+
+                {% for clase in clases %}
+
+
+                <article class="asignatura-card">
+
+
+                    <!-- NUMERO -->
+
+                    <div class="numero-card">
+
+                        {{ loop.index }}
+
+                    </div>
+
+
+                    <!-- CABECERA -->
+
+                    <div class="card-header">
+
+
+                        <div class="icono-asignatura">
+
+                            <i class="bi bi-book-half"></i>
+
+                        </div>
+
+
+                        <div class="estado">
+
+                            <span class="estado-punto"></span>
+
+                            Activa
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- NOMBRE -->
+
+                    <div class="card-body">
+
+
+                        <span class="tipo-asignatura">
+
+                            ASIGNATURA
+
+                        </span>
+
+
+                        <h3>
+
+                            {{ clase.nombre }}
+
+                        </h3>
+
+
+
+                        <!-- DATOS -->
+
+                        <div class="datos-clase">
+
+
+                            <div class="dato">
+
+
+                                <div class="dato-icono grado">
+
+                                    <i class="bi bi-mortarboard-fill"></i>
+
+                                </div>
+
+
+                                <div class="dato-info">
+
+                                    <span>
+
+                                        Grado
+
+                                    </span>
+
+
+                                    <strong>
+
+                                        {{ clase.grado }}
+
+                                    </strong>
+
+                                </div>
+
+
+                            </div>
+
+
+
+                            <div class="dato">
+
+
+                                <div class="dato-icono seccion">
+
+                                    <i class="bi bi-people-fill"></i>
+
+                                </div>
+
+
+                                <div class="dato-info">
+
+                                    <span>
+
+                                        Sección
+
+                                    </span>
+
+
+                                    <strong>
+
+                                        {{ clase.seccion }}
+
+                                    </strong>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <!-- HORARIO -->
+
+                        {% if clase.horario %}
+
+                        <div class="horario">
+
+                            <i class="bi bi-clock-fill"></i>
+
+                            <span>
+
+                                {{ clase.horario }}
+
+                            </span>
+
+                        </div>
+
+                        {% endif %}
+
+
+                    </div>
+
+
+
+                    <!-- ACCION -->
+
+                    <div class="card-footer">
+
+
+                        <a
+                            href="{{ url_for(
+                                'docente.asistencia',
+                                asignatura_id=clase._id
+                            ) }}"
+                            class="btn-asistencia"
+                        >
+
+                            <span>
+
+                                Tomar asistencia
+
+                            </span>
+
+
+                            <i class="bi bi-arrow-right"></i>
+
+                        </a>
+
+
+                    </div>
+
+
+                </article>
+
+
+                {% endfor %}
+
 
             {% else %}
 
-                <tr>
-                    <td colspan="4">
-                        No hay estudiantes asignados
-                    </td>
-                </tr>
 
-            {% endfor %}
+                <!-- ==================================================
+                     SIN ASIGNATURAS
+                =================================================== -->
 
-            </tbody>
-
-        </table>
+                <div class="sin-asignaturas">
 
 
-    </div>
+                    <div class="sin-icono">
+
+                        <i class="bi bi-journal-x"></i>
+
+                    </div>
 
 
-<a href="{{ url_for('aulas') }}" class="volver">
-    <i class="bi bi-arrow-left"></i>
-    Volver a Mis Clases
-</a>
+                    <h3>
 
-<a href="{{ url_for('aulas') }}" class="volver">
-    <i class="bi bi-arrow-left"></i>
-    Volver a Mis Asignaturas
-</a>
+                        No tienes asignaturas asignadas
+
+                    </h3>
+
+
+                    <p>
+
+                        Actualmente no tienes grupos disponibles
+                        para registrar asistencia.
+
+                    </p>
+
+
+                </div>
+
+
+            {% endif %}
+
+
+        </section>
+
+
+
+        <!-- ==================================================
+             VOLVER
+        =================================================== -->
+
+        <div class="volver-contenedor">
+
+
+            <a
+                href="{{ url_for(
+                    'docente.dashboard_docente'
+                ) }}"
+                class="btn-volver"
+            >
+
+                <i class="bi bi-arrow-left"></i>
+
+                Volver al Dashboard
+
+            </a>
+
+
+        </div>
+
+
+    </main>
+
+
+
+    <!-- ==================================================
+         FOOTER
+    =================================================== -->
+
+    <footer>
+
+        <div>
+
+            <i class="bi bi-shield-check"></i>
+
+            <strong>
+                CIEM Académico
+            </strong>
+
+            <span>
+                · Gestión Escolar
+            </span>
+
+        </div>
+
+    </footer>
+
 
 </div>
 
 
 </body>
+
 </html>

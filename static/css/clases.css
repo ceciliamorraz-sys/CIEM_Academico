@@ -1,212 +1,456 @@
-/* =====================================
-   CIEM ACADÉMICO
-   MÓDULO MIS CLASES
-===================================== */
+:root {
+    --navy-950: #061126;
+    --navy-900: #08142C;
+    --navy-800: #0D2A52;
+    --blue-700: #1E4E8C;
+    --blue-100: #EAF2FB;
+    --gold: #FFC107;
+    --gold-dark: #D89F00;
+    --white: #FFFFFF;
+    --background: #F5F7FA;
+    --surface: #FFFFFF;
+    --text: #172033;
+    --muted: #6B7280;
+    --border: #E5E9F0;
+    --success: #18A66A;
+    --shadow-sm: 0 4px 12px rgba(6, 17, 38, 0.06);
+    --shadow-md: 0 10px 30px rgba(6, 17, 38, 0.09);
+    --shadow-lg: 0 18px 45px rgba(6, 17, 38, 0.13);
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 22px;
+}
 
 
-/* GENERAL */
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
 
 body {
-    background: #f4f7fb;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+    background: radial-gradient( circle at 10% 0%, rgba(30, 78, 140, 0.07), transparent 30%), var(--background);
+    color: var(--text);
 }
 
 
-/* =====================================
-   ENCABEZADO
-===================================== */
+/* =========================================================
+   CONTENEDOR
+========================================================= */
+
+.container {
+    max-width: 1280px;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+
+/* =========================================================
+   ENCABEZADO PRINCIPAL
+========================================================= */
 
 .header-clases {
-    background: linear-gradient( 135deg, #08142C, #1E4E8C);
-    color: white;
-    padding: 30px;
-    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    min-height: 190px;
+    padding: 34px 38px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, .15);
+    justify-content: space-between;
+    gap: 30px;
+    background: linear-gradient( 135deg, var(--navy-950) 0%, var(--navy-900) 55%, var(--navy-800) 100%);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    color: var(--white);
 }
 
-.titulo-clases h2 {
-    font-size: 32px;
-    font-weight: 700;
+
+/* Decoración */
+
+.header-clases::before {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    right: -100px;
+    top: -160px;
+    background: rgba(255, 193, 7, 0.10);
+}
+
+.header-clases::after {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    left: 35%;
+    bottom: -130px;
+    background: rgba(255, 255, 255, 0.035);
+}
+
+
+/* =========================================================
+   CONTENIDO DEL HEADER
+========================================================= */
+
+.header-clases>div {
+    position: relative;
+    z-index: 2;
+}
+
+
+/* =========================================================
+   ICONO DEL TITULO
+========================================================= */
+
+.header-clases h2 {
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    font-size: 31px;
+    font-weight: 750;
+    letter-spacing: -0.5px;
 }
 
-.titulo-clases p {
-    margin-top: 8px;
-    opacity: .85;
+.header-clases h2 i {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: rgba(255, 193, 7, 0.14);
+    color: var(--gold);
+    font-size: 24px;
+    border: 1px solid rgba(255, 193, 7, 0.20);
+}
+
+.header-clases p {
+    margin: 13px 0 0 65px;
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 14px;
+    letter-spacing: 0.1px;
+}
+
+
+/* =========================================================
+   BOTÓN VOLVER
+========================================================= */
+
+.header-clases>a {
+    position: relative;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-width: 125px;
+    padding: 12px 19px;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.09) !important;
+    color: var(--white) !important;
+    font-size: 13px;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    transition: background 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+
+.header-clases>a:hover {
+    background: var(--gold) !important;
+    border-color: var(--gold) !important;
+    color: var(--navy-950) !important;
+    transform: translateY(-2px);
+}
+
+.header-clases>a i {
     font-size: 16px;
 }
 
-.docente {
-    background: rgba(255, 255, 255, .15);
-    padding: 12px 22px;
-    border-radius: 30px;
-    font-size: 17px;
-    font-weight: 600;
-}
 
-.docente i {
-    font-size: 25px;
-    margin-right: 8px;
+/* =========================================================
+   GRID DE TARJETAS
+========================================================= */
+
+.row.g-4 {
+    margin-top: 34px !important;
 }
 
 
-/* =====================================
-   TARJETAS DE CLASE
-===================================== */
+/* =========================================================
+   TARJETA
+========================================================= */
 
 .clase-card {
-    background: white;
-    border-radius: 20px;
-    padding: 25px;
+    position: relative;
     height: 100%;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
-    transition: .3s;
-    border-top: 5px solid #1E4E8C;
+    padding: 27px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: transform 0.30s ease, box-shadow 0.30s ease, border-color 0.30s ease;
 }
+
+
+/* Línea superior */
+
+.clase-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient( 90deg, var(--gold), #FFD85A);
+}
+
+
+/* Hover */
 
 .clase-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, .15);
+    border-color: rgba(30, 78, 140, 0.20);
+    box-shadow: var(--shadow-lg);
 }
 
 
-/* ICONO */
+/* =========================================================
+   ICONO DE ASIGNATURA
+========================================================= */
 
 .icono {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
+    width: 62px;
+    height: 62px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    background: #0D2A52;
-    color: white;
-    font-size: 32px;
-    margin-bottom: 20px;
+    justify-content: center;
+    margin-bottom: 22px;
+    border-radius: 16px;
+    background: linear-gradient( 145deg, var(--navy-800), var(--blue-700));
+    color: var(--gold);
+    font-size: 25px;
+    box-shadow: 0 9px 20px rgba(13, 42, 82, 0.20);
 }
+
+
+/* =========================================================
+   NOMBRE DE LA ASIGNATURA
+========================================================= */
 
 .clase-card h4 {
-    color: #08142C;
+    margin: 0 0 22px;
+    min-height: 52px;
+    color: var(--navy-900);
+    font-size: 20px;
     font-weight: 700;
-    margin-bottom: 20px;
+    line-height: 1.35;
+    letter-spacing: -0.2px;
 }
 
 
-/* =====================================
+/* =========================================================
    INFORMACIÓN
-===================================== */
+========================================================= */
 
 .datos {
-    margin-bottom: 25px;
+    margin-bottom: 22px;
+    padding: 5px 14px;
+    background: #F8FAFC;
+    border: 1px solid #EDF0F4;
+    border-radius: 14px;
 }
 
 .datos p {
-    color: #555;
-    margin-bottom: 12px;
+    margin: 0;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+}
+
+.datos p:last-child {
+    border-bottom: none;
+}
+
+.datos p i {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 9px;
+    background: var(--blue-100);
+    color: var(--blue-700);
     font-size: 15px;
 }
 
-.datos i {
-    color: #1E4E8C;
-    width: 25px;
-}
-
 .datos strong {
-    color: #08142C;
+    margin-left: auto;
+    color: var(--navy-900);
+    font-size: 13px;
+    font-weight: 700;
 }
 
 
-/* =====================================
-   BOTONES
-===================================== */
+/* =========================================================
+   BOTÓN TOMAR ASISTENCIA
+========================================================= */
 
-.acciones {
+.clase-card .btn-success {
+    width: 100%;
+    min-height: 47px;
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.acciones .btn {
-    border-radius: 25px;
-    font-weight: 600;
-    padding: 10px 18px;
-}
-
-
-/* ASISTENCIA */
-
-.btn-success {
-    background: #1E4E8C !important;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
     border: none !important;
+    border-radius: 12px !important;
+    background: linear-gradient( 135deg, var(--navy-800), var(--blue-700)) !important;
+    color: var(--white) !important;
+    font-size: 13px;
+    font-weight: 650;
+    box-shadow: 0 7px 16px rgba(13, 42, 82, 0.16);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.btn-success:hover {
-    background: #08142C !important;
+.clase-card .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(13, 42, 82, 0.25);
+    background: linear-gradient( 135deg, var(--blue-700), #2867A8) !important;
 }
 
-
-/* NOTAS */
-
-.btn-primary {
-    background: #FFC107 !important;
-    color: #08142C !important;
-    border: none !important;
-}
-
-.btn-primary:hover {
-    background: #e0a800 !important;
-}
-
-
-/* INCIDENCIAS */
-
-.btn-warning {
-    background: #f5b700;
-    border: none;
-    color: #08142C;
+.clase-card .btn-success i {
+    color: var(--gold);
+    font-size: 16px;
 }
 
 
-/* =====================================
-   SIN CLASES
-===================================== */
+/* =========================================================
+   MENSAJE SIN ASIGNATURAS
+========================================================= */
 
-.sin-clases {
-    background: white;
-    padding: 50px;
-    border-radius: 20px;
-    text-align: center;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, .08);
-}
-
-.sin-clases i {
-    font-size: 60px;
-    color: #1E4E8C;
-}
-
-.sin-clases h4 {
-    color: #08142C;
+.alert-warning {
     margin-top: 20px;
+    padding: 22px 25px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--gold);
+    border-radius: 14px;
+    color: var(--navy-900);
+    box-shadow: var(--shadow-sm);
 }
 
 
-/* =====================================
-   RESPONSIVE
-===================================== */
+/* =========================================================
+   EFECTO DE ENTRADA
+========================================================= */
 
-@media(max-width:768px) {
+.clase-card {
+    animation: aparecer 0.45s ease both;
+}
+
+.col-md-4:nth-child(2) .clase-card {
+    animation-delay: 0.08s;
+}
+
+.col-md-4:nth-child(3) .clase-card {
+    animation-delay: 0.16s;
+}
+
+.col-md-4:nth-child(4) .clase-card {
+    animation-delay: 0.24s;
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 992px) {
     .header-clases {
+        padding: 30px;
+    }
+    .header-clases h2 {
+        font-size: 27px;
+    }
+    .clase-card {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+    .header-clases {
+        min-height: auto;
+        padding: 25px;
         flex-direction: column;
-        text-align: center;
-        gap: 20px;
+        align-items: flex-start;
     }
-    .titulo-clases h2 {
-        font-size: 25px;
+    .header-clases>a {
+        width: 100%;
     }
-    .acciones {
-        justify-content: center;
+    .header-clases p {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+    .header-clases {
+        border-radius: 17px;
+        padding: 23px 20px;
+    }
+    .header-clases h2 {
+        font-size: 24px;
+    }
+    .header-clases h2 i {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+    }
+    .header-clases p {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+    .clase-card {
+        padding: 22px;
+        border-radius: 17px;
+    }
+    .clase-card h4 {
+        font-size: 19px;
     }
 }

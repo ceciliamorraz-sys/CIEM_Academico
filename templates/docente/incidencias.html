@@ -3,27 +3,43 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-
-<title>
-Registrar Incidencia | CIEM
-</title>
-
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-rel="stylesheet">
+    <title>
+        Registrar Incidencia | CIEM Académico
+    </title>
 
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-rel="stylesheet">
+    <!-- Bootstrap -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
 
 
-<link rel="stylesheet"
-href="{{ url_for('static', filename='css/clases.css') }}">
+    <!-- Bootstrap Icons -->
 
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
+
+
+    <!-- CSS CIEM -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/clases.css'
+        ) }}"
+    >
 
 </head>
 
@@ -34,275 +50,494 @@ href="{{ url_for('static', filename='css/clases.css') }}">
 <div class="container-fluid py-4">
 
 
-
-<!-- ENCABEZADO -->
-
-<div class="header-clases">
+    <div class="container">
 
 
-<div>
+        <!-- ==================================================
+             ENCABEZADO
+        =================================================== -->
+
+        <div class="header-clases">
 
 
-<h2>
+            <div>
 
-<i class="bi bi-exclamation-triangle"></i>
+                <h2>
 
-Registro de Incidencias
+                    <i class="bi bi-exclamation-triangle-fill"></i>
 
-</h2>
+                    Registro de Incidencias
+
+                </h2>
 
 
-<p>
+                <p>
 
-{{ asignatura.nombre }}
+                    {{ asignatura.nombre }}
 
-|
+                    |
 
-Grado {{ asignatura.grado }}
+                    Grado {{ asignatura.grado }}
 
-|
+                    |
 
-Sección {{ asignatura.seccion }}
+                    Sección {{ asignatura.seccion }}
 
-</p>
+                </p>
 
+            </div>
+
+
+            <a
+                href="{{ url_for(
+                    'docente.lista_incidencias'
+                ) }}"
+                class="btn btn-light"
+            >
+
+                <i class="bi bi-arrow-left"></i>
+
+                Volver
+
+            </a>
+
+
+        </div>
+
+
+        <!-- ==================================================
+             MENSAJES
+        =================================================== -->
+
+        {% with messages = get_flashed_messages(
+            with_categories=true
+        ) %}
+
+            {% if messages %}
+
+                <div class="mt-4">
+
+                    {% for category, message in messages %}
+
+                        <div
+                            class="alert
+                            {% if category == 'success' %}
+                                alert-success
+                            {% elif category == 'danger' %}
+                                alert-danger
+                            {% elif category == 'warning' %}
+                                alert-warning
+                            {% else %}
+                                alert-info
+                            {% endif %}
+                            alert-dismissible fade show"
+                            role="alert"
+                        >
+
+                            {{ message }}
+
+                            <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert"
+                            ></button>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- ==================================================
+             PANEL PRINCIPAL
+        =================================================== -->
+
+        <div class="card mt-4 panel border-0">
+
+
+            <div class="card-body p-4 p-md-5">
+
+
+                <div class="mb-4">
+
+                    <span
+                        style="
+                            display:inline-block;
+                            color:#1E4E8C;
+                            font-size:11px;
+                            font-weight:800;
+                            letter-spacing:1.5px;
+                            margin-bottom:6px;
+                        "
+                    >
+
+                        GESTIÓN ACADÉMICA
+
+                    </span>
+
+
+                    <h3
+                        class="mb-2"
+                        style="
+                            color:#08142C;
+                            font-weight:700;
+                        "
+                    >
+
+                        Registrar nueva incidencia
+
+                    </h3>
+
+
+                    <p
+                        class="mb-0"
+                        style="color:#667085;"
+                    >
+
+                        Registre una situación relacionada
+                        con uno de los estudiantes de esta clase.
+
+                    </p>
+
+                </div>
+
+
+                <!-- ==================================================
+                     FORMULARIO
+                =================================================== -->
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'docente.guardar_incidencia'
+                    ) }}"
+                >
+
+
+                    <!-- ID DE LA ASIGNATURA -->
+
+                    <input
+                        type="hidden"
+                        name="asignatura_id"
+                        value="{{ asignatura._id }}"
+                    >
+
+
+                    <div class="row g-4">
+
+
+                        <!-- ==========================================
+                             ESTUDIANTE
+                        =========================================== -->
+
+                        <div class="col-md-7">
+
+                            <label
+                                for="estudiante_id"
+                                class="form-label fw-semibold"
+                            >
+
+                                <i
+                                    class="bi bi-person-fill me-1"
+                                    style="color:#1E4E8C;"
+                                ></i>
+
+                                Estudiante
+
+                            </label>
+
+
+                            <select
+                                id="estudiante_id"
+                                class="form-select"
+                                name="estudiante_id"
+                                required
+                            >
+
+                                <option value="">
+                                    Seleccione un estudiante
+                                </option>
+
+
+                                {% for e in estudiantes %}
+
+                                    <option
+                                        value="{{ e._id }}"
+                                    >
+
+                                        {{ e.nombre }}
+
+                                        — {{ e.grado }}
+
+                                        — Sección {{ e.seccion }}
+
+                                    </option>
+
+                                {% else %}
+
+                                    <option value="">
+                                        No hay estudiantes activos
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+
+                            <div
+                                class="form-text"
+                            >
+
+                                Seleccione el estudiante relacionado
+                                con la incidencia.
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ==========================================
+                             FECHA
+                        =========================================== -->
+
+                        <div class="col-md-5">
+
+                            <label
+                                for="fecha"
+                                class="form-label fw-semibold"
+                            >
+
+                                <i
+                                    class="bi bi-calendar-event me-1"
+                                    style="color:#1E4E8C;"
+                                ></i>
+
+                                Fecha
+
+                            </label>
+
+
+                            <input
+                                type="date"
+                                id="fecha"
+                                class="form-control"
+                                name="fecha"
+                                value="{{ fecha or '' }}"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- ==========================================
+                             TIPO
+                        =========================================== -->
+
+                        <div class="col-md-6">
+
+                            <label
+                                for="tipo"
+                                class="form-label fw-semibold"
+                            >
+
+                                <i
+                                    class="bi bi-tags-fill me-1"
+                                    style="color:#1E4E8C;"
+                                ></i>
+
+                                Tipo de incidencia
+
+                            </label>
+
+
+                            <select
+                                id="tipo"
+                                class="form-select"
+                                name="tipo"
+                                required
+                            >
+
+                                <option value="">
+                                    Seleccione un tipo
+                                </option>
+
+                                <option value="disciplina">
+                                    Disciplina
+                                </option>
+
+                                <option value="academica">
+                                    Académica
+                                </option>
+
+                                <option value="asistencia">
+                                    Asistencia
+                                </option>
+
+                                <option value="convivencia">
+                                    Convivencia
+                                </option>
+
+                                <option value="otra">
+                                    Otra
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- ==========================================
+                             ESTADO INFORMATIVO
+                        =========================================== -->
+
+                        <div class="col-md-6">
+
+                            <label
+                                class="form-label fw-semibold"
+                            >
+
+                                <i
+                                    class="bi bi-shield-check me-1"
+                                    style="color:#1E4E8C;"
+                                ></i>
+
+                                Estado inicial
+
+                            </label>
+
+
+                            <div
+                                class="form-control"
+                                style="
+                                    background:#F7F9FC;
+                                    color:#667085;
+                                "
+                            >
+
+                                <i
+                                    class="bi bi-clock-history me-1"
+                                ></i>
+
+                                Pendiente de seguimiento
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ==========================================
+                             DESCRIPCIÓN
+                        =========================================== -->
+
+                        <div class="col-12">
+
+                            <label
+                                for="descripcion"
+                                class="form-label fw-semibold"
+                            >
+
+                                <i
+                                    class="bi bi-file-text-fill me-1"
+                                    style="color:#1E4E8C;"
+                                ></i>
+
+                                Descripción
+
+                            </label>
+
+
+                            <textarea
+                                id="descripcion"
+                                class="form-control"
+                                rows="5"
+                                name="descripcion"
+                                placeholder="Describa detalladamente la situación presentada..."
+                                required
+                            ></textarea>
+
+
+                            <div
+                                class="form-text"
+                            >
+
+                                Incluya información clara y objetiva
+                                sobre la situación.
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         BOTONES
+                    =================================================== -->
+
+                    <div
+                        class="d-flex flex-column flex-sm-row
+                        justify-content-end gap-2 mt-4 pt-4"
+                        style="
+                            border-top:1px solid #E5E9F0;
+                        "
+                    >
+
+
+                        <a
+                            href="{{ url_for(
+                                'docente.lista_incidencias'
+                            ) }}"
+                            class="btn btn-outline-secondary px-4"
+                        >
+
+                            <i class="bi bi-x-lg me-1"></i>
+
+                            Cancelar
+
+                        </a>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-warning px-4 fw-semibold"
+                        >
+
+                            <i
+                                class="bi bi-save-fill me-1"
+                            ></i>
+
+                            Guardar incidencia
+
+                        </button>
+
+
+                    </div>
+
+
+                </form>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
 
 </div>
 
 
-
-
-<a href="{{ url_for('docente.lista_incidencias') }}"
-class="btn btn-light">
-
-<i class="bi bi-arrow-left"></i>
-
-Volver
-
-</a>
-
-
-</div>
-
-
-
-
-
-<div class="card mt-4 panel">
-
-
-<div class="card-body">
-
-
-
-<form method="POST"
-action="{{ url_for('docente.guardar_incidencia') }}">
-
-
-
-<input type="hidden"
-name="asignatura_id"
-value="{{ asignatura._id }}">
-
-
-
-
-
-
-<div class="row">
-
-
-
-<div class="col-md-6">
-
-
-
-<label class="form-label">
-
-Estudiante
-
-</label>
-
-
-<select class="form-select"
-name="estudiante_id"
-required>
-
-
-<option value="">
-
-Seleccione estudiante
-
-</option>
-
-
-
-{% for e in estudiantes %}
-
-
-<option value="{{ e.codigo }}">
-
-{{ e.nombre }}
-
--
-Grado {{ e.grado }}
-
-</option>
-
-
-{% endfor %}
-
-
-
-</select>
-
-
-</div>
-
-
-
-
-
-<div class="col-md-6">
-
-
-<label class="form-label">
-
-Fecha
-
-</label>
-
-
-<input type="date"
-class="form-control"
-name="fecha"
-value="{{ fecha if fecha else '' }}"
-required>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<div class="mt-3">
-
-
-<label class="form-label">
-
-Tipo de incidencia
-
-</label>
-
-
-<select class="form-select"
-name="tipo">
-
-
-<option value="disciplina">
-
-Disciplina
-
-</option>
-
-
-<option value="academica">
-
-Académica
-
-</option>
-
-
-<option value="asistencia">
-
-Asistencia
-
-</option>
-
-
-<option value="otra">
-
-Otra
-
-</option>
-
-
-</select>
-
-
-</div>
-
-
-
-
-
-
-
-
-<div class="mt-3">
-
-
-<label class="form-label">
-
-Descripción
-
-</label>
-
-
-<textarea
-class="form-control"
-rows="4"
-name="descripcion"
-placeholder="Detalle la incidencia..."
-required></textarea>
-
-
-</div>
-
-
-
-
-
-
-
-<div class="mt-4">
-
-
-<button class="btn btn-warning">
-
-<i class="bi bi-save"></i>
-
-Guardar incidencia
-
-</button>
-
-
-
-</div>
-
-
-
-</form>
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-</div>
-
+<!-- Bootstrap JS -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
 
 
 </body>

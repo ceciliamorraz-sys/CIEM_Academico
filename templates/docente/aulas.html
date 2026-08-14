@@ -1,410 +1,525 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>
-Mis Clases | CIEM Académico
-</title>
-
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
-
-<link rel="stylesheet"
-href="{{ url_for('static', filename='css/clases.css') }}">
-
-
-<style>
-
-body{
-
-background:#f5f8fc;
-font-family:"Segoe UI",sans-serif;
-
-}
-
-
-.header-ciem{
-
-background:#08142C;
-color:white;
-
-padding:25px;
-
-border-radius:15px;
-
-margin-bottom:30px;
-
-}
-
-
-.logo-ciem{
-
-width:70px;
-
-height:70px;
-
-object-fit:cover;
-
-border-radius:12px;
-
-}
-
-
-
-.titulo{
-
-font-size:30px;
-
-font-weight:700;
-
-}
-
-
-.subtitulo{
-
-opacity:.8;
-
-}
-
-
-
-.card-clase{
-
-background:white;
-
-border-radius:18px;
-
-padding:25px;
-
-height:100%;
-
-box-shadow:
-0 8px 25px rgba(0,0,0,.08);
-
-border-top:5px solid #1E4E8C;
-
-transition:.3s;
-
-}
-
-
-.card-clase:hover{
-
-transform:translateY(-5px);
-
-}
-
-
-
-.icono{
-
-width:60px;
-
-height:60px;
-
-border-radius:50%;
-
-background:#EAF2FF;
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
-font-size:28px;
-
-color:#1E4E8C;
-
-margin-bottom:15px;
-
-}
-
-
-
-.dato{
-
-color:#64748B;
-
-margin-bottom:8px;
-
-}
-
-
-
-.btn-ciem{
-
-background:#1E4E8C;
-
-color:white;
-
-}
-
-
-
-.btn-ciem:hover{
-
-background:#0D2A52;
-
-color:white;
-
-}
-
-
-</style>
-
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mis Clases | CIEM Académico</title>
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Bootstrap Icons -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
+
+    <!-- CSS exclusivo de Aulas -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/aulas.css') }}"
+    >
 
 </head>
 
 
-
 <body>
 
+<div class="pagina-aulas">
 
 
-<div class="container py-4">
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <header class="encabezado-aulas">
+
+        <div class="encabezado-contenido">
+
+
+            <!-- LOGO -->
+
+            <div class="logo-contenedor">
+
+                <img
+                    src="{{ url_for('static', filename='img/logo.jpg') }}"
+                    alt="Logo CIEM"
+                    class="logo"
+                >
+
+            </div>
+
+
+            <!-- INFORMACIÓN -->
+
+            <div class="titulo-aulas">
+
+                <span class="etiqueta-docente">
+
+                    <i class="bi bi-grid-fill"></i>
+
+                    DOCENTE
+
+                </span>
+
+
+                <h1>
+
+                    Mis Clases
+
+                </h1>
+
+
+                <p>
+
+                    Administra tus asignaturas y accede rápidamente
+                    a asistencia, calificaciones e incidencias.
+
+                </p>
+
+            </div>
+
+
+            <!-- USUARIO -->
+
+            <div class="usuario">
+
+                <div class="usuario-icono">
+
+                    <i class="bi bi-person-fill"></i>
+
+                </div>
+
+
+                <div class="usuario-datos">
+
+                    <span class="usuario-label">
+
+                        Sesión iniciada
+
+                    </span>
+
+
+                    <strong>
+
+                        {{ session.get('usuario', 'Docente') }}
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
 
 
 
-<!-- HEADER -->
+    <!-- =====================================================
+         CONTENIDO
+    ====================================================== -->
+
+    <main class="contenido-aulas">
 
 
-<div class="header-ciem">
+        <!-- =================================================
+             ENCABEZADO DE SECCIÓN
+        ================================================== -->
+
+        <div class="seccion-titulo">
+
+            <div class="seccion-texto">
+
+                <h2>
+
+                    <i class="bi bi-book-half"></i>
+
+                    Mis asignaturas
+
+                </h2>
 
 
-<div class="d-flex align-items-center">
+                <p>
+
+                    Selecciona una clase para gestionar sus actividades académicas.
+
+                </p>
+
+            </div>
 
 
-<img 
-src="{{ url_for('static',filename='img/logo.jpg') }}"
-class="logo-ciem">
+            <!-- CONTADOR -->
+
+            <div class="contador-clases">
+
+                <div class="contador-icono">
+
+                    <i class="bi bi-collection-fill"></i>
+
+                </div>
 
 
-<div class="ms-3">
+                <div class="contador-info">
+
+                    <strong>
+
+                        {{ clases|length }}
+
+                    </strong>
+
+                    <span>
+
+                        clases asignadas
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
 
 
-<div class="titulo">
 
-<i class="bi bi-journal-bookmark-fill"></i>
+        <!-- =================================================
+             LISTADO DE CLASES
+        ================================================== -->
 
-Mis Clases
+        <div class="row g-4">
+
+
+            {% if clases %}
+
+
+                {% for clase in clases %}
+
+
+                <div class="col-xl-4 col-lg-6 col-md-6">
+
+
+                    <!-- =====================================
+                         TARJETA
+                    ====================================== -->
+
+                    <article class="clase-card">
+
+
+                        <!-- FRANJA -->
+
+                        <div class="franja"></div>
+
+
+                        <!-- CABECERA -->
+
+                        <div class="clase-header">
+
+
+                            <div class="icono-clase">
+
+                                <i class="bi bi-book-fill"></i>
+
+                            </div>
+
+
+                            <span class="codigo-clase">
+
+                                {{ clase.codigo if clase.codigo else 'ASIGNATURA' }}
+
+                            </span>
+
+                        </div>
+
+
+
+                        <!-- CONTENIDO -->
+
+                        <div class="clase-contenido">
+
+
+                            <h3>
+
+                                {{ clase.nombre }}
+
+                            </h3>
+
+
+
+                            <!-- INFORMACIÓN -->
+
+                            <div class="informacion">
+
+
+                                <!-- GRADO -->
+
+                                <div class="dato">
+
+                                    <div class="dato-icono celeste">
+
+                                        <i class="bi bi-mortarboard-fill"></i>
+
+                                    </div>
+
+
+                                    <div class="dato-texto">
+
+                                        <span>
+
+                                            Grado
+
+                                        </span>
+
+
+                                        <strong>
+
+                                            {{ clase.grado if clase.grado else 'No definido' }}
+
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <!-- SECCIÓN -->
+
+                                <div class="dato">
+
+                                    <div class="dato-icono amarillo">
+
+                                        <i class="bi bi-people-fill"></i>
+
+                                    </div>
+
+
+                                    <div class="dato-texto">
+
+                                        <span>
+
+                                            Sección
+
+                                        </span>
+
+
+                                        <strong>
+
+                                            {{ clase.seccion if clase.seccion else 'No definida' }}
+
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <!-- HORARIO -->
+
+                                {% if clase.horario %}
+
+                                <div class="dato">
+
+                                    <div class="dato-icono verde">
+
+                                        <i class="bi bi-clock-fill"></i>
+
+                                    </div>
+
+
+                                    <div class="dato-texto">
+
+                                        <span>
+
+                                            Horario
+
+                                        </span>
+
+
+                                        <strong>
+
+                                            {{ clase.horario }}
+
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                                {% endif %}
+
+
+                            </div>
+
+
+
+                            <!-- DIVISOR -->
+
+                            <div class="divisor"></div>
+
+
+
+                            <!-- ACCIONES -->
+
+                            <div class="acciones">
+
+
+                                <!-- ASISTENCIA -->
+
+                                <a
+                                    href="{{ url_for(
+                                        'docente.asistencia',
+                                        asignatura_id=clase._id
+                                    ) }}"
+                                    class="accion accion-asistencia"
+                                >
+
+                                    <i class="bi bi-calendar-check-fill"></i>
+
+                                    <span>
+
+                                        Asistencia
+
+                                    </span>
+
+                                </a>
+
+
+
+                                <!-- CALIFICACIONES -->
+
+                                <a
+                                    href="{{ url_for(
+                                        'docente.notas',
+                                        asignatura_id=clase._id
+                                    ) }}"
+                                    class="accion accion-notas"
+                                >
+
+                                    <i class="bi bi-pencil-square"></i>
+
+                                    <span>
+
+                                        Calificaciones
+
+                                    </span>
+
+                                </a>
+
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+
+                {% endfor %}
+
+
+            {% else %}
+
+
+                <!-- =========================================
+                     SIN CLASES
+                ========================================== -->
+
+                <div class="col-12">
+
+                    <section class="sin-clases">
+
+
+                        <div class="sin-clases-icono">
+
+                            <i class="bi bi-journal-x"></i>
+
+                        </div>
+
+
+                        <h3>
+
+                            No tienes clases asignadas
+
+                        </h3>
+
+
+                        <p>
+
+                            Actualmente no tienes asignaturas asignadas.
+                            Consulta con coordinación académica.
+
+                        </p>
+
+
+                        <a
+                            href="{{ url_for('docente.dashboard_docente') }}"
+                            class="btn-volver"
+                        >
+
+                            <i class="bi bi-arrow-left"></i>
+
+                            Volver al Dashboard
+
+                        </a>
+
+
+                    </section>
+
+                </div>
+
+
+            {% endif %}
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             VOLVER
+        ================================================== -->
+
+        {% if clases %}
+
+        <div class="volver-contenedor">
+
+            <a
+                href="{{ url_for('docente.dashboard_docente') }}"
+                class="btn-volver"
+            >
+
+                <i class="bi bi-arrow-left"></i>
+
+                Volver al Dashboard
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+
+    </main>
 
 </div>
 
 
-<div class="subtitulo">
 
-Gestión de asignaturas asignadas
+<!-- Bootstrap JS -->
 
-</div>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-<div class="row g-4">
-
-
-
-{% for clase in clases %}
-
-
-
-<div class="col-lg-4 col-md-6">
-
-
-
-<div class="card-clase">
-
-
-
-<div class="icono">
-
-<i class="bi bi-book"></i>
-
-</div>
-
-
-
-
-<h3>
-
-{{ clase.nombre }}
-
-</h3>
-
-
-
-
-<div class="dato">
-
-<i class="bi bi-mortarboard"></i>
-
-Grado:
-
-<strong>
-
-{{ clase.grado }}
-
-</strong>
-
-</div>
-
-
-
-
-<div class="dato">
-
-<i class="bi bi-people"></i>
-
-Sección:
-
-<strong>
-
-{{ clase.seccion }}
-
-</strong>
-
-</div>
-
-
-
-{% if clase.horario %}
-
-<div class="dato">
-
-<i class="bi bi-clock"></i>
-
-{{ clase.horario }}
-
-</div>
-
-{% endif %}
-
-
-
-
-
-
-<div class="d-grid gap-2 mt-4">
-
-
-
-<a href="/docente/asistencia/{{ clase._id }}"
-class="btn btn-success">
-
-<i class="bi bi-calendar-check"></i>
-
-Asistencia
-
-</a>
-
-
-
-
-<a href="{{ url_for('docente.notas', asignatura_id=clase._id) }}"
-
-class="btn btn-ciem">
-
-
-<i class="bi bi-pencil-square"></i>
-
-Registrar notas
-
-
-</a>
-
-
-
-
-
-<a href="{{ url_for('docente.detalle_clase', asignatura_id=clase._id) }}"
-
-class="btn btn-outline-secondary">
-
-
-
-</a>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-{% else %}
-
-
-
-<div class="alert alert-warning">
-
-<i class="bi bi-info-circle"></i>
-
-No tienes clases asignadas actualmente.
-
-
-</div>
-
-
-
-{% endfor %}
-
-
-
-</div>
-
-
-
-
-
-<div class="mt-4">
-
-
-<a href="{{ url_for('docente.dashboard_docente') }}"
-
-class="btn btn-secondary">
-
-
-<i class="bi bi-arrow-left"></i>
-
-Volver al Dashboard
-
-
-</a>
-
-
-</div>
-
-
-
-</div>
-
-
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
 
 
 </body>
