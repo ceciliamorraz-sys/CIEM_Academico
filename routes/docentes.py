@@ -90,17 +90,14 @@ def dashboard_docente():
 
     usuario = session.get("usuario")
 
-    # ==========================================
-    # BUSCAR DOCENTE
-    # ==========================================
+    fecha_hoy = datetime.now().strftime("%d/%m/%Y")
+    # =====================================================
+    # 1. BUSCAR DOCENTE
+    # =====================================================
 
     docente = db.docentes.find_one({
         "usuario": usuario
     })
-
-    # ==========================================
-    # VALIDAR DOCENTE
-    # ==========================================
 
     if not docente:
 
@@ -113,15 +110,13 @@ def dashboard_docente():
             url_for("login")
         )
 
-    # ==========================================
-    # IDENTIFICAR DOCENTE
-    # ==========================================
+    docente_id = str(
+        docente.get("_id")
+    )
 
-    docente_id = docente.get("_id")
-
-    # ==========================================
-    # CONVERSACIONES DEL DOCENTE
-    # ==========================================
+    # =====================================================
+    # 2. CONVERSACIONES
+    # =====================================================
 
     conversaciones = list(
         db.conversaciones.find({
@@ -132,10 +127,6 @@ def dashboard_docente():
         )
     )
 
-    # ==========================================
-    # MENSAJES PENDIENTES
-    # ==========================================
-
     mensajes_pendientes = db.conversaciones.count_documents({
         "docente_id": docente_id,
         "no_leidos_docente": {
@@ -143,9 +134,9 @@ def dashboard_docente():
         }
     })
 
-    # ==========================================
-    # CLASES DEL DOCENTE
-    # ==========================================
+    # =====================================================
+    # 3. ASIGNATURAS DEL DOCENTE
+    # =====================================================
 
     clases = list(
         db.asignaturas.find({
@@ -154,63 +145,12 @@ def dashboard_docente():
     )
 
     total_asignaturas = len(clases)
-    print("==========================================")
-    print("🔎 CLASES DEL DOCENTE")
-    print("==========================================")
 
-    for clase in clases:
-        print(
-            "ASIGNATURA:",
-            clase.get("nombre"),
-            "| GRADO:",
-            repr(clase.get("grado")),
-            "| SECCIÓN:",
-            repr(clase.get("seccion")),
-            "| DOCENTE:",
-            clase.get("docente_id")
-        )
-
-    print("==========================================")
-    print("🔎 PRIMEROS ESTUDIANTES EN MONGODB")
-    print("==========================================")
-
-    for estudiante in db.estudiantes.find().limit(10):
-        print(
-            "ID:",
-            estudiante.get("_id"),
-            "| NOMBRE:",
-            estudiante.get("nombre"),
-            "| GRADO:",
-            repr(estudiante.get("grado")),
-            "| SECCIÓN:",
-            repr(estudiante.get("seccion")),
-            "| ESTADO:",
-            repr(estudiante.get("estado"))
-        )
-
-    print("==========================================")
-
-   # ==========================================
-    # OBTENER ESTUDIANTES
-    # SEGÚN GRADO Y SECCIÓN
-    # ==========================================
-
-    estudiantes = []
-
-    ids_estudiantes = set()
-
-    # --------------------------------------------------
-    # CONVERSIÓN DEL GRADO DE ASIGNATURA
-    # AL FORMATO USADO EN ESTUDIANTES
-    # --------------------------------------------------
+    # =====================================================
+    # 4. NORMALIZACIÓN DE GRADOS
+    # =====================================================
 
     mapa_grados = {
-        1: "1ro Grado",
-        2: "2do Grado",
-        3: "3ro Grado",
-        4: "4to Grado",
-        5: "5to Grado",
-        6: "6to Grado",
 
         "1": "1ro Grado",
         "2": "2do Grado",
@@ -218,6 +158,20 @@ def dashboard_docente():
         "4": "4to Grado",
         "5": "5to Grado",
         "6": "6to Grado",
+
+        "1ro": "1ro Grado",
+        "2do": "2do Grado",
+        "3ro": "3ro Grado",
+        "4to": "4to Grado",
+        "5to": "5to Grado",
+        "6to": "6to Grado",
+
+        "1ro Grado": "1ro Grado",
+        "2do Grado": "2do Grado",
+        "3ro Grado": "3ro Grado",
+        "4to Grado": "4to Grado",
+        "5to Grado": "5to Grado",
+        "6to Grado": "6to Grado",
 
         "I Nivel": "I Nivel",
         "II Nivel": "II Nivel",
@@ -230,59 +184,856 @@ def dashboard_docente():
         "Quinto Año": "Quinto Año"
     }
 
+    # =====================================================
+    # 5. BUSCAR ESTUDIANTES
+    # =====================================================
+
+    estudiantes_dict = {}
+
+    # Relación estudiante -> asignaturas que cursa
+    asignaturas_por_estudiante = {}
 
     for clase in clases:
 
-        grado_asignatura = clase.get("grado")
-        seccion = clase.get("seccion")
-
-        # Buscar equivalente en estudiantes
-        grado_estudiante = mapa_grados.get(
-            grado_asignatura,
-            grado_asignatura
+        asignatura_id = str(
+            clase.get("_id")
         )
 
-        print("====================================")
-        print("BUSCANDO ESTUDIANTES")
-        print("GRADO ASIGNATURA:", repr(grado_asignatura))
-        print("GRADO ESTUDIANTE:", repr(grado_estudiante))
-        print("SECCIÓN:", repr(seccion))
-        print("====================================")
+        grado = clase.get("grado")
 
-        lista_estudiantes = db.estudiantes.find({
-            "grado": grado_estudiante,
-            "seccion": seccion,
-            "estado": "activo"
-        })
+        seccion = clase.get("seccion")
 
-        for estudiante in lista_estudiantes:
+        grado_normalizado = mapa_grados.get(
+            str(grado).strip(),
+            grado
+        )
+
+        seccion_normalizada = (
+            str(seccion).strip().upper()
+            if seccion is not None
+            else ""
+        )
+
+        consulta_estudiantes = {
+
+            "grado": grado_normalizado,
+
+            "seccion": seccion_normalizada
+        }
+
+        encontrados = db.estudiantes.find(
+            consulta_estudiantes
+        )
+
+        for estudiante in encontrados:
 
             estudiante_id = str(
                 estudiante.get("_id")
             )
 
-            if estudiante_id not in ids_estudiantes:
+            # Guardar estudiante solamente una vez
+            estudiantes_dict[
+                estudiante_id
+            ] = estudiante
 
-                estudiantes.append(
-                    estudiante
-                )
+            # Crear relación estudiante -> asignatura
+            if estudiante_id not in asignaturas_por_estudiante:
 
-                ids_estudiantes.add(
+                asignaturas_por_estudiante[
                     estudiante_id
+                ] = []
+
+            if asignatura_id not in asignaturas_por_estudiante[
+                estudiante_id
+            ]:
+
+                asignaturas_por_estudiante[
+                    estudiante_id
+                ].append(
+                    asignatura_id
                 )
 
+    estudiantes = list(
+        estudiantes_dict.values()
+    )
+
+    total_estudiantes = len(
+        estudiantes
+    )
+
+    # =====================================================
+    # 6. BUSCAR NOTAS
+    # =====================================================
+
+    notas_por_estudiante_asignatura = {}
+
+    notas_docente = []
+
+    # -----------------------------------------------------
+    # Obtener IDs actuales
+    # -----------------------------------------------------
+
+    ids_estudiantes = [
+
+        str(
+            estudiante.get("_id")
+        )
+
+        for estudiante in estudiantes
+    ]
+
+    # -----------------------------------------------------
+    # Buscar notas solamente de esos estudiantes
+    # -----------------------------------------------------
+
+    if ids_estudiantes:
+
+        notas_encontradas = list(
+            db.notas.find({
+                "estudiante_id": {
+                    "$in": ids_estudiantes
+                }
+            }).sort(
+                "_id",
+                1
+            )
+        )
+
+        # -------------------------------------------------
+        # Organizar notas
+        # -------------------------------------------------
+
+        for nota in notas_encontradas:
+
+            estudiante_id = str(
+                nota.get("estudiante_id")
+            )
+
+            asignatura_id = str(
+                nota.get("asignatura_id")
+            )
+
+            clave = (
+                estudiante_id,
+                asignatura_id
+            )
+
+            if clave not in notas_por_estudiante_asignatura:
+
+                notas_por_estudiante_asignatura[
+                    clave
+                ] = []
+
+            notas_por_estudiante_asignatura[
+                clave
+            ].append(
+                nota
+            )
+
+    # =====================================================
+    # 7. COMPATIBILIDAD CON IDs ANTIGUOS
+    #
+    # Ejemplo:
+    #
+    # ACTUAL:
+    # CIEM-KMBM
+    #
+    # ANTIGUO:
+    # CBM-KMBM
+    # =====================================================
+
+    for estudiante in estudiantes:
+
+        estudiante_id = str(
+            estudiante.get("_id")
+        )
+
+        # Si tiene formato CIEM-XXXX
+        if estudiante_id.startswith("CIEM-"):
+
+            sufijo = estudiante_id.split(
+                "-",
+                1
+            )[1]
+
+            ids_antiguos = [
+
+                f"CBM-{sufijo}",
+
+                f"CIEM-{sufijo}"
+
+            ]
+
+            asignaturas_estudiante = (
+                asignaturas_por_estudiante.get(
+                    estudiante_id,
+                    []
+                )
+            )
+
+            for asignatura_id in asignaturas_estudiante:
+
+                # Si ya tiene notas actuales,
+                # no buscar antiguas
+                clave_actual = (
+                    estudiante_id,
+                    asignatura_id
+                )
+
+                if clave_actual in notas_por_estudiante_asignatura:
+
+                    continue
+
+                notas_antiguas = list(
+                    db.notas.find({
+                        "estudiante_id": {
+                            "$in": ids_antiguos
+                        },
+                        "asignatura_id":
+                            asignatura_id
+                    }).sort(
+                        "_id",
+                        1
+                    )
+                )
+
+                if notas_antiguas:
+
+                    notas_por_estudiante_asignatura[
+                        clave_actual
+                    ] = notas_antiguas
+
+    # =====================================================
+    # 8. ASIGNAR NOTAS A CADA ESTUDIANTE
+    # =====================================================
+
+    for estudiante in estudiantes:
+
+        estudiante_id = str(
+            estudiante.get("_id")
+        )
+
+        todas_las_notas_estudiante = []
+
+        asignaturas_estudiante = (
+            asignaturas_por_estudiante.get(
+                estudiante_id,
+                []
+            )
+        )
+
+        for asignatura_id in asignaturas_estudiante:
+
+            clave = (
+                estudiante_id,
+                asignatura_id
+            )
+
+            notas_estudiante_asignatura = (
+                notas_por_estudiante_asignatura.get(
+                    clave,
+                    []
+                )
+            )
+
+            todas_las_notas_estudiante.extend(
+                notas_estudiante_asignatura
+            )
+
+        estudiante["notas"] = (
+            todas_las_notas_estudiante
+        )
+
+        estudiante["total_notas"] = len(
+            todas_las_notas_estudiante
+        )
+
+        # -------------------------------------------------
+        # Agregar a las notas generales del docente
+        # -------------------------------------------------
+
+        for nota in todas_las_notas_estudiante:
+
+            nota_docente_id = nota.get(
+                "docente_id"
+            )
+
+            # Si la nota tiene docente_id,
+            # debe pertenecer a este docente
+            if nota_docente_id is not None:
+
+                if str(
+                    nota_docente_id
+                ) != docente_id:
+
+                    continue
+
+            notas_docente.append(
+                nota
+            )
+
+    # =====================================================
+    # 9. ELIMINAR NOTAS DUPLICADAS
+    # =====================================================
+
+    notas_unicas = {}
+
+    for nota in notas_docente:
+
+        nota_id = str(
+            nota.get("_id")
+        )
+
+        notas_unicas[
+            nota_id
+        ] = nota
+
+    notas_docente = list(
+        notas_unicas.values()
+    )
+
+    # =====================================================
+    # 10. ASISTENCIAS
+    # =====================================================
+
+    total_asistencias = db.asistencias.count_documents({
+        "docente": usuario
+    })
+
+    pendientes = list(
+        db.asistencias.find({
+            "docente": usuario
+        })
+    )
+
+    # =====================================================
+    # 11. CALCULAR PROMEDIOS
+    # =====================================================
+
+    valores_promedio = []
+
+    for nota in notas_docente:
+
+        promedio = nota.get(
+            "promedio"
+        )
+
+        if promedio is None:
+
+            promedio = nota.get(
+                "nota"
+            )
+
+        try:
+
+            if promedio is not None:
+
+                valor = float(
+                    promedio
+                )
+
+                valores_promedio.append(
+                    valor
+                )
+
+        except (
+            ValueError,
+            TypeError
+        ):
+
+            continue
+
+    # =====================================================
+    # 12. PROMEDIO GENERAL
+    # =====================================================
+
+    if valores_promedio:
+
+        promedio_general = round(
+            sum(
+                valores_promedio
+            )
+            /
+            len(
+                valores_promedio
+            ),
+            2
+        )
+
+    else:
+
+        promedio_general = 0.0
+
+    # =====================================================
+    # 13. APROBADOS Y REPROBADOS
+    # =====================================================
+
+    aprobados = sum(
+        1
+        for promedio in valores_promedio
+        if promedio >= 60
+    )
+
+    reprobados = sum(
+        1
+        for promedio in valores_promedio
+        if promedio < 60
+    )
+
+    # =====================================================
+    # 14. PROGRESO DE NOTAS
+    #
+    # Cada estudiante tiene 4 evaluaciones:
+    #
+    # Primer Parcial
+    # Segundo Parcial
+    # Tercer Parcial
+    # Cuarto Parcial
+    # =====================================================
+
+    total_esperado_notas = (
+        total_estudiantes * 4
+    )
+
+    if total_esperado_notas > 0:
+
+        progreso_notas = round(
+            (
+                len(notas_docente)
+                /
+                total_esperado_notas
+            )
+            * 100
+        )
+
+        progreso_notas = min(
+            progreso_notas,
+            100
+        )
+
+    else:
+
+        progreso_notas = 0
+
+    # =====================================================
+    # 15. PROGRESO DE ASISTENCIA
+    # =====================================================
+
+    if total_estudiantes > 0:
+
+        progreso_asistencia = round(
+            (
+                total_asistencias
+                /
+                total_estudiantes
+            )
+            * 100
+        )
+
+        progreso_asistencia = min(
+            progreso_asistencia,
+            100
+        )
+
+    else:
+
+        progreso_asistencia = 0
+
+    # =====================================================
+    # 16. ESTADÍSTICAS
+    # =====================================================
+
+    estadistica = {
+
+        "total_asignaturas":
+            total_asignaturas,
+
+        "total_estudiantes":
+            total_estudiantes,
+
+        "promedio_general":
+            promedio_general,
+
+        "progreso_notas":
+            progreso_notas,
+
+        "progreso_asistencia":
+            progreso_asistencia,
+
+        "aprobados":
+            aprobados,
+
+        "reprobados":
+            reprobados,
+
+        "presentes":
+            total_asistencias
+    }
+
+    # =====================================================
+    # 17. INFORMACIÓN DEL DASHBOARD
+    # =====================================================
+
+    print(
+        "=========================================="
+    )
+
+    print(
+        "📊 DASHBOARD DOCENTE"
+    )
+
+    print(
+        "=========================================="
+    )
+
+    print(
+        "DOCENTE:",
+        docente.get("nombre")
+    )
+
+    print(
+        "USUARIO:",
+        usuario
+    )
+
+    print(
+        "ID DOCENTE:",
+        docente_id
+    )
+
+    print(
+        "TOTAL ASIGNATURAS:",
+        total_asignaturas
+    )
+
+    print(
+        "TOTAL ESTUDIANTES:",
+        total_estudiantes
+    )
+
+    print(
+        "TOTAL NOTAS:",
+        len(notas_docente)
+    )
+
+    print(
+        "TOTAL ASISTENCIAS:",
+        total_asistencias
+    )
+
+    print(
+        "PROMEDIO GENERAL:",
+        promedio_general
+    )
+
+    print(
+        "APROBADOS:",
+        aprobados
+    )
+
+    print(
+        "REPROBADOS:",
+        reprobados
+    )
+
+    print(
+        "PROGRESO NOTAS:",
+        progreso_notas,
+        "%"
+    )
+
+    print(
+        "PROGRESO ASISTENCIA:",
+        progreso_asistencia,
+        "%"
+    )
+
+    print(
+        "=========================================="
+    )
+
+    # =====================================================
+    # 18. RETORNAR DASHBOARD
+    # =====================================================
+
+    return render_template(
+        "docente/dashboard_docente.html",
+
+        docente=docente,
+
+        usuario=usuario,
+
+        docente_id=docente_id,
+
+        conversaciones=conversaciones,
+
+        mensajes_pendientes=mensajes_pendientes,
+
+        clases=clases,
+
+        total_asignaturas=total_asignaturas,
+
+        estudiantes=estudiantes,
+
+        total_estudiantes=total_estudiantes,
+
+        total_asistencias=total_asistencias,
+
+        pendientes=pendientes,
+
+        notas_docente=notas_docente,
+
+        estadistica=estadistica
+    )
 
     # ==========================================
-    # TOTAL DE ESTUDIANTES
+    # ASISTENCIAS
     # ==========================================
 
-    total_estudiantes = len(estudiantes)
+    total_asistencias = db.asistencias.count_documents({
+        "docente": usuario
+    })
+
     # ==========================================
-    # DEPURACIÓN
+    # ASISTENCIAS PENDIENTES
+    # ==========================================
+
+    pendientes = list(
+        db.asistencias.find({
+            "docente": usuario
+        })
+    )
+
+    # ==========================================
+    # ESTADÍSTICAS DE NOTAS
+    # ==========================================
+
+    notas_docente = []
+
+    for estudiante in estudiantes:
+
+        for nota in estudiante.get(
+            "notas",
+            []
+        ):
+
+            notas_docente.append(
+                nota
+            )
+
+    # ==========================================
+    # CALCULAR PROMEDIOS
+    # ==========================================
+
+    valores_promedio = []
+
+    for nota in notas_docente:
+
+        promedio = nota.get(
+            "promedio"
+        )
+
+        if promedio is None:
+
+            promedio = nota.get(
+                "nota"
+            )
+
+        try:
+
+            if promedio is not None:
+
+                valores_promedio.append(
+                    float(promedio)
+                )
+
+        except (
+            ValueError,
+            TypeError
+        ):
+
+            pass
+
+    # ==========================================
+    # PROMEDIO GENERAL
+    # ==========================================
+
+    if valores_promedio:
+
+        promedio_general = round(
+            sum(valores_promedio)
+            / len(valores_promedio),
+            2
+        )
+
+    else:
+
+        promedio_general = 0.0
+
+    # ==========================================
+    # APROBADOS Y REPROBADOS
+    # ==========================================
+
+    aprobados = sum(
+        1
+        for promedio in valores_promedio
+        if promedio >= 60
+    )
+
+    reprobados = sum(
+        1
+        for promedio in valores_promedio
+        if promedio < 60
+    )
+
+    # ==========================================
+    # PROGRESO DE NOTAS
+    # ==========================================
+
+    total_esperado_notas = (
+        total_estudiantes
+        * total_asignaturas
+    )
+
+    if total_esperado_notas > 0:
+
+        progreso_notas = round(
+            (
+                len(notas_docente)
+                / total_esperado_notas
+            ) * 100
+        )
+
+        progreso_notas = min(
+            progreso_notas,
+            100
+        )
+
+    else:
+
+        progreso_notas = 0
+
+    # ==========================================
+    # PROGRESO DE ASISTENCIA
+    # ==========================================
+
+    if total_estudiantes > 0:
+
+        progreso_asistencia = round(
+            (
+                total_asistencias
+                / total_estudiantes
+            ) * 100
+        )
+
+        progreso_asistencia = min(
+            progreso_asistencia,
+            100
+        )
+
+    else:
+
+        progreso_asistencia = 0
+
+    # ==========================================
+    # ESTADÍSTICA
+    # ==========================================
+
+    estadistica = {
+
+        "total_asignaturas":
+            total_asignaturas,
+
+        "total_estudiantes":
+            total_estudiantes,
+
+        "promedio_general":
+            promedio_general,
+
+        "progreso_notas":
+            progreso_notas,
+
+        "progreso_asistencia":
+            progreso_asistencia,
+
+        "aprobados":
+            aprobados,
+
+        "reprobados":
+            reprobados,
+
+        "presentes":
+            total_asistencias
+    }
+
+    # ==========================================
+    # DEPURACIÓN DE ESTADÍSTICAS
     # ==========================================
 
     print("==========================================")
-    print("DASHBOARD DOCENTE")
+    print("📊 ESTADÍSTICAS")
+    print("==========================================")
+
+    print(
+        "TOTAL NOTAS DEL DOCENTE:",
+        len(notas_docente)
+    )
+
+    print(
+        "PROMEDIO GENERAL:",
+        promedio_general
+    )
+
+    print(
+        "APROBADOS:",
+        aprobados
+    )
+
+    print(
+        "REPROBADOS:",
+        reprobados
+    )
+
+    print(
+        "PROGRESO NOTAS:",
+        progreso_notas,
+        "%"
+    )
+
+    print(
+        "PROGRESO ASISTENCIA:",
+        progreso_asistencia,
+        "%"
+    )
+
+    print("==========================================")
+
+    # ==========================================
+    # AVISOS
+    # ==========================================
+
+    avisos = [
+
+        "Recuerda registrar la asistencia diariamente.",
+
+        "Mantén actualizadas las calificaciones.",
+
+        "Consulta las incidencias de tus estudiantes."
+
+    ]
+
+    # ==========================================
+    # CLASES DE HOY
+    # ==========================================
+
+    clases_hoy = clases
+
+    # ==========================================
+    # DEPURACIÓN FINAL
+    # ==========================================
+
+    print("==========================================")
+    print("📊 DASHBOARD DOCENTE")
     print("==========================================")
 
     print(
@@ -310,106 +1061,41 @@ def dashboard_docente():
         total_estudiantes
     )
 
-    for estudiante in estudiantes:
-
-        print(
-            "ESTUDIANTE:",
-            estudiante.get("_id"),
-            estudiante.get("nombre"),
-            estudiante.get("grado"),
-            estudiante.get("seccion")
-        )
-
-    print("==========================================")
-
-    # ==========================================
-    # ASISTENCIAS
-    # ==========================================
-
-    total_asistencias = db.asistencias.count_documents({
-        "docente": usuario
-    })
-
-    # ==========================================
-    # ASISTENCIAS PENDIENTES
-    # ==========================================
-
-    pendientes = list(
-        db.asistencias.find({
-            "docente": usuario
-        })
+    print(
+        "TOTAL ASISTENCIAS:",
+        total_asistencias
     )
 
-    # ==========================================
-    # ESTADÍSTICA
-    # ==========================================
-
-    estadistica = {
-
-        "total_asignaturas":
-            total_asignaturas,
-
-        "total_estudiantes":
-            total_estudiantes,
-
-        "promedio_general":
-            "0.0",
-
-        "progreso_notas":
-            0,
-
-        "progreso_asistencia":
-            0,
-
-        "aprobados":
-            0,
-
-        "reprobados":
-            0,
-
-        "presentes":
-            total_asistencias
-    }
-
-    # ==========================================
-    # AVISOS
-    # ==========================================
-
-    avisos = [
-
-        "Recuerda registrar la asistencia diariamente.",
-
-        "Mantén actualizadas las calificaciones.",
-
-        "Consulta las incidencias de tus estudiantes."
-
-    ]
-
-    # ==========================================
-    # CLASES DE HOY
-    # ==========================================
-
-    clases_hoy = clases
+    print("==========================================")
 
     # ==========================================
     # RENDER DASHBOARD
     # ==========================================
 
     return render_template(
-    "docente/dashboard_docente.html",
+        "docente/dashboard_docente.html",
 
-    docente=docente,
-    fecha_hoy=datetime.now(),
-    estadistica=estadistica,
-    pendientes=pendientes,
-    avisos=avisos,
-    clases_hoy=clases_hoy,
-    mensajes_pendientes=mensajes_pendientes,
-    conversaciones=conversaciones,
+        docente=docente,
 
-    estudiantes=estudiantes,
-    total_estudiantes=total_estudiantes
-)
+        fecha_hoy=datetime.now(),
+
+        estadistica=estadistica,
+
+        pendientes=pendientes,
+
+        avisos=avisos,
+
+        clases_hoy=clases_hoy,
+
+        mensajes_pendientes=mensajes_pendientes,
+
+        conversaciones=conversaciones,
+
+        estudiantes=estudiantes,
+
+        total_estudiantes=total_estudiantes
+    )
+
 
 
 # ==========================================================

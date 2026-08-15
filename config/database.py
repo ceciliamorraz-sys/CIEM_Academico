@@ -7,10 +7,6 @@ from pymongo import MongoClient
 
 MONGO_URI = os.getenv("MONGO_URI")
 
-# ----------------------------------------------------------
-# CONEXIÓN LOCAL / DESARROLLO
-# ----------------------------------------------------------
-
 if not MONGO_URI:
     MONGO_URI = (
         "mongodb+srv://ciemadmin:CiemAtlas2026"
@@ -19,7 +15,7 @@ if not MONGO_URI:
     )
 
 # ==========================================================
-# CREAR CLIENTE MONGODB
+# CLIENTE MONGODB
 # ==========================================================
 
 cliente = MongoClient(
@@ -34,40 +30,24 @@ cliente = MongoClient(
 
 db = cliente["CIEM"]
 
-# ==========================================================
-# PRUEBA DE CONEXIÓN
-# ==========================================================
+print("------------------------------------")
+print("📚 ASIGNATURAS DOC012:")
 
-try:
+asignaturas_doc012 = list(
+    db.asignaturas.find({"docente_id": "DOC012"})
+)
 
-    cliente.admin.command("ping")
+print("CANTIDAD ENCONTRADA:", len(asignaturas_doc012))
 
-    print("====================================")
-    print("✅ CONECTADO A MONGODB ATLAS")
-    print("====================================")
+for asignatura in asignaturas_doc012:
+    print(
+        asignatura.get("_id"),
+        "|",
+        asignatura.get("nombre"),
+        "| GRADO:",
+        asignatura.get("grado"),
+        "| SECCIÓN:",
+        asignatura.get("seccion")
+    )
 
-    print("BASE ACTUAL:", db.name)
-
-    print("------------------------------------")
-    print("📂 COLECCIONES:")
-    print(db.list_collection_names())
-
-    print("------------------------------------")
-    print("📊 TOTAL ESTUDIANTES:")
-
-    total_estudiantes = db.estudiantes.count_documents({})
-
-    print(total_estudiantes)
-
-    print("====================================")
-
-except Exception as e:
-
-    print("====================================")
-    print("❌ ERROR DE CONEXIÓN MONGODB")
-    print("====================================")
-
-    print(type(e).__name__)
-    print(e)
-
-    print("====================================")
+print("====================================")
