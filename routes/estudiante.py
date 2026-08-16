@@ -75,12 +75,14 @@ def obtener_estudiante_sesion():
 
     elif rol == "padre":
 
+        print("====================================")
         print("👩‍👧 BUSCANDO HIJO DEL PADRE")
+        print("====================================")
+
         print("USUARIO PADRE:", usuario)
 
         # --------------------------------------------------
-        # PRIMERA OPCIÓN:
-        # madre_usuario = alma
+        # BUSCAR ESTUDIANTE POR USUARIO DE LA MADRE
         # --------------------------------------------------
 
         estudiante = db.estudiantes.find_one({
@@ -90,116 +92,32 @@ def obtener_estudiante_sesion():
 
         print("------------------------------------")
         print("BÚSQUEDA POR madre_usuario")
+        print("USUARIO:", usuario)
         print("RESULTADO:", estudiante)
 
         # --------------------------------------------------
-        # SEGUNDA OPCIÓN:
-        # tutor_usuario
+        # RESULTADO
         # --------------------------------------------------
 
-        if not estudiante:
+        if estudiante:
 
             print("------------------------------------")
-            print("⚠️ NO SE ENCONTRÓ POR madre_usuario")
-            print("BUSCANDO POR tutor_usuario")
+            print("✅ ESTUDIANTE ENCONTRADO")
+            print("ID:", estudiante.get("_id"))
+            print("NOMBRE:", estudiante.get("nombre"))
+            print("MADRE:", estudiante.get("madre"))
+            print("TUTOR:", estudiante.get("tutor"))
+            print("MADRE USUARIO:", estudiante.get("madre_usuario"))
 
-            estudiante = db.estudiantes.find_one({
-                "tutor_usuario": usuario,
-                "estado": "activo"
-            })
-
-            print("RESULTADO tutor_usuario:", estudiante)
-
-        # --------------------------------------------------
-        # TERCERA OPCIÓN:
-        # buscar usuario y comparar nombre de madre/tutor
-        # --------------------------------------------------
-
-        if not estudiante:
+        else:
 
             print("------------------------------------")
-            print("⚠️ NO SE ENCONTRÓ POR tutor_usuario")
-            print("BUSCANDO DATOS DEL USUARIO PADRE")
+            print("❌ NO SE ENCONTRÓ ESTUDIANTE")
+            print("MADRE_USUARIO BUSCADO:", usuario)
 
-            usuario_padre = db.usuarios.find_one({
-                "usuario": usuario,
-                "rol": "padre",
-                "activo": True
-            })
+        print("====================================")
 
-            print("USUARIO PADRE EN DB:")
-            print(usuario_padre)
-
-            if usuario_padre:
-
-                nombre_padre = (
-                    usuario_padre.get("nombre")
-                    or usuario_padre.get("nombre_completo")
-                    or usuario_padre.get("nombre_usuario")
-                )
-
-                if nombre_padre:
-
-                    print("------------------------------------")
-                    print("NOMBRE PADRE:", nombre_padre)
-
-                    estudiante = db.estudiantes.find_one({
-                        "$or": [
-                            {
-                                "madre": nombre_padre,
-                                "estado": "activo"
-                            },
-                            {
-                                "tutor": nombre_padre,
-                                "estado": "activo"
-                            }
-                        ]
-                    })
-
-                    print(
-                        "RESULTADO BÚSQUEDA POR NOMBRE:",
-                        estudiante
-                    )
-
-    # ======================================================
-    # RESULTADO FINAL
-    # ======================================================
-
-    print("====================================")
-    print("📊 RESULTADO FINAL")
-    print("====================================")
-
-    if estudiante:
-
-        print("✅ ESTUDIANTE ENCONTRADO")
-        print(
-            "ID:",
-            estudiante.get("_id")
-        )
-        print(
-            "NOMBRE:",
-            estudiante.get("nombre")
-        )
-        print(
-            "MADRE:",
-            estudiante.get("madre")
-        )
-        print(
-            "TUTOR:",
-            estudiante.get("tutor")
-        )
-        print(
-            "MADRE USUARIO:",
-            estudiante.get("madre_usuario")
-        )
-
-    else:
-
-        print("❌ NO SE ENCONTRÓ ESTUDIANTE")
-
-    print("====================================")
-
-    return estudiante
+        return estudiante
 # ==========================================================
 # CONFIGURACIÓN
 # ==========================================================
@@ -1125,11 +1043,11 @@ def perfil():
 @role_required("estudiante", "padre")
 def boletin_pdf():
 
-    estudiante = obtener_estudiante_sesion()
+    # ======================================================
+    # OBTENER ESTUDIANTE
+    # ======================================================
 
-    # ======================================================
-    # VERIFICAR ESTUDIANTE
-    # ======================================================
+    estudiante = obtener_estudiante_sesion()
 
     if not estudiante:
 
@@ -1350,433 +1268,120 @@ def boletin_pdf():
         )
 
     # ======================================================
-    # CREAR PDF
+    # OBSERVACIÓN
     # ======================================================
 
-    buffer = BytesIO()
+    if promedio_general is None:
 
-    documento = SimpleDocTemplate(
-
-        buffer,
-
-        pagesize=letter,
-
-        rightMargin=35,
-
-        leftMargin=35,
-
-        topMargin=35,
-
-        bottomMargin=35
-    )
-
-    estilos = getSampleStyleSheet()
-
-    titulo = estilos["Title"]
-    titulo.alignment = TA_CENTER
-
-    subtitulo = estilos["Heading2"]
-    subtitulo.alignment = TA_CENTER
-
-    elementos = []
-
-    # ======================================================
-    # ENCABEZADO
-    # ======================================================
-
-    elementos.append(
-        Paragraph(
-            "COLEGIO INTEGRAL EMANUEL",
-            titulo
-        )
-    )
-
-    elementos.append(
-        Paragraph(
-            "CIEM ONE",
-            subtitulo
-        )
-    )
-
-    elementos.append(
-        Spacer(1, 10)
-    )
-
-    elementos.append(
-        Paragraph(
-            "BOLETÍN ACADÉMICO",
-            subtitulo
-        )
-    )
-
-    elementos.append(
-        Spacer(1, 15)
-    )
-
-    # ======================================================
-    # DATOS DEL ESTUDIANTE
-    # ======================================================
-
-    datos_estudiante = [
-
-        [
-            "Estudiante",
-            estudiante.get(
-                "nombre",
-                "No disponible"
-            )
-        ],
-
-        [
-            "Grado",
-            estudiante.get(
-                "grado",
-                "No disponible"
-            )
-        ],
-
-        [
-            "Sección",
-            estudiante.get(
-                "seccion",
-                "No disponible"
-            )
-        ],
-
-        [
-            "Año lectivo",
-            "2026"
-        ]
-    ]
-
-    tabla_datos = Table(
-        datos_estudiante,
-        colWidths=[120, 350]
-    )
-
-    tabla_datos.setStyle(
-        TableStyle([
-
-            (
-                "BACKGROUND",
-                (0, 0),
-                (0, -1),
-                colors.HexColor("#08142C")
-            ),
-
-            (
-                "TEXTCOLOR",
-                (0, 0),
-                (0, -1),
-                colors.white
-            ),
-
-            (
-                "FONTNAME",
-                (0, 0),
-                (0, -1),
-                "Helvetica-Bold"
-            ),
-
-            (
-                "GRID",
-                (0, 0),
-                (-1, -1),
-                0.5,
-                colors.grey
-            ),
-
-            (
-                "PADDING",
-                (0, 0),
-                (-1, -1),
-                8
-            )
-        ])
-    )
-
-    elementos.append(
-        tabla_datos
-    )
-
-    elementos.append(
-        Spacer(1, 20)
-    )
-
-    # ======================================================
-    # TABLA DE NOTAS
-    # ======================================================
-
-    encabezados = [
-
-        "Asignatura",
-
-        "I Corte",
-
-        "II Corte",
-
-        "III Corte",
-
-        "IV Corte",
-
-        "Promedio",
-
-        "Estado"
-    ]
-
-    filas = [
-        encabezados
-    ]
-
-    for item in boletin:
-
-        promedio = item.get(
-            "promedio"
+        observacion = (
+            "Aún no se han registrado calificaciones "
+            "para este estudiante."
         )
 
-        if promedio is not None:
+    elif promedio_general >= 90:
 
-            estado = (
-                "Aprobado"
-                if promedio >= 60
-                else "Reforzamiento"
-            )
+        observacion = (
+            "El estudiante presenta un desempeño académico "
+            "excelente durante el período evaluado. "
+            "Se recomienda continuar fortaleciendo sus "
+            "hábitos de estudio, participación y compromiso."
+        )
 
-        else:
+    elif promedio_general >= 60:
 
-            estado = "Pendiente"
+        observacion = (
+            "El estudiante presenta un desempeño académico "
+            "satisfactorio durante el período evaluado. "
+            "Se recomienda continuar fortaleciendo sus "
+            "hábitos de estudio y participación en las "
+            "diferentes actividades académicas."
+        )
 
-        filas.append([
+    else:
 
-            item["asignatura"],
+        observacion = (
+            "El estudiante requiere reforzamiento académico. "
+            "Se recomienda brindar acompañamiento y "
+            "fortalecer los hábitos de estudio para mejorar "
+            "su desempeño."
+        )
 
-            item["corte1"]
-            if item["corte1"] is not None
-            else "—",
+    # ======================================================
+    # GENERAR HTML
+    # ======================================================
 
-            item["corte2"]
-            if item["corte2"] is not None
-            else "—",
+    html_boletin = render_template(
 
-            item["corte3"]
-            if item["corte3"] is not None
-            else "—",
+        "boletin.html",
 
-            item["corte4"]
-            if item["corte4"] is not None
-            else "—",
+        estudiante=estudiante,
 
-            promedio
-            if promedio is not None
-            else "—",
+        notas=notas,
 
-            estado
-        ])
+        boletin=boletin,
 
-    tabla_notas = Table(
-        filas,
-        repeatRows=1
-    )
+        promedio_general=promedio_general,
 
-    tabla_notas.setStyle(
-        TableStyle([
-
-            (
-                "BACKGROUND",
-                (0, 0),
-                (-1, 0),
-                colors.HexColor("#08142C")
-            ),
-
-            (
-                "TEXTCOLOR",
-                (0, 0),
-                (-1, 0),
-                colors.white
-            ),
-
-            (
-                "FONTNAME",
-                (0, 0),
-                (-1, 0),
-                "Helvetica-Bold"
-            ),
-
-            (
-                "ALIGN",
-                (1, 0),
-                (-1, -1),
-                "CENTER"
-            ),
-
-            (
-                "GRID",
-                (0, 0),
-                (-1, -1),
-                0.5,
-                colors.grey
-            ),
-
-            (
-                "PADDING",
-                (0, 0),
-                (-1, -1),
-                7
-            )
-        ])
-    )
-
-    elementos.append(
-        tabla_notas
-    )
-
-    elementos.append(
-        Spacer(1, 20)
+        observacion=observacion
     )
 
     # ======================================================
-    # RESUMEN
+    # WEASYPRINT
     # ======================================================
 
-    promedio_texto = (
+    from weasyprint import HTML
 
-        str(promedio_general)
+    pdf_bytes = HTML(
 
-        if promedio_general is not None
+        string=html_boletin,
 
-        else "—"
-    )
+        base_url=request.url_root
 
-    resumen = [
-
-        [
-            "Promedio general",
-            promedio_texto
-        ],
-
-        [
-            "Asignaturas",
-            str(len(boletin))
-        ]
-    ]
-
-    tabla_resumen = Table(
-        resumen,
-        colWidths=[180, 100]
-    )
-
-    tabla_resumen.setStyle(
-        TableStyle([
-
-            (
-                "BACKGROUND",
-                (0, 0),
-                (0, -1),
-                colors.HexColor("#EAF1FA")
-            ),
-
-            (
-                "FONTNAME",
-                (0, 0),
-                (0, -1),
-                "Helvetica-Bold"
-            ),
-
-            (
-                "ALIGN",
-                (1, 0),
-                (1, -1),
-                "CENTER"
-            ),
-
-            (
-                "GRID",
-                (0, 0),
-                (-1, -1),
-                0.5,
-                colors.grey
-            ),
-
-            (
-                "PADDING",
-                (0, 0),
-                (-1, -1),
-                8
-            )
-        ])
-    )
-
-    elementos.append(
-        tabla_resumen
-    )
-
-    elementos.append(
-        Spacer(1, 30)
-    )
+    ).write_pdf()
 
     # ======================================================
-    # FIRMAS
+    # BUFFER
     # ======================================================
 
-    firmas = Table([
-
-        [
-            "________________________",
-            "________________________"
-        ],
-
-        [
-            "Docente / Tutor",
-            "Dirección Académica"
-        ]
-
-    ], colWidths=[220, 220])
-
-    firmas.setStyle(
-        TableStyle([
-
-            (
-                "ALIGN",
-                (0, 0),
-                (-1, -1),
-                "CENTER"
-            ),
-
-            (
-                "FONTNAME",
-                (0, 1),
-                (-1, 1),
-                "Helvetica-Bold"
-            )
-        ])
+    buffer = BytesIO(
+        pdf_bytes
     )
-
-    elementos.append(
-        firmas
-    )
-
-    # ======================================================
-    # GENERAR PDF
-    # ======================================================
-
-    documento.build(
-        elementos
-    )
-
-    buffer.seek(0)
 
     # ======================================================
     # NOMBRE DEL ARCHIVO
     # ======================================================
 
-    nombre_estudiante = (
+    nombre_estudiante = str(
 
         estudiante.get(
             "nombre",
             "estudiante"
         )
-        .replace(" ", "_")
     )
+
+    nombre_estudiante = (
+
+        nombre_estudiante
+
+        .replace(
+            " ",
+            "_"
+        )
+
+        .replace(
+            "/",
+            "_"
+        )
+
+        .replace(
+            "\\",
+            "_"
+        )
+    )
+
+    # ======================================================
+    # DESCARGAR
+    # ======================================================
 
     return send_file(
 
@@ -1785,7 +1390,10 @@ def boletin_pdf():
         as_attachment=True,
 
         download_name=(
-            f"Boletin_{nombre_estudiante}_2026.pdf"
+
+            f"Boletin_"
+            f"{nombre_estudiante}"
+            f"_2026.pdf"
         ),
 
         mimetype="application/pdf"

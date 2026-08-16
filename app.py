@@ -3,6 +3,8 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 from flask import request, url_for
+from weasyprint import HTML
+from io import BytesIO
 from datetime import datetime
 from bson import ObjectId
 from functools import wraps

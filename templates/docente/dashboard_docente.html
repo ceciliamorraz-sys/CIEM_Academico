@@ -14,21 +14,13 @@
         Dashboard Docente | CIEM Académico
     </title>
 
-
-    <!-- ==================================================
-         ICONOS
-    =================================================== -->
-
+    <!-- ICONOS -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         rel="stylesheet"
     >
 
-
-    <!-- ==================================================
-         CSS DEL DASHBOARD
-    =================================================== -->
-
+    <!-- CSS -->
     <link
         rel="stylesheet"
         href="{{ url_for(
@@ -80,35 +72,7 @@
         </div>
 
 
-        <!-- PERFIL -->
-
-        <div class="perfil">
-
-            <div class="avatar">
-
-                {{ docente.nombre[0]|upper }}
-
-            </div>
-
-
-            <div>
-
-                <strong>
-                    {{ docente.nombre }}
-                </strong>
-
-                <small>
-                    Docente
-                </small>
-
-            </div>
-
-        </div>
-
-
-        <!-- ==================================================
-             MENÚ
-        =================================================== -->
+        <!-- MENÚ -->
 
         <nav>
 
@@ -122,9 +86,11 @@
                 ) }}"
             >
 
-                <i class="bi bi-house"></i>
+                <i class="bi bi-grid-1x2-fill"></i>
 
-                Dashboard
+                <span>
+                    Dashboard
+                </span>
 
             </a>
 
@@ -137,9 +103,11 @@
                 ) }}"
             >
 
-                <i class="bi bi-book"></i>
+                <i class="bi bi-book-fill"></i>
 
-                Mis clases
+                <span>
+                    Mis clases
+                </span>
 
             </a>
 
@@ -152,9 +120,11 @@
                 ) }}"
             >
 
-                <i class="bi bi-people"></i>
+                <i class="bi bi-people-fill"></i>
 
-                Estudiantes
+                <span>
+                    Estudiantes
+                </span>
 
             </a>
 
@@ -167,9 +137,11 @@
                 ) }}"
             >
 
-                <i class="bi bi-calendar-check"></i>
+                <i class="bi bi-calendar-check-fill"></i>
 
-                Asistencia
+                <span>
+                    Asistencia
+                </span>
 
             </a>
 
@@ -184,7 +156,9 @@
 
                 <i class="bi bi-pencil-square"></i>
 
-                Calificaciones
+                <span>
+                    Calificaciones
+                </span>
 
             </a>
 
@@ -197,9 +171,11 @@
                 ) }}"
             >
 
-                <i class="bi bi-exclamation-triangle"></i>
+                <i class="bi bi-exclamation-triangle-fill"></i>
 
-                Incidencias
+                <span>
+                    Incidencias
+                </span>
 
             </a>
 
@@ -212,9 +188,11 @@
                 ) }}"
             >
 
-                <i class="bi bi-chat-dots"></i>
+                <i class="bi bi-chat-dots-fill"></i>
 
-                Comunicación Padres
+                <span>
+                    Comunicación Padres
+                </span>
 
             </a>
 
@@ -227,9 +205,11 @@
                 ) }}"
             >
 
-                <i class="bi bi-file-earmark-bar-graph"></i>
+                <i class="bi bi-file-earmark-bar-graph-fill"></i>
 
-                Informes MINED
+                <span>
+                    Informes MINED
+                </span>
 
             </a>
 
@@ -244,7 +224,9 @@
 
                 <i class="bi bi-robot"></i>
 
-                CIEM Asiste IA
+                <span>
+                    CIEM Asiste IA
+                </span>
 
             </a>
 
@@ -257,14 +239,16 @@
                 ) }}"
             >
 
-                <i class="bi bi-gear"></i>
+                <i class="bi bi-gear-fill"></i>
 
-                Configuración
+                <span>
+                    Configuración
+                </span>
 
             </a>
 
 
-            <!-- MENSAJES DE PADRES -->
+            <!-- MENSAJES -->
 
             <a
                 href="{{ url_for(
@@ -272,24 +256,18 @@
                 ) }}"
             >
 
-                <i class="bi bi-chat-dots"></i>
+                <i class="bi bi-envelope-fill"></i>
 
-                Mensajes de padres
-
-                {% if mensajes_pendientes > 0 %}
-
-                    <span class="menu-badge">
-
-                        {{ mensajes_pendientes }}
-
-                    </span>
-
-                {% endif %}
+                <span>
+                    Mensajes de padres
+                </span>
 
             </a>
 
 
-            <!-- SALIR -->
+            <!-- ==================================================
+                 SALIR
+            =================================================== -->
 
             <div class="salir-container">
 
@@ -300,11 +278,13 @@
                     ) }}"
                 >
 
-                    <i class="bi bi-door-open-fill"></i>
+                    <i class="bi bi-box-arrow-left"></i>
 
                     <span>
                         Cerrar sesión
                     </span>
+
+                    <i class="bi bi-chevron-right salir-flecha"></i>
 
                 </a>
 
@@ -325,13 +305,12 @@
 
 
         <!-- ==================================================
-             ALERTA DE MENSAJES PENDIENTES
+             ALERTA DE MENSAJES
         =================================================== -->
 
         {% if mensajes_pendientes > 0 %}
 
         <div class="alerta-mensaje-familia">
-
 
             <div class="alerta-icono">
 
@@ -343,21 +322,20 @@
             <div class="alerta-contenido">
 
                 <strong>
-
-                    Mensajes pendientes de familias
-
+                    Tienes mensajes pendientes
                 </strong>
-
 
                 <span>
 
-                    Tienes
+                    Hay
 
-                    {{ mensajes_pendientes }}
+                    <b>
+                        {{ mensajes_pendientes }}
+                    </b>
 
                     mensaje{% if mensajes_pendientes != 1 %}s{% endif %}
 
-                    pendiente{% if mensajes_pendientes != 1 %}s{% endif %}.
+                    de padres pendiente{% if mensajes_pendientes != 1 %}s{% endif %}.
 
                 </span>
 
@@ -373,10 +351,9 @@
 
                 <i class="bi bi-envelope-open-fill"></i>
 
-                Ver mensajes
+                Revisar mensajes
 
             </a>
-
 
         </div>
 
@@ -388,15 +365,16 @@
              ENCABEZADO
         =================================================== -->
 
-        <header>
+        <header class="encabezado">
 
 
             <div>
 
+                <span class="fecha">
 
-                <p class="fecha">
-                {{ fecha_hoy }}
-                </p>
+                    {{ fecha_hoy }}
+
+                </span>
 
 
                 <h1>
@@ -405,15 +383,27 @@
 
                     {{ docente.nombre.split(' ')[0] }}
 
+                    👋
+
                 </h1>
 
 
                 <p>
 
-                    Panel integral de gestión académica docente.
+                    Bienvenido nuevamente a tu espacio de gestión académica.
 
                 </p>
 
+            </div>
+
+
+            <div class="encabezado-decoracion">
+
+                <div class="circulo-decorativo">
+
+                    <i class="bi bi-mortarboard-fill"></i>
+
+                </div>
 
             </div>
 
@@ -429,92 +419,123 @@
         <section class="cards">
 
 
-            <!-- MIS CLASES -->
+            <!-- CLASES -->
 
             <div class="card">
 
-                <i class="bi bi-book"></i>
+                <div class="card-icon clases">
 
-                <div>
+                    <i class="bi bi-book-fill"></i>
+
+                </div>
+
+
+                <div class="card-info">
 
                     <span>
                         Mis clases
                     </span>
 
-                    <h2>
-
+                    <strong>
                         {{ estadistica.total_asignaturas }}
+                    </strong>
 
-                    </h2>
+                    <small>
+                        Asignaturas asignadas
+                    </small>
 
                 </div>
 
             </div>
+
 
 
             <!-- ESTUDIANTES -->
 
             <div class="card">
 
-                <i class="bi bi-people"></i>
+                <div class="card-icon estudiantes">
 
-                <div>
+                    <i class="bi bi-people-fill"></i>
+
+                </div>
+
+
+                <div class="card-info">
 
                     <span>
                         Estudiantes
                     </span>
 
-                    <h2>
-
+                    <strong>
                         {{ estadistica.total_estudiantes }}
+                    </strong>
 
-                    </h2>
+                    <small>
+                        Bajo tu atención
+                    </small>
 
                 </div>
 
             </div>
+
 
 
             <!-- INCIDENCIAS -->
 
             <div class="card">
 
-                <i class="bi bi-exclamation-circle"></i>
+                <div class="card-icon incidencias">
 
-                <div>
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+
+                </div>
+
+
+                <div class="card-info">
 
                     <span>
                         Incidencias
                     </span>
 
-                    <h2>
-
+                    <strong>
                         {{ estadistica.incidencias }}
+                    </strong>
 
-                    </h2>
+                    <small>
+                        Registros realizados
+                    </small>
 
                 </div>
 
             </div>
 
 
+
             <!-- COMUNICACIONES -->
 
             <div class="card">
 
-                <i class="bi bi-chat"></i>
+                <div class="card-icon comunicaciones">
 
-                <div>
+                    <i class="bi bi-chat-dots-fill"></i>
+
+                </div>
+
+
+                <div class="card-info">
 
                     <span>
                         Comunicaciones
                     </span>
 
-                    <h2>
-
+                    <strong>
                         {{ estadistica.comunicaciones }}
+                    </strong>
 
-                    </h2>
+                    <small>
+                        Comunicaciones registradas
+                    </small>
 
                 </div>
 
@@ -526,166 +547,236 @@
 
 
         <!-- ==================================================
-             BOTÓN DE CONSULTA DE ESTUDIANTES
+             CONSULTA ACADÉMICA
         =================================================== -->
 
-        <div class="boton-consulta-contenedor">
+        <section class="consulta-estudiantes">
 
             <a
                 href="{{ url_for(
                     'docente.consulta_estudiantes'
                 ) }}"
-                class="boton-consulta"
+                class="consulta-card"
             >
 
-
-                <span class="boton-consulta-icono">
+                <div class="consulta-icono">
 
                     <i class="bi bi-person-vcard-fill"></i>
 
-                </span>
+                </div>
 
 
-                <span class="boton-consulta-texto">
+                <div class="consulta-texto">
+
+                    <span>
+                        CONSULTA ACADÉMICA
+                    </span>
 
                     <strong>
-
                         Consulta de estudiantes
-
                     </strong>
 
-
                     <small>
-
-                        Asistencia e incidencias
-
+                        Revisa asistencia, incidencias y seguimiento académico.
                     </small>
 
-                </span>
+                </div>
 
 
-                <i
-                    class="bi bi-arrow-right boton-consulta-flecha"
-                ></i>
+                <div class="consulta-flecha">
 
+                    <i class="bi bi-arrow-right"></i>
+
+                </div>
 
             </a>
 
-        </div>
+        </section>
 
 
 
         <!-- ==================================================
-             MIS CLASES + ACCIONES RÁPIDAS
+             CONTENIDO EN DOS COLUMNAS
         =================================================== -->
 
-        <div class="panel-grid">
+        <section class="dashboard-grid">
 
 
-            <!-- MIS CLASES -->
+            <!-- ==================================================
+                 MIS CLASES
+            =================================================== -->
 
             <section class="panel">
 
 
-                <h2>
-                    Mis clases
-                </h2>
-
-
-                {% for clase in clases_hoy %}
-
-
-                <div class="item">
-
+                <div class="panel-header">
 
                     <div>
 
-                        <h3>
-                            {{ clase.nombre }}
-                        </h3>
+                        <span class="panel-etiqueta">
+                            DOCENCIA
+                        </span>
 
+                        <h2>
+                            Mis clases
+                        </h2>
 
                         <p>
-
-                            {{ clase.grado }}
-
-                            -
-
-                            {{ clase.seccion }}
-
+                            Accede rápidamente a tus grupos.
                         </p>
 
                     </div>
 
 
-                    <div>
+                    <a
+                        href="{{ url_for(
+                            'docente.aulas'
+                        ) }}"
+                        class="panel-link"
+                    >
+
+                        Ver todas
+
+                        <i class="bi bi-arrow-right"></i>
+
+                    </a>
+
+                </div>
 
 
-                        <a
-                            href="{{ url_for(
-                                'docente.asistencia',
-                                asignatura_id=clase._id
-                            ) }}"
-                            title="Asistencia"
-                        >
-
-                            <i class="bi bi-calendar-check"></i>
-
-                        </a>
+                <div class="clases-lista">
 
 
-                        <a
-                            href="{{ url_for(
-                                'docente.notas',
-                                asignatura_id=clase._id
-                            ) }}"
-                            title="Calificaciones"
-                        >
+                    {% for clase in clases_hoy %}
 
-                            <i class="bi bi-pencil"></i>
 
-                        </a>
+                    <div class="clase-item">
+
+
+                        <div class="clase-numero">
+
+                            {{ loop.index }}
+
+                        </div>
+
+
+                        <div class="clase-icono">
+
+                            <i class="bi bi-book"></i>
+
+                        </div>
+
+
+                        <div class="clase-info">
+
+                            <h3>
+                                {{ clase.nombre }}
+                            </h3>
+
+
+                            <span>
+
+                                {{ clase.grado }}
+
+                                {% if clase.seccion %}
+
+                                    · Sección {{ clase.seccion }}
+
+                                {% endif %}
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="clase-acciones">
+
+
+                            <a
+                                href="{{ url_for(
+                                    'docente.asistencia',
+                                    asignatura_id=clase._id
+                                ) }}"
+                                title="Registrar asistencia"
+                            >
+
+                                <i class="bi bi-calendar-check"></i>
+
+                            </a>
+
+
+                            <a
+                                href="{{ url_for(
+                                    'docente.notas',
+                                    asignatura_id=clase._id
+                                ) }}"
+                                title="Registrar calificaciones"
+                            >
+
+                                <i class="bi bi-pencil-square"></i>
+
+                            </a>
+
+
+                        </div>
 
 
                     </div>
 
 
+                    {% else %}
+
+
+                    <div class="sin-datos">
+
+                        <i class="bi bi-book"></i>
+
+                        <p>
+                            No hay clases asignadas.
+                        </p>
+
+                    </div>
+
+
+                    {% endfor %}
+
+
                 </div>
-
-
-                {% else %}
-
-
-                <p>
-
-                    No hay clases asignadas.
-
-                </p>
-
-
-                {% endfor %}
-
 
             </section>
 
 
 
-            <!-- ACCIONES RÁPIDAS -->
+            <!-- ==================================================
+                 ACCIONES RÁPIDAS
+            =================================================== -->
 
             <section class="panel">
 
 
-                <h2>
+                <div class="panel-header">
 
-                    Acciones rápidas
+                    <div>
 
-                </h2>
+                        <span class="panel-etiqueta">
+                            ACCESOS
+                        </span>
+
+                        <h2>
+                            Acciones rápidas
+                        </h2>
+
+                        <p>
+                            Las herramientas que más utilizas.
+                        </p>
+
+                    </div>
+
+                </div>
 
 
                 <div class="acciones">
 
-
-                    <!-- REGISTRAR INCIDENCIA -->
 
                     <a
                         href="{{ url_for(
@@ -693,14 +784,29 @@
                         ) }}"
                     >
 
-                        <i class="bi bi-exclamation-triangle"></i>
+                        <div class="accion-icono rojo">
 
-                        Registrar incidencia
+                            <i class="bi bi-exclamation-triangle"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Registrar incidencia
+                            </strong>
+
+                            <small>
+                                Registrar una nueva incidencia
+                            </small>
+
+                        </div>
+
+                        <i class="bi bi-chevron-right accion-flecha"></i>
 
                     </a>
 
 
-                    <!-- COMUNICACIÓN -->
 
                     <a
                         href="{{ url_for(
@@ -708,14 +814,29 @@
                         ) }}"
                     >
 
-                        <i class="bi bi-chat-square-text"></i>
+                        <div class="accion-icono azul">
 
-                        Enviar comunicación
+                            <i class="bi bi-chat-square-text"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Enviar comunicación
+                            </strong>
+
+                            <small>
+                                Contactar con madres y tutores
+                            </small>
+
+                        </div>
+
+                        <i class="bi bi-chevron-right accion-flecha"></i>
 
                     </a>
 
 
-                    <!-- MENSAJES -->
 
                     <a
                         href="{{ url_for(
@@ -723,31 +844,85 @@
                         ) }}"
                     >
 
-                        <i class="bi bi-envelope-fill"></i>
+                        <div class="accion-icono dorado">
 
-                        Mensajes del colegio
+                            <i class="bi bi-envelope"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Mensajes de padres
+                            </strong>
+
+                            <small>
+                                Revisar conversaciones
+                            </small>
+
+                        </div>
+
+                        <i class="bi bi-chevron-right accion-flecha"></i>
 
                     </a>
 
 
-                    <!-- INFORMES -->
 
-                    <a href="#">
+                    <a
+                        href="{{ url_for(
+                            'docente.informes_mined'
+                        ) }}"
+                    >
 
-                        <i class="bi bi-filetype-pdf"></i>
+                        <div class="accion-icono verde">
 
-                        Generar informe MINED
+                            <i class="bi bi-file-earmark-bar-graph"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Informes MINED
+                            </strong>
+
+                            <small>
+                                Consultar reportes académicos
+                            </small>
+
+                        </div>
+
+                        <i class="bi bi-chevron-right accion-flecha"></i>
 
                     </a>
 
 
-                    <!-- REPORTES -->
 
-                    <a href="#">
+                    <a
+                        href="{{ url_for(
+                            'docente.lista_calificaciones'
+                        ) }}"
+                    >
 
-                        <i class="bi bi-graph-up"></i>
+                        <div class="accion-icono morado">
 
-                        Ver reportes
+                            <i class="bi bi-graph-up"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Ver calificaciones
+                            </strong>
+
+                            <small>
+                                Consultar rendimiento
+                            </small>
+
+                        </div>
+
+                        <i class="bi bi-chevron-right accion-flecha"></i>
 
                     </a>
 
@@ -757,7 +932,207 @@
             </section>
 
 
-        </div>
+        </section>
+
+
+
+        <!-- ==================================================
+             RESUMEN ACADÉMICO
+        =================================================== -->
+
+        <section class="panel resumen-academico">
+
+
+            <div class="panel-header">
+
+                <div>
+
+                    <span class="panel-etiqueta">
+                        RENDIMIENTO
+                    </span>
+
+                    <h2>
+                        Resumen académico
+                    </h2>
+
+                    <p>
+                        Vista general del rendimiento de tus estudiantes.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="resumen-grid">
+
+
+                <!-- PROMEDIO -->
+
+                <div class="resumen-item">
+
+                    <div class="resumen-icono">
+
+                        <i class="bi bi-bar-chart-fill"></i>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Promedio general
+                        </span>
+
+                        <strong>
+                            {{ estadistica.promedio_general }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- APROBADOS -->
+
+                <div class="resumen-item">
+
+                    <div class="resumen-icono">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Aprobados
+                        </span>
+
+                        <strong>
+                            {{ estadistica.aprobados }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- REPROBADOS -->
+
+                <div class="resumen-item">
+
+                    <div class="resumen-icono">
+
+                        <i class="bi bi-x-circle-fill"></i>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Reprobados
+                        </span>
+
+                        <strong>
+                            {{ estadistica.reprobados }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ASISTENCIAS -->
+
+                <div class="resumen-item">
+
+                    <div class="resumen-icono">
+
+                        <i class="bi bi-calendar-check-fill"></i>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Registros de asistencia
+                        </span>
+
+                        <strong>
+                            {{ estadistica.presentes }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- PROGRESOS -->
+
+            <div class="progresos">
+
+
+                <div class="progreso">
+
+                    <div class="progreso-header">
+
+                        <span>
+                            Registro de calificaciones
+                        </span>
+
+                        <strong>
+                            {{ estadistica.progreso_notas }}%
+                        </strong>
+
+                    </div>
+
+
+                    <div class="barra">
+
+                        <div
+                            class="barra-progreso"
+                            style="width: {{ estadistica.progreso_notas }}%;"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="progreso">
+
+                    <div class="progreso-header">
+
+                        <span>
+                            Registro de asistencia
+                        </span>
+
+                        <strong>
+                            {{ estadistica.progreso_asistencia }}%
+                        </strong>
+
+                    </div>
+
+
+                    <div class="barra">
+
+                        <div
+                            class="barra-progreso"
+                            style="width: {{ estadistica.progreso_asistencia }}%;"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
 
 
 
@@ -765,19 +1140,25 @@
              CIEM ASISTE IA
         =================================================== -->
 
-        <section class="panel ia">
+        <section class="ia-panel">
 
 
-            <i class="bi bi-robot"></i>
+            <div class="ia-icono">
+
+                <i class="bi bi-robot"></i>
+
+            </div>
 
 
-            <div>
+            <div class="ia-contenido">
 
+                <span>
+                    HERRAMIENTA PEDAGÓGICA
+                </span>
 
                 <h2>
                     CIEM Asiste IA
                 </h2>
-
 
                 <p>
 
@@ -787,19 +1168,19 @@
 
                 </p>
 
-
             </div>
 
 
             <a
                 href="{{ url_for(
-                    'docente.ciem_ai'
+                    'ciem_ai.inicio'
                 ) }}"
+                class="ia-boton"
             >
 
-                <i class="bi bi-robot"></i>
+                <i class="bi bi-stars"></i>
 
-                CIEM IA
+                Abrir CIEM IA
 
             </a>
 
@@ -809,26 +1190,127 @@
 
 
         <!-- ==================================================
+             MENSAJES
+        =================================================== -->
+
+        {% if mensajes_pendientes > 0 %}
+
+        <section class="panel mensajes-panel">
+
+
+            <div class="panel-header">
+
+                <div>
+
+                    <span class="panel-etiqueta">
+                        COMUNICACIÓN
+                    </span>
+
+                    <h2>
+                        Mensajes de padres
+                    </h2>
+
+                    <p>
+                        Comunicación con las familias.
+                    </p>
+
+                </div>
+
+
+                <a
+                    href="{{ url_for(
+                        'mensajes.bandeja_docente'
+                    ) }}"
+                    class="panel-link"
+                >
+
+                    Ver mensajes
+
+                    <i class="bi bi-arrow-right"></i>
+
+                </a>
+
+            </div>
+
+
+            <div class="mensaje-resumen">
+
+
+                <div class="mensaje-icono">
+
+                    <i class="bi bi-envelope-open-fill"></i>
+
+                </div>
+
+
+                <div class="mensaje-numero">
+
+                    <strong>
+                        {{ mensajes_pendientes }}
+                    </strong>
+
+                    <span>
+
+                        mensaje{% if mensajes_pendientes != 1 %}s{% endif %}
+
+                        pendiente{% if mensajes_pendientes != 1 %}s{% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <a
+                    href="{{ url_for(
+                        'mensajes.bandeja_docente'
+                    ) }}"
+                    class="mensaje-boton"
+                >
+
+                    Revisar
+
+                    <i class="bi bi-arrow-right"></i>
+
+                </a>
+
+
+            </div>
+
+
+        </section>
+
+        {% endif %}
+
+
+
+        <!-- ==================================================
              FOOTER
         =================================================== -->
 
         <footer>
 
-            CIEM Académico © 2026
+            <strong>
+                CIEM Académico
+            </strong>
+
+            <span>
+                Sistema de gestión académica
+            </span>
+
+            <span>
+                © 2026
+            </span>
 
         </footer>
 
 
     </main>
 
-
 </div>
 
 
 
-<!-- ==================================================
-     JAVASCRIPT
-================================================== -->
+<!-- JAVASCRIPT -->
 
 <script
     src="{{ url_for(

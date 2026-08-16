@@ -1107,19 +1107,17 @@
 
 
                             <a
-                                href="{{ url_for(
-                                    'docente.boletin_estudiante',
-                                    estudiante_id=estudiante._id
-                                ) }}"
-                                class="btn-action btn-boletin"
-                                title="Ver boletín"
-                            >
+    href="{{ url_for(
+        'docente.boletin_pdf_estudiante',
+        estudiante_id=estudiante._id
+    ) }}"
+    class="btn-action btn-boletin"
+    title="Generar boletín PDF"
+>
 
-                                <i
-                                    class="bi bi-file-earmark-text"
-                                ></i>
+    <i class="bi bi-file-earmark-text"></i>
 
-                            </a>
+</a>
 
 
                         </td>
