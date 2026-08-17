@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -23,9 +22,9 @@
             color: #1d3256;
         }
 
-        /* ==========================================
+        /* ==================================================
            CONTENEDOR
-        ========================================== */
+        ================================================== */
 
         .contenedor {
             width: 94%;
@@ -33,9 +32,9 @@
             margin: 30px auto;
         }
 
-        /* ==========================================
+        /* ==================================================
            ENCABEZADO
-        ========================================== */
+        ================================================== */
 
         .encabezado {
 
@@ -66,9 +65,9 @@
             gap: 20px;
         }
 
-        /* ==========================================
+        /* ==================================================
            IDENTIDAD
-        ========================================== */
+        ================================================== */
 
         .identidad {
 
@@ -130,9 +129,9 @@
             white-space: nowrap;
         }
 
-        /* ==========================================
+        /* ==================================================
            CONTENIDO
-        ========================================== */
+        ================================================== */
 
         .contenido {
 
@@ -146,9 +145,9 @@
                 0 5px 18px rgba(0,0,0,.08);
         }
 
-        /* ==========================================
+        /* ==================================================
            BARRA SUPERIOR
-        ========================================== */
+        ================================================== */
 
         .barra-superior {
 
@@ -190,9 +189,9 @@
             flex-wrap: wrap;
         }
 
-        /* ==========================================
+        /* ==================================================
            BOTONES
-        ========================================== */
+        ================================================== */
 
         .btn {
 
@@ -245,9 +244,9 @@
             background: #1E4E8C;
         }
 
-        /* ==========================================
+        /* ==================================================
            MENSAJES
-        ========================================== */
+        ================================================== */
 
         .mensaje {
 
@@ -298,9 +297,9 @@
             border: 1px solid #b6effb;
         }
 
-        /* ==========================================
+        /* ==================================================
            TARJETAS
-        ========================================== */
+        ================================================== */
 
         .tarjetas {
 
@@ -373,9 +372,9 @@
             color: #0D2A52;
         }
 
-        /* ==========================================
-           TITULO REGISTRO
-        ========================================== */
+        /* ==================================================
+           TITULO LISTADO
+        ================================================== */
 
         .titulo-listado {
 
@@ -404,9 +403,9 @@
             font-size: 13px;
         }
 
-        /* ==========================================
+        /* ==================================================
            TABLA
-        ========================================== */
+        ================================================== */
 
         .tabla-contenedor {
 
@@ -425,7 +424,7 @@
 
             border-collapse: collapse;
 
-            min-width: 950px;
+            min-width: 1000px;
         }
 
         thead {
@@ -465,9 +464,9 @@
             background: #f7f9fb;
         }
 
-        /* ==========================================
+        /* ==================================================
            CÓDIGO
-        ========================================== */
+        ================================================== */
 
         .codigo {
 
@@ -484,9 +483,9 @@
             display: inline-block;
         }
 
-        /* ==========================================
+        /* ==================================================
            BADGES
-        ========================================== */
+        ================================================== */
 
         .badge {
 
@@ -506,6 +505,13 @@
             background: #d1e7dd;
 
             color: #0f5132;
+        }
+
+        .badge-inactiva {
+
+            background: #f8d7da;
+
+            color: #842029;
         }
 
         .badge-preescolar {
@@ -529,15 +535,17 @@
             color: #805400;
         }
 
-        /* ==========================================
+        /* ==================================================
            ACCIONES
-        ========================================== */
+        ================================================== */
 
         .acciones {
 
             display: flex;
 
             gap: 6px;
+
+            align-items: center;
         }
 
         .btn-accion {
@@ -561,6 +569,15 @@
             border: none;
 
             cursor: pointer;
+
+            transition: .2s;
+        }
+
+        .btn-accion:hover {
+
+            transform: translateY(-1px);
+
+            opacity: .85;
         }
 
         .ver {
@@ -578,9 +595,9 @@
             background: #f8d7da;
         }
 
-        /* ==========================================
+        /* ==================================================
            SIN REGISTROS
-        ========================================== */
+        ================================================== */
 
         .sin-registros {
 
@@ -616,9 +633,9 @@
             line-height: 1.6;
         }
 
-        /* ==========================================
+        /* ==================================================
            PIE
-        ========================================== */
+        ================================================== */
 
         .pie {
 
@@ -636,9 +653,9 @@
             font-size: 12px;
         }
 
-        /* ==========================================
+        /* ==================================================
            RESPONSIVE
-        ========================================== */
+        ================================================== */
 
         @media (max-width: 900px) {
 
@@ -720,22 +737,19 @@
 
     <!-- ==================================================
          ENCABEZADO
-    =================================================== -->
+    ================================================== -->
 
     <div class="encabezado">
 
         <div class="encabezado-contenido">
 
-
             <div class="identidad">
-
 
                 <img
                     src="{{ url_for('static', filename='img/logo.jpg') }}"
                     alt="Logo Colegio Integral Emanuel Matagalpa"
                     class="logo"
                 >
-
 
                 <div class="titulo">
 
@@ -753,34 +767,29 @@
 
                 </div>
 
-
             </div>
-
 
             <div class="anio">
                 Año Lectivo 2026
             </div>
-
 
         </div>
 
     </div>
 
 
-
     <!-- ==================================================
          CONTENIDO
-    =================================================== -->
+    ================================================== -->
 
     <div class="contenido">
 
 
         <!-- ==================================================
              BARRA SUPERIOR
-        =================================================== -->
+        ================================================== -->
 
         <div class="barra-superior">
-
 
             <div class="descripcion">
 
@@ -794,11 +803,7 @@
 
             </div>
 
-
             <div class="botones">
-
-
-                <!-- REGRESAR -->
 
                 <a
                     href="{{ url_for('admin_dashboard') }}"
@@ -807,9 +812,6 @@
                     ← Regresar al Dashboard
                 </a>
 
-
-                <!-- NUEVA MATRÍCULA -->
-
                 <a
                     href="{{ url_for('agregar_matricula') }}"
                     class="btn btn-nueva"
@@ -817,17 +819,14 @@
                     ➕ Nueva Matrícula
                 </a>
 
-
             </div>
-
 
         </div>
 
 
-
         <!-- ==================================================
              MENSAJES FLASH
-        =================================================== -->
+        ================================================== -->
 
         {% with mensajes =
             get_flashed_messages(
@@ -870,15 +869,12 @@
         {% endwith %}
 
 
-
         <!-- ==================================================
              TARJETAS
-        =================================================== -->
+        ================================================== -->
 
         <div class="tarjetas">
 
-
-            <!-- TOTAL -->
 
             <div class="tarjeta">
 
@@ -901,8 +897,6 @@
             </div>
 
 
-            <!-- AÑO -->
-
             <div class="tarjeta">
 
                 <div class="icono">
@@ -923,8 +917,6 @@
 
             </div>
 
-
-            <!-- INSTITUCIÓN -->
 
             <div class="tarjeta">
 
@@ -950,10 +942,9 @@
         </div>
 
 
-
         <!-- ==================================================
-             LISTADO
-        =================================================== -->
+             TÍTULO LISTADO
+        ================================================== -->
 
         <div class="titulo-listado">
 
@@ -972,239 +963,364 @@
         </div>
 
 
+        <!-- ==================================================
+             LISTADO
+        ================================================== -->
 
         {% if matriculas %}
 
-<div class="tabla-contenedor">
+            <div class="tabla-contenedor">
 
-    <table>
+                <table>
 
-        <thead>
-            <tr>
-                <th>Código</th>
-                <th>Estudiante</th>
-                <th>Grado / Año</th>
-                <th>Sección</th>
-                <th>Fecha de Matrícula</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
+                    <thead>
 
-        <tbody>
+                        <tr>
 
-        {% for matricula in matriculas %}
+                            <th>
+                                Código
+                            </th>
 
-            <tr>
+                            <th>
+                                Estudiante
+                            </th>
 
-                <!-- CÓDIGO -->
-                <td>
-                    <span class="codigo">
-                        {{ matricula.codigo or matricula.estudiante_id or "—" }}
-                    </span>
-                </td>
+                            <th>
+                                Grado / Año
+                            </th>
 
+                            <th>
+                                Sección
+                            </th>
 
-                <!-- ESTUDIANTE -->
-                <td>
+                            <th>
+                                Fecha de Matrícula
+                            </th>
 
-                    {% if matricula.estudiante %}
+                            <th>
+                                Estado
+                            </th>
 
-                        <strong>
-                            {{ matricula.estudiante.nombre or "Sin nombre" }}
-                        </strong>
+                            <th>
+                                Acciones
+                            </th>
 
-                    {% else %}
+                        </tr>
 
-                        <span>
-                            Sin información
-                        </span>
-
-                    {% endif %}
-
-                </td>
+                    </thead>
 
 
-                <!-- GRADO -->
-                <td>
+                    <tbody>
 
-                    {% set grado = matricula.grado or "" %}
+                    {% for matricula in matriculas %}
 
-                    {% if grado == "Preescolar" %}
-
-                        <span class="badge badge-preescolar">
-                            Preescolar
-                        </span>
-
-                    {% elif grado in [
-                        "Primero",
-                        "Segundo",
-                        "Tercero",
-                        "Cuarto",
-                        "Quinto",
-                        "Sexto"
-                    ] %}
-
-                        <span class="badge badge-primaria">
-                            {{ grado }}
-                        </span>
-
-                    {% elif grado in [
-                        "Primer Año",
-                        "Segundo Año",
-                        "Tercer Año",
-                        "Cuarto Año",
-                        "Quinto Año"
-                    ] %}
-
-                        <span class="badge badge-secundaria">
-                            {{ grado }}
-                        </span>
-
-                    {% else %}
-
-                        {{ grado or "—" }}
-
-                    {% endif %}
-
-                </td>
+                        <tr>
 
 
-                <!-- SECCIÓN -->
-                <td>
-                    {{ matricula.seccion or "—" }}
-                </td>
+                            <!-- ==================================
+                                 CÓDIGO
+                            =================================== -->
+
+                            <td>
+
+                                <span class="codigo">
+
+                                    {{ matricula.codigo
+                                       or matricula.estudiante_id
+                                       or "—" }}
+
+                                </span>
+
+                            </td>
 
 
-                <!-- FECHA -->
-                <td>
-                    {{ matricula.fecha_matricula or "—" }}
-                </td>
+                            <!-- ==================================
+                                 ESTUDIANTE
+                            =================================== -->
+
+                            <td>
+
+                                {% if matricula.estudiante %}
+
+                                    <strong>
+
+                                        {{ matricula.estudiante.nombre
+                                           or "Sin nombre" }}
+
+                                    </strong>
+
+                                {% else %}
+
+                                    <span>
+                                        Sin información
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
 
 
-                <!-- ESTADO -->
-                <td>
+                            <!-- ==================================
+                                 GRADO
+                            =================================== -->
 
-                    {% if matricula.estado == "activa" %}
+                            <td>
 
-                        <span class="badge badge-activa">
-                            Activa
-                        </span>
-
-                    {% else %}
-
-                        <span
-                            class="badge"
-                            style="
-                                background:#f8d7da;
-                                color:#842029;
-                            "
-                        >
-                            Inactiva
-                        </span>
-
-                    {% endif %}
-
-                </td>
+                                {% set grado =
+                                    matricula.grado or "" %}
 
 
-                <!-- ACCIONES -->
-                <td>
+                                {% if grado == "Preescolar" %}
 
-                    <div class="acciones">
-
-
-                        <!-- VER -->
-
-                        <a
-                            href="{{ url_for(
-                                'ver_matricula',
-                                codigo=matricula.codigo
-                            ) }}"
-                            class="btn-accion ver"
-                            title="Ver matrícula"
-                        >
-                            👁️
-                        </a>
+                                    <span
+                                        class="badge badge-preescolar"
+                                    >
+                                        Preescolar
+                                    </span>
 
 
-                        <!-- EDITAR -->
+                                {% elif grado in [
+                                    "Primero",
+                                    "Segundo",
+                                    "Tercero",
+                                    "Cuarto",
+                                    "Quinto",
+                                    "Sexto"
+                                ] %}
 
-                        <a
-                            href="{{ url_for(
-                                'editar_matricula',
-                                codigo=matricula.codigo
-                            ) }}"
-                            class="btn-accion editar"
-                            title="Editar matrícula"
-                        >
-                            ✏️
-                        </a>
-
-
-                        <!-- DESACTIVAR -->
-
-                        {% if matricula.estado == "activa" %}
-
-                            <form
-                                method="POST"
-                                action="{{ url_for(
-                                    'desactivar_matricula',
-                                    matricula_id=matricula._id
-                                ) }}"
-                                style="display:inline;"
-                                onsubmit="
-                                    return confirm(
-                                        '¿Está seguro de que desea desactivar esta matrícula?'
-                                    );
-                                "
-                            >
-
-                                <button
-                                    type="submit"
-                                    class="btn-accion eliminar"
-                                    title="Desactivar matrícula"
-                                >
-                                    🗑️
-                                </button>
-
-                            </form>
-
-                        {% endif %}
+                                    <span
+                                        class="badge badge-primaria"
+                                    >
+                                        {{ grado }}
+                                    </span>
 
 
-                    </div>
+                                {% elif grado in [
+                                    "Primer Año",
+                                    "Segundo Año",
+                                    "Tercer Año",
+                                    "Cuarto Año",
+                                    "Quinto Año",
+                                    "Primer año",
+                                    "Segundo año",
+                                    "Tercer año",
+                                    "Cuarto año",
+                                    "Quinto año"
+                                ] %}
 
-                </td>
+                                    <span
+                                        class="badge badge-secundaria"
+                                    >
+                                        {{ grado }}
+                                    </span>
 
-            </tr>
 
-        {% endfor %}
+                                {% else %}
 
-        </tbody>
+                                    {{ grado or "—" }}
 
-    </table>
+                                {% endif %}
 
-</div>
-            <span
-                class="badge"
-                style="
-                    background:#f8d7da;
-                    color:#842029;
-                "
-                title="Matrícula inactiva"
-            >
-                Inactiva
-            </span>
+                            </td>
+
+
+                            <!-- ==================================
+                                 SECCIÓN
+                            =================================== -->
+
+                            <td>
+
+                                {{ matricula.seccion or "—" }}
+
+                            </td>
+
+
+                            <!-- ==================================
+                                 FECHA
+                            =================================== -->
+
+                            <td>
+
+                                {{ matricula.fecha_matricula
+                                   or "—" }}
+
+                            </td>
+
+
+                            <!-- ==================================
+                                 ESTADO
+                            =================================== -->
+
+                            <td>
+
+                                {% if matricula.estado == "activa" %}
+
+                                    <span
+                                        class="badge badge-activa"
+                                    >
+                                        Activa
+                                    </span>
+
+                                {% else %}
+
+                                    <span
+                                        class="badge badge-inactiva"
+                                    >
+                                        {{ matricula.estado
+                                           or "Inactiva" }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- ==================================
+                                 ACCIONES
+                            =================================== -->
+
+                            <td>
+
+                                <div class="acciones">
+
+
+                                    <!-- ==========================
+                                         VER
+                                    =========================== -->
+
+                                    <a
+                                        href="{{ url_for(
+                                            'ver_matricula',
+                                            codigo=matricula.codigo
+                                        ) }}"
+                                        class="btn-accion ver"
+                                        title="Ver matrícula"
+                                    >
+                                        👁️
+                                    </a>
+
+
+                                    <!-- ==========================
+                                         EDITAR
+                                    =========================== -->
+
+                                    <a
+                                        href="{{ url_for(
+                                            'editar_matricula',
+                                            codigo=matricula.codigo
+                                        ) }}"
+                                        class="btn-accion editar"
+                                        title="Editar matrícula"
+                                    >
+                                        ✏️
+                                    </a>
+
+
+                                    <!-- ==========================
+                                         DESACTIVAR
+                                    =========================== -->
+
+                                    {% if matricula.estado == "activa" %}
+
+                                        <form
+                                            method="POST"
+                                            action="{{ url_for(
+                                                'desactivar_matricula',
+                                                matricula_id=matricula._id
+                                            ) }}"
+                                            style="display:inline;"
+                                            onsubmit="
+                                                return confirm(
+                                                    '¿Está seguro de que desea desactivar esta matrícula?'
+                                                );
+                                            "
+                                        >
+
+                                            <button
+                                                type="submit"
+                                                class="btn-accion eliminar"
+                                                title="Desactivar matrícula"
+                                            >
+                                                🗑️
+                                            </button>
+
+                                        </form>
+
+                                    {% endif %}
+
+
+                                </div>
+
+                            </td>
+
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        {% else %}
+
+
+            <!-- ==================================================
+                 SIN REGISTROS
+            ================================================== -->
+
+            <div class="sin-registros">
+
+                <div class="icono-grande">
+                    📋
+                </div>
+
+                <h3>
+                    No hay matrículas registradas
+                </h3>
+
+                <p>
+                    Actualmente no existen matrículas
+                    registradas en el sistema.
+                </p>
+
+                <a
+                    href="{{ url_for('agregar_matricula') }}"
+                    class="btn btn-nueva"
+                >
+                    ➕ Registrar primera matrícula
+                </a>
+
+            </div>
+
 
         {% endif %}
 
+
+        <!-- ==================================================
+             PIE
+        ================================================== -->
+
+        <div class="pie">
+
+            Colegio Integral Emanuel Matagalpa ·
+            CIEM Académico ·
+            Año Lectivo 2026
+
+        </div>
+
+
     </div>
 
-</td>
-<!-- ======================================================
+</div>
+
+
+<!-- ==================================================
      JAVASCRIPT
-======================================================= -->
+================================================== -->
 
 <script>
 
@@ -1219,15 +1335,14 @@ function confirmarEliminacion(codigo) {
         return false;
     }
 
-
     return confirm(
 
-        "¿Está seguro de eliminar la matrícula " +
+        "¿Está seguro de desactivar la matrícula " +
         codigo +
         "?\n\n" +
 
-        "Esta acción debe realizarse únicamente " +
-        "si realmente desea retirar el registro."
+        "La matrícula no será eliminada físicamente " +
+        "de la base de datos."
 
     );
 

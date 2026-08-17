@@ -1,11 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-<meta charset="UTF-8">
-<title>Agregar Asignatura</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Agregar Asignatura | CIEM Académico</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
 </head>
+
 
 <body>
 
@@ -14,54 +27,270 @@
     <div class="card shadow">
 
         <div class="card-header bg-warning">
-            <h3>📚 Nueva Asignatura</h3>
+
+            <h3 class="mb-0">
+                📚 Nueva Asignatura
+            </h3>
+
         </div>
+
 
         <div class="card-body">
 
-            <form method="POST">
+            <form
+                method="POST"
+                action="{{ url_for('agregar_asignatura') }}"
+            >
+
+
+                <!-- ======================================
+                     CÓDIGO
+                ======================================= -->
 
                 <div class="mb-3">
-                    <label>Código</label>
-                    <input type="text"
-                           class="form-control"
-                           name="codigo"
-                           required>
+
+                    <label class="form-label">
+                        Código de la asignatura
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="codigo"
+                        placeholder="Ej. MAT-001"
+                        required
+                    >
+
                 </div>
 
+
+                <!-- ======================================
+                     NOMBRE
+                ======================================= -->
+
                 <div class="mb-3">
-                    <label>Nombre</label>
-                    <input type="text"
-                           class="form-control"
-                           name="nombre"
-                           required>
+
+                    <label class="form-label">
+                        Nombre de la asignatura
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="nombre"
+                        placeholder="Ej. Matemática"
+                        required
+                    >
+
                 </div>
 
+
+                <!-- ======================================
+                     NIVEL
+                ======================================= -->
+
                 <div class="mb-3">
-                    <label>Grado</label>
 
-                    <select class="form-select"
-                            name="grado">
+                    <label class="form-label">
+                        Nivel educativo
+                    </label>
 
-                        <option>1ro</option>
-                        <option>2do</option>
-                        <option>3ro</option>
-                        <option>4to</option>
-                        <option>5to</option>
-                        <<option>6to</option>
+                    <select
+                        class="form-select"
+                        name="nivel"
+                        required
+                    >
+
+                        <option value="">
+                            Seleccione el nivel
+                        </option>
+
+                        <option value="Preescolar">
+                            Preescolar
+                        </option>
+
+                        <option value="Primaria">
+                            Primaria
+                        </option>
+
+                        <option value="Secundaria">
+                            Secundaria
+                        </option>
 
                     </select>
 
                 </div>
 
-                <button class="btn btn-success">
-                    Guardar
+
+                <!-- ======================================
+                     GRADO
+                ======================================= -->
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Grado / Nivel
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="grado"
+                        required
+                    >
+
+                        <option value="">
+                            Seleccione el grado
+                        </option>
+
+
+                        <!-- PREESCOLAR -->
+
+                        <optgroup label="Preescolar">
+
+                            <option value="1er Nivel de Preescolar">
+                                1er Nivel de Preescolar
+                            </option>
+
+                            <option value="2do Nivel de Preescolar">
+                                2do Nivel de Preescolar
+                            </option>
+
+                            <option value="3er Nivel de Preescolar">
+                                3er Nivel de Preescolar
+                            </option>
+
+                        </optgroup>
+
+
+                        <!-- PRIMARIA -->
+
+                        <optgroup label="Primaria">
+
+                            <option value="1er Grado">
+                                1er Grado
+                            </option>
+
+                            <option value="2do Grado">
+                                2do Grado
+                            </option>
+
+                            <option value="3er Grado">
+                                3er Grado
+                            </option>
+
+                            <option value="4to Grado">
+                                4to Grado
+                            </option>
+
+                            <option value="5to Grado">
+                                5to Grado
+                            </option>
+
+                            <option value="6to Grado">
+                                6to Grado
+                            </option>
+
+                        </optgroup>
+
+
+                        <!-- SECUNDARIA -->
+
+                        <optgroup label="Secundaria">
+
+                            <option value="1 Año">
+                                1 Año
+                            </option>
+
+                            <option value="2 Año">
+                                2 Año
+                            </option>
+
+                            <option value="3 Año">
+                                3 Año
+                            </option>
+
+                            <option value="4 Año">
+                                4 Año
+                            </option>
+
+                            <option value="5 Año">
+                                5 Año
+                            </option>
+
+                        </optgroup>
+
+                    </select>
+
+                </div>
+
+
+                <!-- ======================================
+                     DOCENTE
+                ======================================= -->
+
+                <div class="mb-4">
+
+                    <label class="form-label">
+                        Docente
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="docente_id"
+                        required
+                    >
+
+                        <option value="">
+                            Seleccione el docente
+                        </option>
+
+
+                        {% for docente in docentes %}
+
+                            <option
+                                value="{{ docente.codigo }}"
+                            >
+
+                                {{ docente.codigo }}
+                                -
+                                {{ docente.nombre }}
+
+                                {% if docente.cargo %}
+                                    — {{ docente.cargo }}
+                                {% endif %}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- ======================================
+                     BOTONES
+                ======================================= -->
+
+                <button
+                    type="submit"
+                    class="btn btn-success"
+                >
+
+                    💾 Guardar
+
                 </button>
 
-                <a href="/asignaturas"
-                   class="btn btn-secondary">
-                    Volver
+
+                <a
+                    href="{{ url_for('listar_asignaturas') }}"
+                    class="btn btn-secondary"
+                >
+
+                    ← Volver
+
                 </a>
+
 
             </form>
 
@@ -72,4 +301,5 @@
 </div>
 
 </body>
+
 </html>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -12,7 +13,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-
 <style>
 
 :root{
@@ -22,171 +22,132 @@
     --dark:#0f172a;
 }
 
-
 body{
-
     background:#f1f5f9;
     font-family:'Segoe UI',sans-serif;
-
 }
-
 
 /* SIDEBAR */
 
 .sidebar{
-
     position:fixed;
     width:260px;
     height:100vh;
     background:var(--dark);
     color:white;
     padding:20px;
-
 }
 
-
 .logo{
-
     width:90px;
     height:90px;
     border-radius:50%;
-
 }
 
-
 .sidebar a{
-
     display:block;
     color:white;
     text-decoration:none;
     padding:12px;
     margin-top:8px;
     border-radius:10px;
-
 }
-
 
 .sidebar a:hover{
-
     background:#1e293b;
-
 }
-
-
 
 /* CONTENIDO */
 
 .main{
-
     margin-left:280px;
     padding:30px;
-
 }
-
-
 
 /* TARJETAS */
 
-
 .card-stat{
-
     border:none;
     border-radius:20px;
     color:white;
     transition:.3s;
-
 }
-
 
 .card-stat:hover{
-
     transform:translateY(-5px);
-
 }
-
 
 .bg-estudiantes{
-
     background:linear-gradient(135deg,#2563eb,#1d4ed8);
-
 }
-
 
 .bg-docentes{
-
     background:linear-gradient(135deg,#10b981,#059669);
-
 }
-
 
 .bg-asignaturas{
-
     background:linear-gradient(135deg,#f59e0b,#d97706);
-
 }
-
 
 .bg-matriculas{
-
     background:linear-gradient(135deg,#8b5cf6,#6d28d9);
-
 }
 
+/* REPORTE POR GRADO */
+
+.bg-reporte-grado{
+    background:linear-gradient(135deg,#0ea5e9,#0369a1);
+}
+
+.bg-reporte-estudiantes{
+    background:linear-gradient(135deg,#6366f1,#4338ca);
+}
+
+.bg-reporte-docentes{
+    background:linear-gradient(135deg,#10b981,#047857);
+}
+
+.bg-reporte-matriculas{
+    background:linear-gradient(135deg,#f59e0b,#b45309);
+}
 
 .numero{
-
     font-size:40px;
     font-weight:bold;
-
 }
-
-
 
 .card{
-
     border:none;
     border-radius:20px;
-
 }
-
 
 </style>
 
-
 </head>
 
-
 <body>
-
 
 
 <!-- ==========================
      SIDEBAR
 =========================== -->
 
-
 <div class="sidebar">
-
 
 <div class="text-center">
 
-
 <img src="{{ url_for('static',filename='img/logo.jpg') }}"
 class="logo">
-
 
 <h4 class="mt-3">
 CIEM
 </h4>
 
-
 <small>
 Sistema Académico
 </small>
 
-
 </div>
-
 
 <hr>
 
@@ -197,11 +158,12 @@ Sistema Académico
 
 
 <a href="{{ url_for('listar_estudiantes_admin') }}">
-    👨‍🎓 Estudiantes
+👨‍🎓 Estudiantes
 </a>
 
+
 <a href="{{ url_for('listar_docentes') }}">
-    👩‍🏫 Docentes
+👩‍🏫 Docentes
 </a>
 
 
@@ -215,8 +177,25 @@ Sistema Académico
 </a>
 
 
+<hr>
+
+
+<!-- ==========================
+     REPORTES
+=========================== -->
+
+<div class="text-uppercase small text-secondary mt-3 mb-2">
+    Reportes
+</div>
+
+
 <a href="{{ url_for('reporte_estudiantes') }}">
 📚 Reporte Estudiantes
+</a>
+
+
+<a href="{{ url_for('reporte_estudiantes_por_grado') }}">
+🎓 Reporte por Grado
 </a>
 
 
@@ -230,10 +209,13 @@ Sistema Académico
 </a>
 
 
-
 <a href="{{ url_for('reporte_academico') }}">
 📊 Reporte Académico
 </a>
+
+
+<hr>
+
 
 <a href="{{ url_for('logout') }}">
 🚪 Cerrar sesión
@@ -243,164 +225,113 @@ Sistema Académico
 </div>
 
 
-
-
-
 <!-- ==========================
         CONTENIDO
 =========================== -->
 
-
 <div class="main">
 
 
-
 <div class="mb-4">
-
 
 <h2>
 Dashboard Académico
 </h2>
 
-
 <p class="text-muted">
-
 Bienvenido al sistema CIEM Académico
-
 </p>
-
 
 </div>
 
 
-
-
-
 <!-- ==========================
-       TARJETAS
+       TARJETAS PRINCIPALES
 =========================== -->
-
 
 <div class="row g-4">
 
 
-
 <div class="col-md-3">
-
 
 <div class="card card-stat bg-estudiantes shadow">
 
 <div class="card-body">
 
-
 <h5>
 Estudiantes
 </h5>
 
-
 <div class="numero">
-
 {{ total_estudiantes }}
-
-</div>
-
-
 </div>
 
 </div>
 
-
 </div>
 
-
-
+</div>
 
 
 <div class="col-md-3">
 
-
 <div class="card card-stat bg-docentes shadow">
 
-
 <div class="card-body">
-
 
 <h5>
 Docentes
 </h5>
 
-
 <div class="numero">
-
 {{ total_docentes }}
+</div>
 
 </div>
 
-
 </div>
 
-
 </div>
-
-
-</div>
-
-
-
-
 
 
 <div class="col-md-3">
 
-
 <div class="card card-stat bg-asignaturas shadow">
 
-
 <div class="card-body">
-
 
 <h5>
 Asignaturas
 </h5>
 
-
 <div class="numero">
-
 {{ total_asignaturas }}
+</div>
 
 </div>
 
-
 </div>
 
-
 </div>
-
-
-</div>
-
-
-
-
 
 
 <div class="col-md-3">
 
-
 <div class="card card-stat bg-matriculas shadow">
 
-
 <div class="card-body">
-
 
 <h5>
 Matrículas
 </h5>
 
-
 <div class="numero">
-
 {{ total_matriculas }}
+</div>
+
+</div>
+
+</div>
 
 </div>
 
@@ -408,12 +339,151 @@ Matrículas
 </div>
 
 
+<!-- ==========================
+     ACCESOS A REPORTES
+=========================== -->
+
+<div class="row g-4 mt-2">
+
+
+<!-- REPORTE ESTUDIANTES -->
+
+<div class="col-md-3">
+
+<a href="{{ url_for('reporte_estudiantes') }}"
+   style="text-decoration:none;">
+
+<div class="card card-stat bg-reporte-estudiantes shadow"
+     style="cursor:pointer;">
+
+<div class="card-body">
+
+<h5>
+📚 Reporte Estudiantes
+</h5>
+
+<div style="
+font-size:15px;
+margin-top:10px;
+opacity:.9;
+">
+
+Listado general de estudiantes
+
+</div>
+
+</div>
+
+</div>
+
+</a>
+
 </div>
 
 
+<!-- REPORTE POR GRADO -->
+
+<div class="col-md-3">
+
+<a href="{{ url_for('reporte_estudiantes_por_grado') }}"
+   style="text-decoration:none;">
+
+<div class="card card-stat bg-reporte-grado shadow"
+     style="cursor:pointer;">
+
+<div class="card-body">
+
+<h5>
+🎓 Reporte por Grado
+</h5>
+
+<div style="
+font-size:15px;
+margin-top:10px;
+opacity:.9;
+">
+
+Consultar estudiantes por grado y sección
+
+</div>
+
+</div>
+
+</div>
+
+</a>
+
 </div>
 
 
+<!-- REPORTE DOCENTES -->
+
+<div class="col-md-3">
+
+<a href="{{ url_for('reporte_docentes') }}"
+   style="text-decoration:none;">
+
+<div class="card card-stat bg-reporte-docentes shadow"
+     style="cursor:pointer;">
+
+<div class="card-body">
+
+<h5>
+👨‍🏫 Reporte Docentes
+</h5>
+
+<div style="
+font-size:15px;
+margin-top:10px;
+opacity:.9;
+">
+
+Información del personal docente
+
+</div>
+
+</div>
+
+</div>
+
+</a>
+
+</div>
+
+
+<!-- REPORTE MATRÍCULAS -->
+
+<div class="col-md-3">
+
+<a href="{{ url_for('reporte_matriculas') }}"
+   style="text-decoration:none;">
+
+<div class="card card-stat bg-reporte-matriculas shadow"
+     style="cursor:pointer;">
+
+<div class="card-body">
+
+<h5>
+📝 Reporte Matrículas
+</h5>
+
+<div style="
+font-size:15px;
+margin-top:10px;
+opacity:.9;
+">
+
+Consulta de matrículas registradas
+
+</div>
+
+</div>
+
+</div>
+
+</a>
+
+</div>
 
 
 </div>
@@ -425,134 +495,104 @@ Matrículas
 
 <div class="row g-4 mt-2">
 
-    <div class="col-md-3">
+<div class="col-md-3">
 
-        <a href="{{ url_for('admin_comunicados') }}"
-           style="text-decoration:none;">
+<a href="{{ url_for('admin_comunicados') }}"
+style="text-decoration:none;">
 
-            <div class="card card-stat shadow"
-                 style="
-                    background:linear-gradient(
-                        135deg,
-                        #08142C,
-                        #1E4E8C
-                    );
-                    color:white;
-                    cursor:pointer;
-                 ">
+<div class="card card-stat shadow"
+style="
+background:linear-gradient(
+135deg,
+#08142C,
+#1E4E8C
+);
+color:white;
+cursor:pointer;
+">
 
-                <div class="card-body">
+<div class="card-body">
 
-                    <h5 style="color:white;">
-                        📢 Comunicados
-                    </h5>
+<h5 style="color:white;">
+📢 Comunicados
+</h5>
 
-                    <div style="
-                        font-size:15px;
-                        margin-top:10px;
-                        opacity:.9;
-                    ">
-                        Enviar avisos a los padres
-                    </div>
+<div style="
+font-size:15px;
+margin-top:10px;
+opacity:.9;
+">
 
-                </div>
-
-            </div>
-
-        </a>
-
-    </div>
+Enviar avisos a los padres
 
 </div>
 
+</div>
 
+</div>
+
+</a>
+
+</div>
+
+</div>
 
 
 <!-- ==========================
         GRAFICOS
 =========================== -->
 
-
 <div class="row mt-4">
-
 
 
 <div class="col-md-8">
 
-
 <div class="card shadow">
 
-
 <div class="card-body">
-
 
 <h5>
 Estadísticas generales
 </h5>
 
-
 <canvas id="graficoBarras"></canvas>
 
+</div>
 
 </div>
 
-
 </div>
-
-
-</div>
-
-
-
-
 
 
 <div class="col-md-4">
 
-
 <div class="card shadow">
 
-
 <div class="card-body">
-
 
 <h5>
 Distribución
 </h5>
 
-
 <canvas id="graficoCircular"></canvas>
 
+</div>
+
+</div>
 
 </div>
 
 
 </div>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
 
 
 <!-- ==========================
      ULTIMOS ESTUDIANTES
 =========================== -->
 
-
 <div class="card shadow mt-4">
 
-
 <div class="card-body">
-
 
 <h5>
 Últimos estudiantes registrados
@@ -560,18 +600,14 @@ Distribución
 
 
 <a href="{{ url_for('agregar_matricula') }}"
-   class="btn btn-ciem">
+class="btn btn-primary mb-3">
 
-<i class="bi bi-plus-circle"></i>
-
-Nuevo estudiante
+➕ Nuevo estudiante
 
 </a>
 
 
-
 <table class="table table-striped">
-
 
 <thead>
 
@@ -590,85 +626,60 @@ Nuevo estudiante
 </thead>
 
 
-
 <tbody>
-
 
 
 {% for e in estudiantes %}
 
-
 <tr>
-
 
 <td>
 {{ e.codigo }}
 </td>
 
-
 <td>
 {{ e.nombre }}
 </td>
-
 
 <td>
 {{ e.grado }}
 </td>
 
-
 <td>
 
 <a href="{{ url_for('editar_estudiante', id=e._id) }}"
-   class="btn btn-warning btn-sm">
+class="btn btn-warning btn-sm">
 
-    ✏️ Editar
+✏️ Editar
 
 </a>
 
 
 <a href="{{ url_for('eliminar_estudiante', id=e._id) }}"
-   class="btn btn-danger btn-sm"
-   onclick="return confirm('¿Desea eliminar este estudiante?')">
+class="btn btn-danger btn-sm"
+onclick="return confirm('¿Desea eliminar este estudiante?')">
 
-    🗑 Eliminar
+🗑 Eliminar
 
 </a>
 
-
 </td>
 
-
 </tr>
-
 
 {% endfor %}
 
 
-
 </tbody>
-
 
 </table>
 
-
+</div>
 
 </div>
 
 
 </div>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
 
 
 <script>
@@ -684,7 +695,6 @@ type:'bar',
 
 data:{
 
-
 labels:[
 
 'Estudiantes',
@@ -694,9 +704,7 @@ labels:[
 
 ],
 
-
 datasets:[{
-
 
 label:'Cantidad',
 
@@ -709,19 +717,13 @@ data:[
 
 ]
 
-
 }]
 
-
 }
-
 
 }
 
 );
-
-
-
 
 
 new Chart(
@@ -732,9 +734,7 @@ document.getElementById('graficoCircular'),
 
 type:'doughnut',
 
-
 data:{
-
 
 labels:[
 
@@ -744,9 +744,7 @@ labels:[
 
 ],
 
-
 datasets:[{
-
 
 data:[
 
@@ -756,21 +754,16 @@ data:[
 
 ]
 
-
 }]
 
-
 }
-
 
 }
 
 );
 
 
-
 </script>
-
 
 
 </body>
