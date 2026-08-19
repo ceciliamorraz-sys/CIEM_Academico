@@ -51,3 +51,55 @@ for asignatura in asignaturas_doc012:
     )
 
 print("====================================")
+print("\n")
+print("==============================================")
+print("🔎 TODAS LAS ASIGNATURAS")
+print("==============================================")
+
+todas = list(
+    db.asignaturas.find({})
+)
+
+print("TOTAL ASIGNATURAS EN MONGO:", len(todas))
+
+for a in todas:
+
+    print(
+        "ID:", a.get("_id"),
+        "| NOMBRE:", a.get("nombre"),
+        "| GRADO:", a.get("grado"),
+        "| SECCIÓN:", a.get("seccion"),
+        "| DOCENTE_ID:", a.get("docente_id")
+    )
+
+print("==============================================")
+# ==========================================================
+# CORREGIR ASIGNATURAS DE EVERT
+# ==========================================================
+
+ids_evert = [
+    "EDFPRE3A",
+    "EDF5GraA",
+    "EDF6GraA",
+    "EDF1AñoA"
+]
+
+resultado = db.asignaturas.update_many(
+    {
+        "_id": {
+            "$in": ids_evert
+        },
+        "docente_id": "012"
+    },
+    {
+        "$set": {
+            "docente_id": "DOC012"
+        }
+    }
+)
+
+print("========================================")
+print("🔧 CORRECCIÓN DE ASIGNATURAS DE EVERT")
+print("========================================")
+print("DOCUMENTOS MODIFICADOS:", resultado.modified_count)
+print("========================================")

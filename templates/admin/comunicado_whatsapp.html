@@ -1,0 +1,2156 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        WhatsApp | CIEM Académico
+    </title>
+
+    <style>
+
+        /* =====================================================
+           VARIABLES
+        ===================================================== */
+
+        :root {
+
+            --azul-oscuro: #08142C;
+            --azul: #0D2A52;
+            --azul-claro: #1E4E8C;
+
+            --verde: #25D366;
+            --verde-oscuro: #128C7E;
+
+            --amarillo: #FFC107;
+
+            --fondo: #f4f7fb;
+            --blanco: #ffffff;
+
+            --texto: #1d3256;
+            --texto-secundario: #718096;
+
+            --borde: #e5eaf1;
+
+            --sombra:
+                0 10px 35px rgba(8, 20, 44, .08);
+
+        }
+
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+
+            box-sizing:
+                border-box;
+
+            margin:
+                0;
+
+            padding:
+                0;
+
+        }
+
+
+        /* =====================================================
+           BODY
+        ===================================================== */
+
+        body {
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #eef3f9 0%,
+                    #f7f9fc 100%
+                );
+
+            color:
+                var(--texto);
+
+            min-height:
+                100vh;
+
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .header {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--azul-oscuro),
+                    var(--azul)
+                );
+
+            color:
+                white;
+
+            padding:
+                24px 5%;
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            box-shadow:
+                0 6px 25px
+                rgba(8,20,44,.18);
+
+        }
+
+
+        .header-left {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                16px;
+
+        }
+
+
+        .logo-icon {
+
+            width:
+                60px;
+
+            height:
+                60px;
+
+            border-radius:
+                17px;
+
+            background:
+                rgba(255,255,255,.12);
+
+            border:
+                1px solid
+                rgba(255,255,255,.12);
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                29px;
+
+        }
+
+
+        .header h1 {
+
+            font-size:
+                25px;
+
+            font-weight:
+                700;
+
+            letter-spacing:
+                -.3px;
+
+        }
+
+
+        .header p {
+
+            margin-top:
+                5px;
+
+            font-size:
+                13px;
+
+            opacity:
+                .75;
+
+        }
+
+
+        .header-badge {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                8px;
+
+            background:
+                rgba(37,211,102,.12);
+
+            border:
+                1px solid
+                rgba(37,211,102,.25);
+
+            color:
+                #9cffbe;
+
+            padding:
+                9px 14px;
+
+            border-radius:
+                30px;
+
+            font-size:
+                12px;
+
+            font-weight:
+                700;
+
+        }
+
+
+        .online-dot {
+
+            width:
+                8px;
+
+            height:
+                8px;
+
+            border-radius:
+                50%;
+
+            background:
+                #25D366;
+
+            box-shadow:
+                0 0 0 4px
+                rgba(37,211,102,.12);
+
+        }
+
+
+        /* =====================================================
+           CONTENEDOR
+        ===================================================== */
+
+        .container {
+
+            width:
+                92%;
+
+            max-width:
+                1250px;
+
+            margin:
+                30px auto 50px;
+
+        }
+
+
+        /* =====================================================
+           BOTÓN REGRESAR
+        ===================================================== */
+
+        .back {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                8px;
+
+            text-decoration:
+                none;
+
+            color:
+                var(--texto);
+
+            background:
+                white;
+
+            border:
+                1px solid
+                var(--borde);
+
+            padding:
+                10px 17px;
+
+            border-radius:
+                10px;
+
+            font-size:
+                13px;
+
+            font-weight:
+                600;
+
+            margin-bottom:
+                22px;
+
+            transition:
+                .2s;
+
+            box-shadow:
+                0 3px 12px
+                rgba(8,20,44,.04);
+
+        }
+
+
+        .back:hover {
+
+            background:
+                #f7faff;
+
+            transform:
+                translateX(-3px);
+
+        }
+
+
+        /* =====================================================
+           TARJETA COMUNICADO
+        ===================================================== */
+
+        .communication {
+
+            background:
+                var(--blanco);
+
+            border-radius:
+                22px;
+
+            padding:
+                30px;
+
+            box-shadow:
+                var(--sombra);
+
+            border:
+                1px solid
+                rgba(229,234,241,.8);
+
+            margin-bottom:
+                22px;
+
+        }
+
+
+        .communication-header {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                flex-start;
+
+            gap:
+                20px;
+
+        }
+
+
+        .communication-title {
+
+            display:
+                flex;
+
+            align-items:
+                flex-start;
+
+            gap:
+                15px;
+
+        }
+
+
+        .communication-icon {
+
+            width:
+                52px;
+
+            height:
+                52px;
+
+            flex-shrink:
+                0;
+
+            border-radius:
+                15px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff7d6,
+                    #fff0a8
+                );
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                24px;
+
+        }
+
+
+        .communication h2 {
+
+            color:
+                var(--azul-oscuro);
+
+            font-size:
+                22px;
+
+            margin-bottom:
+                5px;
+
+            line-height:
+                1.3;
+
+        }
+
+
+        .communication-subtitle {
+
+            color:
+                var(--texto-secundario);
+
+            font-size:
+                13px;
+
+        }
+
+
+        .badge {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                6px;
+
+            background:
+                #e8f7ee;
+
+            color:
+                #18864b;
+
+            padding:
+                8px 13px;
+
+            border-radius:
+                25px;
+
+            font-size:
+                11px;
+
+            font-weight:
+                800;
+
+            white-space:
+                nowrap;
+
+        }
+
+
+        /* =====================================================
+           MENSAJE
+        ===================================================== */
+
+        .message-title {
+
+            margin-top:
+                25px;
+
+            margin-bottom:
+                9px;
+
+            color:
+                #344563;
+
+            font-size:
+                12px;
+
+            font-weight:
+                700;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                .5px;
+
+        }
+
+
+        .message-box {
+
+            padding:
+                20px;
+
+            border-radius:
+                14px;
+
+            background:
+                #f7f9fc;
+
+            border:
+                1px solid
+                #e7ecf3;
+
+            color:
+                #52637b;
+
+            line-height:
+                1.7;
+
+            font-size:
+                14px;
+
+            white-space:
+                pre-line;
+
+        }
+
+
+        /* =====================================================
+           METADATA
+        ===================================================== */
+
+        .communication-meta {
+
+            display:
+                flex;
+
+            flex-wrap:
+                wrap;
+
+            gap:
+                10px;
+
+            margin-top:
+                16px;
+
+        }
+
+
+        .meta-item {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                5px;
+
+            background:
+                #edf3fa;
+
+            color:
+                #34537a;
+
+            padding:
+                8px 13px;
+
+            border-radius:
+                22px;
+
+            font-size:
+                12px;
+
+            font-weight:
+                600;
+
+        }
+
+
+        /* =====================================================
+           ACCIONES
+        ===================================================== */
+
+        .communication-actions {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                10px;
+
+            margin-top:
+                18px;
+
+            padding-top:
+                18px;
+
+            border-top:
+                1px solid
+                #edf0f4;
+
+        }
+
+
+        .copy-button {
+
+            border:
+                1px solid
+                #dbe4ef;
+
+            background:
+                #f5f8fc;
+
+            color:
+                var(--azul-claro);
+
+            padding:
+                10px 15px;
+
+            border-radius:
+                9px;
+
+            cursor:
+                pointer;
+
+            font-family:
+                inherit;
+
+            font-size:
+                12px;
+
+            font-weight:
+                700;
+
+            transition:
+                .2s;
+
+        }
+
+
+        .copy-button:hover {
+
+            background:
+                #eaf1f8;
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        /* =====================================================
+           ESTADÍSTICAS
+        ===================================================== */
+
+        .stats {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap:
+                16px;
+
+            margin-bottom:
+                22px;
+
+        }
+
+
+        .stat {
+
+            position:
+                relative;
+
+            overflow:
+                hidden;
+
+            background:
+                white;
+
+            border-radius:
+                18px;
+
+            padding:
+                21px;
+
+            box-shadow:
+                0 5px 20px
+                rgba(13,42,82,.06);
+
+            border:
+                1px solid
+                #edf0f5;
+
+        }
+
+
+        .stat::after {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            width:
+                65px;
+
+            height:
+                65px;
+
+            border-radius:
+                50%;
+
+            background:
+                rgba(30,78,140,.05);
+
+            right:
+                -25px;
+
+            bottom:
+                -25px;
+
+        }
+
+
+        .stat-label {
+
+            color:
+                #718096;
+
+            font-size:
+                11px;
+
+            font-weight:
+                700;
+
+            letter-spacing:
+                .5px;
+
+            margin-bottom:
+                8px;
+
+        }
+
+
+        .stat-number {
+
+            font-size:
+                28px;
+
+            font-weight:
+                800;
+
+            color:
+                var(--azul-oscuro);
+
+        }
+
+
+        /* =====================================================
+           PANEL CONTACTOS
+        ===================================================== */
+
+        .contacts {
+
+            background:
+                white;
+
+            border-radius:
+                22px;
+
+            padding:
+                30px;
+
+            box-shadow:
+                var(--sombra);
+
+            border:
+                1px solid
+                rgba(229,234,241,.8);
+
+        }
+
+
+        .contacts-header {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            gap:
+                20px;
+
+            margin-bottom:
+                22px;
+
+        }
+
+
+        .contacts-title h2 {
+
+            color:
+                var(--azul-oscuro);
+
+            font-size:
+                20px;
+
+        }
+
+
+        .contacts-title p {
+
+            color:
+                #718096;
+
+            font-size:
+                13px;
+
+            margin-top:
+                4px;
+
+        }
+
+
+        /* =====================================================
+           BUSCADOR
+        ===================================================== */
+
+        .search {
+
+            position:
+                relative;
+
+            width:
+                300px;
+
+        }
+
+
+        .search input {
+
+            width:
+                100%;
+
+            padding:
+                12px 14px 12px 40px;
+
+            border:
+                1px solid
+                #dce3ec;
+
+            border-radius:
+                11px;
+
+            outline:
+                none;
+
+            font-family:
+                inherit;
+
+            font-size:
+                13px;
+
+            background:
+                #fbfcfe;
+
+            transition:
+                .2s;
+
+        }
+
+
+        .search input:focus {
+
+            border-color:
+                var(--azul-claro);
+
+            background:
+                white;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(30,78,140,.08);
+
+        }
+
+
+        .search-icon {
+
+            position:
+                absolute;
+
+            left:
+                14px;
+
+            top:
+                50%;
+
+            transform:
+                translateY(-50%);
+
+            color:
+                #8492a6;
+
+        }
+
+
+        /* =====================================================
+           TABLA
+        ===================================================== */
+
+        .table-wrapper {
+
+            overflow-x:
+                auto;
+
+            border:
+                1px solid
+                #edf0f4;
+
+            border-radius:
+                14px;
+
+        }
+
+
+        table {
+
+            width:
+                100%;
+
+            border-collapse:
+                collapse;
+
+            min-width:
+                720px;
+
+        }
+
+
+        thead {
+
+            background:
+                #f6f8fb;
+
+        }
+
+
+        th {
+
+            text-align:
+                left;
+
+            padding:
+                14px;
+
+            font-size:
+                11px;
+
+            color:
+                #60728d;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                .4px;
+
+            border-bottom:
+                1px solid
+                #e5eaf1;
+
+        }
+
+
+        td {
+
+            padding:
+                14px;
+
+            border-bottom:
+                1px solid
+                #edf0f4;
+
+            font-size:
+                13px;
+
+            color:
+                #40536e;
+
+            vertical-align:
+                middle;
+
+        }
+
+
+        tr:last-child td {
+
+            border-bottom:
+                none;
+
+        }
+
+
+        tr:hover td {
+
+            background:
+                #fafcff;
+
+        }
+
+
+        /* =====================================================
+           PERSONA
+        ===================================================== */
+
+        .person {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                11px;
+
+        }
+
+
+        .avatar {
+
+            width:
+                40px;
+
+            height:
+                40px;
+
+            flex-shrink:
+                0;
+
+            border-radius:
+                12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #edf3fa,
+                    #e5edf7
+                );
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                17px;
+
+        }
+
+
+        .person-name {
+
+            font-weight:
+                700;
+
+            color:
+                #1d3256;
+
+        }
+
+
+        .person-type {
+
+            color:
+                #8492a6;
+
+            font-size:
+                11px;
+
+            margin-top:
+                2px;
+
+        }
+
+
+        .student {
+
+            color:
+                #1E4E8C;
+
+            font-weight:
+                600;
+
+        }
+
+
+        .phone {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                6px;
+
+            font-family:
+                Consolas,
+                monospace;
+
+            font-size:
+                13px;
+
+            background:
+                #f4f7fb;
+
+            padding:
+                6px 9px;
+
+            border-radius:
+                7px;
+
+        }
+
+
+        .phone-dot {
+
+            width:
+                7px;
+
+            height:
+                7px;
+
+            border-radius:
+                50%;
+
+            background:
+                #25D366;
+
+        }
+
+
+        /* =====================================================
+           BOTÓN WHATSAPP
+        ===================================================== */
+
+        .btn-whatsapp {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            gap:
+                7px;
+
+            text-decoration:
+                none;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #25D366,
+                    #20bd5c
+                );
+
+            color:
+                white;
+
+            padding:
+                10px 16px;
+
+            border-radius:
+                10px;
+
+            font-size:
+                12px;
+
+            font-weight:
+                800;
+
+            transition:
+                .2s;
+
+            box-shadow:
+                0 4px 10px
+                rgba(37,211,102,.18);
+
+        }
+
+
+        .btn-whatsapp:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 7px 17px
+                rgba(37,211,102,.28);
+
+            color:
+                white;
+
+        }
+
+
+        /* =====================================================
+           AVISO
+        ===================================================== */
+
+        .notice {
+
+            margin-top:
+                20px;
+
+            padding:
+                15px 17px;
+
+            border-radius:
+                12px;
+
+            background:
+                #fff9e6;
+
+            border:
+                1px solid
+                #f4df91;
+
+            color:
+                #735c13;
+
+            font-size:
+                12px;
+
+            line-height:
+                1.6;
+
+        }
+
+
+        /* =====================================================
+           EMPTY
+        ===================================================== */
+
+        .empty {
+
+            text-align:
+                center;
+
+            padding:
+                55px 20px;
+
+            color:
+                #8492a6;
+
+        }
+
+
+        .empty-icon {
+
+            width:
+                70px;
+
+            height:
+                70px;
+
+            margin:
+                0 auto 15px;
+
+            border-radius:
+                20px;
+
+            background:
+                #f1f5f9;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                32px;
+
+        }
+
+
+        .empty h3 {
+
+            color:
+                #344563;
+
+            margin-bottom:
+                6px;
+
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        .footer {
+
+            text-align:
+                center;
+
+            margin-top:
+                25px;
+
+            color:
+                #8492a6;
+
+            font-size:
+                11px;
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media(max-width: 850px) {
+
+            .stats {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .communication-header {
+
+                flex-direction:
+                    column;
+
+            }
+
+
+            .contacts-header {
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    stretch;
+
+            }
+
+
+            .search {
+
+                width:
+                    100%;
+
+            }
+
+
+            .header-badge {
+
+                display:
+                    none;
+
+            }
+
+        }
+
+
+        @media(max-width: 600px) {
+
+            .header {
+
+                padding:
+                    20px;
+
+            }
+
+
+            .header h1 {
+
+                font-size:
+                    20px;
+
+            }
+
+
+            .header p {
+
+                font-size:
+                    12px;
+
+            }
+
+
+            .container {
+
+                width:
+                    92%;
+
+                margin-top:
+                    22px;
+
+            }
+
+
+            .communication,
+            .contacts {
+
+                padding:
+                    20px;
+
+                border-radius:
+                    17px;
+
+            }
+
+
+            .communication h2 {
+
+                font-size:
+                    19px;
+
+            }
+
+
+            .communication-actions {
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    stretch;
+
+            }
+
+
+            .copy-button {
+
+                width:
+                    100%;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+====================================================== -->
+
+<header class="header">
+
+    <div class="header-left">
+
+        <div class="logo-icon">
+            📱
+        </div>
+
+        <div>
+
+            <h1>
+                Envío por WhatsApp
+            </h1>
+
+            <p>
+                CIEM Académico · Comunicación con las familias
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-badge">
+
+        <span class="online-dot"></span>
+
+        WhatsApp listo
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+
+    <!-- =================================================
+         REGRESAR
+    ================================================== -->
+
+    <a
+        href="{{ url_for('admin_comunicados') }}"
+        class="back"
+    >
+
+        ←
+
+        Volver a comunicados
+
+    </a>
+
+
+    <!-- =================================================
+         COMUNICADO
+    ================================================== -->
+
+    <section class="communication">
+
+        <div class="communication-header">
+
+            <div class="communication-title">
+
+                <div class="communication-icon">
+                    📢
+                </div>
+
+                <div>
+
+                    <h2>
+                        {{ comunicado.titulo }}
+                    </h2>
+
+                    <p class="communication-subtitle">
+                        Comunicado preparado para enviar a las familias
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <span class="badge">
+
+                ● PUBLICADO
+
+            </span>
+
+        </div>
+
+
+        <div class="message-title">
+            Mensaje
+        </div>
+
+
+        <div
+            class="message-box"
+            id="mensajeWhatsApp"
+        >
+
+            {{ comunicado.mensaje }}
+
+        </div>
+
+
+        <div class="communication-meta">
+
+            <span class="meta-item">
+
+                📅
+
+                {{ comunicado.fecha }}
+
+            </span>
+
+
+            <span class="meta-item">
+
+                🕐
+
+                {{ comunicado.hora }}
+
+            </span>
+
+
+            <span class="meta-item">
+
+                👥
+
+                {% if comunicado.destinatario == "todos" %}
+
+                    Todos los padres
+
+                {% elif comunicado.destinatario == "grado" %}
+
+                    Padres de {{ comunicado.grado }}
+
+                {% else %}
+
+                    Destinatario específico
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+
+        <div class="communication-actions">
+
+            <button
+                type="button"
+                class="copy-button"
+                onclick="copiarMensaje()"
+            >
+
+                📋
+
+                Copiar mensaje
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         ESTADÍSTICAS
+    ================================================== -->
+
+    <section class="stats">
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                CONTACTOS ENCONTRADOS
+            </div>
+
+            <div class="stat-number">
+
+                {{ contactos|length }}
+
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                PADRES / TUTORES
+            </div>
+
+            <div
+                class="stat-number"
+                id="totalContactos"
+            >
+
+                {{ contactos|length }}
+
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                CANAL DE ENVÍO
+            </div>
+
+            <div
+                class="stat-number"
+                style="font-size:24px;"
+            >
+
+                📱 WhatsApp
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =================================================
+         CONTACTOS
+    ================================================== -->
+
+    <section class="contacts">
+
+
+        <div class="contacts-header">
+
+
+            <div class="contacts-title">
+
+                <h2>
+                    Padres y tutores
+                </h2>
+
+                <p>
+                    Selecciona un contacto para abrir WhatsApp con el mensaje preparado.
+                </p>
+
+            </div>
+
+
+            <div class="search">
+
+                <span class="search-icon">
+                    🔎
+                </span>
+
+                <input
+                    type="text"
+                    id="buscador"
+                    placeholder="Buscar padre o estudiante..."
+                    onkeyup="filtrarContactos()"
+                >
+
+            </div>
+
+
+        </div>
+
+
+        {% if contactos %}
+
+
+        <div class="table-wrapper">
+
+
+            <table id="tablaContactos">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            PADRE / TUTOR
+                        </th>
+
+                        <th>
+                            ESTUDIANTE
+                        </th>
+
+                        <th>
+                            TELÉFONO
+                        </th>
+
+                        <th>
+                            ACCIÓN
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                {% for contacto in contactos %}
+
+
+                    <tr>
+
+
+                        <!-- PADRE -->
+
+                        <td>
+
+                            <div class="person">
+
+                                <div class="avatar">
+
+                                    {% if contacto.tipo == "Padre" %}
+
+                                        👨
+
+                                    {% elif contacto.tipo == "Madre" %}
+
+                                        👩
+
+                                    {% else %}
+
+                                        👤
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <div>
+
+                                    <div class="person-name">
+
+                                        {{ contacto.nombre }}
+
+                                    </div>
+
+
+                                    <div class="person-type">
+
+                                        {{ contacto.tipo }}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- ESTUDIANTE -->
+
+                        <td>
+
+                            <span class="student">
+
+                                {{ contacto.estudiante }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- TELÉFONO -->
+
+                        <td>
+
+                            <span class="phone">
+
+                                <span class="phone-dot"></span>
+
+                                {{ contacto.telefono }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- WHATSAPP -->
+
+                        <td>
+
+                            <a
+                                class="btn-whatsapp"
+                                target="_blank"
+                                rel="noopener noreferrer"
+
+                                href="https://wa.me/{{ contacto.telefono|replace(' ','')|replace('-','')|replace('+','') }}?text={{ ('📢 ' ~ comunicado.titulo ~ '\n\n' ~ comunicado.mensaje ~ '\n\n📅 Fecha: ' ~ comunicado.fecha ~ '\n🕐 Hora: ' ~ comunicado.hora ~ '\n\n🏫 CIEM Académico')|urlencode }}"
+                            >
+
+                                💬
+
+                                Enviar
+
+                            </a>
+
+                        </td>
+
+
+                    </tr>
+
+
+                {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+        <!-- =================================================
+             AVISO
+        ================================================== -->
+
+        <div class="notice">
+
+            <strong>
+                ℹ️ ¿Cómo funciona?
+            </strong>
+
+            <br>
+
+            Al presionar
+
+            <strong>
+                💬 Enviar
+            </strong>
+
+            se abrirá WhatsApp con el mensaje del comunicado
+            preparado automáticamente.
+
+            <br>
+
+            <strong>
+                Tú decides cuándo enviarlo.
+            </strong>
+
+            No se realiza ningún envío automático ni se genera
+            ningún costo por esta función.
+
+        </div>
+
+
+        {% else %}
+
+
+        <!-- =================================================
+             SIN CONTACTOS
+        ================================================== -->
+
+        <div class="empty">
+
+
+            <div class="empty-icon">
+
+                📵
+
+            </div>
+
+
+            <h3>
+
+                No encontramos contactos
+
+            </h3>
+
+
+            <p>
+
+                No hay padres o tutores con teléfono registrado
+                para este comunicado.
+
+            </p>
+
+
+        </div>
+
+
+        {% endif %}
+
+
+    </section>
+
+
+    <div class="footer">
+
+        CIEM Académico · Sistema de Comunicación con las Familias
+
+    </div>
+
+
+</main>
+
+
+<script>
+
+
+    /* =====================================================
+       BUSCADOR
+    ===================================================== */
+
+    function filtrarContactos() {
+
+
+        const texto =
+
+            document
+                .getElementById("buscador")
+                .value
+                .toLowerCase()
+                .trim();
+
+
+        const filas =
+
+            document.querySelectorAll(
+                "#tablaContactos tbody tr"
+            );
+
+
+        filas.forEach(
+
+            function(fila) {
+
+
+                const contenido =
+
+                    fila.textContent
+                        .toLowerCase();
+
+
+                fila.style.display =
+
+                    contenido.includes(texto)
+                        ? ""
+                        : "none";
+
+
+            }
+
+        );
+
+    }
+
+
+
+    /* =====================================================
+       COPIAR MENSAJE
+    ===================================================== */
+
+    function copiarMensaje() {
+
+
+        const titulo =
+
+            `📢 {{ comunicado.titulo|e }}`;
+
+
+        const mensaje =
+
+            `{{ comunicado.mensaje|e }}`;
+
+
+        const fecha =
+
+            `📅 Fecha: {{ comunicado.fecha|e }}`;
+
+
+        const hora =
+
+            `🕐 Hora: {{ comunicado.hora|e }}`;
+
+
+        const texto =
+
+            titulo +
+            "\n\n" +
+            mensaje +
+            "\n\n" +
+            fecha +
+            "\n" +
+            hora +
+            "\n\n🏫 CIEM Académico";
+
+
+        navigator.clipboard
+
+            .writeText(texto)
+
+            .then(
+
+                function() {
+
+                    alert(
+                        "✅ Mensaje copiado correctamente."
+                    );
+
+                }
+
+            )
+
+            .catch(
+
+                function() {
+
+                    alert(
+                        "No fue posible copiar el mensaje."
+                    );
+
+                }
+
+            );
+
+    }
+
+
+</script>
+
+
+</body>
+
+</html>

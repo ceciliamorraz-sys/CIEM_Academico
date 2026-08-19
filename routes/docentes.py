@@ -17,6 +17,19 @@ from datetime import datetime
 from flask_pymongo import PyMongo
 from routes.mined import datos_mined, estadistica_grado
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
+from io import BytesIO
+from flask import send_file
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Table,
+    TableStyle,
+    Paragraph,
+    Spacer
+)
 
 
 import os
@@ -92,7 +105,7 @@ def dashboard_docente():
     usuario = session.get("usuario")
     fecha_hoy = datetime.now().strftime("%d/%m/%Y")
 
-    # ========================================================
+   # ========================================================
     # 1. BUSCAR DOCENTE
     # ========================================================
 
@@ -114,7 +127,6 @@ def dashboard_docente():
     docente_id = str(
         docente.get("_id")
     )
-
     # ========================================================
     # 2. ASIGNATURAS DEL DOCENTE
     # ========================================================
@@ -226,6 +238,23 @@ def dashboard_docente():
                 1
             )
         )
+
+        # ========================================================
+        # 🔎 ESTRUCTURA REAL DE LAS NOTAS
+        # ========================================================
+
+        print("")
+        print("========================================================")
+        print("🔎 ESTRUCTURA REAL DE LAS NOTAS")
+        print("========================================================")
+
+        for nota in notas_docente[:10]:
+
+            print("----------------------------------------")
+            print(nota)
+            print("----------------------------------------")
+
+        print("========================================================")
 
     # ========================================================
     # 6. PROMEDIO GENERAL
@@ -440,317 +469,7 @@ def dashboard_docente():
 
         estadistica=estadistica
     )   
-    # ==========================================
-    # ASISTENCIAS
-    # ==========================================
-
-    total_asistencias = db.asistencias.count_documents({
-        "docente": usuario
-    })
-
-    # ==========================================
-    # ASISTENCIAS PENDIENTES
-    # ==========================================
-
-    pendientes = list(
-        db.asistencias.find({
-            "docente": usuario
-        })
-    )
-
-    # ==========================================
-    # ESTADÍSTICAS DE NOTAS
-    # ==========================================
-
-    notas_docente = []
-
-    for estudiante in estudiantes:
-
-        for nota in estudiante.get(
-            "notas",
-            []
-        ):
-
-            notas_docente.append(
-                nota
-            )
-
-    # ==========================================
-    # CALCULAR PROMEDIOS
-    # ==========================================
-
-    valores_promedio = []
-
-    for nota in notas_docente:
-
-        promedio = nota.get(
-            "promedio"
-        )
-
-        if promedio is None:
-
-            promedio = nota.get(
-                "nota"
-            )
-
-        try:
-
-            if promedio is not None:
-
-                valores_promedio.append(
-                    float(promedio)
-                )
-
-        except (
-            ValueError,
-            TypeError
-        ):
-
-            pass
-
-    # ==========================================
-    # PROMEDIO GENERAL
-    # ==========================================
-
-    if valores_promedio:
-
-        promedio_general = round(
-            sum(valores_promedio)
-            / len(valores_promedio),
-            2
-        )
-
-    else:
-
-        promedio_general = 0.0
-
-    # ==========================================
-    # APROBADOS Y REPROBADOS
-    # ==========================================
-
-    aprobados = sum(
-        1
-        for promedio in valores_promedio
-        if promedio >= 60
-    )
-
-    reprobados = sum(
-        1
-        for promedio in valores_promedio
-        if promedio < 60
-    )
-
-    # ==========================================
-    # PROGRESO DE NOTAS
-    # ==========================================
-
-    total_esperado_notas = (
-        total_estudiantes
-        * total_asignaturas
-    )
-
-    if total_esperado_notas > 0:
-
-        progreso_notas = round(
-            (
-                len(notas_docente)
-                / total_esperado_notas
-            ) * 100
-        )
-
-        progreso_notas = min(
-            progreso_notas,
-            100
-        )
-
-    else:
-
-        progreso_notas = 0
-
-    # ==========================================
-    # PROGRESO DE ASISTENCIA
-    # ==========================================
-
-    if total_estudiantes > 0:
-
-        progreso_asistencia = round(
-            (
-                total_asistencias
-                / total_estudiantes
-            ) * 100
-        )
-
-        progreso_asistencia = min(
-            progreso_asistencia,
-            100
-        )
-
-    else:
-
-        progreso_asistencia = 0
-
-    # ==========================================
-    # ESTADÍSTICA
-    # ==========================================
-
-    estadistica = {
-
-        "total_asignaturas":
-            total_asignaturas,
-
-        "total_estudiantes":
-            total_estudiantes,
-
-        "promedio_general":
-            promedio_general,
-
-        "progreso_notas":
-            progreso_notas,
-
-        "progreso_asistencia":
-            progreso_asistencia,
-
-        "aprobados":
-            aprobados,
-
-        "reprobados":
-            reprobados,
-
-        "presentes":
-            total_asistencias
-    }
-
-    # ==========================================
-    # DEPURACIÓN DE ESTADÍSTICAS
-    # ==========================================
-
-    print("==========================================")
-    print("📊 ESTADÍSTICAS")
-    print("==========================================")
-
-    print(
-        "TOTAL NOTAS DEL DOCENTE:",
-        len(notas_docente)
-    )
-
-    print(
-        "PROMEDIO GENERAL:",
-        promedio_general
-    )
-
-    print(
-        "APROBADOS:",
-        aprobados
-    )
-
-    print(
-        "REPROBADOS:",
-        reprobados
-    )
-
-    print(
-        "PROGRESO NOTAS:",
-        progreso_notas,
-        "%"
-    )
-
-    print(
-        "PROGRESO ASISTENCIA:",
-        progreso_asistencia,
-        "%"
-    )
-
-    print("==========================================")
-
-    # ==========================================
-    # AVISOS
-    # ==========================================
-
-    avisos = [
-
-        "Recuerda registrar la asistencia diariamente.",
-
-        "Mantén actualizadas las calificaciones.",
-
-        "Consulta las incidencias de tus estudiantes."
-
-    ]
-
-    # ==========================================
-    # CLASES DE HOY
-    # ==========================================
-
-    clases_hoy = clases
-
-    # ==========================================
-    # DEPURACIÓN FINAL
-    # ==========================================
-
-    print("==========================================")
-    print("📊 DASHBOARD DOCENTE")
-    print("==========================================")
-
-    print(
-        "DOCENTE:",
-        docente.get("nombre")
-    )
-
-    print(
-        "USUARIO:",
-        usuario
-    )
-
-    print(
-        "ID DOCENTE:",
-        docente_id
-    )
-
-    print(
-        "TOTAL ASIGNATURAS:",
-        total_asignaturas
-    )
-
-    print(
-        "TOTAL ESTUDIANTES:",
-        total_estudiantes
-    )
-
-    print(
-        "TOTAL ASISTENCIAS:",
-        total_asistencias
-    )
-
-    print("==========================================")
-
-    # ==========================================
-    # RENDER DASHBOARD
-    # ==========================================
-
-    return render_template(
-        "docente/dashboard_docente.html",
-
-        docente=docente,
-
-        fecha_hoy=datetime.now(),
-
-        estadistica=estadistica,
-
-        pendientes=pendientes,
-
-        avisos=avisos,
-
-        clases_hoy=clases_hoy,
-
-        mensajes_pendientes=mensajes_pendientes,
-
-        conversaciones=conversaciones,
-
-        estudiantes=estudiantes,
-
-        total_estudiantes=total_estudiantes
-    )
-
-
+    
 
 # ==========================================================
 # MIS CLASES
@@ -2306,7 +2025,1034 @@ def guardar_notas():
             asignatura_id=asignatura_id
         )
     )
+# ==========================================================
+# REPORTE DE NOTAS POR PARCIAL
+# ==========================================================
 
+@docente_bp.route("/notas/reporte/<asignatura_id>")
+@role_required("docente")
+def ver_reporte_notas(asignatura_id):
+
+    print("========================================")
+    print("📊 REPORTE DE NOTAS")
+    print("========================================")
+    print("ASIGNATURA:", asignatura_id)
+
+    # ------------------------------------------------------
+    # BUSCAR ASIGNATURA
+    # ------------------------------------------------------
+
+    asignatura = db.asignaturas.find_one({
+        "_id": asignatura_id
+    })
+
+    if not asignatura:
+
+        flash(
+            "Asignatura no encontrada.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("docente.aulas")
+        )
+
+    # ------------------------------------------------------
+    # GRADO Y SECCIÓN
+    # ------------------------------------------------------
+
+    mapa_grados = {
+        "1": "1er Grado",
+        "2": "2do Grado",
+        "3": "3er Grado",
+        "4": "4to Grado",
+        "5": "5to Grado",
+        "6": "6to Grado"
+    }
+
+    grado = asignatura.get("grado")
+    seccion = asignatura.get("seccion")
+
+    grado_estudiante = mapa_grados.get(
+        str(grado),
+        grado
+    )
+
+    # ------------------------------------------------------
+    # ESTUDIANTES
+    # ------------------------------------------------------
+
+    estudiantes = list(
+        db.estudiantes.find({
+            "grado": grado_estudiante,
+            "seccion": seccion,
+            "estado": "activo"
+        }).sort(
+            "nombre",
+            1
+        )
+    )
+
+    print(
+        "👥 ESTUDIANTES:",
+        len(estudiantes)
+    )
+
+    # ------------------------------------------------------
+    # NOTAS
+    # ------------------------------------------------------
+
+    notas = list(
+        db.notas.find({
+            "asignatura_id": asignatura_id
+        })
+    )
+
+    print(
+        "📝 REGISTROS DE NOTAS:",
+        len(notas)
+    )
+
+    # ------------------------------------------------------
+    # ORGANIZAR NOTAS
+    # ------------------------------------------------------
+
+    notas_por_estudiante = {}
+
+    for nota in notas:
+
+        estudiante_id = str(
+            nota.get("estudiante_id")
+        )
+
+        notas_por_estudiante[
+            estudiante_id
+        ] = nota
+
+    # ------------------------------------------------------
+    # CREAR REPORTE
+    # ------------------------------------------------------
+
+    reporte = []
+
+    for estudiante in estudiantes:
+
+        estudiante_id = str(
+            estudiante.get("_id")
+        )
+
+        nota = notas_por_estudiante.get(
+            estudiante_id
+        )
+
+        if nota:
+
+            reporte.append({
+
+                "nombre": estudiante.get(
+                    "nombre",
+                    ""
+                ),
+
+                "periodo": nota.get(
+                    "periodo",
+                    "-"
+                ),
+
+                "evaluacion": nota.get(
+                    "evaluacion",
+                    "-"
+                ),
+
+                "acumulado": nota.get(
+                    "acumulado",
+                    0
+                ),
+
+                "promedio": nota.get(
+                    "promedio",
+                    0
+                ),
+
+                "estado": nota.get(
+                    "estado",
+                    "Pendiente"
+                ),
+
+                "corte1": nota.get(
+                    "corte1",
+                    "-"
+                ),
+
+                "corte2": nota.get(
+                    "corte2",
+                    "-"
+                ),
+
+                "corte3": nota.get(
+                    "corte3",
+                    "-"
+                ),
+
+                "corte4": nota.get(
+                    "corte4",
+                    "-"
+                )
+
+            })
+
+        else:
+
+            reporte.append({
+
+                "nombre": estudiante.get(
+                    "nombre",
+                    ""
+                ),
+
+                "periodo": "-",
+
+                "evaluacion": "-",
+
+                "acumulado": 0,
+
+                "promedio": 0,
+
+                "estado": "Pendiente",
+
+                "corte1": "-",
+
+                "corte2": "-",
+
+                "corte3": "-",
+
+                "corte4": "-"
+
+            })
+
+    # ------------------------------------------------------
+    # MOSTRAR REPORTE
+    # ------------------------------------------------------
+
+    return render_template(
+        "docente/reporte_notas.html",
+        asignatura=asignatura,
+        estudiantes=estudiantes,
+        reporte=reporte
+    )
+# ==========================================================
+# DESCARGAR REPORTE DE NOTAS EN PDF
+# ==========================================================
+
+@docente_bp.route(
+    "/notas/reporte/<asignatura_id>/descargar",
+    methods=["GET"]
+)
+@role_required("docente")
+def descargar_reporte_notas(asignatura_id):
+
+    print("========================================")
+    print("📥 DESCARGANDO REPORTE DE NOTAS EN PDF")
+    print("========================================")
+    print("ASIGNATURA:", asignatura_id)
+
+    # ======================================================
+    # BUSCAR ASIGNATURA
+    # ======================================================
+
+    asignatura = db.asignaturas.find_one({
+        "_id": asignatura_id
+    })
+
+    if not asignatura:
+
+        flash(
+            "Asignatura no encontrada.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("docente.aulas")
+        )
+
+    # ======================================================
+    # MAPA DE GRADOS
+    # ======================================================
+
+    mapa_grados = {
+        "1": "1er Grado",
+        "2": "2do Grado",
+        "3": "3er Grado",
+        "4": "4to Grado",
+        "5": "5to Grado",
+        "6": "6to Grado"
+    }
+
+    grado = asignatura.get("grado")
+    seccion = asignatura.get("seccion")
+
+    grado_estudiante = mapa_grados.get(
+        str(grado),
+        grado
+    )
+
+    # ======================================================
+    # BUSCAR ESTUDIANTES
+    # ======================================================
+
+    estudiantes = list(
+        db.estudiantes.find({
+            "grado": grado_estudiante,
+            "seccion": seccion,
+            "estado": "activo"
+        }).sort(
+            "nombre",
+            1
+        )
+    )
+
+    print(
+        "👥 ESTUDIANTES:",
+        len(estudiantes)
+    )
+
+    # ======================================================
+    # BUSCAR TODAS LAS NOTAS
+    # ======================================================
+
+    notas = list(
+        db.notas.find({
+            "asignatura_id": asignatura_id
+        })
+    )
+
+    print(
+        "📝 REGISTROS DE NOTAS:",
+        len(notas)
+    )
+
+    # ======================================================
+    # ORGANIZAR NOTAS POR ESTUDIANTE
+    # ======================================================
+
+    notas_por_estudiante = {}
+
+    for nota in notas:
+
+        estudiante_id = str(
+            nota.get("estudiante_id")
+        )
+
+        if estudiante_id not in notas_por_estudiante:
+
+            notas_por_estudiante[
+                estudiante_id
+            ] = []
+
+        notas_por_estudiante[
+            estudiante_id
+        ].append(nota)
+
+    # ======================================================
+    # CREAR PDF
+    # ======================================================
+
+    buffer = BytesIO()
+
+    documento = SimpleDocTemplate(
+
+        buffer,
+
+        pagesize=landscape(letter),
+
+        rightMargin=25,
+        leftMargin=25,
+        topMargin=25,
+        bottomMargin=25
+
+    )
+
+    elementos = []
+
+    estilos = getSampleStyleSheet()
+
+    # ======================================================
+    # ESTILOS
+    # ======================================================
+
+    titulo = ParagraphStyle(
+
+        "TituloCIEM",
+
+        parent=estilos["Title"],
+
+        alignment=TA_CENTER,
+
+        fontSize=18,
+
+        leading=22,
+
+        spaceAfter=5
+
+    )
+
+    subtitulo = ParagraphStyle(
+
+        "SubtituloCIEM",
+
+        parent=estilos["Normal"],
+
+        alignment=TA_CENTER,
+
+        fontSize=10,
+
+        leading=14,
+
+        spaceAfter=5
+
+    )
+
+    # ======================================================
+    # ENCABEZADO
+    # ======================================================
+
+    elementos.append(
+        Paragraph(
+            "COLEGIO INTEGRAL EMANUEL",
+            titulo
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            "CIEM ACADÉMICO",
+            titulo
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            "REPORTE DE CALIFICACIONES",
+            subtitulo
+        )
+    )
+
+    elementos.append(
+        Spacer(1, 8)
+    )
+
+    # ======================================================
+    # INFORMACIÓN DE LA ASIGNATURA
+    # ======================================================
+
+    nombre_asignatura = asignatura.get(
+        "nombre",
+        "Sin asignatura"
+    )
+
+    docente_nombre = session.get(
+        "usuario",
+        "Docente"
+    )
+
+    informacion = [
+
+        [
+            Paragraph(
+                f"<b>Asignatura:</b> "
+                f"{nombre_asignatura}",
+                estilos["Normal"]
+            ),
+
+            Paragraph(
+                f"<b>Docente:</b> "
+                f"{docente_nombre}",
+                estilos["Normal"]
+            )
+        ],
+
+        [
+            Paragraph(
+                f"<b>Grado:</b> "
+                f"{grado_estudiante}",
+                estilos["Normal"]
+            ),
+
+            Paragraph(
+                f"<b>Sección:</b> "
+                f"{seccion}",
+                estilos["Normal"]
+            )
+        ]
+
+    ]
+
+    tabla_info = Table(
+        informacion,
+        colWidths=[350, 350]
+    )
+
+    tabla_info.setStyle(
+        TableStyle([
+
+            (
+                "VALIGN",
+                (0, 0),
+                (-1, -1),
+                "MIDDLE"
+            ),
+
+            (
+                "BOTTOMPADDING",
+                (0, 0),
+                (-1, -1),
+                5
+            )
+
+        ])
+    )
+
+    elementos.append(
+        tabla_info
+    )
+
+    elementos.append(
+        Spacer(1, 10)
+    )
+
+    # ======================================================
+    # TABLA PRINCIPAL
+    # ======================================================
+
+    datos = [
+
+        [
+            "#",
+            "Estudiante",
+            "I Corte",
+            "II Corte",
+            "III Corte",
+            "IV Corte",
+            "Nota Final",
+            "Estado"
+        ]
+
+    ]
+
+    suma_final = 0
+    aprobados = 0
+    reforzamiento = 0
+
+    contador = 1
+
+    # ======================================================
+    # PROCESAR ESTUDIANTES
+    # ======================================================
+
+    for estudiante in estudiantes:
+
+        estudiante_id = str(
+            estudiante.get("_id")
+        )
+
+        lista_notas = notas_por_estudiante.get(
+            estudiante_id,
+            []
+        )
+
+        corte1 = None
+        corte2 = None
+        corte3 = None
+        corte4 = None
+
+        # ==================================================
+        # RECUPERAR CORTES
+        # ==================================================
+
+        for nota in lista_notas:
+
+            if nota.get("corte1") is not None:
+
+                corte1 = nota.get(
+                    "corte1"
+                )
+
+            if nota.get("corte2") is not None:
+
+                corte2 = nota.get(
+                    "corte2"
+                )
+
+            if nota.get("corte3") is not None:
+
+                corte3 = nota.get(
+                    "corte3"
+                )
+
+            if nota.get("corte4") is not None:
+
+                corte4 = nota.get(
+                    "corte4"
+                )
+
+        # ==================================================
+        # CONVERTIR CORTES
+        # ==================================================
+
+        def convertir_nota(valor):
+
+            if valor in (
+                None,
+                "",
+                "-"
+            ):
+
+                return None
+
+            try:
+
+                return float(valor)
+
+            except (
+                ValueError,
+                TypeError
+            ):
+
+                return None
+
+        corte1 = convertir_nota(corte1)
+        corte2 = convertir_nota(corte2)
+        corte3 = convertir_nota(corte3)
+        corte4 = convertir_nota(corte4)
+
+        cortes = [
+            corte1,
+            corte2,
+            corte3,
+            corte4
+        ]
+
+        cortes_validos = [
+
+            nota
+
+            for nota in cortes
+
+            if nota is not None
+
+        ]
+
+        # ==================================================
+        # NOTA FINAL
+        # ==================================================
+
+        if cortes_validos:
+
+            nota_final = round(
+
+                sum(cortes_validos)
+                /
+                len(cortes_validos),
+
+                2
+
+            )
+
+        else:
+
+            nota_final = 0
+
+        # ==================================================
+        # ESTADO
+        # ==================================================
+
+        if not cortes_validos:
+
+            estado = "Pendiente"
+
+        elif nota_final >= 60:
+
+            estado = "Aprobado"
+
+            aprobados += 1
+
+        else:
+
+            estado = "Reforzamiento"
+
+            reforzamiento += 1
+
+        suma_final += nota_final
+
+        # ==================================================
+        # MOSTRAR "-" PARA CORTES SIN NOTA
+        # ==================================================
+
+        valor_corte1 = (
+            f"{corte1:.2f}"
+            if corte1 is not None
+            else "-"
+        )
+
+        valor_corte2 = (
+            f"{corte2:.2f}"
+            if corte2 is not None
+            else "-"
+        )
+
+        valor_corte3 = (
+            f"{corte3:.2f}"
+            if corte3 is not None
+            else "-"
+        )
+
+        valor_corte4 = (
+            f"{corte4:.2f}"
+            if corte4 is not None
+            else "-"
+        )
+
+        # ==================================================
+        # AGREGAR FILA
+        # ==================================================
+
+        datos.append([
+
+            contador,
+
+            estudiante.get(
+                "nombre",
+                "Estudiante"
+            ),
+
+            valor_corte1,
+
+            valor_corte2,
+
+            valor_corte3,
+
+            valor_corte4,
+
+            f"{nota_final:.2f}",
+
+            estado
+
+        ])
+
+        contador += 1
+
+    # ======================================================
+    # CREAR TABLA PDF
+    # ======================================================
+
+    tabla = Table(
+
+        datos,
+
+        repeatRows=1,
+
+        colWidths=[
+            30,
+            230,
+            70,
+            70,
+            70,
+            70,
+            75,
+            90
+        ]
+
+    )
+
+    tabla.setStyle(
+
+        TableStyle([
+
+            # ENCABEZADO
+            (
+                "BACKGROUND",
+                (0, 0),
+                (-1, 0),
+                colors.HexColor("#0f172a")
+            ),
+
+            (
+                "TEXTCOLOR",
+                (0, 0),
+                (-1, 0),
+                colors.white
+            ),
+
+            (
+                "FONTNAME",
+                (0, 0),
+                (-1, 0),
+                "Helvetica-Bold"
+            ),
+
+            (
+                "FONTSIZE",
+                (0, 0),
+                (-1, 0),
+                8
+            ),
+
+            # DATOS
+            (
+                "FONTSIZE",
+                (0, 1),
+                (-1, -1),
+                8
+            ),
+
+            (
+                "ALIGN",
+                (0, 0),
+                (-1, -1),
+                "CENTER"
+            ),
+
+            (
+                "VALIGN",
+                (0, 0),
+                (-1, -1),
+                "MIDDLE"
+            ),
+
+            (
+                "GRID",
+                (0, 0),
+                (-1, -1),
+                0.5,
+                colors.grey
+            ),
+
+            (
+                "ROWBACKGROUNDS",
+                (0, 1),
+                (-1, -1),
+                [
+                    colors.white,
+                    colors.HexColor("#f1f5f9")
+                ]
+            ),
+
+            (
+                "TOPPADDING",
+                (0, 0),
+                (-1, -1),
+                6
+            ),
+
+            (
+                "BOTTOMPADDING",
+                (0, 0),
+                (-1, -1),
+                6
+            )
+
+        ])
+
+    )
+
+    elementos.append(
+        tabla
+    )
+
+    elementos.append(
+        Spacer(1, 15)
+    )
+
+    # ======================================================
+    # RESUMEN
+    # ======================================================
+
+    total_estudiantes = len(
+        estudiantes
+    )
+
+    if total_estudiantes > 0:
+
+        promedio_general = round(
+
+            suma_final
+            /
+            total_estudiantes,
+
+            2
+
+        )
+
+    else:
+
+        promedio_general = 0
+
+    resumen = Table(
+
+        [[
+
+            f"Total estudiantes: "
+            f"{total_estudiantes}",
+
+            f"Promedio general: "
+            f"{promedio_general:.2f}",
+
+            f"Aprobados: "
+            f"{aprobados}",
+
+            f"Reforzamiento: "
+            f"{reforzamiento}"
+
+        ]],
+
+        colWidths=[
+            175,
+            175,
+            175,
+            175
+        ]
+
+    )
+
+    resumen.setStyle(
+
+        TableStyle([
+
+            (
+                "BACKGROUND",
+                (0, 0),
+                (-1, -1),
+                colors.HexColor("#e2e8f0")
+            ),
+
+            (
+                "ALIGN",
+                (0, 0),
+                (-1, -1),
+                "CENTER"
+            ),
+
+            (
+                "FONTNAME",
+                (0, 0),
+                (-1, -1),
+                "Helvetica-Bold"
+            ),
+
+            (
+                "FONTSIZE",
+                (0, 0),
+                (-1, -1),
+                9
+            ),
+
+            (
+                "BOX",
+                (0, 0),
+                (-1, -1),
+                0.5,
+                colors.grey
+            ),
+
+            (
+                "TOPPADDING",
+                (0, 0),
+                (-1, -1),
+                8
+            ),
+
+            (
+                "BOTTOMPADDING",
+                (0, 0),
+                (-1, -1),
+                8
+            )
+
+        ])
+
+    )
+
+    elementos.append(
+        resumen
+    )
+
+    elementos.append(
+        Spacer(1, 10)
+    )
+
+    # ======================================================
+    # PIE DEL REPORTE
+    # ======================================================
+
+    elementos.append(
+
+        Paragraph(
+
+            "Documento generado desde CIEM Académico",
+
+            ParagraphStyle(
+
+                "Pie",
+
+                parent=estilos["Normal"],
+
+                alignment=TA_CENTER,
+
+                fontSize=8,
+
+                textColor=colors.grey
+
+            )
+
+        )
+
+    )
+
+    # ======================================================
+    # GENERAR PDF
+    # ======================================================
+
+    documento.build(
+        elementos
+    )
+
+    buffer.seek(0)
+
+    print(
+        "✅ PDF GENERADO CORRECTAMENTE"
+    )
+
+    # ======================================================
+    # NOMBRE DEL ARCHIVO
+    # ======================================================
+
+    nombre_archivo = (
+
+        "Reporte_Notas_"
+        +
+        nombre_asignatura
+        .replace(" ", "_")
+        .replace("/", "_")
+        +
+        ".pdf"
+
+    )
+
+    # ======================================================
+    # DESCARGAR
+    # ======================================================
+
+    return send_file(
+
+        buffer,
+
+        as_attachment=True,
+
+        download_name=nombre_archivo,
+
+        mimetype="application/pdf"
+
+    )    
 # =====================================
 # AULAS DEL DOCENTE
 # =====================================
@@ -2317,29 +3063,193 @@ def aulas():
 
     usuario = session.get("usuario")
 
+    # =====================================
+    # BUSCAR DOCENTE
+    # =====================================
+
     docente = db.docentes.find_one({
         "usuario": usuario
     })
 
     if not docente:
+
         flash(
             "Docente no encontrado",
             "danger"
         )
-        return redirect(url_for("login"))
 
+        return redirect(
+            url_for("login")
+        )
+
+    # =====================================
+    # ID DEL DOCENTE
+    # =====================================
+    #
+    # IMPORTANTE:
+    # Las asignaturas utilizan:
+    #
+    # docente_id = "DOC012"
+    #
+    # Por eso debemos utilizar el código
+    # del docente y NO el ObjectId de MongoDB.
+    # =====================================
+
+    docente_id = str(
+        docente.get("codigo", "")
+    ).strip()
+
+   
+
+    # ========================================================
+    # 2. ASIGNATURAS DEL DOCENTE
+    # ========================================================
+
+    codigo_docente = str(
+        docente.get("codigo", "")
+    ).strip()
+
+    # Reconocer ambos formatos:
+    # 012
+    # DOC012
+
+    ids_docente = []
+
+    if codigo_docente:
+        ids_docente.append(codigo_docente)
+        ids_docente.append(f"DOC{codigo_docente}")
+
+    # También incluir el _id convertido a texto
+    # por compatibilidad con registros antiguos.
+    if docente.get("_id") is not None:
+        ids_docente.append(
+            str(docente.get("_id"))
+        )
+
+    # Eliminar posibles duplicados
+    ids_docente = list(
+        dict.fromkeys(ids_docente)
+    )
 
     clases = list(
         db.asignaturas.find({
-            "docente_id": docente["_id"]
+            "docente_id": {
+                "$in": ids_docente
+            }
         })
     )
 
+    total_asignaturas = len(clases)
+
+    # ========================================================
+    # MOSTRAR INFORMACIÓN
+    # ========================================================
+
+    print("")
+    print("========================================================")
+    print("🔎 ASIGNATURAS QUE VE EL DASHBOARD DOCENTE")
+    print("========================================================")
+    print("USUARIO:", usuario)
+    print("DOCENTE:", docente.get("nombre"))
+    print("CÓDIGO DOCENTE:", codigo_docente)
+    print("IDENTIFICADORES BUSCADOS:", ids_docente)
+    print("TOTAL ASIGNATURAS:", total_asignaturas)
+    print("========================================================")
+
+    for clase in clases:
+
+        print("----------------------------------------")
+        print("ID:", clase.get("_id"))
+        print("CÓDIGO:", clase.get("codigo"))
+        print("NOMBRE:", clase.get("nombre"))
+        print("NIVEL:", clase.get("nivel"))
+        print("GRADO:", clase.get("grado"))
+        print("SECCIÓN:", clase.get("seccion"))
+        print("DOCENTE_ID:", clase.get("docente_id"))
+        print("----------------------------------------")
+
+    
+    todas_asignaturas = list(db.asignaturas.find({}))
+
+    for clase in todas_asignaturas:
+
+        docente_id_clase = str(
+            clase.get("docente_id", "")
+        ).strip()
+
+        if (
+            "012" in docente_id_clase
+            or "DOC012" in docente_id_clase
+            or "Evert" in str(clase.get("docente", ""))
+            or "Evert" in str(clase.get("nombre_docente", ""))
+        ):
+
+            print("----------------------------------------")
+            print("ID:", clase.get("_id"))
+            print("CÓDIGO:", clase.get("codigo"))
+            print("NOMBRE:", clase.get("nombre"))
+            print("NIVEL:", clase.get("nivel"))
+            print("GRADO:", clase.get("grado"))
+            print("SECCIÓN:", clase.get("seccion"))
+            print("DOCENTE_ID:", clase.get("docente_id"))
+            print("DOCENTE:", clase.get("docente"))
+            print("NOMBRE_DOCENTE:", clase.get("nombre_docente"))
+            print("----------------------------------------")
+
+    print("========================================================")
+
+    
+
+    # =====================================
+    # ORDENAR LAS CLASES
+    # =====================================
+
+    clases.sort(
+        key=lambda clase: (
+            str(clase.get("nivel", "")),
+            str(clase.get("grado", "")),
+            str(clase.get("seccion", ""))
+        )
+    )
+
+    # =====================================
+    # DEBUG
+    # =====================================
+
+    print("")
+    print("========================================================")
+    print("🔎 AULAS DEL DOCENTE")
+    print("========================================================")
+    print("USUARIO:", usuario)
+    print("DOCENTE:", docente.get("nombre"))
+    print("DOCENTE ID:", docente_id)
+    print("TOTAL CLASES:", len(clases))
+    print("========================================================")
+
+    for clase in clases:
+
+        print("----------------------------------------")
+        print("ID:", clase.get("_id"))
+        print("CÓDIGO:", clase.get("codigo"))
+        print("NOMBRE:", clase.get("nombre"))
+        print("NIVEL:", clase.get("nivel"))
+        print("GRADO:", clase.get("grado"))
+        print("SECCIÓN:", clase.get("seccion"))
+        print("DOCENTE_ID:", clase.get("docente_id"))
+        print("----------------------------------------")
+
+    print("========================================================")
+
+    # =====================================
+    # MOSTRAR AULAS
+    # =====================================
 
     return render_template(
         "docente/aulas.html",
-        clases=clases
+        clases=clases,
+        docente=docente
     )
+
 
 # =====================================
 # ESTUDIANTES DEL DOCENTE
@@ -2371,21 +3281,7 @@ def estudiantes():
         )
 
     # =====================================
-    # OBTENER TODOS LOS ESTUDIANTES
-    # =====================================
-    #
-    # IMPORTANTE:
-    # No filtramos por:
-    # - grado
-    # - sección
-    # - estado
-    # - asignatura
-    #
-    # Admin ya demuestra que existen 103
-    # estudiantes en esta colección.
-    #
-    # Por tanto, el dashboard docente debe
-    # trabajar sobre la misma colección.
+    # TODOS LOS ESTUDIANTES
     # =====================================
 
     estudiantes = list(
@@ -2393,7 +3289,7 @@ def estudiantes():
     )
 
     # =====================================
-    # ORDENAR ESTUDIANTES
+    # ORDENAR
     # =====================================
 
     estudiantes.sort(
@@ -2406,7 +3302,7 @@ def estudiantes():
     )
 
     # =====================================
-    # TOTAL DE ESTUDIANTES
+    # TOTAL
     # =====================================
 
     total_estudiantes = len(
@@ -2414,37 +3310,27 @@ def estudiantes():
     )
 
     # =====================================
-    # INFORMACIÓN DEL DOCENTE
+    # DEBUG
     # =====================================
 
+    print("")
     print("=====================================")
-    print("DASHBOARD / ESTUDIANTES DOCENTE")
+    print("👨‍🏫 ESTUDIANTES DEL DOCENTE")
     print("=====================================")
-
-    print(
-        "DOCENTE:",
-        docente.get("nombre")
-    )
-
-    print(
-        "USUARIO:",
-        usuario
-    )
-
+    print("DOCENTE:", docente.get("nombre"))
+    print("USUARIO:", usuario)
     print(
         "ID DOCENTE:",
-        docente.get("_id")
+        docente.get("codigo")
     )
-
     print(
         "TOTAL ESTUDIANTES:",
         total_estudiantes
     )
-
     print("=====================================")
 
     # =====================================
-    # RENDERIZAR PÁGINA
+    # RENDERIZAR
     # =====================================
 
     return render_template(

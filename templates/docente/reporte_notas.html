@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Reporte de Notas | CIEM Académico
+    </title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet">
+
+
+    <style>
+
+        body {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f1f5f9,
+                    #e2e8f0
+                );
+
+            font-family:
+                'Segoe UI',
+                sans-serif;
+
+            min-height: 100vh;
+
+        }
+
+
+        .contenedor {
+
+            max-width: 1400px;
+
+            margin:
+                30px auto;
+
+            padding:
+                0 20px;
+
+        }
+
+
+        /* =====================================
+           ENCABEZADO
+        ===================================== */
+
+        .header {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #08142C,
+                    #0D2A52
+                );
+
+            color: white;
+
+            border-radius: 22px;
+
+            padding: 25px 30px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 15px 35px
+                rgba(15,23,42,.15);
+
+        }
+
+
+        .logo {
+
+            width: 70px;
+
+            height: 70px;
+
+            object-fit: cover;
+
+            border-radius: 50%;
+
+            border: 3px solid white;
+
+        }
+
+
+        .titulo {
+
+            font-weight: 700;
+
+            margin: 0;
+
+        }
+
+
+        .subtitulo {
+
+            opacity: .8;
+
+            margin-top: 5px;
+
+        }
+
+
+        /* =====================================
+           BOTONES
+        ===================================== */
+
+        .btn-ciem {
+
+            border-radius: 10px;
+
+            padding:
+                10px 16px;
+
+            font-weight: 600;
+
+        }
+/* ==========================================================
+   BOTÓN DESCARGAR REPORTE PDF
+   ========================================================== */
+
+.btn-pdf {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    background: #dc2626 !important;
+    color: #ffffff !important;
+
+    border: none !important;
+    border-radius: 10px;
+
+    padding: 11px 20px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none !important;
+
+    cursor: pointer;
+
+    transition: all 0.25s ease;
+}
+
+.btn-pdf i {
+    font-size: 18px;
+    color: #ffffff !important;
+}
+
+.btn-pdf:hover {
+    background: #b91c1c !important;
+    color: #ffffff !important;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.18);
+}
+
+.btn-pdf:active {
+    transform: translateY(0);
+}
+
+        /* =====================================
+           TARJETAS
+        ===================================== */
+
+        .card {
+
+            border: none;
+
+            border-radius: 20px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(15,23,42,.08);
+
+        }
+
+
+        .card-header {
+
+            background: white;
+
+            border-bottom:
+                1px solid #e5e7eb;
+
+            border-radius:
+                20px 20px 0 0 !important;
+
+            padding: 20px;
+
+        }
+
+
+        /* =====================================
+           INFORMACIÓN
+        ===================================== */
+
+        .info-card {
+
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 18px;
+
+        }
+
+
+        .info-label {
+
+            font-size: 13px;
+
+            color: #64748b;
+
+            margin-bottom: 3px;
+
+        }
+
+
+        .info-value {
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+            color: #0f172a;
+
+        }
+
+
+        /* =====================================
+           TABLA
+        ===================================== */
+
+        .tabla {
+
+            margin: 0;
+
+        }
+
+
+        .tabla thead th {
+
+            background:
+                #0f172a;
+
+            color: white;
+
+            font-size: 13px;
+
+            padding: 14px;
+
+            text-align: center;
+
+            white-space: nowrap;
+
+        }
+
+
+        .tabla tbody td {
+
+            padding: 13px;
+
+            vertical-align: middle;
+
+            text-align: center;
+
+        }
+
+
+        .tabla tbody tr {
+
+            transition:
+                .2s;
+
+        }
+
+
+        .tabla tbody tr:hover {
+
+            background:
+                #f8fafc;
+
+        }
+
+
+        .nombre {
+
+            text-align: left !important;
+
+            font-weight: 600;
+
+            color: #1e293b;
+
+        }
+
+
+        /* =====================================
+           BADGES
+        ===================================== */
+
+        .badge-aprobado {
+
+            background: #dcfce7;
+
+            color: #166534;
+
+            padding:
+                7px 12px;
+
+            border-radius: 20px;
+
+        }
+
+
+        .badge-reforzamiento {
+
+            background: #fee2e2;
+
+            color: #991b1b;
+
+            padding:
+                7px 12px;
+
+            border-radius: 20px;
+
+        }
+
+
+        .badge-pendiente {
+
+            background: #fef3c7;
+
+            color: #92400e;
+
+            padding:
+                7px 12px;
+
+            border-radius: 20px;
+
+        }
+
+
+        /* =====================================
+           CORTES
+        ===================================== */
+
+        .corte {
+
+            font-weight: 700;
+
+        }
+
+
+        .nota-final {
+
+            font-size: 17px;
+
+            font-weight: 800;
+
+            color: #2563eb;
+
+        }
+
+
+        /* =====================================
+           ESTADÍSTICAS
+        ===================================== */
+
+        .estadistica {
+
+            text-align: center;
+
+            padding: 20px;
+
+        }
+
+
+        .estadistica i {
+
+            font-size: 30px;
+
+        }
+
+
+        .estadistica h3 {
+
+            font-weight: 800;
+
+            margin:
+                8px 0 0;
+
+        }
+
+
+        .estadistica small {
+
+            color: #64748b;
+
+        }
+
+
+        /* =====================================
+           RESPONSIVE
+        ===================================== */
+
+        @media(max-width: 768px) {
+
+            .header {
+
+                padding: 20px;
+
+            }
+
+
+            .logo {
+
+                width: 55px;
+
+                height: 55px;
+
+            }
+
+
+            .titulo {
+
+                font-size: 20px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="contenedor">
+
+
+    <!-- =====================================
+         ENCABEZADO
+    ===================================== -->
+
+    <div class="header">
+
+        <div class="d-flex
+                    justify-content-between
+                    align-items-center
+                    flex-wrap
+                    gap-3">
+
+
+            <div class="d-flex
+                        align-items-center
+                        gap-3">
+
+
+                <img
+                    src="{{ url_for(
+                        'static',
+                        filename='img/logo.jpg'
+                    ) }}"
+                    class="logo">
+
+
+                <div>
+
+                    <h2 class="titulo">
+
+                        <i class="bi bi-file-earmark-bar-graph"></i>
+
+                        Reporte de Notas
+
+                    </h2>
+
+
+                    <div class="subtitulo">
+
+                        CIEM Académico
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="d-flex gap-2 flex-wrap">
+
+
+                <a
+                    href="{{ url_for(
+                        'docente.notas',
+                        asignatura_id=asignatura._id
+                    ) }}"
+                    class="btn btn-light btn-ciem">
+
+                    <i class="bi bi-arrow-left"></i>
+
+                    Volver a notas
+
+                </a>
+
+
+               <a
+                href="{{ url_for(
+                    'docente.descargar_reporte_notas',
+                    asignatura_id=asignatura._id
+                ) }}"
+                class="btn btn-descargar btn-pdf"
+            >
+                <i class="bi bi-file-earmark-pdf"></i>
+                Descargar Reporte
+            </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================
+         INFORMACIÓN DE ASIGNATURA
+    ===================================== -->
+
+    <div class="row g-3 mb-4">
+
+
+        <div class="col-md-4">
+
+            <div class="info-card">
+
+                <div class="info-label">
+
+                    ASIGNATURA
+
+                </div>
+
+                <div class="info-value">
+
+                    {{ asignatura.nombre }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="info-card">
+
+                <div class="info-label">
+
+                    GRADO
+
+                </div>
+
+                <div class="info-value">
+
+                    {{ asignatura.grado }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="info-card">
+
+                <div class="info-label">
+
+                    SECCIÓN
+
+                </div>
+
+                <div class="info-value">
+
+                    {{ asignatura.seccion }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================
+         TABLA
+    ===================================== -->
+
+    <div class="card">
+
+
+        <div class="card-header">
+
+
+            <div class="d-flex
+                        justify-content-between
+                        align-items-center
+                        flex-wrap
+                        gap-2">
+
+
+                <div>
+
+                    <h5 class="mb-1">
+
+                        <i class="bi bi-table"></i>
+
+                        Calificaciones por Parcial
+
+                    </h5>
+
+                    <small class="text-muted">
+
+                        Consulta el rendimiento académico
+                        de los estudiantes.
+
+                    </small>
+
+                </div>
+
+
+                <div>
+
+                    <span class="badge bg-primary">
+
+                        {{ reporte|length }}
+
+                        estudiantes
+
+                    </span>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <div class="table-responsive">
+
+
+            <table class="table tabla">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>Estudiante</th>
+
+                        <th>I Parcial</th>
+
+                        <th>II Parcial</th>
+
+                        <th>III Parcial</th>
+
+                        <th>IV Parcial</th>
+
+                        <th>Nota Final</th>
+
+                        <th>Estado</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                {% for r in reporte %}
+
+
+                    <tr>
+
+
+                        <td>
+
+                            {{ loop.index }}
+
+                        </td>
+
+
+                        <td class="nombre">
+
+                            {{ r.nombre }}
+
+                        </td>
+
+
+                        <td class="corte">
+
+                            {{ r.corte1 }}
+
+                        </td>
+
+
+                        <td class="corte">
+
+                            {{ r.corte2 }}
+
+                        </td>
+
+
+                        <td class="corte">
+
+                            {{ r.corte3 }}
+
+                        </td>
+
+
+                        <td class="corte">
+
+                            {{ r.corte4 }}
+
+                        </td>
+
+
+                        <td class="nota-final">
+
+                            {{ r.promedio }}
+
+                        </td>
+
+
+                        <td>
+
+
+                            {% if r.estado == "Aprobado" %}
+
+                                <span
+                                    class="badge-aprobado">
+
+                                    <i class="bi bi-check-circle"></i>
+
+                                    Aprobado
+
+                                </span>
+
+
+                            {% elif r.estado == "Reforzamiento" %}
+
+                                <span
+                                    class="badge-reforzamiento">
+
+                                    <i class="bi bi-exclamation-circle"></i>
+
+                                    Reforzamiento
+
+                                </span>
+
+
+                            {% else %}
+
+                                <span
+                                    class="badge-pendiente">
+
+                                    <i class="bi bi-clock"></i>
+
+                                    Pendiente
+
+                                </span>
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                    </tr>
+
+
+                {% else %}
+
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="text-center py-5">
+
+
+                            <i
+                                class="bi bi-inbox"
+                                style="font-size:45px;">
+                            </i>
+
+
+                            <h5 class="mt-3">
+
+                                No hay estudiantes
+
+                            </h5>
+
+
+                            <p class="text-muted">
+
+                                No se encontraron registros
+                                para esta asignatura.
+
+                            </p>
+
+
+                        </td>
+
+                    </tr>
+
+
+                {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================
+         RESUMEN
+    ===================================== -->
+
+    <div class="card mt-4">
+
+
+        <div class="card-body">
+
+
+            <div class="row">
+
+
+                <div class="col-md-3">
+
+                    <div class="estadistica">
+
+                        <i class="bi bi-people"></i>
+
+                        <h3>
+
+                            {{ reporte|length }}
+
+                        </h3>
+
+                        <small>
+
+                            Estudiantes
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <div class="estadistica">
+
+                        <i class="bi bi-check-circle"></i>
+
+                        <h3 id="totalAprobados">
+
+                            0
+
+                        </h3>
+
+                        <small>
+
+                            Aprobados
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <div class="estadistica">
+
+                        <i class="bi bi-exclamation-circle"></i>
+
+                        <h3 id="totalReforzamiento">
+
+                            0
+
+                        </h3>
+
+                        <small>
+
+                            Reforzamiento
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <div class="estadistica">
+
+                        <i class="bi bi-bar-chart"></i>
+
+                        <h3 id="promedioGeneral">
+
+                            0.00
+
+                        </h3>
+
+                        <small>
+
+                            Promedio general
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================
+         PIE
+    ===================================== -->
+
+    <div class="text-center
+                text-muted
+                mt-4
+                mb-4">
+
+        <small>
+
+            © {{ now().year if now is defined else '' }}
+
+            Colegio Integral Emanuel
+
+            · CIEM Académico
+
+        </small>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        let aprobados = 0;
+
+        let reforzamiento = 0;
+
+        let suma = 0;
+
+        let cantidad = 0;
+
+
+        document
+            .querySelectorAll(
+                ".nota-final"
+            )
+            .forEach(
+                function (elemento) {
+
+                    let valor =
+                        parseFloat(
+                            elemento.textContent
+                        ) || 0;
+
+
+                    suma += valor;
+
+                    cantidad++;
+
+
+                    if (valor >= 60) {
+
+                        aprobados++;
+
+                    } else {
+
+                        reforzamiento++;
+
+                    }
+
+                }
+            );
+
+
+        document.getElementById(
+            "totalAprobados"
+        ).textContent =
+            aprobados;
+
+
+        document.getElementById(
+            "totalReforzamiento"
+        ).textContent =
+            reforzamiento;
+
+
+        if (cantidad > 0) {
+
+            document.getElementById(
+                "promedioGeneral"
+            ).textContent =
+                (
+                    suma / cantidad
+                ).toFixed(2);
+
+        }
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

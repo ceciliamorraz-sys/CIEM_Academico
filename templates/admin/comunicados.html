@@ -3,488 +3,1511 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Comunicados | CIEM Académico</title>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Comunicados | CIEM Académico
+    </title>
 
     <style>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        /* =====================================================
+           VARIABLES
+        ===================================================== */
+
+        :root {
+
+            --azul-oscuro: #08142C;
+            --azul: #0D2A52;
+            --azul-medio: #1E4E8C;
+
+            --dorado: #FFC107;
+            --dorado-claro: #FFF4CC;
+
+            --verde: #16a34a;
+            --rojo: #dc2626;
+
+            --fondo: #f4f7fb;
+            --blanco: #ffffff;
+
+            --texto: #1d3256;
+            --texto-suave: #718096;
+
+            --borde: #e4eaf2;
+
         }
 
-        body {
-            font-family: "Segoe UI", Arial, sans-serif;
-            background: #f4f7fb;
-            color: #1d3256;
-        }
 
         /* =====================================================
-           ENCABEZADO
+           RESET
+        ===================================================== */
+
+        * {
+
+            box-sizing: border-box;
+
+            margin: 0;
+
+            padding: 0;
+
+        }
+
+
+        body {
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f4f7fb,
+                    #eef3f9
+                );
+
+            color:
+                var(--texto);
+
+            min-height:
+                100vh;
+
+        }
+
+
+        /* =====================================================
+           HEADER
         ===================================================== */
 
         .header {
-            background: linear-gradient(
-                135deg,
-                #08142C,
-                #0D2A52
-            );
 
-            color: white;
-            padding: 28px 35px;
+            position:
+                relative;
 
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            overflow:
+                hidden;
 
-            box-shadow: 0 4px 15px rgba(0,0,0,.12);
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--azul-oscuro),
+                    var(--azul),
+                    var(--azul-medio)
+                );
+
+            color:
+                white;
+
+            padding:
+                30px 45px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(8,20,44,.20);
+
         }
+
+
+        .header::before {
+
+            content: "";
+
+            position:
+                absolute;
+
+            width:
+                250px;
+
+            height:
+                250px;
+
+            border-radius:
+                50%;
+
+            background:
+                rgba(255,193,7,.10);
+
+            right:
+                -80px;
+
+            top:
+                -120px;
+
+        }
+
+
+        .header::after {
+
+            content: "";
+
+            position:
+                absolute;
+
+            width:
+                180px;
+
+            height:
+                180px;
+
+            border-radius:
+                50%;
+
+            background:
+                rgba(255,255,255,.06);
+
+            right:
+                120px;
+
+            bottom:
+                -110px;
+
+        }
+
+
+        .header-content {
+
+            position:
+                relative;
+
+            z-index:
+                2;
+
+            max-width:
+                1250px;
+
+            margin:
+                auto;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                25px;
+
+        }
+
 
         .header-left {
-            display: flex;
-            align-items: center;
-            gap: 18px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                18px;
+
         }
+
 
         .header-icon {
-            width: 58px;
-            height: 58px;
 
-            border-radius: 15px;
+            width:
+                65px;
 
-            background: rgba(255,255,255,.12);
+            height:
+                65px;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-radius:
+                18px;
 
-            font-size: 28px;
+            background:
+                rgba(255,255,255,.13);
+
+            border:
+                1px solid
+                rgba(255,255,255,.18);
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                31px;
+
+            box-shadow:
+                0 8px 20px
+                rgba(0,0,0,.12);
+
         }
+
 
         .header h1 {
-            font-size: 27px;
-            font-weight: 600;
+
+            font-size:
+                28px;
+
+            font-weight:
+                700;
+
+            letter-spacing:
+                -.3px;
+
         }
 
+
         .header p {
-            margin-top: 5px;
-            opacity: .8;
-            font-size: 14px;
+
+            margin-top:
+                5px;
+
+            font-size:
+                14px;
+
+            opacity:
+                .78;
+
         }
+
+
+        .header-badge {
+
+            background:
+                rgba(255,255,255,.10);
+
+            border:
+                1px solid
+                rgba(255,255,255,.18);
+
+            padding:
+                10px 15px;
+
+            border-radius:
+                30px;
+
+            font-size:
+                12px;
+
+            backdrop-filter:
+                blur(8px);
+
+        }
+
 
         /* =====================================================
            CONTENEDOR
         ===================================================== */
 
         .container {
-            width: 94%;
-            max-width: 1200px;
-            margin: 30px auto;
+
+            width:
+                92%;
+
+            max-width:
+                1250px;
+
+            margin:
+                32px auto 50px;
+
         }
 
+
         /* =====================================================
-           BOTÓN REGRESAR
+           ACCIONES SUPERIORES
         ===================================================== */
 
         .top-actions {
-            margin-bottom: 20px;
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            gap:
+                15px;
+
+            margin-bottom:
+                25px;
+
         }
 
-        .btn-back {
-            text-decoration: none;
-            color: #1d3256;
 
-            background: white;
+        .back {
 
-            padding: 10px 18px;
+            display:
+                inline-flex;
 
-            border-radius: 9px;
+            align-items:
+                center;
 
-            border: 1px solid #e1e7ef;
+            gap:
+                8px;
 
-            font-size: 14px;
+            text-decoration:
+                none;
 
-            transition: .2s;
+            color:
+                var(--texto);
+
+            background:
+                white;
+
+            border:
+                1px solid var(--borde);
+
+            padding:
+                11px 17px;
+
+            border-radius:
+                11px;
+
+            font-size:
+                13px;
+
+            font-weight:
+                600;
+
+            transition:
+                .2s;
+
         }
 
-        .btn-back:hover {
-            background: #eef3f9;
+
+        .back:hover {
+
+            transform:
+                translateX(-3px);
+
+            background:
+                #eef3f9;
+
         }
+
+
+        .history-button {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                8px;
+
+            text-decoration:
+                none;
+
+            color:
+                white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #1E4E8C,
+                    #0D2A52
+                );
+
+            padding:
+                12px 18px;
+
+            border-radius:
+                11px;
+
+            font-size:
+                13px;
+
+            font-weight:
+                700;
+
+            box-shadow:
+                0 6px 15px
+                rgba(13,42,82,.18);
+
+            transition:
+                .2s;
+
+        }
+
+
+        .history-button:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 9px 20px
+                rgba(13,42,82,.25);
+
+        }
+
 
         /* =====================================================
-           TARJETA PRINCIPAL
+           RESUMEN
+        ===================================================== */
+
+        .summary {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                2fr 1fr;
+
+            gap:
+                20px;
+
+            margin-bottom:
+                22px;
+
+        }
+
+
+        .welcome-card {
+
+            position:
+                relative;
+
+            overflow:
+                hidden;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffffff,
+                    #f8fbff
+                );
+
+            border:
+                1px solid
+                var(--borde);
+
+            border-radius:
+                20px;
+
+            padding:
+                25px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(13,42,82,.07);
+
+        }
+
+
+        .welcome-card::after {
+
+            content:
+                "📢";
+
+            position:
+                absolute;
+
+            right:
+                25px;
+
+            bottom:
+                -10px;
+
+            font-size:
+                90px;
+
+            opacity:
+                .07;
+
+        }
+
+
+        .welcome-card h2 {
+
+            color:
+                var(--azul-oscuro);
+
+            font-size:
+                21px;
+
+            margin-bottom:
+                7px;
+
+        }
+
+
+        .welcome-card p {
+
+            color:
+                var(--texto-suave);
+
+            font-size:
+                13px;
+
+            line-height:
+                1.6;
+
+            max-width:
+                650px;
+
+        }
+
+
+        .counter-card {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--azul-oscuro),
+                    var(--azul-medio)
+                );
+
+            color:
+                white;
+
+            border-radius:
+                20px;
+
+            padding:
+                25px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(13,42,82,.18);
+
+        }
+
+
+        .counter-label {
+
+            font-size:
+                12px;
+
+            opacity:
+                .75;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                .7px;
+
+        }
+
+
+        .counter-number {
+
+            font-size:
+                40px;
+
+            font-weight:
+                800;
+
+            margin-top:
+                5px;
+
+        }
+
+
+        .counter-text {
+
+            font-size:
+                12px;
+
+            opacity:
+                .75;
+
+            margin-top:
+                2px;
+
+        }
+
+
+        /* =====================================================
+           CARD FORMULARIO
         ===================================================== */
 
         .card {
-            background: white;
 
-            border-radius: 18px;
+            background:
+                white;
 
-            padding: 30px;
+            border:
+                1px solid
+                var(--borde);
+
+            border-radius:
+                20px;
+
+            padding:
+                30px;
 
             box-shadow:
-                0 8px 30px rgba(13,42,82,.08);
+                0 8px 30px
+                rgba(13,42,82,.07);
 
-            margin-bottom: 30px;
+            margin-bottom:
+                24px;
+
         }
 
-        .card-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
 
-            margin-bottom: 25px;
+        .card-header {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                13px;
+
+            margin-bottom:
+                25px;
+
         }
 
-        .card-title-icon {
-            width: 42px;
-            height: 42px;
 
-            border-radius: 11px;
+        .card-icon {
 
-            background: #fff4cc;
+            width:
+                45px;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            height:
+                45px;
 
-            font-size: 21px;
+            border-radius:
+                13px;
+
+            background:
+                var(--dorado-claro);
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                21px;
+
         }
 
-        .card-title h2 {
-            font-size: 20px;
-            color: #08142C;
+
+        .card-header h2 {
+
+            color:
+                var(--azul-oscuro);
+
+            font-size:
+                20px;
+
         }
 
-        .card-title p {
-            color: #718096;
-            font-size: 13px;
-            margin-top: 3px;
+
+        .card-header p {
+
+            color:
+                var(--texto-suave);
+
+            font-size:
+                12px;
+
+            margin-top:
+                3px;
+
         }
+
 
         /* =====================================================
            FORMULARIO
         ===================================================== */
 
         .form-grid {
-            display: grid;
+
+            display:
+                grid;
 
             grid-template-columns:
-                1fr 1fr 1fr;
+                repeat(3, 1fr);
 
-            gap: 20px;
+            gap:
+                20px;
 
-            margin-bottom: 20px;
         }
+
 
         .form-group {
-            display: flex;
-            flex-direction: column;
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
         }
 
-        .form-group.full {
-            grid-column: 1 / -1;
+
+        .full {
+
+            grid-column:
+                1 / -1;
+
         }
+
 
         label {
-            font-size: 13px;
 
-            font-weight: 600;
+            color:
+                #344563;
 
-            margin-bottom: 8px;
+            font-size:
+                13px;
 
-            color: #344563;
+            font-weight:
+                700;
+
+            margin-bottom:
+                8px;
+
         }
+
 
         input,
         select,
         textarea {
 
-            width: 100%;
+            width:
+                100%;
 
-            padding: 13px 14px;
+            padding:
+                13px 14px;
 
-            border-radius: 10px;
+            border:
+                1px solid
+                #dce3ec;
 
-            border: 1px solid #dce3ec;
+            border-radius:
+                11px;
 
-            background: #fbfcfe;
+            background:
+                #fbfcfe;
 
-            font-family: inherit;
+            color:
+                #263a5b;
 
-            font-size: 14px;
+            font-family:
+                inherit;
 
-            color: #263a5b;
+            font-size:
+                14px;
 
-            outline: none;
+            outline:
+                none;
 
-            transition: .2s;
+            transition:
+                .2s;
+
         }
+
 
         input:focus,
         select:focus,
         textarea:focus {
 
-            border-color: #1E4E8C;
+            background:
+                white;
 
-            background: white;
+            border-color:
+                var(--azul-medio);
 
             box-shadow:
-                0 0 0 3px rgba(30,78,140,.08);
+                0 0 0 4px
+                rgba(30,78,140,.08);
+
         }
+
 
         textarea {
 
-            min-height: 150px;
+            min-height:
+                155px;
 
-            resize: vertical;
+            resize:
+                vertical;
+
         }
 
-        /* =====================================================
-           BOTÓN PUBLICAR
-        ===================================================== */
 
         .form-actions {
 
-            display: flex;
+            display:
+                flex;
 
-            justify-content: flex-end;
+            justify-content:
+                flex-end;
 
-            margin-top: 22px;
+            margin-top:
+                23px;
+
         }
 
-        .btn-primary {
 
-            border: none;
+        .publish-button {
 
-            background: #FFC107;
+            border:
+                none;
 
-            color: #08142C;
+            cursor:
+                pointer;
 
-            font-weight: 700;
+            display:
+                inline-flex;
 
-            padding: 13px 25px;
+            align-items:
+                center;
 
-            border-radius: 10px;
+            gap:
+                9px;
 
-            cursor: pointer;
+            padding:
+                14px 23px;
 
-            font-size: 14px;
+            border-radius:
+                11px;
 
-            transition: .2s;
+            background:
+                linear-gradient(
+                    135deg,
+                    #FFC107,
+                    #f59e0b
+                );
+
+            color:
+                #08142C;
+
+            font-weight:
+                800;
+
+            font-size:
+                13px;
 
             box-shadow:
-                0 5px 12px rgba(255,193,7,.25);
+                0 7px 18px
+                rgba(245,158,11,.25);
+
+            transition:
+                .2s;
+
         }
 
-        .btn-primary:hover {
 
-            transform: translateY(-1px);
+        .publish-button:hover {
+
+            transform:
+                translateY(-2px);
 
             box-shadow:
-                0 7px 16px rgba(255,193,7,.35);
+                0 10px 23px
+                rgba(245,158,11,.35);
+
         }
+
 
         /* =====================================================
-           LISTA DE COMUNICADOS
+           LISTA
         ===================================================== */
 
-        .comunicados-header {
+        .list-header {
 
-            display: flex;
+            display:
+                flex;
 
-            justify-content: space-between;
+            align-items:
+                center;
 
-            align-items: center;
+            justify-content:
+                space-between;
 
-            margin-bottom: 20px;
+            gap:
+                15px;
+
+            margin-bottom:
+                20px;
+
         }
 
-        .counter {
 
-            background: #edf3fa;
+        .list-title {
 
-            color: #1E4E8C;
+            display:
+                flex;
 
-            padding: 6px 12px;
+            align-items:
+                center;
 
-            border-radius: 20px;
+            gap:
+                12px;
 
-            font-size: 12px;
-
-            font-weight: 600;
         }
 
-        .comunicado {
 
-            border: 1px solid #e6ebf2;
+        .list-title h2 {
 
-            border-radius: 14px;
+            color:
+                var(--azul-oscuro);
 
-            padding: 20px;
+            font-size:
+                20px;
 
-            margin-bottom: 14px;
-
-            transition: .2s;
-
-            background: #fff;
         }
 
-        .comunicado:hover {
 
-            border-color: #cbd7e7;
+        .list-title p {
+
+            color:
+                var(--texto-suave);
+
+            font-size:
+                12px;
+
+            margin-top:
+                3px;
+
+        }
+
+
+        .badge-count {
+
+            background:
+                #edf3fa;
+
+            color:
+                var(--azul-medio);
+
+            padding:
+                7px 12px;
+
+            border-radius:
+                30px;
+
+            font-size:
+                11px;
+
+            font-weight:
+                800;
+
+        }
+
+
+        /* =====================================================
+           COMUNICADO
+        ===================================================== */
+
+        .announcement {
+
+            position:
+                relative;
+
+            overflow:
+                hidden;
+
+            border:
+                1px solid
+                #e6ebf2;
+
+            border-radius:
+                16px;
+
+            padding:
+                21px;
+
+            margin-bottom:
+                14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffffff,
+                    #fbfdff
+                );
+
+            transition:
+                .25s;
+
+        }
+
+
+        .announcement:hover {
+
+            transform:
+                translateY(-2px);
+
+            border-color:
+                #cbd7e7;
 
             box-shadow:
-                0 5px 18px rgba(13,42,82,.06);
+                0 9px 25px
+                rgba(13,42,82,.08);
+
         }
 
-        .comunicado-top {
 
-            display: flex;
+        .announcement::before {
 
-            justify-content: space-between;
+            content:
+                "";
 
-            gap: 20px;
+            position:
+                absolute;
+
+            left:
+                0;
+
+            top:
+                0;
+
+            bottom:
+                0;
+
+            width:
+                4px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #FFC107,
+                    #1E4E8C
+                );
+
         }
 
-        .comunicado-title {
 
-            font-size: 17px;
+        .announcement-top {
 
-            font-weight: 700;
+            display:
+                flex;
 
-            color: #08142C;
+            justify-content:
+                space-between;
 
-            margin-bottom: 8px;
+            gap:
+                20px;
+
         }
 
-        .comunicado-message {
 
-            color: #5f6f85;
+        .announcement-title {
 
-            line-height: 1.6;
+            color:
+                var(--azul-oscuro);
 
-            font-size: 14px;
+            font-size:
+                17px;
 
-            white-space: pre-line;
+            font-weight:
+                750;
+
+            margin-bottom:
+                8px;
+
         }
+
+
+        .announcement-message {
+
+            color:
+                #5f6f85;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.65;
+
+            white-space:
+                pre-line;
+
+        }
+
 
         .status {
 
-            white-space: nowrap;
+            height:
+                fit-content;
 
-            height: fit-content;
+            white-space:
+                nowrap;
 
-            background: #e8f7ee;
+            background:
+                #e8f7ee;
 
-            color: #18864b;
+            color:
+                #18864b;
 
-            padding: 6px 11px;
+            padding:
+                7px 11px;
 
-            border-radius: 20px;
+            border-radius:
+                20px;
 
-            font-size: 11px;
+            font-size:
+                10px;
 
-            font-weight: 700;
+            font-weight:
+                800;
+
         }
+
+
+        .announcement-footer {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            flex-wrap:
+                wrap;
+
+            gap:
+                12px;
+
+            margin-top:
+                16px;
+
+            padding-top:
+                13px;
+
+            border-top:
+                1px solid
+                #edf0f4;
+
+        }
+
 
         .meta {
 
-            display: flex;
+            display:
+                flex;
 
-            flex-wrap: wrap;
+            flex-wrap:
+                wrap;
 
-            gap: 18px;
+            gap:
+                8px;
 
-            margin-top: 15px;
-
-            padding-top: 13px;
-
-            border-top: 1px solid #edf0f4;
-
-            color: #718096;
-
-            font-size: 12px;
         }
 
+
+        .meta span {
+
+            background:
+                #f0f4f9;
+
+            color:
+                #53677f;
+
+            padding:
+                6px 10px;
+
+            border-radius:
+                20px;
+
+            font-size:
+                11px;
+
+        }
+
+
         /* =====================================================
-           SIN COMUNICADOS
+           ACCIONES COMUNICADO
+        ===================================================== */
+
+        .announcement-actions {
+
+            display:
+                flex;
+
+            gap:
+                8px;
+
+        }
+
+
+        .delete-button {
+
+            border:
+                none;
+
+            cursor:
+                pointer;
+
+            background:
+                #fff0f0;
+
+            color:
+                var(--rojo);
+
+            border:
+                1px solid
+                #ffd6d6;
+
+            padding:
+                7px 11px;
+
+            border-radius:
+                8px;
+
+            font-size:
+                11px;
+
+            font-weight:
+                700;
+
+            transition:
+                .2s;
+
+        }
+
+
+        .delete-button:hover {
+
+            background:
+                #fee2e2;
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        /* =====================================================
+           VACÍO
         ===================================================== */
 
         .empty {
 
-            text-align: center;
+            text-align:
+                center;
 
-            padding: 45px 20px;
+            padding:
+                55px 20px;
 
-            color: #8492a6;
+            color:
+                #8492a6;
+
         }
+
 
         .empty-icon {
 
-            font-size: 42px;
+            width:
+                75px;
 
-            margin-bottom: 12px;
+            height:
+                75px;
+
+            border-radius:
+                22px;
+
+            margin:
+                0 auto 15px;
+
+            background:
+                #f1f5f9;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                35px;
+
         }
+
 
         .empty h3 {
 
-            color: #344563;
+            color:
+                #344563;
 
-            margin-bottom: 6px;
+            margin-bottom:
+                6px;
+
         }
+
+
+        .empty p {
+
+            font-size:
+                13px;
+
+        }
+
 
         /* =====================================================
            RESPONSIVE
         ===================================================== */
 
-        @media(max-width: 800px) {
+        @media(max-width: 900px) {
+
+            .summary {
+
+                grid-template-columns:
+                    1fr;
+
+            }
 
             .form-grid {
 
-                grid-template-columns: 1fr;
+                grid-template-columns:
+                    1fr 1fr;
+
             }
 
-            .form-group.full {
+        }
 
-                grid-column: auto;
-            }
+
+        @media(max-width: 650px) {
 
             .header {
 
-                padding: 22px;
+                padding:
+                    23px 20px;
+
+            }
+
+            .header-content {
+
+                align-items:
+                    flex-start;
+
+            }
+
+            .header-badge {
+
+                display:
+                    none;
+
+            }
+
+            .header h1 {
+
+                font-size:
+                    22px;
+
             }
 
             .container {
 
-                width: 92%;
+                width:
+                    92%;
+
+            }
+
+            .top-actions {
+
+                align-items:
+                    stretch;
+
+                flex-direction:
+                    column;
+
+            }
+
+            .back,
+            .history-button {
+
+                justify-content:
+                    center;
+
             }
 
             .card {
 
-                padding: 22px;
+                padding:
+                    21px;
+
             }
 
-            .comunicado-top {
+            .form-grid {
 
-                flex-direction: column;
+                grid-template-columns:
+                    1fr;
+
+            }
+
+            .full {
+
+                grid-column:
+                    auto;
+
+            }
+
+            .announcement-top {
+
+                flex-direction:
+                    column;
+
+            }
+
+            .announcement-footer {
+
+                align-items:
+                    stretch;
+
+                flex-direction:
+                    column;
+
+            }
+
+            .announcement-actions {
+
+                justify-content:
+                    flex-end;
+
             }
 
         }
 
     </style>
+
 </head>
+
 
 <body>
 
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
 
-    <header class="header">
+<!-- =====================================================
+     HEADER
+====================================================== -->
+
+<header class="header">
+
+    <div class="header-content">
 
         <div class="header-left">
 
@@ -494,58 +1517,336 @@
 
             <div>
 
-                <h1>Comunicados</h1>
+                <h1>
+                    Centro de Comunicados
+                </h1>
 
                 <p>
-                    Mantén informada a la comunidad educativa
+                    CIEM Académico · Comunicación con las familias
                 </p>
 
             </div>
 
         </div>
 
-    </header>
+
+        <div class="header-badge">
+            🏫 Administración
+        </div>
+
+    </div>
+
+</header>
 
 
-    <main class="container">
+<main class="container">
 
 
-        <!-- =================================================
-             REGRESAR
-        ================================================== -->
+    <!-- =================================================
+         ACCIONES
+    ================================================== -->
 
-        <div class="top-actions">
+    <div class="top-actions">
 
-            <a
-                href="{{ url_for('admin_dashboard') }}"
-                class="btn-back"
-            >
-                ⬅ Regresar al Dashboard
-            </a>
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="back"
+        >
+            ⬅ Dashboard
+        </a>
+
+
+        <a
+        href="{{ url_for('historial_comunicados') }}"
+        class="btn-history"
+    >
+        📋 Ver historial
+    </a>
+
+</div>
+
+
+
+
+    <!-- =================================================
+         RESUMEN
+    ================================================== -->
+
+    <section class="summary">
+
+
+        <div class="welcome-card">
+
+            <h2>
+                Mantén informada a nuestra comunidad educativa
+            </h2>
+
+            <p>
+                Desde este espacio puedes publicar avisos,
+                recordatorios, reuniones y cualquier información
+                importante para los padres de familia.
+            </p>
 
         </div>
 
 
-        <!-- =================================================
-             NUEVO COMUNICADO
-        ================================================== -->
+        <div class="counter-card">
 
-        <section class="card">
+            <div class="counter-label">
+                Comunicados publicados
+            </div>
 
-            <div class="card-title">
+            <div class="counter-number">
+                {{ comunicados|length }}
+            </div>
 
-                <div class="card-title-icon">
-                    ✍️
+            <div class="counter-text">
+                Avisos registrados en el sistema
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         NUEVO COMUNICADO
+    ================================================== -->
+
+    <section class="card">
+
+
+        <div class="card-header">
+
+            <div class="card-icon">
+                ✍️
+            </div>
+
+            <div>
+
+                <h2>
+                    Crear nuevo comunicado
+                </h2>
+
+                <p>
+                    Completa la información para publicar un nuevo aviso.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form
+            method="POST"
+            action="{{ url_for('crear_comunicado') }}"
+        >
+
+
+            <div class="form-grid">
+
+
+                <!-- TÍTULO -->
+
+                <div class="form-group full">
+
+                    <label>
+                        Título del comunicado
+                    </label>
+
+                    <input
+                        type="text"
+                        name="titulo"
+                        placeholder="Ej. Reunión de padres de familia"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- DESTINATARIO -->
+
+                <div class="form-group">
+
+                    <label>
+                        Destinatarios
+                    </label>
+
+                    <select
+                        name="destinatario"
+                        id="destinatario"
+                        required
+                    >
+
+                        <option value="">
+                            Seleccione
+                        </option>
+
+                        <option value="todos">
+                            👨‍👩‍👧 Todos los padres
+                        </option>
+
+                        <option value="grado">
+                            🎓 Padres de un grado
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- GRADO -->
+
+                <div
+                    class="form-group"
+                    id="grupoGrado"
+                    style="display:none;"
+                >
+
+                    <label>
+                        Seleccione el grado
+                    </label>
+
+                    <select
+                        name="grado"
+                        id="grado"
+                    >
+
+                        <option value="">
+                            Seleccione el grado
+                        </option>
+
+                        <option value="Preescolar">
+                            Preescolar
+                        </option>
+
+                        <option value="1">
+                            1.º Primaria
+                        </option>
+
+                        <option value="2">
+                            2.º Primaria
+                        </option>
+
+                        <option value="3">
+                            3.º Primaria
+                        </option>
+
+                        <option value="4">
+                            4.º Primaria
+                        </option>
+
+                        <option value="5">
+                            5.º Primaria
+                        </option>
+
+                        <option value="6">
+                            6.º Primaria
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- FECHA -->
+
+                <div class="form-group">
+
+                    <label>
+                        Fecha
+                    </label>
+
+                    <input
+                        type="date"
+                        name="fecha"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- HORA -->
+
+                <div class="form-group">
+
+                    <label>
+                        Hora
+                    </label>
+
+                    <input
+                        type="time"
+                        name="hora"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- MENSAJE -->
+
+                <div class="form-group full">
+
+                    <label>
+                        Mensaje
+                    </label>
+
+                    <textarea
+                        name="mensaje"
+                        placeholder="Escribe aquí el comunicado que deseas compartir con las familias..."
+                        required
+                    ></textarea>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="submit"
+                    class="publish-button"
+                >
+
+                    📢
+
+                    Publicar comunicado
+
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </section>
+
+
+    <!-- =================================================
+         COMUNICADOS PUBLICADOS
+    ================================================== -->
+
+    <section class="card">
+
+
+        <div class="list-header">
+
+            <div class="list-title">
+
+                <div class="card-icon">
+                    📋
                 </div>
 
                 <div>
 
                     <h2>
-                        Nuevo comunicado
+                        Comunicados recientes
                     </h2>
 
                     <p>
-                        Publica información para los padres de familia
+                        Información publicada recientemente.
                     </p>
 
                 </div>
@@ -553,258 +1854,79 @@
             </div>
 
 
-            <form
-                method="POST"
-                action="{{ url_for('crear_comunicado') }}"
-            >
+            <span class="badge-count">
 
-                <div class="form-grid">
+                {{ comunicados|length }}
 
+                publicados
 
-                    <!-- TÍTULO -->
+            </span>
 
-                    <div class="form-group full">
+        </div>
 
-                        <label>
-                            Título del comunicado
-                        </label>
 
-                        <input
-                            type="text"
-                            name="titulo"
-                            placeholder="Ej. Reunión de padres de familia"
-                            required
-                        >
+        {% if comunicados %}
 
-                    </div>
 
+            {% for comunicado in comunicados %}
 
-                    <!-- DESTINATARIOS -->
 
-                    <div class="form-group">
+                <article class="announcement">
 
-                        <label>
-                            Destinatarios
-                        </label>
 
-                        <select
-                            name="destinatario"
-                            id="destinatario"
-                            required
-                        >
+                    <div class="announcement-top">
 
-                            <option value="">
-                                Seleccione
-                            </option>
 
-                            <option value="todos">
-                                👨‍👩‍👧 Todos los padres
-                            </option>
+                        <div>
 
-                            <option value="grado">
-                                🎓 Padres de un grado
-                            </option>
+                            <div class="announcement-title">
 
-                        </select>
-
-                    </div>
-
-
-                    <!-- GRADO -->
-
-                    <div
-                        class="form-group"
-                        id="grupoGrado"
-                        style="display:none;"
-                    >
-
-                        <label>
-                            Seleccione el grado
-                        </label>
-
-                        <select name="grado">
-
-                            <option value="">
-                                Seleccione el grado
-                            </option>
-
-                            <option value="Preescolar">
-                                Preescolar
-                            </option>
-
-                            <option value="1">
-                                1.º Primaria
-                            </option>
-
-                            <option value="2">
-                                2.º Primaria
-                            </option>
-
-                            <option value="3">
-                                3.º Primaria
-                            </option>
-
-                            <option value="4">
-                                4.º Primaria
-                            </option>
-
-                            <option value="5">
-                                5.º Primaria
-                            </option>
-
-                            <option value="6">
-                                6.º Primaria
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <!-- FECHA -->
-
-                    <div class="form-group">
-
-                        <label>
-                            Fecha
-                        </label>
-
-                        <input
-                            type="date"
-                            name="fecha"
-                            required
-                        >
-
-                    </div>
-
-
-                    <!-- HORA -->
-
-                    <div class="form-group">
-
-                        <label>
-                            Hora
-                        </label>
-
-                        <input
-                            type="time"
-                            name="hora"
-                            required
-                        >
-
-                    </div>
-
-
-                    <!-- MENSAJE -->
-
-                    <div class="form-group full">
-
-                        <label>
-                            Mensaje
-                        </label>
-
-                        <textarea
-                            name="mensaje"
-                            placeholder="Escribe aquí el comunicado..."
-                            required
-                        ></textarea>
-
-                    </div>
-
-                </div>
-
-
-                <div class="form-actions">
-
-                    <button
-                        type="submit"
-                        class="btn-primary"
-                    >
-                        📢 Publicar comunicado
-                    </button>
-
-                </div>
-
-            </form>
-
-        </section>
-
-
-        <!-- =================================================
-             COMUNICADOS PUBLICADOS
-        ================================================== -->
-
-        <section class="card">
-
-            <div class="comunicados-header">
-
-                <div class="card-title" style="margin-bottom:0;">
-
-                    <div class="card-title-icon">
-                        📋
-                    </div>
-
-                    <div>
-
-                        <h2>
-                            Comunicados publicados
-                        </h2>
-
-                        <p>
-                            Historial de avisos enviados
-                        </p>
-
-                    </div>
-
-                </div>
-
-                <span class="counter">
-                    {{ comunicados|length }} publicados
-                </span>
-
-            </div>
-
-
-            {% if comunicados %}
-
-                {% for comunicado in comunicados %}
-
-                    <article class="comunicado">
-
-                        <div class="comunicado-top">
-
-                            <div>
-
-                                <div class="comunicado-title">
-
-                                    📢 {{ comunicado.titulo }}
-
-                                </div>
-
-                                <div class="comunicado-message">
-
-                                    {{ comunicado.mensaje }}
-
-                                </div>
+                                📢
+                                {{ comunicado.titulo }}
 
                             </div>
 
-                            <span class="status">
-                                ● Publicado
-                            </span>
+
+                            <div class="announcement-message">
+
+                                {{ comunicado.mensaje }}
+
+                            </div>
 
                         </div>
 
 
+                        <span class="status">
+
+                            ● PUBLICADO
+
+                        </span>
+
+
+                    </div>
+
+
+                    <div class="announcement-footer">
+
+
                         <div class="meta">
 
-                            <span>
-                                📅 {{ comunicado.fecha }}
-                            </span>
 
                             <span>
-                                🕐 {{ comunicado.hora }}
+
+                                📅
+                                {{ comunicado.fecha }}
+
                             </span>
+
+
+                            <span>
+
+                                🕐
+                                {{ comunicado.hora }}
+
+                            </span>
+
 
                             <span>
 
@@ -826,70 +1948,133 @@
 
                             </span>
 
+
                         </div>
 
-                    </article>
 
-                {% endfor %}
+                        <div class="announcement-actions">
 
-            {% else %}
 
-                <div class="empty">
+                            <form
+                                method="POST"
+                                action="{{ url_for('eliminar_comunicado', id=comunicado._id) }}"
+                                onsubmit="return confirmarEliminacion();"
+                            >
 
-                    <div class="empty-icon">
-                        📭
+                                <button
+                                    type="submit"
+                                    class="delete-button"
+                                >
+
+                                    🗑️ Eliminar
+
+                                </button>
+
+                            </form>
+
+
+                        </div>
+
+
                     </div>
 
-                    <h3>
-                        Aún no hay comunicados
-                    </h3>
 
-                    <p>
-                        Los comunicados que publiques aparecerán aquí.
-                    </p>
+                </article>
 
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    📭
                 </div>
 
-            {% endif %}
+                <h3>
+                    Aún no hay comunicados
+                </h3>
 
-        </section>
+                <p>
+                    Los comunicados que publiques aparecerán aquí.
+                </p>
 
-    </main>
-
-
-    <!-- =====================================================
-         JAVASCRIPT
-    ====================================================== -->
-
-    <script>
-
-        const destinatario =
-            document.getElementById("destinatario");
-
-        const grupoGrado =
-            document.getElementById("grupoGrado");
+            </div>
 
 
-        destinatario.addEventListener(
-            "change",
-            function () {
+        {% endif %}
 
-                if (this.value === "grado") {
 
-                    grupoGrado.style.display = "flex";
+    </section>
 
-                } else {
 
-                    grupoGrado.style.display = "none";
+</main>
 
-                }
 
-            }
+<script>
+
+
+    /* =====================================================
+       MOSTRAR / OCULTAR GRADO
+    ===================================================== */
+
+    const destinatario =
+        document.getElementById(
+            "destinatario"
         );
 
-    </script>
+
+    const grupoGrado =
+        document.getElementById(
+            "grupoGrado"
+        );
+
+
+    destinatario.addEventListener(
+        "change",
+        function () {
+
+
+            if (
+                this.value === "grado"
+            ) {
+
+                grupoGrado.style.display =
+                    "flex";
+
+            }
+
+            else {
+
+                grupoGrado.style.display =
+                    "none";
+
+            }
+
+
+        }
+    );
+
+
+    /* =====================================================
+       CONFIRMAR ELIMINACIÓN
+    ===================================================== */
+
+    function confirmarEliminacion() {
+
+        return confirm(
+            "¿Está segura de que desea eliminar este comunicado?"
+        );
+
+    }
+
+
+</script>
+
 
 </body>
 
 </html>
-

@@ -163,6 +163,44 @@ def logout():
     print("¿Coinciden?:", str(user.get("password")).strip() == password)
 
 
+
+print("\n========================================")
+print("🔎 ASIGNATURAS DE EVERT EN MONGODB")
+print("========================================")
+
+evert = db.docentes.find_one({
+    "usuario": "evert"
+})
+
+if evert:
+
+    evert_id = str(evert["_id"])
+
+    print("DOCENTE:", evert.get("nombre"))
+    print("ID:", evert_id)
+
+    asignaturas_evert = list(
+        db.asignaturas.find({
+            "docente_id": evert_id
+        })
+    )
+
+    print("TOTAL:", len(asignaturas_evert))
+
+    for a in asignaturas_evert:
+        print(
+            a.get("_id"),
+            "|",
+            a.get("nombre"),
+            "|",
+            a.get("nivel"),
+            "|",
+            a.get("grado"),
+            "| DOCENTE:",
+            a.get("docente_id")
+        )
+
+print("========================================\n")
 # =========================
 # ADMIN DASHBOARD
 # =========================
@@ -702,7 +740,322 @@ def editar_estudiante(id):
         "admin/editar_estudiante.html",
         estudiante=estudiante
     )
-        
+
+
+
+
+# ==========================================================
+# ADMIN - ELIMINAR COMUNICADO
+# ==========================================================
+
+@app.route(
+    "/admin/comunicados/eliminar/<id>",
+    methods=["POST"]
+)
+@role_required("admin")
+def eliminar_comunicado(id):
+
+    try:
+
+        print("==========================================")
+        print("🗑️ ELIMINANDO COMUNICADO")
+        print("ID:", id)
+        print("==========================================")
+
+        resultado = db.comunicaciones.delete_one({
+            "_id": ObjectId(id)
+        })
+
+        if resultado.deleted_count == 1:
+
+            print("✅ COMUNICADO ELIMINADO")
+
+            flash(
+                "Comunicado eliminado correctamente.",
+                "success"
+            )
+
+        else:
+
+            print("⚠️ COMUNICADO NO ENCONTRADO")
+
+            flash(
+                "El comunicado no fue encontrado.",
+                "warning"
+            )
+
+        return redirect(
+            url_for("admin_comunicados")
+        )
+
+    except Exception as e:
+
+        print("==========================================")
+        print("❌ ERROR AL ELIMINAR COMUNICADO")
+        print("TIPO:", type(e).__name__)
+        print("ERROR:", repr(e))
+        print("==========================================")
+
+        flash(
+            f"No se pudo eliminar el comunicado: {e}",
+            "danger"
+        )
+
+        return redirect(
+            url_for("admin_comunicados")
+        )
+# ==========================================================
+# ADMIN - HISTORIAL DE COMUNICADOS
+# ==========================================================
+
+@app.route("/admin/comunicados/historial")
+@role_required("admin")
+def historial_comunicados():
+
+    try:
+
+        print("==========================================")
+        print("📋 HISTORIAL DE COMUNICADOS")
+        print("==========================================")
+
+        comunicados = list(
+            db.comunicaciones.find().sort(
+                "fecha_creacion",
+                -1
+            )
+        )
+
+        print(
+            "TOTAL HISTORIAL:",
+            len(comunicados)
+        )
+
+        return render_template(
+            "admin/historial_comunicados.html",
+            comunicados=comunicados
+        )
+
+    except Exception as e:
+
+        print("==========================================")
+        print("❌ ERROR AL CARGAR HISTORIAL")
+        print("TIPO:", type(e).__name__)
+        print("ERROR:", repr(e))
+        print("==========================================")
+
+        flash(
+            f"No se pudo cargar el historial: {e}",
+            "danger"
+        )
+
+        return redirect(
+            url_for("admin_comunicados")
+        )
+# ==========================================================
+# ADMIN - PREPARAR ENVÍO POR WHATSAPP
+# ==========================================================
+
+@app.route("/admin/comunicados/<id>/whatsapp")
+@role_required("admin")
+def comunicado_whatsapp(id):
+
+    try:
+
+        print("==========================================")
+        print("📱 PREPARANDO WHATSAPP")
+        print("ID COMUNICADO:", id)
+        print("==========================================")
+
+        # ==================================================
+        # BUSCAR COMUNICADO
+        # ==================================================
+
+        comunicado = db.comunicaciones.find_one({
+            "_id": ObjectId(id)
+        })
+
+        if not comunicado:
+
+            flash(
+                "El comunicado no existe.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("admin_comunicados")
+            )
+
+        print("COMUNICADO ENCONTRADO:")
+        print(comunicado)
+
+        # ==================================================
+        # BUSCAR ESTUDIANTES
+        # ==================================================
+
+        if comunicado.get("destinatario") == "grado":
+
+            estudiantes = list(
+                db.estudiantes.find({
+                    "grado": comunicado.get("grado")
+                }).sort(
+                    "nombre",
+                    1
+                )
+            )
+
+        else:
+
+            estudiantes = list(
+                db.estudiantes.find().sort(
+                    "nombre",
+                    1
+                )
+            )
+
+        print(
+            "ESTUDIANTES ENCONTRADOS:",
+            len(estudiantes)
+        )
+
+        # ==================================================
+        # CREAR CONTACTOS
+        # ==================================================
+
+        contactos = []
+
+        for estudiante in estudiantes:
+
+            nombre_estudiante = estudiante.get(
+                "nombre",
+                ""
+            )
+
+            # ----------------------------------------------
+            # PADRE
+            # ----------------------------------------------
+
+            padre = estudiante.get(
+                "padre",
+                ""
+            )
+
+            telefono_padre = estudiante.get(
+                "telefono",
+                ""
+            )
+
+            if padre and telefono_padre:
+
+                contactos.append({
+
+                    "nombre": padre,
+
+                    "tipo": "Padre",
+
+                    "estudiante":
+                        nombre_estudiante,
+
+                    "telefono":
+                        telefono_padre
+
+                })
+
+            # ----------------------------------------------
+            # MADRE
+            # ----------------------------------------------
+
+            madre = estudiante.get(
+                "madre",
+                ""
+            )
+
+            telefono_madre = estudiante.get(
+                "celular",
+                ""
+            )
+
+            if madre and telefono_madre:
+
+                contactos.append({
+
+                    "nombre": madre,
+
+                    "tipo": "Madre",
+
+                    "estudiante":
+                        nombre_estudiante,
+
+                    "telefono":
+                        telefono_madre
+
+                })
+
+            # ----------------------------------------------
+            # TUTOR
+            # ----------------------------------------------
+
+            tutor = estudiante.get(
+                "tutor",
+                ""
+            )
+
+            if tutor:
+
+                telefono_tutor = estudiante.get(
+                    "telefono",
+                    ""
+                )
+
+                if telefono_tutor:
+
+                    contactos.append({
+
+                        "nombre": tutor,
+
+                        "tipo": "Tutor",
+
+                        "estudiante":
+                            nombre_estudiante,
+
+                        "telefono":
+                            telefono_tutor
+
+                    })
+
+        print("==========================================")
+        print(
+            "📱 CONTACTOS CON TELÉFONO:",
+            len(contactos)
+        )
+        print("==========================================")
+
+        # ==================================================
+        # MOSTRAR PÁGINA
+        # ==================================================
+
+        return render_template(
+            "admin/comunicado_whatsapp.html",
+            comunicado=comunicado,
+            contactos=contactos
+        )
+
+    except Exception as e:
+
+        print("==========================================")
+        print("❌ ERROR WHATSAPP")
+        print("TIPO:", type(e).__name__)
+        print("ERROR:", repr(e))
+        print("==========================================")
+
+        flash(
+            f"No se pudo preparar WhatsApp: {e}",
+            "danger"
+        )
+
+        return redirect(
+            url_for("admin_comunicados")
+        )
+    
 # ==========================================================
 # ADMIN - ELIMINAR ESTUDIANTE
 # ==========================================================
@@ -3999,7 +4352,7 @@ def listar_asignaturas():
     asignaturas = list(
         db.asignaturas.find().sort("nombre",1)
     )
-
+    
 
     return render_template(
         "asignaturas/listar.html",
@@ -4054,15 +4407,11 @@ def editar_nota(id):
 
         return redirect(url_for("docente_dashboard"))
 
-
 # ==========================================================
 # AGREGAR ASIGNATURA
 # ==========================================================
 
-@app.route(
-    "/asignaturas/agregar",
-    methods=["GET", "POST"]
-)
+@app.route("/asignaturas/agregar", methods=["GET", "POST"])
 @role_required("admin")
 def agregar_asignatura():
 
@@ -4071,10 +4420,7 @@ def agregar_asignatura():
     # ======================================================
 
     docentes = list(
-        db.docentes.find({}).sort(
-            "nombre",
-            1
-        )
+        db.docentes.find({}).sort("nombre", 1)
     )
 
     # ======================================================
@@ -4083,141 +4429,202 @@ def agregar_asignatura():
 
     if request.method == "POST":
 
-        codigo = request.form.get(
-            "codigo",
-            ""
-        ).strip()
-
-        nombre = request.form.get(
-            "nombre",
-            ""
-        ).strip()
-
-        nivel = request.form.get(
-            "nivel",
-            ""
-        ).strip()
-
-        grado = request.form.get(
-            "grado",
-            ""
-        ).strip()
-
-        docente_id = request.form.get(
-            "docente_id",
-            ""
-        ).strip()
+        codigo = request.form.get("codigo", "").strip()
+        nombre = request.form.get("nombre", "").strip()
+        nivel = request.form.get("nivel", "").strip()
+        grado = request.form.get("grado", "").strip()
+        seccion = request.form.get("seccion", "A").strip()
+        docente_id = request.form.get("docente_id", "").strip()
+        print("")
+        print("========================================================")
+        print("🔥 GUARDANDO NUEVA ASIGNATURA")
+        print("========================================================")
+        print("CÓDIGO:", codigo)
+        print("NOMBRE:", nombre)
+        print("NIVEL:", nivel)
+        print("GRADO:", grado)
+        print("DOCENTE_ID RECIBIDO:", docente_id)
+        print("TIPO:", type(docente_id))
+        print("========================================================")
 
         # ==================================================
-        # VALIDAR CAMPOS
+        # VALIDACIONES
         # ==================================================
 
         if not codigo:
-            flash(
-                "Debe seleccionar o ingresar el código de la asignatura.",
-                "warning"
-            )
-
-            return redirect(
-                url_for("agregar_asignatura")
-            )
+            flash("Debe ingresar el código de la asignatura.", "warning")
+            return redirect(url_for("agregar_asignatura"))
 
         if not nombre:
-            flash(
-                "Debe ingresar el nombre de la asignatura.",
-                "warning"
-            )
-
-            return redirect(
-                url_for("agregar_asignatura")
-            )
+            flash("Debe ingresar el nombre de la asignatura.", "warning")
+            return redirect(url_for("agregar_asignatura"))
 
         if not nivel:
-            flash(
-                "Debe seleccionar el nivel.",
-                "warning"
-            )
-
-            return redirect(
-                url_for("agregar_asignatura")
-            )
+            flash("Debe seleccionar el nivel.", "warning")
+            return redirect(url_for("agregar_asignatura"))
 
         if not grado:
-            flash(
-                "Debe seleccionar el grado.",
-                "warning"
-            )
-
-            return redirect(
-                url_for("agregar_asignatura")
-            )
+            flash("Debe seleccionar el grado.", "warning")
+            return redirect(url_for("agregar_asignatura"))
 
         if not docente_id:
-            flash(
-                "Debe seleccionar un docente.",
-                "warning"
-            )
-
-            return redirect(
-                url_for("agregar_asignatura")
-            )
+            flash("Debe seleccionar un docente.", "warning")
+            return redirect(url_for("agregar_asignatura"))
 
         # ==================================================
-        # BUSCAR DOCENTE
+        # BUSCAR DOCENTE POR CÓDIGO
         # ==================================================
 
         docente = db.docentes.find_one({
             "codigo": docente_id
         })
+        print("DOCENTE ENCONTRADO:", docente)
 
         if not docente:
-
             flash(
-                "El docente seleccionado no existe.",
+                f"No se encontró el docente con código {docente_id}.",
                 "danger"
             )
+            return redirect(url_for("agregar_asignatura"))
 
-            return redirect(
-                url_for("agregar_asignatura")
+        # ==================================================
+        # DATOS DEL DOCENTE
+        # ==================================================
+
+        docente_nombre = docente.get("nombre", "")
+        tipo_docente = docente.get("tipo_docente", "docente")
+        print("DOCENTE NOMBRE:", docente_nombre)
+
+        # ==================================================
+        # GENERAR ID DE LA ASIGNATURA
+        #
+        # Ejemplo:
+        # EDF + 5 + A = EDF05A
+        # ==================================================
+
+        existentes = list(
+            db.asignaturas.find({
+                "codigo": codigo,
+                "grado": grado,
+                "seccion": seccion
+            })
+        )
+
+        if existentes:
+            flash(
+                "Ya existe una asignatura con ese código, grado y sección.",
+                "warning"
+            )
+            return redirect(url_for("agregar_asignatura"))
+
+        # ==================================================
+        # CONSTRUIR ID
+        # ==================================================
+
+        grado_id = grado
+
+        if grado_id.isdigit():
+            grado_id = grado_id.zfill(2)
+
+        elif grado_id == "I Nivel":
+            grado_id = "PRE1"
+
+        elif grado_id == "II Nivel":
+            grado_id = "PRE2"
+
+        elif grado_id == "III Nivel":
+            grado_id = "PRE3"
+
+        else:
+            grado_id = (
+                grado_id
+                .replace(" ", "")
+                .replace("er", "")
+                .replace("do", "")
+                .replace("to", "")
             )
 
+        nuevo_id = f"{codigo}{grado_id}{seccion}"
+
         # ==================================================
-        # NOMBRE DEL DOCENTE
+        # VERIFICAR QUE EL ID NO EXISTA
         # ==================================================
 
-        docente_nombre = docente.get(
-            "nombre",
-            ""
-        )
+        if db.asignaturas.find_one({
+            "_id": nuevo_id
+        }):
+            flash(
+                f"La asignatura {nuevo_id} ya existe.",
+                "warning"
+            )
+            return redirect(url_for("agregar_asignatura"))
 
         # ==================================================
         # CREAR ASIGNATURA
         # ==================================================
 
-        db.asignaturas.insert_one({
-
+        nueva_asignatura = {
+            "_id": nuevo_id,
             "codigo": codigo,
-
             "nombre": nombre,
-
             "nivel": nivel,
-
             "grado": grado,
-
+            "seccion": seccion,
             "docente_id": docente_id,
+            "docente_nombre": docente_nombre,
+            "tipo_docente": tipo_docente,
+            "activo": True
+        }
 
+
+        print("========================================================")
+        print("💾 DOCUMENTO QUE SE VA A GUARDAR")
+        print("========================================================")
+        print({
+            "codigo": codigo,
+            "nombre": nombre,
+            "nivel": nivel,
+            "grado": grado,
+            "docente_id": docente_id,
             "docente_nombre": docente_nombre
-
         })
+        print("========================================================")
+        # ==================================================
+        # GUARDAR EN MONGODB
+        # ==================================================
 
-        flash(
-            "Asignatura agregada correctamente.",
-            "success"
+        resultado = db.asignaturas.insert_one(
+            nueva_asignatura
         )
+
+        # ==================================================
+        # CONFIRMAR
+        # ==================================================
+
+        if resultado.inserted_id:
+
+            print("========================================")
+            print("✅ ASIGNATURA GUARDADA")
+            print("========================================")
+            print("ID:", nuevo_id)
+            print("CÓDIGO:", codigo)
+            print("NOMBRE:", nombre)
+            print("NIVEL:", nivel)
+            print("GRADO:", grado)
+            print("SECCIÓN:", seccion)
+            print("DOCENTE:", docente_id)
+            print("DOCENTE NOMBRE:", docente_nombre)
+            print("========================================")
+
+            flash(
+                f"Asignatura {nombre} agregada correctamente.",
+                "success"
+            )
 
         return redirect(
             url_for("listar_asignaturas")
         )
+
 
     # ======================================================
     # MOSTRAR FORMULARIO
@@ -4502,58 +4909,6 @@ def notas_clase(id):
         estudiantes=estudiantes,
         notas=notas
     )
-
-# =============================
-# MATERIALES POR AULA
-# =============================
-@app.route("/aula/<id>")
-@role_required("docente")
-def aula_detalle(id):
-
-    materiales = list(db.materiales.find({"asignatura_id": id}))
-    tareas = list(db.tareas.find({"asignatura_id": id}))
-
-    return render_template(
-        "aula_detalle.html",
-        materiales=materiales,
-        tareas=tareas,
-        asignatura=id
-    )
-
-
-# =============================
-# SUBIR MATERIAL
-# =============================
-@app.route("/material/subir", methods=["POST"])
-@role_required("docente")
-def subir_material():
-
-    db.materiales.insert_one({
-        "titulo": request.form["titulo"],
-        "archivo": request.form["archivo"],
-        "asignatura_id": request.form["asignatura_id"],
-        "docente_id": session["usuario"]
-    })
-
-    return redirect(url_for("aulas"))
-
-#=============================
-# CREAR TAREA
-# =============================
-@app.route("/tarea/crear", methods=["POST"])
-@role_required("docente")
-def crear_tarea():
-
-    db.tareas.insert_one({
-        "titulo": request.form["titulo"],
-        "descripcion": request.form["descripcion"],
-        "asignatura_id": request.form["asignatura_id"],
-        "fecha_entrega": request.form["fecha"],
-        "puntaje": int(request.form["puntaje"]),
-        "docente_id": session["usuario"]
-    })
-
-    return redirect(url_for("aulas"))
 
 
 # =========================
