@@ -4344,15 +4344,13 @@ def desactivar_matricula(matricula_id):
 # LISTAR-ASIGNATURA
 # =========================
 
-
 @app.route("/asignaturas")
 @role_required("admin")
 def listar_asignaturas():
 
     asignaturas = list(
-        db.asignaturas.find().sort("nombre",1)
+        db.asignaturas.find().sort("nombre", 1)
     )
-    
 
     return render_template(
         "asignaturas/listar.html",
@@ -4360,6 +4358,275 @@ def listar_asignaturas():
     )
 
 
+# =========================================================
+# ASIGNAR CLASE A DOCENTE
+# =========================================================
+
+@app.route("/asignar-clase", methods=["GET", "POST"])
+@role_required("admin")
+def asignar_clase():
+
+    print("========================================")
+    print("👨‍🏫 ASIGNAR CLASE")
+    print("========================================")
+
+    # =====================================================
+    # OBTENER ASIGNATURAS
+    # =====================================================
+
+    asignaturas = list(
+        db.asignaturas.find({}).sort(
+            "nombre",
+            1
+        )
+    )
+
+    # =====================================================
+    # OBTENER DOCENTES
+    # =====================================================
+
+    docentes = list(
+        db.docentes.find({}).sort(
+            "nombre",
+            1
+        )
+    )
+
+    # =====================================================
+    # GUARDAR ASIGNACIÓN
+    # =====================================================
+
+    if request.method == "POST":
+
+        asignatura_id = request.form.get(
+            "asignatura_id"
+        )
+
+        docente_id = request.form.get(
+            "docente_id"
+        )
+
+        nivel = request.form.get(
+            "nivel"
+        )
+
+        grado = request.form.get(
+            "grado"
+        )
+
+        seccion = request.form.get(
+            "seccion"
+        )
+
+        print("📚 ASIGNATURA ID:", asignatura_id)
+        print("👨‍🏫 DOCENTE ID:", docente_id)
+        print("🎓 NIVEL:", nivel)
+        print("📖 GRADO:", grado)
+        print("🏫 SECCIÓN:", seccion)
+
+        # =================================================
+        # VALIDACIONES
+        # =================================================
+
+        if not asignatura_id:
+
+            flash(
+                "Debe seleccionar una asignatura.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("asignar_clase")
+            )
+
+        if not docente_id:
+
+            flash(
+                "Debe seleccionar un docente.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("asignar_clase")
+            )
+
+        if not nivel:
+
+            flash(
+                "Debe seleccionar el nivel.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("asignar_clase")
+            )
+
+        if not grado:
+
+            flash(
+                "Debe seleccionar el grado.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("asignar_clase")
+            )
+
+        if not seccion:
+
+            flash(
+                "Debe seleccionar la sección.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("asignar_clase")
+            )
+
+        # =================================================
+        # BUSCAR ASIGNATURA
+        # =================================================
+
+        asignatura = db.asignaturas.find_one({
+            "_id": asignatura_id
+        })
+
+        if not asignatura:
+
+            flash(
+                "La asignatura seleccionada no existe.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("asignar_clase")
+            )
+
+        # =================================================
+        # BUSCAR DOCENTE
+        # =================================================
+
+        docente = db.docentes.find_one({
+            "codigo": docente_id
+        })
+
+        if not docente:
+
+            flash(
+                "El docente seleccionado no existe.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("asignar_clase")
+            )
+
+        # =================================================
+        # EVITAR DUPLICADOS
+        # =================================================
+
+        clase_existente = db.clases.find_one({
+
+            "asignatura_id": asignatura_id,
+
+            "docente_id": docente_id,
+
+            "grado": grado,
+
+            "seccion": seccion
+
+        })
+
+        if clase_existente:
+
+            flash(
+                "Esta clase ya está asignada a este docente.",
+                "warning"
+            )
+
+            return redirect(
+                url_for("asignar_clase")
+            )
+
+        # =================================================
+        # CREAR ASIGNACIÓN DE CLASE
+        # =================================================
+
+        clase = {
+
+            "asignatura_id":
+                asignatura_id,
+
+            "codigo_asignatura":
+                asignatura.get(
+                    "codigo",
+                    ""
+                ),
+
+            "asignatura":
+                asignatura.get(
+                    "nombre",
+                    ""
+                ),
+
+            "docente_id":
+                docente_id,
+
+            "docente":
+                docente.get(
+                    "nombre",
+                    ""
+                ),
+
+            "nivel":
+                nivel,
+
+            "grado":
+                grado,
+
+            "seccion":
+                seccion,
+
+            "estado":
+                "Activa"
+
+        }
+
+        # =================================================
+        # GUARDAR EN MONGODB
+        # =================================================
+
+        resultado = db.clases.insert_one(
+            clase
+        )
+
+        print("========================================")
+        print("✅ CLASE ASIGNADA")
+        print("ID:", resultado.inserted_id)
+        print("========================================")
+
+        flash(
+            "La clase fue asignada correctamente.",
+            "success"
+        )
+
+        return redirect(
+            url_for("asignar_clase")
+        )
+
+    # =====================================================
+    # MOSTRAR FORMULARIO
+    # =====================================================
+
+    return render_template(
+
+        "asignaturas/asignar_clase.html",
+
+        asignaturas=asignaturas,
+
+        docentes=docentes
+
+    )
 # =========================
 # ASIGNAR ESTUDIANTE
 # =========================
@@ -4416,179 +4683,96 @@ def editar_nota(id):
 def agregar_asignatura():
 
     # ======================================================
-    # OBTENER DOCENTES
-    # ======================================================
-
-    docentes = list(
-        db.docentes.find({}).sort("nombre", 1)
-    )
-
-    # ======================================================
     # GUARDAR ASIGNATURA
     # ======================================================
 
     if request.method == "POST":
 
-        codigo = request.form.get("codigo", "").strip()
+        codigo = request.form.get("codigo", "").strip().upper()
         nombre = request.form.get("nombre", "").strip()
-        nivel = request.form.get("nivel", "").strip()
-        grado = request.form.get("grado", "").strip()
-        seccion = request.form.get("seccion", "A").strip()
-        docente_id = request.form.get("docente_id", "").strip()
+
         print("")
         print("========================================================")
         print("🔥 GUARDANDO NUEVA ASIGNATURA")
         print("========================================================")
         print("CÓDIGO:", codigo)
         print("NOMBRE:", nombre)
-        print("NIVEL:", nivel)
-        print("GRADO:", grado)
-        print("DOCENTE_ID RECIBIDO:", docente_id)
-        print("TIPO:", type(docente_id))
         print("========================================================")
 
         # ==================================================
-        # VALIDACIONES
+        # VALIDAR CÓDIGO
         # ==================================================
 
         if not codigo:
-            flash("Debe ingresar el código de la asignatura.", "warning")
-            return redirect(url_for("agregar_asignatura"))
+
+            flash(
+                "Debe ingresar el código de la asignatura.",
+                "warning"
+            )
+
+            return redirect(
+                url_for("agregar_asignatura")
+            )
+
+        # ==================================================
+        # VALIDAR NOMBRE
+        # ==================================================
 
         if not nombre:
-            flash("Debe ingresar el nombre de la asignatura.", "warning")
-            return redirect(url_for("agregar_asignatura"))
 
-        if not nivel:
-            flash("Debe seleccionar el nivel.", "warning")
-            return redirect(url_for("agregar_asignatura"))
+            flash(
+                "Debe ingresar el nombre de la asignatura.",
+                "warning"
+            )
 
-        if not grado:
-            flash("Debe seleccionar el grado.", "warning")
-            return redirect(url_for("agregar_asignatura"))
-
-        if not docente_id:
-            flash("Debe seleccionar un docente.", "warning")
-            return redirect(url_for("agregar_asignatura"))
+            return redirect(
+                url_for("agregar_asignatura")
+            )
 
         # ==================================================
-        # BUSCAR DOCENTE POR CÓDIGO
+        # VERIFICAR SI YA EXISTE
         # ==================================================
 
-        docente = db.docentes.find_one({
-            "codigo": docente_id
+        asignatura_existente = db.asignaturas.find_one({
+            "codigo": codigo
         })
-        print("DOCENTE ENCONTRADO:", docente)
 
-        if not docente:
+        if asignatura_existente:
+
             flash(
-                f"No se encontró el docente con código {docente_id}.",
-                "danger"
-            )
-            return redirect(url_for("agregar_asignatura"))
-
-        # ==================================================
-        # DATOS DEL DOCENTE
-        # ==================================================
-
-        docente_nombre = docente.get("nombre", "")
-        tipo_docente = docente.get("tipo_docente", "docente")
-        print("DOCENTE NOMBRE:", docente_nombre)
-
-        # ==================================================
-        # GENERAR ID DE LA ASIGNATURA
-        #
-        # Ejemplo:
-        # EDF + 5 + A = EDF05A
-        # ==================================================
-
-        existentes = list(
-            db.asignaturas.find({
-                "codigo": codigo,
-                "grado": grado,
-                "seccion": seccion
-            })
-        )
-
-        if existentes:
-            flash(
-                "Ya existe una asignatura con ese código, grado y sección.",
+                f"La asignatura con código {codigo} ya existe.",
                 "warning"
             )
-            return redirect(url_for("agregar_asignatura"))
 
-        # ==================================================
-        # CONSTRUIR ID
-        # ==================================================
-
-        grado_id = grado
-
-        if grado_id.isdigit():
-            grado_id = grado_id.zfill(2)
-
-        elif grado_id == "I Nivel":
-            grado_id = "PRE1"
-
-        elif grado_id == "II Nivel":
-            grado_id = "PRE2"
-
-        elif grado_id == "III Nivel":
-            grado_id = "PRE3"
-
-        else:
-            grado_id = (
-                grado_id
-                .replace(" ", "")
-                .replace("er", "")
-                .replace("do", "")
-                .replace("to", "")
+            return redirect(
+                url_for("agregar_asignatura")
             )
-
-        nuevo_id = f"{codigo}{grado_id}{seccion}"
-
-        # ==================================================
-        # VERIFICAR QUE EL ID NO EXISTA
-        # ==================================================
-
-        if db.asignaturas.find_one({
-            "_id": nuevo_id
-        }):
-            flash(
-                f"La asignatura {nuevo_id} ya existe.",
-                "warning"
-            )
-            return redirect(url_for("agregar_asignatura"))
 
         # ==================================================
         # CREAR ASIGNATURA
         # ==================================================
 
         nueva_asignatura = {
-            "_id": nuevo_id,
+
             "codigo": codigo,
+
             "nombre": nombre,
-            "nivel": nivel,
-            "grado": grado,
-            "seccion": seccion,
-            "docente_id": docente_id,
-            "docente_nombre": docente_nombre,
-            "tipo_docente": tipo_docente,
+
             "activo": True
         }
 
+        # ==================================================
+        # MOSTRAR DOCUMENTO
+        # ==================================================
 
         print("========================================================")
         print("💾 DOCUMENTO QUE SE VA A GUARDAR")
         print("========================================================")
-        print({
-            "codigo": codigo,
-            "nombre": nombre,
-            "nivel": nivel,
-            "grado": grado,
-            "docente_id": docente_id,
-            "docente_nombre": docente_nombre
-        })
+
+        print(nueva_asignatura)
+
         print("========================================================")
+
         # ==================================================
         # GUARDAR EN MONGODB
         # ==================================================
@@ -4606,14 +4790,9 @@ def agregar_asignatura():
             print("========================================")
             print("✅ ASIGNATURA GUARDADA")
             print("========================================")
-            print("ID:", nuevo_id)
+            print("ID:", resultado.inserted_id)
             print("CÓDIGO:", codigo)
             print("NOMBRE:", nombre)
-            print("NIVEL:", nivel)
-            print("GRADO:", grado)
-            print("SECCIÓN:", seccion)
-            print("DOCENTE:", docente_id)
-            print("DOCENTE NOMBRE:", docente_nombre)
             print("========================================")
 
             flash(
@@ -4625,8 +4804,60 @@ def agregar_asignatura():
             url_for("listar_asignaturas")
         )
 
+    # ======================================================
+    # MOSTRAR FORMULARIO DIRECTAMENTE
+    # ======================================================
+
+    return render_template(
+        "asignaturas/agregar.html"
+    )
 
     # ======================================================
+    # OBTENER CATÁLOGO DE ASIGNATURAS
+    # ======================================================
+
+    asignaturas_catalogo = list(
+        db.asignaturas.find(
+            {},
+            {
+                "_id": 0,
+                "codigo": 1,
+                "nombre": 1
+            }
+        ).sort("nombre", 1)
+    )
+
+    # ======================================================
+    # ELIMINAR CÓDIGOS DUPLICADOS
+    # ======================================================
+
+    catalogo_asignaturas = {}
+
+    for asignatura in asignaturas_catalogo:
+
+        codigo = str(
+            asignatura.get("codigo", "")
+        ).strip().upper()
+
+        nombre = str(
+            asignatura.get("nombre", "")
+        ).strip()
+
+        if codigo and nombre:
+
+            catalogo_asignaturas[codigo] = nombre
+
+
+    # ======================================================
+    # MOSTRAR FORMULARIO
+    # ======================================================
+
+    return render_template(
+        "asignaturas/agregar.html",
+        docentes=docentes,
+        catalogo_asignaturas=catalogo_asignaturas
+    )
+        # ======================================================
     # MOSTRAR FORMULARIO
     # ======================================================
 

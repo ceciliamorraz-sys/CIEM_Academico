@@ -1,5 +1,6 @@
 
 <!DOCTYPE html>
+
 <html lang="es">
 
 <head>
@@ -8,12 +9,10 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1"
     >
 
-    <title>
-        Agregar Asignatura | CIEM Académico
-    </title>
+    <title>Nueva Asignatura | CIEM Académico</title>
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -24,91 +23,274 @@
 
         body {
             background: #f1f5f9;
-            font-family: "Segoe UI", Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
         }
 
-        .contenedor {
+        .container-main {
             max-width: 850px;
-            margin: 50px auto;
+            margin: 40px auto;
         }
 
-        .card {
-            border: none;
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-        }
-
-        .card-header {
+        .header {
             background: linear-gradient(
                 135deg,
                 #08142C,
                 #1E4E8C
             );
+
             color: white;
-            padding: 25px;
+
+            padding: 30px;
+
+            border-radius: 20px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(0, 0, 0, .15);
         }
 
-        .card-header h2 {
+        .header h2 {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: .9;
+        }
+
+        .card {
+            border: none;
+
+            border-radius: 20px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(0, 0, 0, .10);
+
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: white;
+
+            border-bottom:
+                1px solid #e5e7eb;
+
+            padding: 22px 28px;
+        }
+
+        .card-header h5 {
             margin: 0;
+
+            color: #08142C;
+
             font-weight: 700;
         }
 
-        .card-header p {
-            margin: 5px 0 0;
-            opacity: 0.9;
-        }
-
         .card-body {
-            padding: 35px;
+            padding: 30px;
         }
 
-        .form-label {
+        label {
             font-weight: 600;
-            color: #1D3256;
+
+            color: #1f2937;
+
+            margin-bottom: 8px;
         }
 
         .form-control,
         .form-select {
-            min-height: 45px;
+
+            min-height: 48px;
+
             border-radius: 10px;
-            border: 1px solid #cbd5e1;
+
+            border:
+                1px solid #cbd5e1;
+
+            padding:
+                10px 14px;
         }
 
         .form-control:focus,
         .form-select:focus {
-            border-color: #1E4E8C;
-            box-shadow: 0 0 0 0.2rem rgba(30, 78, 140, 0.15);
+
+            border-color:
+                #1E4E8C;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(
+                    30,
+                    78,
+                    140,
+                    .12
+                );
         }
 
-        .btn-guardar {
-            background: #198754;
-            color: white;
-            border: none;
-            padding: 10px 22px;
-            border-radius: 10px;
-            font-weight: 600;
+        .required {
+            color: #dc2626;
         }
 
-        .btn-guardar:hover {
-            background: #157347;
-            color: white;
+        .info-box {
+
+            background:
+                #eff6ff;
+
+            border-left:
+                4px solid #2563eb;
+
+            border-radius:
+                10px;
+
+            padding:
+                14px 16px;
+
+            margin-bottom:
+                25px;
+
+            color:
+                #1e3a8a;
         }
 
-        .btn-volver {
-            padding: 10px 22px;
-            border-radius: 10px;
-            font-weight: 600;
+        .ayuda {
+
+            font-size:
+                .88rem;
+
+            color:
+                #64748b;
+
+            margin-top:
+                6px;
         }
 
-        .info-docente {
-            background: #f8fafc;
-            border-left: 4px solid #1E4E8C;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-top: 8px;
-            font-size: 14px;
-            color: #475569;
+        .preview {
+
+            background:
+                #f0fdf4;
+
+            border-left:
+                4px solid #16a34a;
+
+            border-radius:
+                12px;
+
+            padding:
+                18px;
+
+            margin-top:
+                10px;
+        }
+
+        .preview-codigo {
+
+            display:
+                inline-block;
+
+            background:
+                #08142C;
+
+            color:
+                white;
+
+            padding:
+                6px 14px;
+
+            border-radius:
+                8px;
+
+            font-weight:
+                700;
+        }
+
+        .acciones {
+
+            border-top:
+                1px solid #e5e7eb;
+
+            margin-top:
+                25px;
+
+            padding-top:
+                25px;
+
+            display:
+                flex;
+
+            gap:
+                10px;
+
+            flex-wrap:
+                wrap;
+        }
+
+        .btn-ciem {
+
+            background:
+                #2563eb;
+
+            border:
+                none;
+
+            color:
+                white;
+
+            border-radius:
+                10px;
+
+            padding:
+                11px 22px;
+
+            font-weight:
+                600;
+        }
+
+        .btn-ciem:hover {
+
+            background:
+                #1d4ed8;
+
+            color:
+                white;
+        }
+
+        .btn-secondary {
+
+            border-radius:
+                10px;
+
+            padding:
+                11px 22px;
+
+            font-weight:
+                600;
+        }
+
+        @media (
+            max-width: 768px
+        ) {
+
+            .container-main {
+
+                margin:
+                    20px 12px;
+            }
+
+            .header {
+
+                padding:
+                    22px;
+            }
+
+            .card-body {
+
+                padding:
+                    20px;
+            }
+
         }
 
     </style>
@@ -119,81 +301,241 @@
 <body>
 
 
-<div class="container contenedor">
-
-    <div class="card">
+<div class="container container-main">
 
 
-        <!-- ==========================================
-             ENCABEZADO
-        =========================================== -->
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
 
-        <div class="card-header">
+    <div class="header mb-4">
 
-            <h2>
-                📚 Nueva Asignatura
-            </h2>
 
-            <p>
-                Registro de asignaturas — CIEM Académico
-            </p>
+        <div
+            class="
+                d-flex
+                justify-content-between
+                align-items-center
+                flex-wrap
+                gap-3
+            "
+        >
+
+
+            <div>
+
+                <h2>
+
+                    📚 Nueva Asignatura
+
+                </h2>
+
+
+                <p class="mb-0">
+
+                    Catálogo de asignaturas · CIEM Académico
+
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('listar_asignaturas') }}"
+                class="btn btn-light"
+            >
+
+                ← Regresar
+
+            </a>
+
 
         </div>
 
 
-        <!-- ==========================================
-             CUERPO
-        =========================================== -->
+    </div>
+
+
+
+    <!-- =====================================================
+         TARJETA
+    ====================================================== -->
+
+    <div class="card">
+
+
+        <div class="card-header">
+
+            <h5>
+
+                📝 Datos de la asignatura
+
+            </h5>
+
+        </div>
+
+
 
         <div class="card-body">
 
 
+            <div class="info-box">
+
+                <strong>
+                    ℹ️ Importante:
+                </strong>
+
+                Registre únicamente los datos básicos de
+                la asignatura. La asignación del docente,
+                nivel, grado y sección se realizará
+                posteriormente desde
+                <strong>Asignar Clase</strong>.
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FORMULARIO
+            ================================================== -->
+
             <form
                 method="POST"
                 action="{{ url_for('agregar_asignatura') }}"
+                id="formAsignatura"
             >
 
 
-                <div class="row">
+                <div class="row g-4">
 
 
-                    <!-- ==================================
+                    <!-- =========================================
                          CÓDIGO
-                    =================================== -->
+                    ========================================== -->
 
-                    <div class="col-md-6 mb-4">
+                    <div class="col-md-6">
 
-                        <label
-                            for="codigo"
-                            class="form-label"
-                        >
-                            Código de la asignatura
+
+                        <label for="codigo">
+
+                            Código de asignatura
+
+                            <span class="required">
+                                *
+                            </span>
+
                         </label>
 
-                        <input
-                            type="text"
+
+                        <select
                             id="codigo"
                             name="codigo"
-                            class="form-control"
-                            placeholder="Ej. MAT"
+                            class="form-select"
                             required
                         >
+
+                            <option value="">
+
+                                Seleccione código
+
+                            </option>
+
+
+                            <option value="MAT">
+
+                                MAT
+
+                            </option>
+
+
+                            <option value="LEN">
+
+                                LEN
+
+                            </option>
+
+
+                            <option value="CNA">
+
+                                CNA
+
+                            </option>
+
+
+                            <option value="CSS">
+
+                                CSS
+
+                            </option>
+
+
+                            <option value="ING">
+
+                                ING
+
+                            </option>
+
+
+                            <option value="EDF">
+
+                                EDF
+
+                            </option>
+
+
+                            <option value="INF">
+
+                                INF
+
+                            </option>
+
+
+                            <option value="ECR">
+
+                                ECR
+
+                            </option>
+
+
+                            <option value="AEP">
+
+                                AEP
+
+                            </option>
+
+
+                        </select>
+
+
+                        <div class="ayuda">
+
+                            Código corto utilizado para
+                            identificar la asignatura.
+
+                        </div>
+
 
                     </div>
 
 
-                    <!-- ==================================
+
+                    <!-- =========================================
                          NOMBRE
-                    =================================== -->
+                    ========================================== -->
 
-                    <div class="col-md-6 mb-4">
+                    <div class="col-md-6">
 
-                        <label
-                            for="nombre"
-                            class="form-label"
-                        >
+
+                        <label for="nombre">
+
                             Nombre de la asignatura
+
+                            <span class="required">
+                                *
+                            </span>
+
                         </label>
+
 
                         <input
                             type="text"
@@ -201,213 +543,71 @@
                             name="nombre"
                             class="form-control"
                             placeholder="Ej. Matemática"
+                            maxlength="100"
                             required
                         >
 
-                    </div>
 
+                        <div class="ayuda">
 
-                    <!-- ==================================
-                         NIVEL
-                    =================================== -->
-
-                    <div class="col-md-6 mb-4">
-
-                        <label
-                            for="nivel"
-                            class="form-label"
-                        >
-                            Nivel educativo
-                        </label>
-
-                        <select
-                            id="nivel"
-                            name="nivel"
-                            class="form-select"
-                            required
-                        >
-
-                            <option value="">
-                                Seleccione el nivel
-                            </option>
-
-                            <option value="Preescolar">
-                                Preescolar
-                            </option>
-
-                            <option value="Primaria">
-                                Primaria
-                            </option>
-
-                            <option value="Secundaria">
-                                Secundaria
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <!-- ==================================
-                         GRADO
-                    =================================== -->
-
-                    <div class="col-md-6 mb-4">
-
-                        <label
-                            for="grado"
-                            class="form-label"
-                        >
-                            Grado / Nivel
-                        </label>
-
-                        <select
-                            id="grado"
-                            name="grado"
-                            class="form-select"
-                            required
-                        >
-
-                            <option value="">
-                                Seleccione el grado
-                            </option>
-
-
-                            <!-- PREESCOLAR -->
-
-                            <optgroup label="Preescolar">
-
-                                <option value="I Nivel">
-                                    I Nivel
-                                </option>
-
-                                <option value="II Nivel">
-                                    II Nivel
-                                </option>
-
-                                <option value="III Nivel">
-                                    III Nivel
-                                </option>
-
-                            </optgroup>
-
-
-                            <!-- PRIMARIA -->
-
-                            <optgroup label="Primaria">
-
-                                <option value="1">
-                                    1er Grado
-                                </option>
-
-                                <option value="2">
-                                    2do Grado
-                                </option>
-
-                                <option value="3">
-                                    3er Grado
-                                </option>
-
-                                <option value="4">
-                                    4to Grado
-                                </option>
-
-                                <option value="5">
-                                    5to Grado
-                                </option>
-
-                                <option value="6">
-                                    6to Grado
-                                </option>
-
-                            </optgroup>
-
-
-                            <!-- SECUNDARIA -->
-
-                            <optgroup label="Secundaria">
-
-                                <option value="1 Año">
-                                    1 Año
-                                </option>
-
-                                <option value="2 Año">
-                                    2 Año
-                                </option>
-
-                                <option value="3 Año">
-                                    3 Año
-                                </option>
-
-                                <option value="4 Año">
-                                    4 Año
-                                </option>
-
-                                <option value="5 Año">
-                                    5 Año
-                                </option>
-
-                            </optgroup>
-
-                        </select>
-
-                    </div>
-
-
-                    <!-- ==================================
-                         DOCENTE
-                    =================================== -->
-
-                    <div class="col-12 mb-4">
-
-                        <label
-                            for="docente_id"
-                            class="form-label"
-                        >
-                            Docente responsable
-                        </label>
-
-
-                        <select
-                            id="docente_id"
-                            name="docente_id"
-                            class="form-select"
-                            required
-                        >
-
-                            <option value="">
-                                Seleccione el docente
-                            </option>
-
-
-                            {% for docente in docentes %}
-
-                                <option
-                                    value="{{ docente._id }}"
-                                >
-
-                                    {{ docente.nombre }}
-
-                                    {% if docente.cargo %}
-                                        — {{ docente.cargo }}
-                                    {% endif %}
-
-                                    — ID: {{ docente._id }}
-
-                                </option>
-
-                            {% endfor %}
-
-
-                        </select>
-
-
-                        <div class="info-docente">
-
-                            ℹ️ El docente seleccionado quedará asociado
-                            directamente a esta asignatura.
+                            Escriba el nombre completo
+                            de la asignatura.
 
                         </div>
+
+
+                    </div>
+
+
+
+                    <!-- =========================================
+                         PREVISUALIZACIÓN
+                    ========================================== -->
+
+                    <div
+                        class="col-md-12"
+                        id="previewContainer"
+                        style="display:none;"
+                    >
+
+
+                        <div class="preview">
+
+
+                            <div>
+
+                                <strong>
+
+                                    📚 Vista previa
+
+                                </strong>
+
+                            </div>
+
+
+                            <div class="mt-3">
+
+
+                                <span
+                                    id="previewCodigo"
+                                    class="preview-codigo"
+                                ></span>
+
+
+                                <span class="ms-2">
+
+                                    <strong
+                                        id="previewNombre"
+                                    ></strong>
+
+                                </span>
+
+
+                            </div>
+
+
+                        </div>
+
 
                     </div>
 
@@ -415,16 +615,17 @@
                 </div>
 
 
-                <!-- ==================================
-                     BOTONES
-                =================================== -->
 
-                <div class="d-flex gap-2 mt-3">
+                <!-- =============================================
+                     ACCIONES
+                ============================================== -->
+
+                <div class="acciones">
 
 
                     <button
                         type="submit"
-                        class="btn btn-guardar"
+                        class="btn btn-ciem"
                     >
 
                         💾 Guardar asignatura
@@ -434,10 +635,10 @@
 
                     <a
                         href="{{ url_for('listar_asignaturas') }}"
-                        class="btn btn-secondary btn-volver"
+                        class="btn btn-secondary"
                     >
 
-                        ← Volver
+                        Cancelar
 
                     </a>
 
@@ -450,14 +651,183 @@
 
         </div>
 
+
     </div>
 
+
 </div>
+
 
 
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 ></script>
+
+
+
+<script>
+
+    // =========================================================
+    // ELEMENTOS
+    // =========================================================
+
+    const codigo =
+        document.getElementById(
+            "codigo"
+        );
+
+
+    const nombre =
+        document.getElementById(
+            "nombre"
+        );
+
+
+    const previewContainer =
+        document.getElementById(
+            "previewContainer"
+        );
+
+
+    const previewCodigo =
+        document.getElementById(
+            "previewCodigo"
+        );
+
+
+    const previewNombre =
+        document.getElementById(
+            "previewNombre"
+        );
+
+
+
+    // =========================================================
+    // ACTUALIZAR PREVISUALIZACIÓN
+    // =========================================================
+
+    function actualizarPreview() {
+
+
+        if (
+            !codigo.value &&
+            !nombre.value
+        ) {
+
+            previewContainer.style.display =
+                "none";
+
+            return;
+
+        }
+
+
+        previewCodigo.textContent =
+            codigo.value || "---";
+
+
+        previewNombre.textContent =
+            nombre.value || "Sin nombre";
+
+
+        previewContainer.style.display =
+            "block";
+
+    }
+
+
+
+    // =========================================================
+    // CAMBIO DE CÓDIGO
+    // =========================================================
+
+    codigo.addEventListener(
+        "change",
+        actualizarPreview
+    );
+
+
+
+    // =========================================================
+    // CAMBIO DE NOMBRE
+    // =========================================================
+
+    nombre.addEventListener(
+        "input",
+        actualizarPreview
+    );
+
+
+
+    // =========================================================
+    // VALIDACIÓN
+    // =========================================================
+
+    document
+        .getElementById(
+            "formAsignatura"
+        )
+        .addEventListener(
+            "submit",
+            function(event) {
+
+
+                if (!codigo.value) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Debe seleccionar el código de la asignatura."
+                    );
+
+                    codigo.focus();
+
+                    return;
+
+                }
+
+
+                if (!nombre.value.trim()) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Debe escribir el nombre de la asignatura."
+                    );
+
+                    nombre.focus();
+
+                    return;
+
+                }
+
+
+                console.log(
+                    "========================================"
+                );
+
+                console.log(
+                    "📚 NUEVA ASIGNATURA"
+                );
+
+                console.log(
+                    "CÓDIGO:",
+                    codigo.value
+                );
+
+                console.log(
+                    "NOMBRE:",
+                    nombre.value
+                );
+
+                console.log(
+                    "========================================"
+                );
+
+            }
+        );
+
+</script>
 
 
 </body>

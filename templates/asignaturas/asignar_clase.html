@@ -1,0 +1,1090 @@
+
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>Asignar Clase | CIEM Académico</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        body {
+            background: #f1f5f9;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container-main {
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #08142C, #1E4E8C);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, .15);
+        }
+
+        .header h2 {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: .9;
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, .10);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 22px 28px;
+        }
+
+        .card-header h5 {
+            margin: 0;
+            color: #08142C;
+            font-weight: 700;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        .form-select {
+            min-height: 48px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            padding: 10px 14px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #1E4E8C;
+            box-shadow: 0 0 0 3px rgba(30, 78, 140, .12);
+        }
+
+        .required {
+            color: #dc2626;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 25px;
+            color: #1e3a8a;
+        }
+
+        .ayuda {
+            font-size: .88rem;
+            color: #64748b;
+            margin-top: 6px;
+        }
+
+        .preview {
+            background: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-top: 10px;
+        }
+
+        .preview-codigo {
+            display: inline-block;
+            background: #08142C;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        .preview-docente {
+            display: inline-block;
+            background: #1E4E8C;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        .acciones {
+            border-top: 1px solid #e5e7eb;
+            margin-top: 25px;
+            padding-top: 25px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-ciem {
+            background: #2563eb;
+            border: none;
+            color: white;
+            border-radius: 10px;
+            padding: 11px 22px;
+            font-weight: 600;
+        }
+
+        .btn-ciem:hover {
+            background: #1d4ed8;
+            color: white;
+        }
+
+        .btn-secondary {
+            border-radius: 10px;
+            padding: 11px 22px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+
+            .container-main {
+                margin: 20px 12px;
+            }
+
+            .header {
+                padding: 22px;
+            }
+
+            .card-body {
+                padding: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container container-main">
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <div class="header mb-4">
+
+        <div
+            class="
+                d-flex
+                justify-content-between
+                align-items-center
+                flex-wrap
+                gap-3
+            "
+        >
+
+            <div>
+
+                <h2>
+                    👨‍🏫 Asignar Clase
+                </h2>
+
+                <p class="mb-0">
+                    Asignación académica · CIEM Académico
+                </p>
+
+            </div>
+
+            <a
+                href="{{ url_for('listar_asignaturas') }}"
+                class="btn btn-light"
+            >
+                ← Regresar
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TARJETA
+    ====================================================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h5>
+                📝 Datos de la asignación de clase
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="info-box">
+
+                <strong>ℹ️ Importante:</strong>
+
+                Seleccione una asignatura, un docente y el
+                nivel, grado y sección donde impartirá la clase.
+                Esta información será registrada como una
+                <strong>asignación de clase</strong>.
+
+            </div>
+
+
+            <!-- =================================================
+                 FORMULARIO
+            ================================================== -->
+
+            <form
+                method="POST"
+                action="{{ url_for('asignar_clase') }}"
+            >
+
+                <div class="row g-4">
+
+
+                    <!-- =========================================
+                         ASIGNATURA
+                    ========================================== -->
+
+                    <div class="col-md-6">
+
+                        <label for="asignatura_id">
+
+                            Asignatura
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <select
+                            id="asignatura_id"
+                            name="asignatura_id"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="">
+                                Seleccione asignatura
+                            </option>
+
+                            {% for asignatura in asignaturas %}
+
+                                <option
+                                    value="{{ asignatura._id }}"
+                                    data-codigo="{{ asignatura.codigo }}"
+                                    data-nombre="{{ asignatura.nombre }}"
+                                >
+
+                                    {{ asignatura.codigo }}
+                                    —
+                                    {{ asignatura.nombre }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                        <div class="ayuda">
+
+                            Seleccione la asignatura que desea
+                            asignar al docente.
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =========================================
+                         DOCENTE
+                    ========================================== -->
+
+                    <div class="col-md-6">
+
+                        <label for="docente_codigo">
+
+                            Docente
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <select
+                            id="docente_codigo"
+                            name="docente_id"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="">
+                                Seleccione docente
+                            </option>
+
+                            {% for d in docentes %}
+
+                                <option
+                                    value="{{ d.codigo }}"
+                                    data-nombre="{{ d.nombre }}"
+                                >
+
+                                    {{ d.codigo }}
+                                    —
+                                    {{ d.nombre }}
+
+                                    {% if d.cargo %}
+                                        — {{ d.cargo }}
+                                    {% endif %}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                        <div class="ayuda">
+
+                            Seleccione el docente responsable
+                            de esta clase.
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =========================================
+                         NIVEL
+                    ========================================== -->
+
+                    <div class="col-md-6">
+
+                        <label for="nivel">
+
+                            Nivel
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <select
+                            id="nivel"
+                            name="nivel"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="">
+                                Seleccione nivel
+                            </option>
+
+                            <option value="Preescolar">
+                                Preescolar
+                            </option>
+
+                            <option value="Primaria">
+                                Primaria
+                            </option>
+
+                            <option value="Secundaria">
+                                Secundaria
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- =========================================
+                         GRADO
+                    ========================================== -->
+
+                    <div class="col-md-6">
+
+                        <label for="grado">
+
+                            Grado
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <select
+                            id="grado"
+                            name="grado"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="">
+                                Seleccione grado
+                            </option>
+
+                            <optgroup label="Preescolar">
+
+                                <option value="I Nivel">
+                                    I Nivel
+                                </option>
+
+                                <option value="II Nivel">
+                                    II Nivel
+                                </option>
+
+                                <option value="III Nivel">
+                                    III Nivel
+                                </option>
+
+                            </optgroup>
+
+
+                            <optgroup label="Primaria">
+
+                                <option value="1">
+                                    1er Grado
+                                </option>
+
+                                <option value="2">
+                                    2do Grado
+                                </option>
+
+                                <option value="3">
+                                    3er Grado
+                                </option>
+
+                                <option value="4">
+                                    4to Grado
+                                </option>
+
+                                <option value="5">
+                                    5to Grado
+                                </option>
+
+                                <option value="6">
+                                    6to Grado
+                                </option>
+
+                            </optgroup>
+
+
+                            <optgroup label="Secundaria">
+
+                                <option value="1 Año">
+                                    1 Año
+                                </option>
+
+                                <option value="2 Año">
+                                    2 Año
+                                </option>
+
+                                <option value="3 Año">
+                                    3 Año
+                                </option>
+
+                                <option value="4 Año">
+                                    4 Año
+                                </option>
+
+                                <option value="5 Año">
+                                    5 Año
+                                </option>
+
+                            </optgroup>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- =========================================
+                         SECCIÓN
+                    ========================================== -->
+
+                    <div class="col-md-6">
+
+                        <label for="seccion">
+
+                            Sección
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <select
+                            id="seccion"
+                            name="seccion"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="A">
+                                A
+                            </option>
+
+                            <option value="B">
+                                B
+                            </option>
+
+                            <option value="C">
+                                C
+                            </option>
+
+                            <option value="D">
+                                D
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- =========================================
+                         ESTADO
+                    ========================================== -->
+
+                    <div class="col-md-6">
+
+                        <label for="activo">
+
+                            Estado
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <select
+                            id="activo"
+                            name="activo"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="True">
+                                Activa
+                            </option>
+
+                            <option value="False">
+                                Inactiva
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- =========================================
+                         PREVISUALIZACIÓN ASIGNATURA
+                    ========================================== -->
+
+                    <div
+                        class="col-md-12"
+                        id="previewAsignatura"
+                        style="display:none;"
+                    >
+
+                        <div class="preview">
+
+                            <div>
+
+                                <strong>
+                                    📚 Asignatura seleccionada
+                                </strong>
+
+                            </div>
+
+                            <div class="mt-2">
+
+                                <span
+                                    id="previewCodigo"
+                                    class="preview-codigo"
+                                ></span>
+
+                                <span class="ms-2">
+
+                                    <strong
+                                        id="previewNombre"
+                                    ></strong>
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =========================================
+                         PREVISUALIZACIÓN DOCENTE
+                    ========================================== -->
+
+                    <div
+                        class="col-md-12"
+                        id="previewDocente"
+                        style="display:none;"
+                    >
+
+                        <div class="preview">
+
+                            <div>
+
+                                <strong>
+                                    👨‍🏫 Docente seleccionado
+                                </strong>
+
+                            </div>
+
+                            <div class="mt-2">
+
+                                <span
+                                    id="previewDocenteCodigo"
+                                    class="preview-docente"
+                                ></span>
+
+                                <span class="ms-2">
+
+                                    <strong
+                                        id="previewDocenteNombre"
+                                    ></strong>
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =========================================
+                         PREVISUALIZACIÓN CLASE
+                    ========================================== -->
+
+                    <div
+                        class="col-md-12"
+                        id="previewClase"
+                        style="display:none;"
+                    >
+
+                        <div class="preview">
+
+                            <strong>
+                                🏫 Asignación:
+                            </strong>
+
+                            <span
+                                id="previewAsignacion"
+                                class="preview-codigo ms-2"
+                            ></span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =============================================
+                     ACCIONES
+                ============================================== -->
+
+                <div class="acciones">
+
+                    <button
+                        type="submit"
+                        class="btn btn-ciem"
+                    >
+
+                        💾 Guardar asignación
+
+                    </button>
+
+
+                    <a
+                        href="{{ url_for('listar_asignaturas') }}"
+                        class="btn btn-secondary"
+                    >
+
+                        Cancelar
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+
+
+<script>
+
+    // =========================================================
+    // ELEMENTOS
+    // =========================================================
+
+    const asignatura =
+        document.getElementById(
+            "asignatura_id"
+        );
+
+    const docente =
+        document.getElementById(
+            "docente_codigo"
+        );
+
+    const nivel =
+        document.getElementById(
+            "nivel"
+        );
+
+    const grado =
+        document.getElementById(
+            "grado"
+        );
+
+    const seccion =
+        document.getElementById(
+            "seccion"
+        );
+
+
+    // =========================================================
+    // PREVISUALIZAR ASIGNATURA
+    // =========================================================
+
+    asignatura.addEventListener(
+        "change",
+        function () {
+
+            const opcion =
+                this.options[
+                    this.selectedIndex
+                ];
+
+            const preview =
+                document.getElementById(
+                    "previewAsignatura"
+                );
+
+            if (!opcion.value) {
+
+                preview.style.display =
+                    "none";
+
+                actualizarPreview();
+
+                return;
+
+            }
+
+            document.getElementById(
+                "previewCodigo"
+            ).textContent =
+                opcion.dataset.codigo || "";
+
+            document.getElementById(
+                "previewNombre"
+            ).textContent =
+                opcion.dataset.nombre || "";
+
+            preview.style.display =
+                "block";
+
+            actualizarPreview();
+
+        }
+    );
+
+
+    // =========================================================
+    // PREVISUALIZAR DOCENTE
+    // =========================================================
+
+    docente.addEventListener(
+        "change",
+        function () {
+
+            const opcion =
+                this.options[
+                    this.selectedIndex
+                ];
+
+            const preview =
+                document.getElementById(
+                    "previewDocente"
+                );
+
+            if (!opcion.value) {
+
+                preview.style.display =
+                    "none";
+
+                actualizarPreview();
+
+                return;
+
+            }
+
+            document.getElementById(
+                "previewDocenteCodigo"
+            ).textContent =
+                opcion.value;
+
+            document.getElementById(
+                "previewDocenteNombre"
+            ).textContent =
+                opcion.dataset.nombre || "";
+
+            preview.style.display =
+                "block";
+
+            actualizarPreview();
+
+        }
+    );
+
+
+    // =========================================================
+    // ACTUALIZAR PREVISUALIZACIÓN
+    // =========================================================
+
+    function actualizarPreview() {
+
+        const opcionAsignatura =
+            asignatura.options[
+                asignatura.selectedIndex
+            ];
+
+        const opcionDocente =
+            docente.options[
+                docente.selectedIndex
+            ];
+
+        if (
+            !opcionAsignatura ||
+            !opcionAsignatura.value ||
+            !opcionDocente ||
+            !opcionDocente.value ||
+            !nivel.value ||
+            !grado.value ||
+            !seccion.value
+        ) {
+
+            document.getElementById(
+                "previewClase"
+            ).style.display = "none";
+
+            return;
+
+        }
+
+
+        const codigo =
+            opcionAsignatura.dataset.codigo || "";
+
+        const docenteCodigo =
+            opcionDocente.value || "";
+
+        const texto =
+            codigo +
+            " · " +
+            nivel.value +
+            " · " +
+            grado.value +
+            " · " +
+            seccion.value +
+            " · " +
+            docenteCodigo;
+
+
+        document.getElementById(
+            "previewAsignacion"
+        ).textContent =
+            texto;
+
+        document.getElementById(
+            "previewClase"
+        ).style.display =
+            "block";
+
+    }
+
+
+    // =========================================================
+    // ACTUALIZAR AL CAMBIAR NIVEL
+    // GRADO O SECCIÓN
+    // =========================================================
+
+    nivel.addEventListener(
+        "change",
+        actualizarPreview
+    );
+
+    grado.addEventListener(
+        "change",
+        actualizarPreview
+    );
+
+    seccion.addEventListener(
+        "change",
+        actualizarPreview
+    );
+
+
+    // =========================================================
+    // VALIDAR FORMULARIO
+    // =========================================================
+
+    document
+        .getElementById(
+            "formAsignacion"
+        )
+        .addEventListener(
+            "submit",
+            function(event) {
+
+                if (!asignatura.value) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Debe seleccionar una asignatura."
+                    );
+
+                    return;
+
+                }
+
+
+                if (!docente.value) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Debe seleccionar un docente."
+                    );
+
+                    return;
+
+                }
+
+
+                if (!nivel.value) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Debe seleccionar el nivel."
+                    );
+
+                    return;
+
+                }
+
+
+                if (!grado.value) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Debe seleccionar el grado."
+                    );
+
+                    return;
+
+                }
+
+
+                if (!seccion.value) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Debe seleccionar la sección."
+                    );
+
+                    return;
+
+                }
+
+
+                console.log(
+                    "========================================"
+                );
+
+                console.log(
+                    "💾 ASIGNACIÓN DE CLASE"
+                );
+
+                console.log(
+                    "ASIGNATURA:",
+                    asignatura.value
+                );
+
+                console.log(
+                    "DOCENTE:",
+                    docente.value
+                );
+
+                console.log(
+                    "NIVEL:",
+                    nivel.value
+                );
+
+                console.log(
+                    "GRADO:",
+                    grado.value
+                );
+
+                console.log(
+                    "SECCIÓN:",
+                    seccion.value
+                );
+
+                console.log(
+                    "========================================"
+                );
+
+            }
+        );
+
+</script>
+
+</body>
+
+</html>

@@ -128,16 +128,55 @@ def dashboard_docente():
         docente.get("_id")
     )
     # ========================================================
-    # 2. ASIGNATURAS DEL DOCENTE
+    # 2. ASIGNACIONES DE CLASE DEL DOCENTE
+    # ========================================================
+    #
+    # La fuente oficial para el dashboard docente es ahora
+    # la colección asignaciones_clase.
+    #
+    # Ejemplo:
+    # DOC012 → Evert → 9 clases
+    # DOC013 → Inglés → 9 clases
+    #
+    # Ya no dependemos de la colección antigua asignaturas.
     # ========================================================
 
     clases = list(
-        db.asignaturas.find({
-            "docente_id": docente_id
+        db.asignaciones_clase.find({
+            "docente_id": docente_id,
+            "activo": True
         })
     )
 
     total_asignaturas = len(clases)
+
+    print("")
+    print("========================================================")
+    print("📚 ASIGNACIONES DEL DOCENTE")
+    print("========================================================")
+    print("DOCENTE:", docente.get("nombre"))
+    print("DOCENTE ID:", docente_id)
+    print("TOTAL ASIGNACIONES:", total_asignaturas)
+
+    for clase in clases:
+
+        print(
+            clase.get("_id"),
+            "|",
+            clase.get("asignatura_codigo"),
+            "|",
+            clase.get("asignatura_nombre"),
+            "| NIVEL:",
+            clase.get("nivel"),
+            "| GRADO:",
+            clase.get("grado"),
+            "| SECCIÓN:",
+            clase.get("seccion"),
+            "| DOCENTE:",
+            clase.get("docente_id")
+        )
+
+    print("========================================================")
 
     # ========================================================
     # 3. ESTUDIANTES
@@ -264,11 +303,8 @@ def dashboard_docente():
 
     for nota in notas_docente:
 
-        valor = nota.get("promedio")
-
-        if valor is None:
-
-            valor = nota.get("nota")
+        # Utilizamos la nota real sobre 100
+        valor = nota.get("nota")
 
         try:
 
@@ -285,18 +321,18 @@ def dashboard_docente():
 
             pass
 
+
     if valores_promedio:
 
         promedio_general = round(
             sum(valores_promedio)
             /
-            len(valores_promedio),
-            2
+            len(valores_promedio)
         )
 
     else:
 
-        promedio_general = 0.0
+        promedio_general = 0
 
     # ========================================================
     # 7. APROBADOS Y REPROBADOS
@@ -481,6 +517,10 @@ def mis_clases():
 
     usuario = session.get("usuario")
 
+    # ======================================================
+    # BUSCAR DOCENTE
+    # ======================================================
+
     docente = db.docentes.find_one({
         "usuario": usuario
     })
@@ -496,93 +536,101 @@ def mis_clases():
             url_for("login")
         )
 
-    clases = list(
-        db.asignaciones.aggregate([
+    # ======================================================
+    # ID DEL DOCENTE
+    # ======================================================
 
-            {
-                "$match": {
-                    "docente_id": docente["_id"]
-                }
-            },
-
-            {
-                "$lookup": {
-                    "from": "asignaturas",
-                    "localField": "asignatura_id",
-                    "foreignField": "_id",
-                    "as": "asignatura"
-                }
-            },
-
-            {
-                "$lookup": {
-                    "from": "cursos",
-                    "localField": "curso_id",
-                    "foreignField": "_id",
-                    "as": "curso"
-                }
-            }
-
-        ])
+    docente_id = str(
+        docente.get("_id")
     )
+
+    # ======================================================
+    # OBTENER ASIGNACIONES DE CLASE
+    # ======================================================
+    #
+    # La fuente oficial ahora es:
+    #
+    # asignaciones_clase
+    #
+    # No necesitamos consultar:
+    # - asignaciones
+    # - asignaturas
+    # - cursos
+    #
+    # porque la nueva colección ya contiene
+    # toda la información necesaria.
+    # ======================================================
+
+    clases = list(
+        db.asignaciones_clase.find({
+            "docente_id": docente_id,
+            "activo": True
+        }).sort(
+            [
+                ("nivel", 1),
+                ("grado", 1),
+                ("seccion", 1),
+                ("asignatura_nombre", 1)
+            ]
+        )
+    )
+
+    # ======================================================
+    # INFORMACIÓN PARA DEPURACIÓN
+    # ======================================================
+
+    print("")
+    print("========================================================")
+    print("📚 MIS CLASES")
+    print("========================================================")
+    print("DOCENTE:", docente.get("nombre"))
+    print("DOCENTE ID:", docente_id)
+    print("TOTAL CLASES:", len(clases))
+
+    for clase in clases:
+
+        print(
+            clase.get("_id"),
+            "|",
+            clase.get("asignatura_codigo"),
+            "|",
+            clase.get("asignatura_nombre"),
+            "| NIVEL:",
+            clase.get("nivel"),
+            "| GRADO:",
+            clase.get("grado"),
+            "| SECCIÓN:",
+            clase.get("seccion"),
+            "| DOCENTE:",
+            clase.get("docente_id")
+        )
+
+    print("========================================================")
+
+    # ======================================================
+    # MOSTRAR MIS CLASES
+    # ======================================================
 
     return render_template(
         "docente/mis_clases.html",
-        clases=clases
+        clases=clases,
+        docente=docente,
+        docente_id=docente_id
     )
 
+    # ==========================================================
+    # BUSCAR ASIGNACIÓN DE CLASE
+    # ==========================================================
 
-# ==============================
-# DETALLE DE UNA CLASE
-# ==============================
+    docente_id = str(
+        docente.get("_id")
+    )
 
-@docente_bp.route("/clase/<asignatura_id>")
-@role_required("docente")
-def detalle_clase(asignatura_id):
-
-    usuario = session.get("usuario")
-
-
-    docente = db.docentes.find_one({
-        "usuario": usuario
-    })
-
-
-    if not docente:
-        flash(
-            "Docente no encontrado",
-            "danger"
-        )
-        return redirect(url_for("login"))
-
-
-
-    asignatura = db.asignaturas.find_one({
+    asignatura = db.asignaciones_clase.find_one({
         "_id": asignatura_id,
-        "docente_id": docente["_id"]
+        "docente_id": docente_id,
+        "activo": True
     })
-
-
-    if not asignatura:
-
-        flash(
-            "Asignatura no encontrada",
-            "danger"
-        )
-
-        return redirect(
-            url_for("docente.mis_clases")
-        )
-
-
-    estudiantes = list(
-        db.estudiantes.find({
-            "grado": asignatura["grado"],
-            "seccion": asignatura["seccion"],
-            "estado":"activo"
-        })
-    )
-
 # =====================================
 # CERRAR SESIÓN DOCENTE
 # =====================================
@@ -605,23 +653,75 @@ def asistencia(asignatura_id):
 
     print("========================================")
     print("🔥 ASISTENCIA")
-    print("ASIGNATURA ID:", asignatura_id)
+    print("ASIGNACIÓN ID:", asignatura_id)
     print("========================================")
 
     # =====================================
-    # BUSCAR ASIGNATURA
+    # BUSCAR DOCENTE
     # =====================================
 
-    asignatura = db.asignaturas.find_one({
-        "_id": asignatura_id
+    usuario = session.get("usuario")
+
+    docente = db.docentes.find_one({
+        "usuario": usuario
     })
 
-    print("📚 ASIGNATURA:", asignatura)
-
-    if not asignatura:
+    if not docente:
 
         flash(
-            "Asignatura no encontrada",
+            "Docente no encontrado",
+            "danger"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+    # =====================================
+    # ID OFICIAL DEL DOCENTE
+    # =====================================
+
+    codigo_docente = str(
+        docente.get("codigo", "")
+    ).strip()
+
+    docente_id = f"DOC{codigo_docente}"
+
+    print("👨‍🏫 DOCENTE:", docente.get("nombre"))
+    print("🆔 DOCENTE ID:", docente_id)
+
+    # =====================================
+    # BUSCAR ASIGNACIÓN DE CLASE
+    # =====================================
+    #
+    # La fuente oficial es:
+    #
+    # asignaciones_clase
+    #
+    # Ya NO utilizamos:
+    #
+    # db.asignaturas
+    #
+    # La asignación debe pertenecer al
+    # docente que inició sesión.
+    # =====================================
+
+    asignacion = db.asignaciones_clase.find_one({
+
+        "_id": asignatura_id,
+
+        "docente_id": docente_id,
+
+        "activo": True
+
+    })
+
+    print("📚 ASIGNACIÓN:", asignacion)
+
+    if not asignacion:
+
+        flash(
+            "Asignación de clase no encontrada.",
             "danger"
         )
 
@@ -630,12 +730,26 @@ def asistencia(asignatura_id):
         )
 
     # =====================================
-    # DATOS DE LA ASIGNATURA
+    # DATOS DE LA ASIGNACIÓN
     # =====================================
 
-    grado = asignatura.get("grado")
-    seccion = asignatura.get("seccion")
+    grado = asignacion.get("grado")
 
+    seccion = asignacion.get("seccion")
+
+    nivel = asignacion.get("nivel")
+
+    asignatura_codigo = asignacion.get(
+        "asignatura_codigo"
+    )
+
+    asignatura_nombre = asignacion.get(
+        "asignatura_nombre"
+    )
+
+    print("📚 CÓDIGO:", asignatura_codigo)
+    print("📚 ASIGNATURA:", asignatura_nombre)
+    print("🎓 NIVEL:", nivel)
     print("🎓 GRADO:", grado)
     print("🏫 SECCIÓN:", seccion)
 
@@ -702,13 +816,16 @@ def asistencia(asignatura_id):
     # FECHA ACTUAL
     # =====================================
 
-    fecha = datetime.now().strftime("%Y-%m-%d")
+    fecha = datetime.now().strftime(
+        "%Y-%m-%d"
+    )
 
     print("📅 FECHA:", fecha)
 
     # =====================================
     # BUSCAR ASISTENCIAS GUARDADAS
-    # PARA ESTA ASIGNATURA Y FECHA
+    #
+    # PARA ESTA ASIGNACIÓN Y FECHA
     # =====================================
 
     asistencias_guardadas = list(
@@ -730,17 +847,6 @@ def asistencia(asignatura_id):
 
     # =====================================
     # CONSTRUIR DICCIONARIO SEGURO
-    #
-    # IMPORTANTE:
-    # NO guardamos el documento completo
-    # de MongoDB porque puede contener
-    # ObjectId.
-    #
-    # Solamente enviamos al HTML:
-    #
-    # estudiante_id
-    # estado
-    # motivo
     # =====================================
 
     asistencia = {}
@@ -791,6 +897,41 @@ def asistencia(asignatura_id):
         )
 
     # =====================================
+    # PREPARAR DATOS PARA EL HTML
+    # =====================================
+    #
+    # Creamos un objeto compatible con
+    # el template actual.
+    #
+    # Así podemos mantener:
+    #
+    # asignatura["grado"]
+    # asignatura["seccion"]
+    # asignatura["nombre"]
+    #
+    # aunque la información venga ahora
+    # de asignaciones_clase.
+    # =====================================
+
+    asignatura = {
+
+        "_id": asignacion.get("_id"),
+
+        "codigo": asignatura_codigo,
+
+        "nombre": asignatura_nombre,
+
+        "nivel": nivel,
+
+        "grado": grado,
+
+        "seccion": seccion,
+
+        "docente_id": docente_id
+
+    }
+
+    # =====================================
     # MOSTRAR ASISTENCIA
     # =====================================
 
@@ -809,10 +950,11 @@ def asistencia(asignatura_id):
 
         fecha=fecha,
 
-        asistencia=asistencia
+        asistencia=asistencia,
+
+        docente=docente
 
     )
-
 
     # =====================================
     # BUSCAR DOCENTE
@@ -3083,160 +3225,86 @@ def aulas():
         )
 
     # =====================================
-    # ID DEL DOCENTE
+    # ID OFICIAL DEL DOCENTE
     # =====================================
     #
-    # IMPORTANTE:
-    # Las asignaturas utilizan:
+    # La colección asignaciones_clase
+    # utiliza el formato:
     #
-    # docente_id = "DOC012"
+    # DOC012
     #
-    # Por eso debemos utilizar el código
-    # del docente y NO el ObjectId de MongoDB.
+    # Por eso utilizamos el código
+    # del docente y construimos el ID oficial.
     # =====================================
-
-    docente_id = str(
-        docente.get("codigo", "")
-    ).strip()
-
-   
-
-    # ========================================================
-    # 2. ASIGNATURAS DEL DOCENTE
-    # ========================================================
 
     codigo_docente = str(
         docente.get("codigo", "")
     ).strip()
 
-    # Reconocer ambos formatos:
-    # 012
-    # DOC012
+    docente_id = f"DOC{codigo_docente}"
 
-    ids_docente = []
-
-    if codigo_docente:
-        ids_docente.append(codigo_docente)
-        ids_docente.append(f"DOC{codigo_docente}")
-
-    # También incluir el _id convertido a texto
-    # por compatibilidad con registros antiguos.
-    if docente.get("_id") is not None:
-        ids_docente.append(
-            str(docente.get("_id"))
-        )
-
-    # Eliminar posibles duplicados
-    ids_docente = list(
-        dict.fromkeys(ids_docente)
-    )
+    # =====================================
+    # OBTENER ASIGNACIONES DE CLASE
+    # =====================================
+    #
+    # FUENTE OFICIAL:
+    #
+    # asignaciones_clase
+    #
+    # Ya no utilizamos:
+    # - asignaturas
+    # - asignaciones
+    # - cursos
+    #
+    # La colección asignaciones_clase
+    # contiene toda la información necesaria.
+    # =====================================
 
     clases = list(
-        db.asignaturas.find({
-            "docente_id": {
-                "$in": ids_docente
-            }
-        })
-    )
-
-    total_asignaturas = len(clases)
-
-    # ========================================================
-    # MOSTRAR INFORMACIÓN
-    # ========================================================
-
-    print("")
-    print("========================================================")
-    print("🔎 ASIGNATURAS QUE VE EL DASHBOARD DOCENTE")
-    print("========================================================")
-    print("USUARIO:", usuario)
-    print("DOCENTE:", docente.get("nombre"))
-    print("CÓDIGO DOCENTE:", codigo_docente)
-    print("IDENTIFICADORES BUSCADOS:", ids_docente)
-    print("TOTAL ASIGNATURAS:", total_asignaturas)
-    print("========================================================")
-
-    for clase in clases:
-
-        print("----------------------------------------")
-        print("ID:", clase.get("_id"))
-        print("CÓDIGO:", clase.get("codigo"))
-        print("NOMBRE:", clase.get("nombre"))
-        print("NIVEL:", clase.get("nivel"))
-        print("GRADO:", clase.get("grado"))
-        print("SECCIÓN:", clase.get("seccion"))
-        print("DOCENTE_ID:", clase.get("docente_id"))
-        print("----------------------------------------")
-
-    
-    todas_asignaturas = list(db.asignaturas.find({}))
-
-    for clase in todas_asignaturas:
-
-        docente_id_clase = str(
-            clase.get("docente_id", "")
-        ).strip()
-
-        if (
-            "012" in docente_id_clase
-            or "DOC012" in docente_id_clase
-            or "Evert" in str(clase.get("docente", ""))
-            or "Evert" in str(clase.get("nombre_docente", ""))
-        ):
-
-            print("----------------------------------------")
-            print("ID:", clase.get("_id"))
-            print("CÓDIGO:", clase.get("codigo"))
-            print("NOMBRE:", clase.get("nombre"))
-            print("NIVEL:", clase.get("nivel"))
-            print("GRADO:", clase.get("grado"))
-            print("SECCIÓN:", clase.get("seccion"))
-            print("DOCENTE_ID:", clase.get("docente_id"))
-            print("DOCENTE:", clase.get("docente"))
-            print("NOMBRE_DOCENTE:", clase.get("nombre_docente"))
-            print("----------------------------------------")
-
-    print("========================================================")
-
-    
-
-    # =====================================
-    # ORDENAR LAS CLASES
-    # =====================================
-
-    clases.sort(
-        key=lambda clase: (
-            str(clase.get("nivel", "")),
-            str(clase.get("grado", "")),
-            str(clase.get("seccion", ""))
+        db.asignaciones_clase.find({
+            "docente_id": docente_id,
+            "activo": True
+        }).sort(
+            [
+                ("nivel", 1),
+                ("grado", 1),
+                ("seccion", 1),
+                ("asignatura_nombre", 1)
+            ]
         )
     )
 
     # =====================================
-    # DEBUG
+    # INFORMACIÓN DE DEPURACIÓN
     # =====================================
 
     print("")
     print("========================================================")
-    print("🔎 AULAS DEL DOCENTE")
+    print("🏫 AULAS DEL DOCENTE")
     print("========================================================")
     print("USUARIO:", usuario)
     print("DOCENTE:", docente.get("nombre"))
     print("DOCENTE ID:", docente_id)
-    print("TOTAL CLASES:", len(clases))
+    print("TOTAL AULAS:", len(clases))
     print("========================================================")
 
     for clase in clases:
 
-        print("----------------------------------------")
-        print("ID:", clase.get("_id"))
-        print("CÓDIGO:", clase.get("codigo"))
-        print("NOMBRE:", clase.get("nombre"))
-        print("NIVEL:", clase.get("nivel"))
-        print("GRADO:", clase.get("grado"))
-        print("SECCIÓN:", clase.get("seccion"))
-        print("DOCENTE_ID:", clase.get("docente_id"))
-        print("----------------------------------------")
+        print(
+            clase.get("_id"),
+            "|",
+            clase.get("asignatura_codigo"),
+            "|",
+            clase.get("asignatura_nombre"),
+            "| NIVEL:",
+            clase.get("nivel"),
+            "| GRADO:",
+            clase.get("grado"),
+            "| SECCIÓN:",
+            clase.get("seccion"),
+            "| DOCENTE:",
+            clase.get("docente_id")
+        )
 
     print("========================================================")
 
@@ -3247,7 +3315,8 @@ def aulas():
     return render_template(
         "docente/aulas.html",
         clases=clases,
-        docente=docente
+        docente=docente,
+        docente_id=docente_id
     )
 
 
@@ -3502,7 +3571,6 @@ def lista_incidencias():
         clases=clases,
         docente=docente
     )
-
 # =====================================
 # GUARDAR ASISTENCIA
 # =====================================
@@ -3536,12 +3604,12 @@ def guardar_asistencia():
             "%Y-%m-%d"
         )
 
-    docente_usuario = session.get(
+    usuario = session.get(
         "usuario"
     )
 
     print(
-        "📚 ASIGNATURA:",
+        "📚 ASIGNACIÓN:",
         asignatura_id
     )
 
@@ -3551,28 +3619,133 @@ def guardar_asistencia():
     )
 
     print(
-        "👨‍🏫 DOCENTE:",
-        docente_usuario
+        "👨‍🏫 USUARIO:",
+        usuario
     )
 
     # =====================================
-    # BUSCAR ASIGNATURA
+    # BUSCAR DOCENTE
     # =====================================
 
-    asignatura = db.asignaturas.find_one({
-        "_id": asignatura_id
+    docente = db.docentes.find_one({
+        "usuario": usuario
     })
 
-    if not asignatura:
+    if not docente:
 
         flash(
-            "Asignatura no encontrada.",
+            "Docente no encontrado.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+    # =====================================
+    # ID OFICIAL DEL DOCENTE
+    # =====================================
+
+    codigo_docente = str(
+        docente.get("codigo", "")
+    ).strip()
+
+    docente_id = f"DOC{codigo_docente}"
+
+    print(
+        "🆔 DOCENTE ID:",
+        docente_id
+    )
+
+    # =====================================
+    # BUSCAR ASIGNACIÓN DE CLASE
+    # =====================================
+    #
+    # IMPORTANTE:
+    #
+    # Ya NO utilizamos:
+    #
+    # db.asignaturas
+    #
+    # La fuente oficial es:
+    #
+    # db.asignaciones_clase
+    # =====================================
+
+    asignacion = db.asignaciones_clase.find_one({
+
+        "_id": asignatura_id,
+
+        "docente_id": docente_id,
+
+        "activo": True
+
+    })
+
+    print(
+        "📚 ASIGNACIÓN ENCONTRADA:",
+        asignacion
+    )
+
+    if not asignacion:
+
+        flash(
+            "Asignación de clase no encontrada.",
             "danger"
         )
 
         return redirect(
             url_for("docente.aulas")
         )
+
+    # =====================================
+    # DATOS DE LA ASIGNACIÓN
+    # =====================================
+
+    grado = asignacion.get(
+        "grado"
+    )
+
+    seccion = asignacion.get(
+        "seccion"
+    )
+
+    nivel = asignacion.get(
+        "nivel"
+    )
+
+    asignatura_codigo = asignacion.get(
+        "asignatura_codigo"
+    )
+
+    asignatura_nombre = asignacion.get(
+        "asignatura_nombre"
+    )
+
+    print(
+        "📚 CÓDIGO:",
+        asignatura_codigo
+    )
+
+    print(
+        "📚 NOMBRE:",
+        asignatura_nombre
+    )
+
+    print(
+        "🎓 NIVEL:",
+        nivel
+    )
+
+    print(
+        "🎓 GRADO:",
+        grado
+    )
+
+    print(
+        "🏫 SECCIÓN:",
+        seccion
+    )
 
     # =====================================
     # CONVERTIR GRADO
@@ -3589,27 +3762,14 @@ def guardar_asistencia():
 
     }
 
-    grado = asignatura.get(
-        "grado"
-    )
-
-    seccion = asignatura.get(
-        "seccion"
-    )
-
     grado_estudiante = mapa_grados.get(
         str(grado),
         grado
     )
 
     print(
-        "🎓 GRADO:",
+        "🔄 GRADO PARA ESTUDIANTES:",
         grado_estudiante
-    )
-
-    print(
-        "🏫 SECCIÓN:",
-        seccion
     )
 
     # =====================================
@@ -3618,9 +3778,16 @@ def guardar_asistencia():
 
     estudiantes = list(
         db.estudiantes.find({
-            "grado": grado_estudiante,
-            "seccion": seccion,
-            "estado": "activo"
+
+            "grado":
+                grado_estudiante,
+
+            "seccion":
+                seccion,
+
+            "estado":
+                "activo"
+
         })
     )
 
@@ -3634,9 +3801,13 @@ def guardar_asistencia():
     # =====================================
 
     estados_validos = [
+
         "Presente",
+
         "Ausente",
+
         "Justificada"
+
     ]
 
     # =====================================
@@ -3726,6 +3897,7 @@ def guardar_asistencia():
         resultado = db.asistencias.update_one(
 
             {
+
                 "asignatura_id":
                     asignatura_id,
 
@@ -3734,9 +3906,11 @@ def guardar_asistencia():
 
                 "fecha":
                     fecha
+
             },
 
             {
+
                 "$set": {
 
                     "asignatura_id":
@@ -3755,7 +3929,10 @@ def guardar_asistencia():
                         motivo,
 
                     "docente":
-                        docente_usuario,
+                        usuario,
+
+                    "docente_id":
+                        docente_id,
 
                     "grado":
                         grado_estudiante,
@@ -3763,15 +3940,21 @@ def guardar_asistencia():
                     "seccion":
                         seccion,
 
+                    "nivel":
+                        nivel,
+
+                    "asignatura_codigo":
+                        asignatura_codigo,
+
                     "asignatura":
-                        asignatura.get(
-                            "nombre",
-                            ""
-                        )
+                        asignatura_nombre
+
                 }
+
             },
 
             upsert=True
+
         )
 
         print(

@@ -36,6 +36,7 @@ body{
     background:var(--dark);
     color:white;
     padding:20px;
+    overflow-y:auto;
 }
 
 .logo{
@@ -93,6 +94,16 @@ body{
     background:linear-gradient(135deg,#8b5cf6,#6d28d9);
 }
 
+/* GESTIÓN ACADÉMICA */
+
+.bg-agregar-asignatura{
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+}
+
+.bg-asignar-clase{
+    background:linear-gradient(135deg,#10b981,#059669);
+}
+
 /* REPORTE POR GRADO */
 
 .bg-reporte-grado{
@@ -121,6 +132,21 @@ body{
     border-radius:20px;
 }
 
+@media (max-width:768px){
+
+    .sidebar{
+        position:relative;
+        width:100%;
+        height:auto;
+    }
+
+    .main{
+        margin-left:0;
+        padding:20px;
+    }
+
+}
+
 </style>
 
 </head>
@@ -136,8 +162,10 @@ body{
 
 <div class="text-center">
 
-<img src="{{ url_for('static',filename='img/logo.jpg') }}"
-class="logo">
+<img
+    src="{{ url_for('static',filename='img/logo.jpg') }}"
+    class="logo"
+>
 
 <h4 class="mt-3">
 CIEM
@@ -167,10 +195,22 @@ Sistema Académico
 </a>
 
 
-<a href="{{ url_for('listar_asignaturas') }}">
-📚 Asignaturas
+<!-- ==========================
+     ASIGNATURAS
+=========================== -->
+
+<a href="{{ url_for('agregar_asignatura') }}"
+   class="btn btn-primary">
+    ➕ Agregar Asignatura
 </a>
 
+<!-- ==========================
+     ASIGNAR CLASE
+=========================== -->
+
+<a href="{{ url_for('asignar_clase') }}">
+    👨‍🏫 Asignar Clase
+</a>
 
 <a href="{{ url_for('listar_matriculas') }}">
 📝 Matrículas
@@ -226,7 +266,7 @@ Sistema Académico
 
 
 <!-- ==========================
-        CONTENIDO
+     CONTENIDO
 =========================== -->
 
 <div class="main">
@@ -246,11 +286,13 @@ Bienvenido al sistema CIEM Académico
 
 
 <!-- ==========================
-       TARJETAS PRINCIPALES
+     TARJETAS PRINCIPALES
 =========================== -->
 
 <div class="row g-4">
 
+
+<!-- ESTUDIANTES -->
 
 <div class="col-md-3">
 
@@ -273,6 +315,8 @@ Estudiantes
 </div>
 
 
+<!-- DOCENTES -->
+
 <div class="col-md-3">
 
 <div class="card card-stat bg-docentes shadow">
@@ -294,6 +338,8 @@ Docentes
 </div>
 
 
+<!-- ASIGNATURAS -->
+
 <div class="col-md-3">
 
 <div class="card card-stat bg-asignaturas shadow">
@@ -314,6 +360,8 @@ Asignaturas
 
 </div>
 
+
+<!-- MATRÍCULAS -->
 
 <div class="col-md-3">
 
@@ -340,6 +388,139 @@ Matrículas
 
 
 <!-- ==========================
+     GESTIÓN ACADÉMICA
+=========================== -->
+
+<div class="row g-4 mt-2">
+
+
+<!-- ==========================
+     ASIGNATURAS
+=========================== -->
+
+<div class="col-md-4">
+
+<a
+    href="{{ url_for('listar_asignaturas') }}"
+    style="text-decoration:none;"
+>
+
+<div
+    class="card card-stat bg-asignaturas shadow"
+    style="cursor:pointer;"
+>
+
+<div class="card-body">
+
+<h5>
+📚 Asignaturas
+</h5>
+
+<div style="
+font-size:15px;
+margin-top:10px;
+opacity:.9;
+">
+
+Administrar asignaturas
+
+</div>
+
+</div>
+
+</div>
+
+</a>
+
+</div>
+
+
+<!-- ==========================
+     AGREGAR ASIGNATURA
+=========================== -->
+
+<div class="col-md-4">
+
+<a
+    href="{{ url_for('agregar_asignatura') }}"
+    style="text-decoration:none;"
+>
+
+<div
+    class="card card-stat bg-agregar-asignatura shadow"
+    style="cursor:pointer;"
+>
+
+<div class="card-body">
+
+<h5>
+➕ Agregar Asignatura
+</h5>
+
+<div style="
+font-size:15px;
+margin-top:10px;
+opacity:.9;
+">
+
+Registrar una nueva asignatura
+
+</div>
+
+</div>
+
+</div>
+
+</a>
+
+</div>
+
+
+<!-- ==========================
+     ASIGNAR CLASE
+=========================== -->
+
+<div class="col-md-4">
+
+<a
+    href="{{ url_for('asignar_clase') }}"
+    style="text-decoration:none;"
+>
+
+<div
+    class="card card-stat bg-asignar-clase shadow"
+    style="cursor:pointer;"
+>
+
+<div class="card-body">
+
+<h5>
+👨‍🏫 Asignar Clase
+</h5>
+
+<div style="
+font-size:15px;
+margin-top:10px;
+opacity:.9;
+">
+
+Asignar docente, grado y sección
+
+</div>
+
+</div>
+
+</div>
+
+</a>
+
+</div>
+
+
+</div>
+
+
+<!-- ==========================
      ACCESOS A REPORTES
 =========================== -->
 
@@ -350,11 +531,15 @@ Matrículas
 
 <div class="col-md-3">
 
-<a href="{{ url_for('reporte_estudiantes') }}"
-   style="text-decoration:none;">
+<a
+    href="{{ url_for('reporte_estudiantes') }}"
+    style="text-decoration:none;"
+>
 
-<div class="card card-stat bg-reporte-estudiantes shadow"
-     style="cursor:pointer;">
+<div
+    class="card card-stat bg-reporte-estudiantes shadow"
+    style="cursor:pointer;"
+>
 
 <div class="card-body">
 
@@ -385,11 +570,15 @@ Listado general de estudiantes
 
 <div class="col-md-3">
 
-<a href="{{ url_for('reporte_estudiantes_por_grado') }}"
-   style="text-decoration:none;">
+<a
+    href="{{ url_for('reporte_estudiantes_por_grado') }}"
+    style="text-decoration:none;"
+>
 
-<div class="card card-stat bg-reporte-grado shadow"
-     style="cursor:pointer;">
+<div
+    class="card card-stat bg-reporte-grado shadow"
+    style="cursor:pointer;"
+>
 
 <div class="card-body">
 
@@ -420,11 +609,15 @@ Consultar estudiantes por grado y sección
 
 <div class="col-md-3">
 
-<a href="{{ url_for('reporte_docentes') }}"
-   style="text-decoration:none;">
+<a
+    href="{{ url_for('reporte_docentes') }}"
+    style="text-decoration:none;"
+>
 
-<div class="card card-stat bg-reporte-docentes shadow"
-     style="cursor:pointer;">
+<div
+    class="card card-stat bg-reporte-docentes shadow"
+    style="cursor:pointer;"
+>
 
 <div class="card-body">
 
@@ -455,11 +648,15 @@ Información del personal docente
 
 <div class="col-md-3">
 
-<a href="{{ url_for('reporte_matriculas') }}"
-   style="text-decoration:none;">
+<a
+    href="{{ url_for('reporte_matriculas') }}"
+    style="text-decoration:none;"
+>
 
-<div class="card card-stat bg-reporte-matriculas shadow"
-     style="cursor:pointer;">
+<div
+    class="card card-stat bg-reporte-matriculas shadow"
+    style="cursor:pointer;"
+>
 
 <div class="card-body">
 
@@ -497,19 +694,23 @@ Consulta de matrículas registradas
 
 <div class="col-md-3">
 
-<a href="{{ url_for('admin_comunicados') }}"
-style="text-decoration:none;">
+<a
+    href="{{ url_for('admin_comunicados') }}"
+    style="text-decoration:none;"
+>
 
-<div class="card card-stat shadow"
-style="
-background:linear-gradient(
-135deg,
-#08142C,
-#1E4E8C
-);
-color:white;
-cursor:pointer;
-">
+<div
+    class="card card-stat shadow"
+    style="
+    background:linear-gradient(
+        135deg,
+        #08142C,
+        #1E4E8C
+    );
+    color:white;
+    cursor:pointer;
+    "
+>
 
 <div class="card-body">
 
@@ -539,7 +740,7 @@ Enviar avisos a los padres
 
 
 <!-- ==========================
-        GRAFICOS
+     GRÁFICOS
 =========================== -->
 
 <div class="row mt-4">
@@ -587,7 +788,7 @@ Distribución
 
 
 <!-- ==========================
-     ULTIMOS ESTUDIANTES
+     ÚLTIMOS ESTUDIANTES
 =========================== -->
 
 <div class="card shadow mt-4">
@@ -599,8 +800,10 @@ Distribución
 </h5>
 
 
-<a href="{{ url_for('agregar_matricula') }}"
-class="btn btn-primary mb-3">
+<a
+    href="{{ url_for('agregar_matricula') }}"
+    class="btn btn-primary mb-3"
+>
 
 ➕ Nuevo estudiante
 
@@ -647,17 +850,21 @@ class="btn btn-primary mb-3">
 
 <td>
 
-<a href="{{ url_for('editar_estudiante', id=e._id) }}"
-class="btn btn-warning btn-sm">
+<a
+    href="{{ url_for('editar_estudiante', id=e._id) }}"
+    class="btn btn-warning btn-sm"
+>
 
 ✏️ Editar
 
 </a>
 
 
-<a href="{{ url_for('eliminar_estudiante', id=e._id) }}"
-class="btn btn-danger btn-sm"
-onclick="return confirm('¿Desea eliminar este estudiante?')">
+<a
+    href="{{ url_for('eliminar_estudiante', id=e._id) }}"
+    class="btn btn-danger btn-sm"
+    onclick="return confirm('¿Desea eliminar este estudiante?')"
+>
 
 🗑 Eliminar
 
@@ -682,8 +889,16 @@ onclick="return confirm('¿Desea eliminar este estudiante?')">
 </div>
 
 
+<!-- ==========================
+     JAVASCRIPT
+=========================== -->
+
 <script>
 
+
+/* ==========================================
+   GRÁFICO DE BARRAS
+========================================== */
 
 new Chart(
 
@@ -725,6 +940,10 @@ data:[
 
 );
 
+
+/* ==========================================
+   GRÁFICO CIRCULAR
+========================================== */
 
 new Chart(
 
