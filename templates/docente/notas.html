@@ -1,370 +1,385 @@
 ﻿<!DOCTYPE html>
+
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+```
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <title>
-        Registro de Notas | CIEM Académico
-    </title>
+<title>
+    Registro de Notas | CIEM Académico
+</title>
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet">
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-        rel="stylesheet">
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    rel="stylesheet">
 
-    <style>
+<style>
 
-        body {
-            background:
-                linear-gradient(
-                    135deg,
-                    #eef4ff 0%,
-                    #f8fafc 50%,
-                    #eef2ff 100%
-                );
+    body {
+        background:
+            linear-gradient(
+                135deg,
+                #eef4ff 0%,
+                #f8fafc 50%,
+                #eef2ff 100%
+            );
 
-            font-family:
-                'Segoe UI',
-                Tahoma,
-                Geneva,
-                Verdana,
-                sans-serif;
+        font-family:
+            'Segoe UI',
+            Tahoma,
+            Geneva,
+            Verdana,
+            sans-serif;
 
-            color: #172033;
-            min-height: 100vh;
-        }
+        color: #172033;
+        min-height: 100vh;
+    }
 
-        .notas-container {
-            max-width: 1700px;
-            margin: auto;
-        }
+    .notas-container {
+        max-width: 1700px;
+        margin: auto;
+    }
 
-        .header-notas {
-            background:
-                linear-gradient(
-                    135deg,
-                    #08142c,
-                    #0d2a52,
-                    #1e4e8c
-                );
+    .header-notas {
+        background:
+            linear-gradient(
+                135deg,
+                #08142c,
+                #0d2a52,
+                #1e4e8c
+            );
 
-            color: white;
-            padding: 25px 30px;
-            border-radius: 22px;
-            margin-bottom: 25px;
+        color: white;
+        padding: 25px 30px;
+        border-radius: 22px;
+        margin-bottom: 25px;
 
-            box-shadow:
-                0 15px 35px
-                rgba(15, 23, 42, .18);
-        }
+        box-shadow:
+            0 15px 35px
+            rgba(15, 23, 42, .18);
+    }
 
-        .logo-ciem {
-            width: 78px;
-            height: 78px;
-            object-fit: cover;
-            border-radius: 50%;
+    .logo-ciem {
+        width: 78px;
+        height: 78px;
+        object-fit: cover;
+        border-radius: 50%;
 
-            border:
-                3px solid
-                rgba(255,255,255,.8);
+        border:
+            3px solid
+            rgba(255,255,255,.8);
+    }
+
+    .header-title {
+        font-weight: 800;
+        margin: 0;
+        font-size: 28px;
+    }
+
+    .header-subtitle {
+        margin: 5px 0 0;
+        opacity: .85;
+        font-size: 15px;
+    }
+
+    .card {
+        border: none;
+        border-radius: 20px;
+
+        box-shadow:
+            0 8px 25px
+            rgba(15,23,42,.08);
+
+        margin-bottom: 22px;
+    }
+
+    .card-body {
+        padding: 24px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 20px;
+
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-title i {
+        color: #2563eb;
+    }
+
+    .config-box {
+        background: #f8fafc;
+
+        border:
+            1px solid
+            #e2e8f0;
+
+        border-radius: 16px;
+        padding: 20px;
+    }
+
+    .form-label {
+        font-weight: 700;
+        color: #334155;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 12px;
+
+        border:
+            1px solid
+            #cbd5e1;
+
+        padding: 11px 14px;
+    }
+
+    .btn {
+        border-radius: 11px;
+        font-weight: 700;
+        padding: 10px 17px;
+        transition: .2s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-ciem {
+        background:
+            linear-gradient(
+                135deg,
+                #2563eb,
+                #1d4ed8
+            );
+
+        color: white;
+        border: none;
+    }
+
+    .btn-ciem:hover {
+        color: white;
+    }
+
+    .btn-reporte {
+        background:
+            linear-gradient(
+                135deg,
+                #059669,
+                #047857
+            );
+
+        color: white;
+        border: none;
+    }
+
+    .btn-reporte:hover {
+        color: white;
+    }
+
+    .btn-descargar {
+        background:
+            linear-gradient(
+                135deg,
+                #dc2626,
+                #b91c1c
+            );
+
+        color: white;
+        border: none;
+    }
+
+    .btn-descargar:hover {
+        color: white;
+    }
+
+    .tabla-wrapper {
+        border-radius: 16px;
+        overflow: auto;
+
+        border:
+            1px solid
+            #e2e8f0;
+    }
+
+    .tabla-notas {
+        margin: 0;
+        min-width: 1250px;
+    }
+
+    .tabla-notas thead th {
+        background:
+            linear-gradient(
+                135deg,
+                #08142c,
+                #0d2a52
+            );
+
+        color: white;
+        text-align: center;
+
+        font-size: 12px;
+        font-weight: 700;
+
+        padding: 13px 8px;
+        white-space: nowrap;
+        border: none;
+    }
+
+    .tabla-notas tbody td {
+        text-align: center;
+        vertical-align: middle;
+        padding: 9px 6px;
+
+        border-color:
+            #e2e8f0;
+    }
+
+    .tabla-notas td:nth-child(2) {
+        text-align: left;
+        font-weight: 600;
+        color: #334155;
+        min-width: 260px;
+    }
+
+    .tabla-notas .nota {
+        width: 62px;
+        margin: auto;
+        text-align: center;
+
+        border-radius: 9px;
+        padding: 7px 4px;
+
+        font-weight: 600;
+    }
+
+    .acumulado {
+        font-weight: 800;
+        color: #2563eb;
+        white-space: nowrap;
+    }
+
+    .promedio {
+        font-weight: 800;
+        color: #059669;
+    }
+
+    .acciones-notas {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 22px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns:
+            repeat(4, 1fr);
+
+        gap: 18px;
+    }
+
+    .stat-card {
+        border-radius: 18px;
+        padding: 22px;
+        background: white;
+
+        border:
+            1px solid
+            #e2e8f0;
+    }
+
+    .stat-icon {
+        width: 46px;
+        height: 46px;
+
+        border-radius: 13px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: #eff6ff;
+        color: #2563eb;
+
+        font-size: 21px;
+        margin-bottom: 12px;
+    }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .stat-value {
+        font-size: 29px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-top: 3px;
+    }
+
+    .tabla-cortes th {
+        background: #0f172a;
+        color: white;
+        font-size: 13px;
+    }
+
+    .tabla-cortes td {
+        vertical-align: middle;
+        font-weight: 600;
+    }
+
+    @media (max-width: 992px) {
+
+        .stats-grid {
+            grid-template-columns:
+                repeat(2, 1fr);
         }
 
         .header-title {
-            font-weight: 800;
-            margin: 0;
-            font-size: 28px;
+            font-size: 22px;
+        }
+    }
+
+    @media (max-width: 576px) {
+
+        .stats-grid {
+            grid-template-columns: 1fr;
         }
 
-        .header-subtitle {
-            margin: 5px 0 0;
-            opacity: .85;
-            font-size: 15px;
-        }
-
-        .card {
-            border: none;
-            border-radius: 20px;
-
-            box-shadow:
-                0 8px 25px
-                rgba(15,23,42,.08);
-
-            margin-bottom: 22px;
-        }
-
-        .card-body {
-            padding: 24px;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 20px;
-
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title i {
-            color: #2563eb;
-        }
-
-        .config-box {
-            background: #f8fafc;
-
-            border:
-                1px solid
-                #e2e8f0;
-
-            border-radius: 16px;
-            padding: 20px;
-        }
-
-        .form-label {
-            font-weight: 700;
-            color: #334155;
-        }
-
-        .form-control,
-        .form-select {
-            border-radius: 12px;
-
-            border:
-                1px solid
-                #cbd5e1;
-
-            padding: 11px 14px;
-        }
-
-        .btn {
-            border-radius: 11px;
-            font-weight: 700;
-            padding: 10px 17px;
-        }
-
-        .btn-ciem {
-            background:
-                linear-gradient(
-                    135deg,
-                    #2563eb,
-                    #1d4ed8
-                );
-
-            color: white;
-            border: none;
-        }
-
-        .btn-ciem:hover {
-            color: white;
-            transform: translateY(-1px);
-        }
-
-        .btn-reporte {
-            background:
-                linear-gradient(
-                    135deg,
-                    #059669,
-                    #047857
-                );
-
-            color: white;
-            border: none;
-        }
-
-        .btn-reporte:hover {
-            color: white;
-        }
-
-        .btn-descargar {
-            background:
-                linear-gradient(
-                    135deg,
-                    #dc2626,
-                    #b91c1c
-                );
-
-            color: white;
-            border: none;
-        }
-
-        .btn-descargar:hover {
-            color: white;
-        }
-
-        .tabla-wrapper {
-            border-radius: 16px;
-            overflow: auto;
-
-            border:
-                1px solid
-                #e2e8f0;
-        }
-
-        .tabla-notas {
-            margin: 0;
-            min-width: 1250px;
-        }
-
-        .tabla-notas thead th {
-            background:
-                linear-gradient(
-                    135deg,
-                    #08142c,
-                    #0d2a52
-                );
-
-            color: white;
+        .header-notas {
             text-align: center;
-
-            font-size: 12px;
-            font-weight: 700;
-
-            padding: 13px 8px;
-            white-space: nowrap;
-            border: none;
         }
 
-        .tabla-notas tbody td {
-            text-align: center;
-            vertical-align: middle;
-            padding: 9px 6px;
-
-            border-color:
-                #e2e8f0;
-        }
-
-        .tabla-notas td:nth-child(2) {
-            text-align: left;
-            font-weight: 600;
-            color: #334155;
-            min-width: 260px;
-        }
-
-        .tabla-notas .nota {
-            width: 62px;
-            margin: auto;
-            text-align: center;
-
-            border-radius: 9px;
-            padding: 7px 4px;
-
-            font-weight: 600;
-        }
-
-        .acumulado {
-            font-weight: 800;
-            color: #2563eb;
-            white-space: nowrap;
-        }
-
-        .promedio {
-            font-weight: 800;
-            color: #059669;
+        .header-notas > div {
+            flex-direction: column;
         }
 
         .acciones-notas {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 22px;
+            flex-direction: column;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns:
-                repeat(4, 1fr);
-
-            gap: 18px;
+        .acciones-notas .btn {
+            width: 100%;
         }
+    }
 
-        .stat-card {
-            border-radius: 18px;
-            padding: 22px;
-            background: white;
-
-            border:
-                1px solid
-                #e2e8f0;
-        }
-
-        .stat-icon {
-            width: 46px;
-            height: 46px;
-
-            border-radius: 13px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background: #eff6ff;
-            color: #2563eb;
-
-            font-size: 21px;
-            margin-bottom: 12px;
-        }
-
-        .stat-label {
-            color: #64748b;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .stat-value {
-            font-size: 29px;
-            font-weight: 800;
-            color: #0f172a;
-            margin-top: 3px;
-        }
-
-        .tabla-cortes th {
-            background: #0f172a;
-            color: white;
-            font-size: 13px;
-        }
-
-        .tabla-cortes td {
-            vertical-align: middle;
-            font-weight: 600;
-        }
-
-        @media (max-width: 992px) {
-
-            .stats-grid {
-                grid-template-columns:
-                    repeat(2, 1fr);
-            }
-
-            .header-title {
-                font-size: 22px;
-            }
-        }
-
-        @media (max-width: 576px) {
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .header-notas {
-                text-align: center;
-            }
-
-            .acciones-notas .btn {
-                width: 100%;
-            }
-        }
-
-    </style>
+</style>
+```
 
 </head>
 
@@ -380,60 +395,63 @@
 
 <div class="header-notas">
 
+```
+<div class="d-flex
+            justify-content-between
+            align-items-center
+            gap-3">
+
     <div class="d-flex
-                justify-content-between
                 align-items-center
                 gap-3">
 
-        <div class="d-flex
-                    align-items-center
-                    gap-3">
+        <img
+            src="{{ url_for('static', filename='img/logo.jpg') }}"
+            class="logo-ciem"
+            alt="Logo CIEM">
 
-            <img
-                src="{{ url_for('static', filename='img/logo.jpg') }}"
-                class="logo-ciem"
-                alt="Logo CIEM">
+        <div>
 
-            <div>
+            <h1 class="header-title">
 
-                <h1 class="header-title">
+                <i class="bi bi-journal-check"></i>
 
-                    <i class="bi bi-journal-check"></i>
+                Registro de Calificaciones
 
-                    Registro de Calificaciones
+            </h1>
 
-                </h1>
+            <p class="header-subtitle">
 
-                <p class="header-subtitle">
+                {{ asignatura.nombre }}
 
-                    {{ asignatura.nombre }}
+                |
 
-                    |
-                    {{ asignatura.grado }}
+                {{ asignatura.grado }}
 
-                    -
-                    {{ asignatura.seccion }}
+                -
 
-                </p>
+                {{ asignatura.seccion }}
 
-            </div>
+            </p>
 
         </div>
 
-        <a
-            href="{{ url_for('docente.aulas') }}"
-            class="btn btn-light">
-
-            <i class="bi bi-arrow-left"></i>
-
-            Volver a mis aulas
-
-        </a>
-
     </div>
 
-</div>
+    <a
+        href="{{ url_for('docente.aulas') }}"
+        class="btn btn-light">
 
+        <i class="bi bi-arrow-left"></i>
+
+        Volver a mis aulas
+
+    </a>
+
+</div>
+```
+
+</div>
 
 <!-- =====================================================
      MENSAJES FLASH
@@ -441,28 +459,29 @@
 
 {% with messages = get_flashed_messages(with_categories=true) %}
 
-    {% if messages %}
+```
+{% if messages %}
 
-        {% for category, message in messages %}
+    {% for category, message in messages %}
 
-            <div class="alert alert-{{ category }} alert-dismissible fade show">
+        <div class="alert alert-{{ category }} alert-dismissible fade show">
 
-                {{ message }}
+            {{ message }}
 
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert">
-                </button>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+            </button>
 
-            </div>
+        </div>
 
-        {% endfor %}
+    {% endfor %}
 
-    {% endif %}
+{% endif %}
+```
 
 {% endwith %}
-
 
 <!-- =====================================================
      CONFIGURACIÓN
@@ -474,25 +493,25 @@
 
 <div class="section-title">
 
-    <i class="bi bi-sliders"></i>
+```
+<i class="bi bi-sliders"></i>
 
-    Configuración de Evaluación
+Configuración de Evaluación
+```
 
 </div>
-
 
 <form
     method="POST"
     action="{{ url_for('docente.guardar_notas') }}"
 >
 
-
 <input
-    type="hidden"
-    name="asignatura_id"
-    value="{{ asignatura._id }}"
->
+type="hidden"
+name="asignatura_id"
+value="{{ asignatura._id }}"
 
+>
 
 <div class="config-box">
 
@@ -504,19 +523,20 @@
 
 <label class="form-label">
 
-    <i class="bi bi-book"></i>
+```
+<i class="bi bi-book"></i>
 
-    Asignatura
+Asignatura
+```
 
 </label>
 
 <input
-    class="form-control"
-    value="{{ asignatura.nombre }}"
-    readonly>
+ class="form-control"
+ value="{{ asignatura.nombre }}"
+ readonly>
 
 </div>
-
 
 <!-- PERIODO -->
 
@@ -524,29 +544,32 @@
 
 <label class="form-label">
 
-    <i class="bi bi-calendar3"></i>
+```
+<i class="bi bi-calendar3"></i>
 
-    Periodo
+Periodo
+```
 
 </label>
 
 <select
-    class="form-select"
-    name="periodo"
-    id="periodo">
+ class="form-select"
+ name="periodo"
+ id="periodo">
 
-    <option value="I Semestre">
-        I Semestre
-    </option>
+```
+<option value="I Semestre">
+    I Semestre
+</option>
 
-    <option value="II Semestre">
-        II Semestre
-    </option>
+<option value="II Semestre">
+    II Semestre
+</option>
+```
 
 </select>
 
 </div>
-
 
 <!-- EVALUACIÓN -->
 
@@ -554,32 +577,36 @@
 
 <label class="form-label">
 
-    <i class="bi bi-clipboard-check"></i>
+```
+<i class="bi bi-clipboard-check"></i>
 
-    Evaluación
+Evaluación
+```
 
 </label>
 
 <select
-    class="form-select"
-    name="evaluacion"
-    id="evaluacion">
+ class="form-select"
+ name="evaluacion"
+ id="evaluacion">
 
-    <option value="Primer Parcial">
-        Primer Parcial
-    </option>
+```
+<option value="Primer Parcial">
+    Primer Parcial
+</option>
 
-    <option value="Segundo Parcial">
-        Segundo Parcial
-    </option>
+<option value="Segundo Parcial">
+    Segundo Parcial
+</option>
 
-    <option value="Tercer Parcial">
-        Tercer Parcial
-    </option>
+<option value="Tercer Parcial">
+    Tercer Parcial
+</option>
 
-    <option value="Cuarto Parcial">
-        Cuarto Parcial
-    </option>
+<option value="Cuarto Parcial">
+    Cuarto Parcial
+</option>
+```
 
 </select>
 
@@ -588,7 +615,6 @@
 </div>
 
 </div>
-
 
 <!-- =====================================================
      TABLA
@@ -598,12 +624,13 @@
 
 <div class="section-title">
 
-    <i class="bi bi-pencil-square"></i>
+```
+<i class="bi bi-pencil-square"></i>
 
-    Registro de Evaluaciones
+Registro de Evaluaciones
+```
 
 </div>
-
 
 <div class="tabla-wrapper">
 
@@ -614,31 +641,32 @@
 
 <tr>
 
-    <th>#</th>
+```
+<th>#</th>
 
-    <th>Estudiante</th>
+<th>Estudiante</th>
 
-    <th>EP1</th>
-    <th>EP2</th>
-    <th>EP3</th>
-    <th>EP4</th>
-    <th>EP5</th>
-    <th>EP6</th>
-    <th>EP7</th>
-    <th>EP8</th>
-    <th>EP9</th>
-    <th>EP10</th>
+<th>EP1</th>
+<th>EP2</th>
+<th>EP3</th>
+<th>EP4</th>
+<th>EP5</th>
+<th>EP6</th>
+<th>EP7</th>
+<th>EP8</th>
+<th>EP9</th>
+<th>EP10</th>
 
-    <th>Acumulado</th>
+<th>Acumulado</th>
 
-    <th>Promedio</th>
+<th>Promedio</th>
 
-    <th>Estado</th>
+<th>Estado</th>
+```
 
 </tr>
 
 </thead>
-
 
 <tbody>
 
@@ -650,16 +678,17 @@
 
 {% for n in notas_existentes %}
 
-    {% if n.estudiante_id|string == id_estudiante
-          and n.periodo == "I Semestre"
-          and n.evaluacion == "Primer Parcial" %}
+```
+{% if n.estudiante_id|string == id_estudiante
+      and n.periodo == "I Semestre"
+      and n.evaluacion == "Primer Parcial" %}
 
-        {% set nota_estudiante = n %}
+    {% set nota_estudiante = n %}
 
-    {% endif %}
+{% endif %}
+```
 
 {% endfor %}
-
 
 <tr>
 
@@ -667,52 +696,54 @@
     {{ loop.index }}
 </td>
 
-
 <td>
     {{ e.nombre }}
 </td>
-
 
 {% for numero in range(1, 11) %}
 
 <td>
 
 <input
-    type="number"
-    min="0"
-    max="10"
-    step="0.1"
-    class="form-control nota"
-    name="ep{{ numero }}_{{ e._id }}"
-    value="{{ nota_estudiante.get('ep' ~ numero, 0) }}"
+type="number"
+min="0"
+max="10"
+step="0.1"
+class="form-control nota"
+name="ep{{ numero }}_{{ e._id }}"
+value="{{ nota_estudiante.get('ep' ~ numero, 0) }}"
+
 >
 
 </td>
 
 {% endfor %}
 
-
 <td class="acumulado">
 
-    0 / 100
+```
+0 / 100
+```
 
 </td>
-
 
 <td class="promedio">
 
-    0.00
+```
+0.00
+```
 
 </td>
 
-
 <td class="estado">
 
-    <span class="badge bg-secondary">
+```
+<span class="badge bg-secondary">
 
-        Pendiente
+    Pendiente
 
-    </span>
+</span>
+```
 
 </td>
 
@@ -726,12 +757,14 @@
 
 </div>
 
-
 <!-- =====================================================
      BOTONES
 ====================================================== -->
 
 <div class="acciones-notas">
+
+```
+<!-- GUARDAR -->
 
 <button
     type="submit"
@@ -744,6 +777,37 @@
 </button>
 
 
+<!-- VER REPORTE -->
+
+<a
+    href="{{ url_for(
+        'docente.reporte_notas',
+        asignatura_id=asignatura._id
+    ) }}"
+    class="btn btn-reporte">
+
+    <i class="bi bi-eye-fill"></i>
+
+    Ver reporte de notas
+
+</a>
+
+
+<!-- DESCARGAR PDF -->
+
+<a
+    href="{{ url_for(
+        'docente.reporte_notas_pdf',
+        asignatura_id=asignatura._id
+    ) }}"
+    class="btn btn-descargar">
+
+    <i class="bi bi-file-earmark-pdf-fill"></i>
+
+    Descargar PDF
+
+</a>
+```
 
 </div>
 
@@ -755,7 +819,6 @@
 
 </div>
 
-
 <!-- =====================================================
      RESUMEN DE CORTES
 ====================================================== -->
@@ -766,12 +829,13 @@
 
 <div class="section-title">
 
-    <i class="bi bi-file-earmark-bar-graph"></i>
+```
+<i class="bi bi-file-earmark-bar-graph"></i>
 
-    Resumen de Cortes
+Resumen de Cortes
+```
 
 </div>
-
 
 <div class="table-responsive">
 
@@ -784,22 +848,23 @@
 
 <tr>
 
-    <th>Asignatura</th>
+```
+<th>Asignatura</th>
 
-    <th>I Corte</th>
+<th>I Corte</th>
 
-    <th>II Corte</th>
+<th>II Corte</th>
 
-    <th>III Corte</th>
+<th>III Corte</th>
 
-    <th>IV Corte</th>
+<th>IV Corte</th>
 
-    <th>Nota Final</th>
+<th>Nota Final</th>
+```
 
 </tr>
 
 </thead>
-
 
 <tbody>
 
@@ -841,7 +906,6 @@
 
 </div>
 
-
 <!-- =====================================================
      RESUMEN ACADÉMICO
 ====================================================== -->
@@ -852,89 +916,115 @@
 
 <div class="section-title">
 
-    <i class="bi bi-bar-chart-line"></i>
+```
+<i class="bi bi-bar-chart-line"></i>
 
-    Resumen Académico
+Resumen Académico
+```
 
 </div>
-
 
 <div class="stats-grid">
 
+<div class="stat-card">
+
+```
+<div class="stat-icon">
+
+    <i class="bi bi-people"></i>
+
+</div>
+
+<div class="stat-label">
+
+    Estudiantes
+
+</div>
+
+<div class="stat-value">
+
+    {{ estudiantes|length }}
+
+</div>
+```
+
+</div>
 
 <div class="stat-card">
 
-    <div class="stat-icon">
-        <i class="bi bi-people"></i>
-    </div>
+```
+<div class="stat-icon">
 
-    <div class="stat-label">
-        Estudiantes
-    </div>
-
-    <div class="stat-value">
-        {{ estudiantes|length }}
-    </div>
+    <i class="bi bi-graph-up-arrow"></i>
 
 </div>
 
+<div class="stat-label">
+
+    Promedio General
+
+</div>
+
+<div
+    class="stat-value"
+    id="promedioGeneral">
+
+    0.00
+
+</div>
+```
+
+</div>
 
 <div class="stat-card">
 
-    <div class="stat-icon">
-        <i class="bi bi-graph-up-arrow"></i>
-    </div>
+```
+<div class="stat-icon">
 
-    <div class="stat-label">
-        Promedio General
-    </div>
-
-    <div
-        class="stat-value"
-        id="promedioGeneral">
-        0.00
-    </div>
+    <i class="bi bi-check-circle"></i>
 
 </div>
 
+<div class="stat-label">
+
+    Aprobados
+
+</div>
+
+<div
+    class="stat-value"
+    id="aprobados">
+
+    0
+
+</div>
+```
+
+</div>
 
 <div class="stat-card">
 
-    <div class="stat-icon">
-        <i class="bi bi-check-circle"></i>
-    </div>
+```
+<div class="stat-icon">
 
-    <div class="stat-label">
-        Aprobados
-    </div>
-
-    <div
-        class="stat-value"
-        id="aprobados">
-        0
-    </div>
+    <i class="bi bi-exclamation-circle"></i>
 
 </div>
 
+<div class="stat-label">
 
-<div class="stat-card">
-
-    <div class="stat-icon">
-        <i class="bi bi-exclamation-circle"></i>
-    </div>
-
-    <div class="stat-label">
-        Reforzamiento
-    </div>
-
-    <div
-        class="stat-value"
-        id="reforzamiento">
-        0
-    </div>
+    Reforzamiento
 
 </div>
 
+<div
+    class="stat-value"
+    id="reforzamiento">
+
+    0
+
+</div>
+```
 
 </div>
 
@@ -942,11 +1032,15 @@
 
 </div>
 
-
 </div>
 
 </div>
 
+</div>
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
 
 <script>
 
@@ -986,14 +1080,20 @@ document.addEventListener(
 
 
                     if (valor < 0) {
+
                         valor = 0;
+
                         input.value = 0;
+
                     }
 
 
                     if (valor > 10) {
+
                         valor = 10;
+
                         input.value = 10;
+
                     }
 
 
@@ -1025,6 +1125,7 @@ document.addEventListener(
                 `;
 
             }
+
             else if (suma > 0) {
 
                 estado.innerHTML = `
@@ -1035,6 +1136,7 @@ document.addEventListener(
                 `;
 
             }
+
             else {
 
                 estado.innerHTML = `
@@ -1097,6 +1199,7 @@ document.addEventListener(
                             aprobados++;
 
                         }
+
                         else {
 
                             reforzamiento++;
@@ -1158,11 +1261,9 @@ document.addEventListener(
 
 </script>
 
-
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
 </script>
-
 
 </body>
 

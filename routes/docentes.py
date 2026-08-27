@@ -7,37 +7,27 @@ from flask import (
     url_for,
     session,
     flash,
-    send_file
-    
-   
+    send_file,
+    make_response,
+    current_app
 )
+
 from io import BytesIO
-from bson import ObjectId
-from weasyprint import HTML
 from datetime import datetime
+from functools import wraps
+import os
+
+from bson import ObjectId
+
 from flask_pymongo import PyMongo
-from routes.mined import datos_mined, estadistica_grado
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
-from io import BytesIO
-from flask import send_file
+
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, landscape
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.enums import TA_CENTER
-from reportlab.platypus import (
-    SimpleDocTemplate,
-    Table,
-    TableStyle,
-    Paragraph,
-    Spacer
+from reportlab.lib.styles import (
+    getSampleStyleSheet,
+    ParagraphStyle
 )
-
-
-import os
-from bson import ObjectId
-
-from reportlab.lib.styles import getSampleStyleSheet
-
+from reportlab.lib.enums import TA_CENTER
 from reportlab.platypus import (
     SimpleDocTemplate,
     Table,
@@ -47,13 +37,7 @@ from reportlab.platypus import (
     Image
 )
 
-from reportlab.lib import colors
-
-from reportlab.lib.pagesizes import letter
-
-from reportlab.lib.enums import TA_CENTER
-
-from io import BytesIO
+from weasyprint import HTML
 
 from config.database import db
 
@@ -62,12 +46,6 @@ from routes.mined import (
     estadistica_grado,
     informe_retencion
 )
-
-from functools import wraps
-
-from datetime import datetime
-
-
 
 docente_bp = Blueprint(
     "docente",
@@ -2775,6 +2753,1246 @@ def guardar_notas():
         )
     )
 
+# ==========================================================
+# REPORTE DE NOTAS
+# ==========================================================
+
+@docente_bp.route("/notas/reporte/<asignatura_id>")
+@role_required("docente")
+def reporte_notas(asignatura_id):
+
+    print("========================================")
+    print("📊 REPORTE DE NOTAS")
+    print("ASIGNACIÓN ID:", asignatura_id)
+    print("========================================")
+
+    usuario = session.get("usuario")
+
+    if not usuario:
+        flash("La sesión ha expirado.", "warning")
+        return redirect(url_for("login"))
+
+    # ======================================================
+    # DOCENTE
+    # ======================================================
+
+    docente = db.docentes.find_one({
+        "usuario": usuario
+    })
+
+    if not docente:
+        flash("Docente no encontrado.", "danger")
+        return redirect(url_for("login"))
+
+    codigo_docente = str(
+        docente.get("codigo", "")
+    ).strip().upper()
+
+    if codigo_docente.startswith("DOC"):
+        docente_id = codigo_docente
+    else:
+        docente_id = "DOC" + codigo_docente
+
+    # ======================================================
+    # BUSCAR ASIGNACIÓN
+    # ======================================================
+
+    ids_busqueda = [asignatura_id]
+
+    try:
+        ids_busqueda.append(
+            ObjectId(asignatura_id)
+        )
+    except Exception:
+        pass
+
+    asignacion = db.asignaciones_clase.find_one({
+        "_id": {
+            "$in": ids_busqueda
+        },
+        "docente_id": docente_id,
+        "activo": True
+    })
+
+    if not asignacion:
+
+        flash(
+            "Asignación de clase no encontrada.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("docente.lista_calificaciones")
+        )
+
+    # ======================================================
+    # DATOS DE LA ASIGNATURA
+    # ======================================================
+
+    grado = asignacion.get("grado", "")
+    seccion = asignacion.get("seccion", "")
+
+    mapa_grados = {
+        "1": "1er Grado",
+        "2": "2do Grado",
+        "3": "3er Grado",
+        "4": "4to Grado",
+        "5": "5to Grado",
+        "6": "6to Grado"
+    }
+
+    grado_estudiante = mapa_grados.get(
+        str(grado),
+        grado
+    )
+
+    # ======================================================
+    # ESTUDIANTES
+    # ======================================================
+
+    estudiantes = list(
+        db.estudiantes.find({
+            "grado": grado_estudiante,
+            "seccion": seccion,
+            "estado": "activo"
+        }).sort(
+            "nombre",
+            1
+        )
+    )
+
+    # ======================================================
+    # NOTAS
+    # ======================================================
+
+    notas = list(
+        db.notas.find({
+            "asignatura_id": asignatura_id
+        })
+    )
+
+    # ======================================================
+    # ORGANIZAR NOTAS
+    # ======================================================
+
+    notas_mapa = {}
+
+    for nota in notas:
+
+        estudiante_id = str(
+            nota.get("estudiante_id", "")
+        )
+
+        periodo = nota.get(
+            "periodo",
+            ""
+        )
+
+        evaluacion = nota.get(
+            "evaluacion",
+            ""
+        )
+
+        notas_mapa[
+            (
+                estudiante_id,
+                periodo,
+                evaluacion
+            )
+        ] = nota
+
+    # ======================================================
+    # DATOS PARA EL REPORTE
+    # ======================================================
+
+    reporte = []
+
+    evaluaciones = [
+        "Primer Parcial",
+        "Segundo Parcial",
+        "Tercer Parcial",
+        "Cuarto Parcial"
+    ]
+
+    for estudiante in estudiantes:
+
+        estudiante_id = str(
+            estudiante.get("_id")
+        )
+
+        parciales = []
+
+        for evaluacion in evaluaciones:
+
+            nota = notas_mapa.get(
+                (
+                    estudiante_id,
+                    "I Semestre",
+                    evaluacion
+                ),
+                {}
+            )
+
+            suma = sum(
+                float(
+                    nota.get(
+                        f"ep{i}",
+                        0
+                    ) or 0
+                )
+                for i in range(1, 11)
+            )
+
+            parciales.append(suma)
+
+        acumulado = sum(parciales)
+
+        promedio = (
+            acumulado / 4
+            if acumulado > 0
+            else 0
+        )
+
+        if acumulado >= 240:
+            estado = "Aprobado"
+
+        elif acumulado > 0:
+            estado = "Reforzamiento"
+
+        else:
+            estado = "Pendiente"
+
+        reporte.append({
+            "nombre": estudiante.get(
+                "nombre",
+                ""
+            ),
+            "parcial1": parciales[0],
+            "parcial2": parciales[1],
+            "parcial3": parciales[2],
+            "parcial4": parciales[3],
+            "acumulado": acumulado,
+            "promedio": promedio,
+            "estado": estado
+        })
+
+    print(
+        "📚 ESTUDIANTES EN REPORTE:",
+        len(reporte)
+    )
+
+    # ======================================================
+    # MOSTRAR REPORTE
+    # ======================================================
+
+    return render_template(
+        "docente/reporte_notas.html",
+
+        docente=docente,
+
+        asignatura={
+            "id": str(asignacion.get("_id")),
+            "codigo": asignacion.get(
+                "asignatura_codigo",
+                ""
+            ),
+            "nombre": asignacion.get(
+                "asignatura_nombre",
+                ""
+            ),
+            "nivel": asignacion.get(
+                "nivel",
+                ""
+            ),
+            "grado": grado,
+            "seccion": seccion
+        },
+
+        reporte=reporte
+    )
+
+# ==========================================================
+# REPORTE DE NOTAS - PDF
+# ==========================================================
+
+@docente_bp.route("/notas/reporte/<asignatura_id>/pdf")
+@role_required("docente")
+def reporte_notas_pdf(asignatura_id):
+
+    print("========================================")
+    print("📄 REPORTE DE NOTAS PDF")
+    print("ASIGNACIÓN ID:", asignatura_id)
+    print("========================================")
+
+    usuario = session.get("usuario")
+
+    if not usuario:
+        flash(
+            "La sesión ha expirado.",
+            "warning"
+        )
+        return redirect(
+            url_for("login")
+        )
+
+    # ======================================================
+    # DOCENTE
+    # ======================================================
+
+    docente = db.docentes.find_one({
+        "usuario": usuario
+    })
+
+    if not docente:
+        flash(
+            "Docente no encontrado.",
+            "danger"
+        )
+        return redirect(
+            url_for("login")
+        )
+
+    codigo_docente = str(
+        docente.get("codigo", "")
+    ).strip().upper()
+
+    if codigo_docente.startswith("DOC"):
+        docente_id = codigo_docente
+    else:
+        docente_id = "DOC" + codigo_docente
+
+    # ======================================================
+    # BUSCAR ASIGNACIÓN
+    # ======================================================
+
+    ids_busqueda = [asignatura_id]
+
+    try:
+        ids_busqueda.append(
+            ObjectId(asignatura_id)
+        )
+    except Exception:
+        pass
+
+    asignacion = db.asignaciones_clase.find_one({
+        "_id": {
+            "$in": ids_busqueda
+        },
+        "docente_id": docente_id,
+        "activo": True
+    })
+
+    if not asignacion:
+
+        flash(
+            "Asignación de clase no encontrada.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "docente.lista_calificaciones"
+            )
+        )
+
+    # ======================================================
+    # DATOS DE LA ASIGNATURA
+    # ======================================================
+
+    grado = asignacion.get(
+        "grado",
+        ""
+    )
+
+    seccion = asignacion.get(
+        "seccion",
+        ""
+    )
+
+    mapa_grados = {
+        "1": "1er Grado",
+        "2": "2do Grado",
+        "3": "3er Grado",
+        "4": "4to Grado",
+        "5": "5to Grado",
+        "6": "6to Grado"
+    }
+
+    grado_estudiante = mapa_grados.get(
+        str(grado),
+        grado
+    )
+
+    # ======================================================
+    # ESTUDIANTES
+    # ======================================================
+
+    estudiantes = list(
+        db.estudiantes.find({
+            "grado": grado_estudiante,
+            "seccion": seccion,
+            "estado": "activo"
+        }).sort(
+            "nombre",
+            1
+        )
+    )
+
+    # ======================================================
+    # NOTAS
+    # ======================================================
+
+    notas = list(
+        db.notas.find({
+            "asignatura_id": asignatura_id
+        })
+    )
+
+    # ======================================================
+    # ORGANIZAR NOTAS
+    # ======================================================
+
+    notas_mapa = {}
+
+    for nota in notas:
+
+        estudiante_id = str(
+            nota.get(
+                "estudiante_id",
+                ""
+            )
+        )
+
+        periodo = nota.get(
+            "periodo",
+            ""
+        )
+
+        evaluacion = nota.get(
+            "evaluacion",
+            ""
+        )
+
+        notas_mapa[
+            (
+                estudiante_id,
+                periodo,
+                evaluacion
+            )
+        ] = nota
+
+    # ======================================================
+    # CREAR PDF
+    # ======================================================
+
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=landscape(letter),
+        rightMargin=25,
+        leftMargin=25,
+        topMargin=25,
+        bottomMargin=25
+    )
+
+    estilos = getSampleStyleSheet()
+
+    titulo = ParagraphStyle(
+        "TituloReporte",
+        parent=estilos["Title"],
+        alignment=TA_CENTER,
+        fontSize=18,
+        leading=22,
+        spaceAfter=8
+    )
+
+    subtitulo = ParagraphStyle(
+        "SubtituloReporte",
+        parent=estilos["Normal"],
+        alignment=TA_CENTER,
+        fontSize=10,
+        leading=13,
+        spaceAfter=4
+    )
+
+    elementos = []
+
+    # ======================================================
+    # ENCABEZADO
+    # ======================================================
+
+    elementos.append(
+        Paragraph(
+            "CIEM ACADÉMICO",
+            titulo
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            "REPORTE DE CALIFICACIONES",
+            titulo
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            f"<b>Asignatura:</b> "
+            f"{asignacion.get('asignatura_nombre', '')}",
+            subtitulo
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            f"<b>Nivel:</b> "
+            f"{asignacion.get('nivel', '')} "
+            f"&nbsp;&nbsp;&nbsp; "
+            f"<b>Grado:</b> {grado} "
+            f"&nbsp;&nbsp;&nbsp; "
+            f"<b>Sección:</b> {seccion}",
+            subtitulo
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            f"<b>Docente:</b> "
+            f"{docente.get('nombre', '')}",
+            subtitulo
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            f"<b>Fecha de emisión:</b> "
+            f"{datetime.now().strftime('%d/%m/%Y %H:%M')}",
+            subtitulo
+        )
+    )
+
+    elementos.append(
+        Spacer(1, 15)
+    )
+
+    # ======================================================
+    # ENCABEZADO DE TABLA
+    # ======================================================
+
+    datos = [[
+        "#",
+        "Estudiante",
+        "I Corte",
+        "II Corte",
+        "III Corte",
+        "IV Corte",
+        "Acumulado",
+        "Promedio",
+        "Estado"
+    ]]
+
+    evaluaciones = [
+        "Primer Parcial",
+        "Segundo Parcial",
+        "Tercer Parcial",
+        "Cuarto Parcial"
+    ]
+
+    # ======================================================
+    # ESTUDIANTES Y CALIFICACIONES
+    # ======================================================
+
+    for indice, estudiante in enumerate(
+        estudiantes,
+        start=1
+    ):
+
+        estudiante_id = str(
+            estudiante.get("_id")
+        )
+
+        parciales = []
+
+        for evaluacion in evaluaciones:
+
+            nota = notas_mapa.get(
+                (
+                    estudiante_id,
+                    "I Semestre",
+                    evaluacion
+                ),
+                {}
+            )
+
+            suma = sum(
+                float(
+                    nota.get(
+                        f"ep{i}",
+                        0
+                    ) or 0
+                )
+                for i in range(1, 11)
+            )
+
+            parciales.append(suma)
+
+        acumulado = sum(
+            parciales
+        )
+
+        promedio = (
+            acumulado / 4
+            if acumulado > 0
+            else 0
+        )
+
+        if acumulado >= 240:
+
+            estado = "Aprobado"
+
+        elif acumulado > 0:
+
+            estado = "Reforzamiento"
+
+        else:
+
+            estado = "Pendiente"
+
+        datos.append([
+            indice,
+            estudiante.get(
+                "nombre",
+                ""
+            ),
+            f"{parciales[0]:.1f}",
+            f"{parciales[1]:.1f}",
+            f"{parciales[2]:.1f}",
+            f"{parciales[3]:.1f}",
+            f"{acumulado:.1f}",
+            f"{promedio:.2f}",
+            estado
+        ])
+
+    # ======================================================
+    # TABLA
+    # ======================================================
+
+    tabla = Table(
+        datos,
+        repeatRows=1,
+        colWidths=[
+            30,
+            220,
+            65,
+            65,
+            65,
+            65,
+            80,
+            70,
+            100
+        ]
+    )
+
+    tabla.setStyle(
+        TableStyle([
+            (
+                "BACKGROUND",
+                (0, 0),
+                (-1, 0),
+                colors.HexColor("#0d2a52")
+            ),
+
+            (
+                "TEXTCOLOR",
+                (0, 0),
+                (-1, 0),
+                colors.white
+            ),
+
+            (
+                "FONTNAME",
+                (0, 0),
+                (-1, 0),
+                "Helvetica-Bold"
+            ),
+
+            (
+                "ALIGN",
+                (0, 0),
+                (-1, -1),
+                "CENTER"
+            ),
+
+            (
+                "VALIGN",
+                (0, 0),
+                (-1, -1),
+                "MIDDLE"
+            ),
+
+            (
+                "FONTNAME",
+                (0, 1),
+                (-1, -1),
+                "Helvetica"
+            ),
+
+            (
+                "FONTSIZE",
+                (0, 0),
+                (-1, -1),
+                8
+            ),
+
+            (
+                "GRID",
+                (0, 0),
+                (-1, -1),
+                0.5,
+                colors.grey
+            ),
+
+            (
+                "ROWBACKGROUNDS",
+                (0, 1),
+                (-1, -1),
+                [
+                    colors.white,
+                    colors.HexColor("#f1f5f9")
+                ]
+            ),
+
+            (
+                "LEFTPADDING",
+                (0, 0),
+                (-1, -1),
+                5
+            ),
+
+            (
+                "RIGHTPADDING",
+                (0, 0),
+                (-1, -1),
+                5
+            ),
+
+            (
+                "TOPPADDING",
+                (0, 0),
+                (-1, -1),
+                6
+            ),
+
+            (
+                "BOTTOMPADDING",
+                (0, 0),
+                (-1, -1),
+                6
+            )
+        ])
+    )
+
+    elementos.append(
+        tabla
+    )
+
+    elementos.append(
+        Spacer(1, 15)
+    )
+
+    # ======================================================
+    # PIE DEL REPORTE
+    # ======================================================
+
+    elementos.append(
+        Paragraph(
+            "CIEM Académico - Reporte generado por el sistema",
+            subtitulo
+        )
+    )
+
+    # ======================================================
+    # GENERAR PDF
+    # ======================================================
+
+    doc.build(
+        elementos
+    )
+
+    buffer.seek(0)
+
+    nombre_archivo = (
+        "Reporte_Notas_"
+        + str(
+            asignacion.get(
+                "asignatura_codigo",
+                "asignatura"
+            )
+        )
+        + "_"
+        + str(grado)
+        + "_"
+        + str(seccion)
+        + ".pdf"
+    )
+
+    print(
+        "✅ PDF GENERADO:",
+        nombre_archivo
+    )
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=nombre_archivo,
+        mimetype="application/pdf"
+    )
+
+# ==========================================================
+# DESCARGAR REPORTE DE NOTAS EN PDF
+# ==========================================================
+
+@docente_bp.route("/notas/pdf/<asignatura_id>")
+@role_required("docente")
+def descargar_reporte_notas(asignatura_id):
+
+    print("========================================")
+    print("📄 DESCARGANDO PDF DE NOTAS")
+    print("ASIGNACIÓN ID:", asignatura_id)
+    print("========================================")
+
+    usuario = session.get("usuario")
+
+    docente = db.docentes.find_one({
+        "usuario": usuario
+    })
+
+    if not docente:
+
+        flash(
+            "Docente no encontrado.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+    codigo_docente = str(
+        docente.get("codigo", "")
+    ).strip().upper()
+
+    if codigo_docente.startswith("DOC"):
+        docente_id = codigo_docente
+    else:
+        docente_id = "DOC" + codigo_docente
+
+    # ======================================================
+    # BUSCAR ASIGNACIÓN
+    # ======================================================
+
+    ids_busqueda = [asignatura_id]
+
+    try:
+        ids_busqueda.append(
+            ObjectId(asignatura_id)
+        )
+    except Exception:
+        pass
+
+    asignacion = db.asignaciones_clase.find_one({
+        "_id": {
+            "$in": ids_busqueda
+        },
+        "docente_id": docente_id,
+        "activo": True
+    })
+
+    if not asignacion:
+
+        flash(
+            "Asignación no encontrada.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("docente.lista_calificaciones")
+        )
+
+    grado = asignacion.get(
+        "grado",
+        ""
+    )
+
+    seccion = asignacion.get(
+        "seccion",
+        ""
+    )
+
+    mapa_grados = {
+        "1": "1er Grado",
+        "2": "2do Grado",
+        "3": "3er Grado",
+        "4": "4to Grado",
+        "5": "5to Grado",
+        "6": "6to Grado"
+    }
+
+    grado_estudiante = mapa_grados.get(
+        str(grado),
+        grado
+    )
+
+    # ======================================================
+    # ESTUDIANTES
+    # ======================================================
+
+    estudiantes = list(
+        db.estudiantes.find({
+            "grado": grado_estudiante,
+            "seccion": seccion,
+            "estado": "activo"
+        }).sort(
+            "nombre",
+            1
+        )
+    )
+
+    # ======================================================
+    # NOTAS
+    # ======================================================
+
+    notas = list(
+        db.notas.find({
+            "asignatura_id": asignatura_id
+        })
+    )
+
+    notas_mapa = {}
+
+    for nota in notas:
+
+        clave = (
+            str(
+                nota.get(
+                    "estudiante_id",
+                    ""
+                )
+            ),
+            nota.get(
+                "periodo",
+                ""
+            ),
+            nota.get(
+                "evaluacion",
+                ""
+            )
+        )
+
+        notas_mapa[clave] = nota
+
+    # ======================================================
+    # CREAR PDF
+    # ======================================================
+
+    import io
+
+    buffer = io.BytesIO()
+
+    documento = SimpleDocTemplate(
+        buffer,
+        pagesize=landscape(letter),
+        rightMargin=25,
+        leftMargin=25,
+        topMargin=30,
+        bottomMargin=30
+    )
+
+    estilos = getSampleStyleSheet()
+
+    titulo = estilos["Title"]
+    titulo.alignment = TA_CENTER
+
+    elementos = []
+
+    elementos.append(
+        Paragraph(
+            "CIEM ACADÉMICO",
+            titulo
+        )
+    )
+
+    elementos.append(
+        Spacer(1, 10)
+    )
+
+    elementos.append(
+        Paragraph(
+            f"<b>Reporte de Calificaciones</b>",
+            estilos["Heading2"]
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            f"Asignatura: "
+            f"{asignacion.get('asignatura_nombre', '')}",
+            estilos["Normal"]
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            f"Grado: {grado} | "
+            f"Sección: {seccion}",
+            estilos["Normal"]
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            f"Docente: "
+            f"{docente.get('nombre', '')}",
+            estilos["Normal"]
+        )
+    )
+
+    elementos.append(
+        Spacer(1, 15)
+    )
+
+    # ======================================================
+    # TABLA
+    # ======================================================
+
+    datos = [
+
+        [
+            "#",
+            "Estudiante",
+            "I Parcial",
+            "II Parcial",
+            "III Parcial",
+            "IV Parcial",
+            "Acumulado",
+            "Promedio",
+            "Estado"
+        ]
+
+    ]
+
+    for indice, estudiante in enumerate(
+        estudiantes,
+        start=1
+    ):
+
+        estudiante_id = str(
+            estudiante.get("_id")
+        )
+
+        parciales = []
+
+        for evaluacion in [
+            "Primer Parcial",
+            "Segundo Parcial",
+            "Tercer Parcial",
+            "Cuarto Parcial"
+        ]:
+
+            nota = notas_mapa.get(
+                (
+                    estudiante_id,
+                    "I Semestre",
+                    evaluacion
+                ),
+                {}
+            )
+
+            suma = sum(
+                float(
+                    nota.get(
+                        f"ep{i}",
+                        0
+                    ) or 0
+                )
+                for i in range(1, 11)
+            )
+
+            parciales.append(suma)
+
+        acumulado = sum(parciales)
+
+        promedio = (
+            acumulado / 4
+            if acumulado > 0
+            else 0
+        )
+
+        if acumulado >= 240:
+            estado = "Aprobado"
+
+        elif acumulado > 0:
+            estado = "Reforzamiento"
+
+        else:
+            estado = "Pendiente"
+
+        datos.append([
+            indice,
+            estudiante.get(
+                "nombre",
+                ""
+            ),
+            f"{parciales[0]:.1f}",
+            f"{parciales[1]:.1f}",
+            f"{parciales[2]:.1f}",
+            f"{parciales[3]:.1f}",
+            f"{acumulado:.1f}",
+            f"{promedio:.2f}",
+            estado
+        ])
+
+    tabla = Table(
+        datos,
+        repeatRows=1,
+        colWidths=[
+            30,
+            210,
+            70,
+            70,
+            70,
+            70,
+            75,
+            65,
+            90
+        ]
+    )
+
+    tabla.setStyle(
+        TableStyle([
+
+            (
+                "BACKGROUND",
+                (0, 0),
+                (-1, 0),
+                colors.HexColor("#08142c")
+            ),
+
+            (
+                "TEXTCOLOR",
+                (0, 0),
+                (-1, 0),
+                colors.white
+            ),
+
+            (
+                "FONTNAME",
+                (0, 0),
+                (-1, 0),
+                "Helvetica-Bold"
+            ),
+
+            (
+                "ALIGN",
+                (0, 0),
+                (-1, -1),
+                "CENTER"
+            ),
+
+            (
+                "ALIGN",
+                (1, 1),
+                (1, -1),
+                "LEFT"
+            ),
+
+            (
+                "GRID",
+                (0, 0),
+                (-1, -1),
+                0.5,
+                colors.grey
+            ),
+
+            (
+                "FONTNAME",
+                (0, 1),
+                (-1, -1),
+                "Helvetica"
+            ),
+
+            (
+                "FONTSIZE",
+                (0, 0),
+                (-1, -1),
+                9
+            ),
+
+            (
+                "TOPPADDING",
+                (0, 0),
+                (-1, -1),
+                7
+            ),
+
+            (
+                "BOTTOMPADDING",
+                (0, 0),
+                (-1, -1),
+                7
+            )
+
+        ])
+    )
+
+    elementos.append(tabla)
+
+    elementos.append(
+        Spacer(1, 15)
+    )
+
+    elementos.append(
+        Paragraph(
+            "CIEM Académico - Sistema de Gestión Académica",
+            estilos["Normal"]
+        )
+    )
+
+    documento.build(elementos)
+
+    buffer.seek(0)
+
+    respuesta = make_response(
+        buffer.getvalue()
+    )
+
+    respuesta.headers[
+        "Content-Type"
+    ] = "application/pdf"
+
+    nombre_archivo = (
+        "Reporte_Notas_"
+        + str(
+            asignacion.get(
+                "asignatura_codigo",
+                "Asignatura"
+            )
+        )
+        + "_"
+        + str(grado)
+        + str(seccion)
+        + ".pdf"
+    )
+
+    respuesta.headers[
+        "Content-Disposition"
+    ] = (
+        "attachment; filename="
+        + nombre_archivo
+    )
+
+    return respuesta
 # =====================================
 # AULAS DEL DOCENTE
 # =====================================

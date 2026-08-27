@@ -829,6 +829,7 @@ def listar_estudiantes_admin():
             print("grado:", repr(e.get("grado")))
 
             print("seccion:", repr(e.get("seccion")))
+            print("nivel:", repr(e.get("nivel")))
 
             print("TIPO _id:", type(e.get("_id")).__name__)
 
