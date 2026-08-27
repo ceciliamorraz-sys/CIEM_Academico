@@ -509,29 +509,17 @@
 
 
                 <a
-                    href="{{ url_for(
-                        'docente.notas',
-                        asignatura_id=asignatura._id
-                    ) }}"
-                    class="btn btn-light btn-ciem">
-
-                    <i class="bi bi-arrow-left"></i>
-
-                    Volver a notas
-
-                </a>
-
-
-               <a
                 href="{{ url_for(
-                    'docente.descargar_reporte_notas',
+                    'docente.notas',
                     asignatura_id=asignatura._id
                 ) }}"
-                class="btn btn-descargar btn-pdf"
+                class="btn btn-ciem"
             >
-                <i class="bi bi-file-earmark-pdf"></i>
-                Descargar Reporte
+                <i class="bi bi-arrow-left"></i>
+                Volver a notas
             </a>
+
+               
 
             </div>
 

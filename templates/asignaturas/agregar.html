@@ -1,128 +1,212 @@
-
 <!DOCTYPE html>
-
 <html lang="es">
 
 <head>
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1"
-    >
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <title>Nueva Asignatura | CIEM Académico</title>
-
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    <title>Agregar Asignatura | CIEM Académico</title>
 
     <style>
 
-        body {
-            background: #f1f5f9;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            min-height: 100vh;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        .container-main {
-            max-width: 850px;
-            margin: 40px auto;
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1d3256;
+            min-height: 100vh;
         }
 
         .header {
             background: linear-gradient(
                 135deg,
                 #08142C,
+                #0D2A52,
                 #1E4E8C
             );
 
             color: white;
+            padding: 22px 30px;
 
-            padding: 30px;
+            display: flex;
+            align-items: center;
 
-            border-radius: 20px;
-
-            box-shadow:
-                0 8px 25px
-                rgba(0, 0, 0, .15);
+            box-shadow: 0 4px 15px rgba(0,0,0,.15);
         }
 
-        .header h2 {
-            font-weight: 700;
-            margin-bottom: 5px;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        .header p {
-            opacity: .9;
+        .header-icon {
+            width: 48px;
+            height: 48px;
+
+            border-radius: 12px;
+
+            background: rgba(255,255,255,.15);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 25px;
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .header-title p {
+            font-size: 14px;
+            opacity: .85;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+
+            margin: 40px auto;
+
+            padding: 0 20px;
         }
 
         .card {
-            border: none;
+            background: white;
 
-            border-radius: 20px;
+            border-radius: 18px;
+
+            padding: 35px;
 
             box-shadow:
-                0 8px 25px
-                rgba(0, 0, 0, .10);
+                0 8px 30px rgba(8,20,44,.10);
 
-            overflow: hidden;
+            border: 1px solid #e5eaf2;
         }
 
         .card-header {
-            background: white;
+            margin-bottom: 30px;
 
-            border-bottom:
-                1px solid #e5e7eb;
+            border-bottom: 1px solid #e5eaf2;
 
-            padding: 22px 28px;
+            padding-bottom: 20px;
         }
 
-        .card-header h5 {
-            margin: 0;
-
+        .card-header h2 {
+            font-size: 22px;
             color: #08142C;
 
-            font-weight: 700;
+            margin-bottom: 7px;
         }
 
-        .card-body {
-            padding: 30px;
+        .card-header p {
+            color: #667085;
+            font-size: 14px;
+        }
+
+        .alert {
+            padding: 14px 18px;
+
+            border-radius: 10px;
+
+            margin-bottom: 20px;
+
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #e8f7ee;
+            color: #176b3a;
+            border: 1px solid #b9e5c9;
+        }
+
+        .alert-warning {
+            background: #fff8df;
+            color: #795b00;
+            border: 1px solid #f3df8b;
+        }
+
+        .alert-danger {
+            background: #fdecec;
+            color: #a32929;
+            border: 1px solid #f2bcbc;
+        }
+
+        .alert-info {
+            background: #eaf4ff;
+            color: #145a91;
+            border: 1px solid #bddcf5;
+        }
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
         }
 
         label {
+            font-size: 14px;
+
             font-weight: 600;
 
-            color: #1f2937;
+            color: #1d3256;
 
             margin-bottom: 8px;
         }
 
-        .form-control,
-        .form-select {
+        .required {
+            color: #d62828;
+        }
 
-            min-height: 48px;
+        input,
+        select {
+            width: 100%;
+
+            padding: 13px 14px;
+
+            border: 1px solid #cfd7e3;
 
             border-radius: 10px;
 
-            border:
-                1px solid #cbd5e1;
+            font-size: 15px;
 
-            padding:
-                10px 14px;
+            color: #1d3256;
+
+            background: white;
+
+            outline: none;
+
+            transition: .2s;
         }
 
-        .form-control:focus,
-        .form-select:focus {
-
-            border-color:
-                #1E4E8C;
+        input:focus,
+        select:focus {
+            border-color: #1E4E8C;
 
             box-shadow:
-                0 0 0 3px
-                rgba(
+                0 0 0 3px rgba(
                     30,
                     78,
                     140,
@@ -130,165 +214,140 @@
                 );
         }
 
-        .required {
-            color: #dc2626;
+        input::placeholder {
+            color: #9aa4b2;
+        }
+
+        .section-title {
+            grid-column: 1 / -1;
+
+            margin-top: 5px;
+
+            padding-bottom: 10px;
+
+            border-bottom: 1px solid #e5eaf2;
+
+            color: #0D2A52;
+
+            font-size: 16px;
+
+            font-weight: 700;
         }
 
         .info-box {
+            grid-column: 1 / -1;
 
-            background:
-                #eff6ff;
+            background: #f0f6ff;
 
-            border-left:
-                4px solid #2563eb;
+            border-left: 4px solid #1E4E8C;
 
-            border-radius:
-                10px;
+            padding: 14px 16px;
 
-            padding:
-                14px 16px;
+            border-radius: 8px;
 
-            margin-bottom:
-                25px;
+            font-size: 13px;
 
-            color:
-                #1e3a8a;
+            color: #344054;
+
+            line-height: 1.6;
         }
 
-        .ayuda {
+        .buttons {
+            display: flex;
 
-            font-size:
-                .88rem;
+            justify-content: flex-end;
 
-            color:
-                #64748b;
+            gap: 12px;
 
-            margin-top:
-                6px;
+            margin-top: 30px;
+
+            padding-top: 25px;
+
+            border-top: 1px solid #e5eaf2;
         }
 
-        .preview {
+        .btn {
+            border: none;
 
-            background:
-                #f0fdf4;
+            border-radius: 10px;
 
-            border-left:
-                4px solid #16a34a;
+            padding: 13px 22px;
 
-            border-radius:
-                12px;
+            font-size: 14px;
 
-            padding:
-                18px;
+            font-weight: 600;
 
-            margin-top:
-                10px;
-        }
+            cursor: pointer;
 
-        .preview-codigo {
+            text-decoration: none;
 
-            display:
-                inline-block;
+            display: inline-flex;
 
-            background:
-                #08142C;
+            align-items: center;
 
-            color:
-                white;
+            justify-content: center;
 
-            padding:
-                6px 14px;
+            gap: 8px;
 
-            border-radius:
-                8px;
-
-            font-weight:
-                700;
-        }
-
-        .acciones {
-
-            border-top:
-                1px solid #e5e7eb;
-
-            margin-top:
-                25px;
-
-            padding-top:
-                25px;
-
-            display:
-                flex;
-
-            gap:
-                10px;
-
-            flex-wrap:
-                wrap;
-        }
-
-        .btn-ciem {
-
-            background:
-                #2563eb;
-
-            border:
-                none;
-
-            color:
-                white;
-
-            border-radius:
-                10px;
-
-            padding:
-                11px 22px;
-
-            font-weight:
-                600;
-        }
-
-        .btn-ciem:hover {
-
-            background:
-                #1d4ed8;
-
-            color:
-                white;
+            transition: .2s;
         }
 
         .btn-secondary {
+            background: #edf1f6;
 
-            border-radius:
-                10px;
-
-            padding:
-                11px 22px;
-
-            font-weight:
-                600;
+            color: #344054;
         }
 
-        @media (
-            max-width: 768px
-        ) {
+        .btn-secondary:hover {
+            background: #dfe5ed;
+        }
 
-            .container-main {
+        .btn-primary {
+            background: #1E4E8C;
 
-                margin:
-                    20px 12px;
-            }
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0D2A52;
+
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 700px) {
 
             .header {
-
-                padding:
-                    22px;
+                padding: 18px;
             }
 
-            .card-body {
+            .header-title h1 {
+                font-size: 19px;
+            }
 
-                padding:
-                    20px;
+            .container {
+                margin: 25px auto;
+            }
+
+            .card {
+                padding: 22px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full,
+            .section-title,
+            .info-box {
+                grid-column: 1;
+            }
+
+            .buttons {
+                flex-direction: column-reverse;
+            }
+
+            .btn {
+                width: 100%;
             }
 
         }
@@ -297,535 +356,403 @@
 
 </head>
 
-
 <body>
 
 
-<div class="container container-main">
+<header class="header">
 
+    <div class="header-left">
 
-    <!-- =====================================================
-         ENCABEZADO
-    ====================================================== -->
+        <div class="header-icon">
+            📚
+        </div>
 
-    <div class="header mb-4">
+        <div class="header-title">
 
+            <h1>
+                CIEM Académico
+            </h1>
 
-        <div
-            class="
-                d-flex
-                justify-content-between
-                align-items-center
-                flex-wrap
-                gap-3
-            "
-        >
-
-
-            <div>
-
-                <h2>
-
-                    📚 Nueva Asignatura
-
-                </h2>
-
-
-                <p class="mb-0">
-
-                    Catálogo de asignaturas · CIEM Académico
-
-                </p>
-
-            </div>
-
-
-            <a
-                href="{{ url_for('listar_asignaturas') }}"
-                class="btn btn-light"
-            >
-
-                ← Regresar
-
-            </a>
-
+            <p>
+                Administración de asignaturas
+            </p>
 
         </div>
 
-
     </div>
 
+</header>
+
+
+<main class="container">
 
 
     <!-- =====================================================
-         TARJETA
+         MENSAJES
     ====================================================== -->
 
-    <div class="card">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            {% for category, message in messages %}
+
+                <div class="alert alert-{{ category }}">
+
+                    {{ message }}
+
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <section class="card">
 
 
         <div class="card-header">
 
-            <h5>
+            <h2>
+                ➕ Agregar nueva asignatura
+            </h2>
 
-                📝 Datos de la asignatura
-
-            </h5>
+            <p>
+                Registre la asignatura y asígnela
+                al docente correspondiente.
+            </p>
 
         </div>
 
 
+        <form
+            method="POST"
+            action="{{ url_for('agregar_asignatura') }}"
+        >
 
-        <div class="card-body">
+            <div class="form-grid">
 
 
-            <div class="info-box">
+                <!-- =================================================
+                     INFORMACIÓN DE LA ASIGNATURA
+                ================================================== -->
 
-                <strong>
-                    ℹ️ Importante:
-                </strong>
+                <div class="section-title">
 
-                Registre únicamente los datos básicos de
-                la asignatura. La asignación del docente,
-                nivel, grado y sección se realizará
-                posteriormente desde
-                <strong>Asignar Clase</strong>.
+                    📖 Información de la asignatura
+
+                </div>
+
+
+                <!-- =================================================
+                     CÓDIGO
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label for="codigo">
+
+                        Código de la asignatura
+
+                        <span class="required">*</span>
+
+                    </label>
+
+                    <input
+                        type="text"
+                        id="codigo"
+                        name="codigo"
+                        placeholder="Ej. MAT01"
+                        maxlength="30"
+                        required
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <!-- =================================================
+                     NOMBRE
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label for="nombre">
+
+                        Nombre de la asignatura
+
+                        <span class="required">*</span>
+
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        placeholder="Ej. Matemática"
+                        maxlength="150"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- =================================================
+                     NIVEL
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label for="nivel">
+
+                        Nivel
+
+                        <span class="required">*</span>
+
+                    </label>
+
+                    <select
+                        id="nivel"
+                        name="nivel"
+                        required
+                    >
+
+                        <option value="">
+                            Seleccione el nivel
+                        </option>
+
+                        <option value="Preescolar">
+                            Preescolar
+                        </option>
+
+                        <option value="Primaria">
+                            Primaria
+                        </option>
+
+                        <option value="Secundaria">
+                            Secundaria
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- =================================================
+                     GRADO
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label for="grado">
+
+                        Grado
+
+                        <span class="required">*</span>
+
+                    </label>
+
+                    <input
+                        type="text"
+                        id="grado"
+                        name="grado"
+                        placeholder="Ej. 4to"
+                        maxlength="50"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- =================================================
+                     DOCENTE
+                ================================================== -->
+
+                <div class="form-group full">
+
+                    <label for="docente_id">
+
+                        Docente responsable
+
+                        <span class="required">*</span>
+
+                    </label>
+
+                    <select
+                        id="docente_id"
+                        name="docente_id"
+                        required
+                    >
+
+                        <option value="">
+                            Seleccione el docente
+                        </option>
+
+                        {% for docente in docentes %}
+
+                            {% set codigo_docente =
+                                docente.get("codigo", "")|string|trim|upper
+                            %}
+
+                            {% if codigo_docente %}
+
+                                {% if codigo_docente.startswith("DOC") %}
+
+                                    {% set id_docente =
+                                        codigo_docente
+                                    %}
+
+                                {% else %}
+
+                                    {% set id_docente =
+                                        "DOC" ~ codigo_docente
+                                    %}
+
+                                {% endif %}
+
+                                <option
+                                    value="{{ id_docente }}"
+                                >
+
+                                    {{ docente.get("nombre", "Sin nombre") }}
+
+                                    -
+                                    
+                                    {{ id_docente }}
+
+                                </option>
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- =================================================
+                     INFORMACIÓN
+                ================================================== -->
+
+                <div class="info-box">
+
+                    <strong>Importante:</strong>
+
+                    La asignatura quedará asociada al nivel,
+                    grado y docente seleccionado.
+                    Las nuevas asignaciones utilizarán el formato
+                    <strong>DOCxxx</strong> para identificar al docente.
+
+                </div>
+
 
             </div>
 
 
+            <div class="buttons">
 
-            <!-- =================================================
-                 FORMULARIO
-            ================================================== -->
 
-            <form
-                method="POST"
-                action="{{ url_for('agregar_asignatura') }}"
-                id="formAsignatura"
-            >
+                <a
+                    href="{{ url_for('listar_asignaturas') }}"
+                    class="btn btn-secondary"
+                >
 
+                    ↩ Cancelar
 
-                <div class="row g-4">
+                </a>
 
 
-                    <!-- =========================================
-                         CÓDIGO
-                    ========================================== -->
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
 
-                    <div class="col-md-6">
+                    💾 Guardar asignatura
 
+                </button>
 
-                        <label for="codigo">
 
-                            Código de asignatura
+            </div>
 
-                            <span class="required">
-                                *
-                            </span>
 
-                        </label>
+        </form>
 
 
-                        <select
-                            id="codigo"
-                            name="codigo"
-                            class="form-select"
-                            required
-                        >
+    </section>
 
-                            <option value="">
 
-                                Seleccione código
-
-                            </option>
-
-
-                            <option value="MAT">
-
-                                MAT
-
-                            </option>
-
-
-                            <option value="LEN">
-
-                                LEN
-
-                            </option>
-
-
-                            <option value="CNA">
-
-                                CNA
-
-                            </option>
-
-
-                            <option value="CSS">
-
-                                CSS
-
-                            </option>
-
-
-                            <option value="ING">
-
-                                ING
-
-                            </option>
-
-
-                            <option value="EDF">
-
-                                EDF
-
-                            </option>
-
-
-                            <option value="INF">
-
-                                INF
-
-                            </option>
-
-
-                            <option value="ECR">
-
-                                ECR
-
-                            </option>
-
-
-                            <option value="AEP">
-
-                                AEP
-
-                            </option>
-
-
-                        </select>
-
-
-                        <div class="ayuda">
-
-                            Código corto utilizado para
-                            identificar la asignatura.
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <!-- =========================================
-                         NOMBRE
-                    ========================================== -->
-
-                    <div class="col-md-6">
-
-
-                        <label for="nombre">
-
-                            Nombre de la asignatura
-
-                            <span class="required">
-                                *
-                            </span>
-
-                        </label>
-
-
-                        <input
-                            type="text"
-                            id="nombre"
-                            name="nombre"
-                            class="form-control"
-                            placeholder="Ej. Matemática"
-                            maxlength="100"
-                            required
-                        >
-
-
-                        <div class="ayuda">
-
-                            Escriba el nombre completo
-                            de la asignatura.
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <!-- =========================================
-                         PREVISUALIZACIÓN
-                    ========================================== -->
-
-                    <div
-                        class="col-md-12"
-                        id="previewContainer"
-                        style="display:none;"
-                    >
-
-
-                        <div class="preview">
-
-
-                            <div>
-
-                                <strong>
-
-                                    📚 Vista previa
-
-                                </strong>
-
-                            </div>
-
-
-                            <div class="mt-3">
-
-
-                                <span
-                                    id="previewCodigo"
-                                    class="preview-codigo"
-                                ></span>
-
-
-                                <span class="ms-2">
-
-                                    <strong
-                                        id="previewNombre"
-                                    ></strong>
-
-                                </span>
-
-
-                            </div>
-
-
-                        </div>
-
-
-                    </div>
-
-
-                </div>
-
-
-
-                <!-- =============================================
-                     ACCIONES
-                ============================================== -->
-
-                <div class="acciones">
-
-
-                    <button
-                        type="submit"
-                        class="btn btn-ciem"
-                    >
-
-                        💾 Guardar asignatura
-
-                    </button>
-
-
-                    <a
-                        href="{{ url_for('listar_asignaturas') }}"
-                        class="btn btn-secondary"
-                    >
-
-                        Cancelar
-
-                    </a>
-
-
-                </div>
-
-
-            </form>
-
-
-        </div>
-
-
-    </div>
-
-
-</div>
-
-
-
-<script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-></script>
-
+</main>
 
 
 <script>
 
-    // =========================================================
-    // ELEMENTOS
-    // =========================================================
+    // =====================================================
+    // CÓDIGO EN MAYÚSCULAS
+    // =====================================================
 
     const codigo =
-        document.getElementById(
-            "codigo"
+        document.getElementById("codigo");
+
+    if (codigo) {
+
+        codigo.addEventListener(
+            "input",
+            function () {
+
+                this.value =
+                    this.value.toUpperCase();
+
+            }
         );
-
-
-    const nombre =
-        document.getElementById(
-            "nombre"
-        );
-
-
-    const previewContainer =
-        document.getElementById(
-            "previewContainer"
-        );
-
-
-    const previewCodigo =
-        document.getElementById(
-            "previewCodigo"
-        );
-
-
-    const previewNombre =
-        document.getElementById(
-            "previewNombre"
-        );
-
-
-
-    // =========================================================
-    // ACTUALIZAR PREVISUALIZACIÓN
-    // =========================================================
-
-    function actualizarPreview() {
-
-
-        if (
-            !codigo.value &&
-            !nombre.value
-        ) {
-
-            previewContainer.style.display =
-                "none";
-
-            return;
-
-        }
-
-
-        previewCodigo.textContent =
-            codigo.value || "---";
-
-
-        previewNombre.textContent =
-            nombre.value || "Sin nombre";
-
-
-        previewContainer.style.display =
-            "block";
 
     }
 
 
+    // =====================================================
+    // LIMPIAR ESPACIOS DEL NOMBRE
+    // =====================================================
 
-    // =========================================================
-    // CAMBIO DE CÓDIGO
-    // =========================================================
+    const nombre =
+        document.getElementById("nombre");
 
-    codigo.addEventListener(
-        "change",
-        actualizarPreview
-    );
+    if (nombre) {
 
+        nombre.addEventListener(
+            "blur",
+            function () {
 
-
-    // =========================================================
-    // CAMBIO DE NOMBRE
-    // =========================================================
-
-    nombre.addEventListener(
-        "input",
-        actualizarPreview
-    );
-
-
-
-    // =========================================================
-    // VALIDACIÓN
-    // =========================================================
-
-    document
-        .getElementById(
-            "formAsignatura"
-        )
-        .addEventListener(
-            "submit",
-            function(event) {
-
-
-                if (!codigo.value) {
-
-                    event.preventDefault();
-
-                    alert(
-                        "Debe seleccionar el código de la asignatura."
-                    );
-
-                    codigo.focus();
-
-                    return;
-
-                }
-
-
-                if (!nombre.value.trim()) {
-
-                    event.preventDefault();
-
-                    alert(
-                        "Debe escribir el nombre de la asignatura."
-                    );
-
-                    nombre.focus();
-
-                    return;
-
-                }
-
-
-                console.log(
-                    "========================================"
-                );
-
-                console.log(
-                    "📚 NUEVA ASIGNATURA"
-                );
-
-                console.log(
-                    "CÓDIGO:",
-                    codigo.value
-                );
-
-                console.log(
-                    "NOMBRE:",
-                    nombre.value
-                );
-
-                console.log(
-                    "========================================"
-                );
+                this.value =
+                    this.value.trim();
 
             }
         );
+
+    }
+
+
+    // =====================================================
+    // LIMPIAR ESPACIOS DEL GRADO
+    // =====================================================
+
+    const grado =
+        document.getElementById("grado");
+
+    if (grado) {
+
+        grado.addEventListener(
+            "blur",
+            function () {
+
+                this.value =
+                    this.value.trim();
+
+            }
+        );
+
+    }
 
 </script>
 

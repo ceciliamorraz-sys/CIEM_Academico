@@ -2,7 +2,6 @@
 <html lang="es">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -12,45 +11,17 @@
         Registro de Notas | CIEM Académico
     </title>
 
-
-    <!-- =====================================================
-         BOOTSTRAP
-    ====================================================== -->
-
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-
-
-    <!-- =====================================================
-         ICONOS
-    ====================================================== -->
+        rel="stylesheet">
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-        rel="stylesheet"
-    >
-
-
-    <!-- =====================================================
-         CSS DEL MÓDULO
-    ====================================================== -->
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/modules/notas.css') }}"
-    >
-
+        rel="stylesheet">
 
     <style>
 
-        /* ==================================================
-           GENERAL
-        ================================================== */
-
         body {
-
             background:
                 linear-gradient(
                     135deg,
@@ -67,31 +38,15 @@
                 sans-serif;
 
             color: #172033;
-
             min-height: 100vh;
-
         }
-
-
-        /* ==================================================
-           CONTENEDOR
-        ================================================== */
 
         .notas-container {
-
             max-width: 1700px;
-
             margin: auto;
-
         }
 
-
-        /* ==================================================
-           ENCABEZADO
-        ================================================== */
-
         .header-notas {
-
             background:
                 linear-gradient(
                     135deg,
@@ -101,94 +56,40 @@
                 );
 
             color: white;
-
             padding: 25px 30px;
-
             border-radius: 22px;
-
             margin-bottom: 25px;
 
             box-shadow:
                 0 15px 35px
                 rgba(15, 23, 42, .18);
-
-            position: relative;
-
-            overflow: hidden;
-
         }
-
-
-        .header-notas::after {
-
-            content: "";
-
-            position: absolute;
-
-            width: 250px;
-            height: 250px;
-
-            border-radius: 50%;
-
-            background:
-                rgba(255,255,255,.06);
-
-            right: -80px;
-            top: -100px;
-
-        }
-
 
         .logo-ciem {
-
             width: 78px;
             height: 78px;
-
             object-fit: cover;
-
             border-radius: 50%;
 
             border:
                 3px solid
                 rgba(255,255,255,.8);
-
-            box-shadow:
-                0 8px 20px
-                rgba(0,0,0,.25);
-
         }
-
 
         .header-title {
-
             font-weight: 800;
-
             margin: 0;
-
             font-size: 28px;
-
         }
-
 
         .header-subtitle {
-
             margin: 5px 0 0;
-
             opacity: .85;
-
             font-size: 15px;
-
         }
 
-
-        /* ==================================================
-           TARJETAS
-        ================================================== */
-
         .card {
-
             border: none;
-
             border-radius: 20px;
 
             box-shadow:
@@ -196,49 +97,28 @@
                 rgba(15,23,42,.08);
 
             margin-bottom: 22px;
-
         }
-
 
         .card-body {
-
             padding: 24px;
-
         }
 
-
         .section-title {
-
             font-size: 18px;
-
             font-weight: 800;
-
             color: #0f172a;
-
             margin-bottom: 20px;
 
             display: flex;
-
             align-items: center;
-
             gap: 10px;
-
         }
-
 
         .section-title i {
-
             color: #2563eb;
-
         }
 
-
-        /* ==================================================
-           CONFIGURACIÓN
-        ================================================== */
-
         .config-box {
-
             background: #f8fafc;
 
             border:
@@ -246,24 +126,16 @@
                 #e2e8f0;
 
             border-radius: 16px;
-
             padding: 20px;
-
         }
-
 
         .form-label {
-
             font-weight: 700;
-
             color: #334155;
-
         }
-
 
         .form-control,
         .form-select {
-
             border-radius: 12px;
 
             border:
@@ -271,41 +143,15 @@
                 #cbd5e1;
 
             padding: 11px 14px;
-
         }
-
-
-        .form-control:focus,
-        .form-select:focus {
-
-            border-color: #2563eb;
-
-            box-shadow:
-                0 0 0 3px
-                rgba(37,99,235,.12);
-
-        }
-
-
-        /* ==================================================
-           BOTONES
-        ================================================== */
 
         .btn {
-
             border-radius: 11px;
-
             font-weight: 700;
-
-            padding:
-                10px
-                17px;
-
+            padding: 10px 17px;
         }
 
-
         .btn-ciem {
-
             background:
                 linear-gradient(
                     135deg,
@@ -314,30 +160,15 @@
                 );
 
             color: white;
-
             border: none;
-
         }
-
 
         .btn-ciem:hover {
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #1d4ed8,
-                    #1e40af
-                );
-
             color: white;
-
             transform: translateY(-1px);
-
         }
 
-
         .btn-reporte {
-
             background:
                 linear-gradient(
                     135deg,
@@ -346,28 +177,14 @@
                 );
 
             color: white;
-
             border: none;
-
         }
-
 
         .btn-reporte:hover {
-
             color: white;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #047857,
-                    #065f46
-                );
-
         }
 
-
         .btn-descargar {
-
             background:
                 linear-gradient(
                     135deg,
@@ -376,54 +193,28 @@
                 );
 
             color: white;
-
             border: none;
-
         }
-
 
         .btn-descargar:hover {
-
             color: white;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #b91c1c,
-                    #991b1b
-                );
-
         }
 
-
-        /* ==================================================
-           TABLA
-        ================================================== */
-
         .tabla-wrapper {
-
             border-radius: 16px;
-
             overflow: auto;
 
             border:
                 1px solid
                 #e2e8f0;
-
         }
-
 
         .tabla-notas {
-
             margin: 0;
-
             min-width: 1250px;
-
         }
 
-
         .tabla-notas thead th {
-
             background:
                 linear-gradient(
                     135deg,
@@ -432,345 +223,156 @@
                 );
 
             color: white;
-
             text-align: center;
 
             font-size: 12px;
-
             font-weight: 700;
 
             padding: 13px 8px;
-
             white-space: nowrap;
-
             border: none;
-
         }
 
-
         .tabla-notas tbody td {
-
             text-align: center;
-
             vertical-align: middle;
-
             padding: 9px 6px;
 
             border-color:
                 #e2e8f0;
-
         }
-
-
-        .tabla-notas tbody tr {
-
-            transition: .2s;
-
-        }
-
-
-        .tabla-notas tbody tr:hover {
-
-            background: #f8fbff;
-
-        }
-
 
         .tabla-notas td:nth-child(2) {
-
             text-align: left;
-
             font-weight: 600;
-
             color: #334155;
-
-            min-width: 220px;
-
+            min-width: 260px;
         }
 
-
-        /* ==================================================
-           INPUTS DE NOTAS
-        ================================================== */
-
         .tabla-notas .nota {
-
             width: 62px;
-
             margin: auto;
-
             text-align: center;
 
             border-radius: 9px;
-
             padding: 7px 4px;
 
             font-weight: 600;
-
         }
-
-
-        .tabla-notas .nota:focus {
-
-            border-color: #2563eb;
-
-            box-shadow:
-                0 0 0 3px
-                rgba(37,99,235,.12);
-
-        }
-
-
-        /* ==================================================
-           ACUMULADO
-        ================================================== */
 
         .acumulado {
-
             font-weight: 800;
-
             color: #2563eb;
-
             white-space: nowrap;
-
         }
-
-
-        /* ==================================================
-           PROMEDIO
-        ================================================== */
 
         .promedio {
-
             font-weight: 800;
-
             color: #059669;
-
         }
-
-
-        /* ==================================================
-           BOTONES DE ACCIÓN
-        ================================================== */
 
         .acciones-notas {
-
             display: flex;
-
             flex-wrap: wrap;
-
             gap: 10px;
-
             margin-top: 22px;
-
         }
 
-
-        /* ==================================================
-           RESUMEN ACADÉMICO
-        ================================================== */
-
         .stats-grid {
-
             display: grid;
-
             grid-template-columns:
                 repeat(4, 1fr);
 
             gap: 18px;
-
         }
 
-
         .stat-card {
-
             border-radius: 18px;
-
             padding: 22px;
-
             background: white;
 
             border:
                 1px solid
                 #e2e8f0;
-
-            position: relative;
-
-            overflow: hidden;
-
         }
 
-
         .stat-icon {
-
             width: 46px;
-
             height: 46px;
 
             border-radius: 13px;
 
             display: flex;
-
             align-items: center;
-
             justify-content: center;
 
             background: #eff6ff;
-
             color: #2563eb;
 
             font-size: 21px;
-
             margin-bottom: 12px;
-
         }
-
 
         .stat-label {
-
             color: #64748b;
-
             font-size: 13px;
-
             font-weight: 600;
-
         }
-
 
         .stat-value {
-
             font-size: 29px;
-
             font-weight: 800;
-
             color: #0f172a;
-
             margin-top: 3px;
-
         }
-
-
-        /* ==================================================
-           CORTES
-        ================================================== */
 
         .tabla-cortes th {
-
             background: #0f172a;
-
             color: white;
-
             font-size: 13px;
-
         }
-
 
         .tabla-cortes td {
-
             vertical-align: middle;
-
             font-weight: 600;
-
         }
-
-
-        /* ==================================================
-           ESTADO
-        ================================================== */
-
-        .badge {
-
-            border-radius: 20px;
-
-            padding: 7px 12px;
-
-            font-weight: 700;
-
-        }
-
-
-        /* ==================================================
-           RESPONSIVE
-        ================================================== */
 
         @media (max-width: 992px) {
 
             .stats-grid {
-
                 grid-template-columns:
                     repeat(2, 1fr);
-
-            }
-
-            .header-notas {
-
-                padding: 20px;
-
             }
 
             .header-title {
-
                 font-size: 22px;
-
             }
-
         }
-
 
         @media (max-width: 576px) {
 
             .stats-grid {
-
-                grid-template-columns:
-                    1fr;
-
+                grid-template-columns: 1fr;
             }
-
 
             .header-notas {
-
                 text-align: center;
-
             }
-
-
-            .header-notas
-            .d-flex {
-
-                flex-direction: column;
-
-                gap: 15px;
-
-            }
-
-
-            .logo-ciem {
-
-                margin-right: 0 !important;
-
-            }
-
 
             .acciones-notas .btn {
-
                 width: 100%;
-
             }
-
         }
 
     </style>
 
 </head>
 
-
 <body>
-
 
 <div class="container-fluid py-4">
 
 <div class="notas-container">
-
 
 <!-- =====================================================
      ENCABEZADO
@@ -778,63 +380,88 @@
 
 <div class="header-notas">
 
+    <div class="d-flex
+                justify-content-between
+                align-items-center
+                gap-3">
 
-<div class="d-flex
-            justify-content-between
-            align-items-center
-            gap-3">
+        <div class="d-flex
+                    align-items-center
+                    gap-3">
 
+            <img
+                src="{{ url_for('static', filename='img/logo.jpg') }}"
+                class="logo-ciem"
+                alt="Logo CIEM">
 
-<div class="d-flex
-            align-items-center
-            gap-3">
+            <div>
 
+                <h1 class="header-title">
 
-<img
-    src="{{ url_for('static', filename='img/logo.jpg') }}"
-    class="logo-ciem"
-    alt="Logo CIEM"
->
+                    <i class="bi bi-journal-check"></i>
 
+                    Registro de Calificaciones
 
-<div>
+                </h1>
 
-<h1 class="header-title">
+                <p class="header-subtitle">
 
-<i class="bi bi-journal-check"></i>
+                    {{ asignatura.nombre }}
 
-Registro de Calificaciones
+                    |
+                    {{ asignatura.grado }}
 
-</h1>
+                    -
+                    {{ asignatura.seccion }}
 
+                </p>
 
-<p class="header-subtitle">
+            </div>
 
-{{ asignatura.nombre }}
+        </div>
 
-</p>
+        <a
+            href="{{ url_for('docente.aulas') }}"
+            class="btn btn-light">
 
-</div>
+            <i class="bi bi-arrow-left"></i>
 
-</div>
+            Volver a mis aulas
 
+        </a>
 
-<a
-    href="{{ url_for('docente.aulas') }}"
-    class="btn btn-light"
->
-
-<i class="bi bi-arrow-left"></i>
-
-Volver a mis aulas
-
-</a>
-
-
-</div>
+    </div>
 
 </div>
 
+
+<!-- =====================================================
+     MENSAJES FLASH
+====================================================== -->
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% if messages %}
+
+        {% for category, message in messages %}
+
+            <div class="alert alert-{{ category }} alert-dismissible fade show">
+
+                {{ message }}
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+                </button>
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+{% endwith %}
 
 
 <!-- =====================================================
@@ -845,12 +472,11 @@ Volver a mis aulas
 
 <div class="card-body">
 
-
 <div class="section-title">
 
-<i class="bi bi-sliders"></i>
+    <i class="bi bi-sliders"></i>
 
-Configuración de Evaluación
+    Configuración de Evaluación
 
 </div>
 
@@ -870,30 +496,24 @@ Configuración de Evaluación
 
 <div class="config-box">
 
-
 <div class="row g-3">
-
 
 <!-- ASIGNATURA -->
 
 <div class="col-lg-4">
 
-
 <label class="form-label">
 
-<i class="bi bi-book"></i>
+    <i class="bi bi-book"></i>
 
-Asignatura
+    Asignatura
 
 </label>
-
 
 <input
     class="form-control"
     value="{{ asignatura.nombre }}"
-    readonly
->
-
+    readonly>
 
 </div>
 
@@ -902,39 +522,28 @@ Asignatura
 
 <div class="col-lg-4">
 
-
 <label class="form-label">
 
-<i class="bi bi-calendar3"></i>
+    <i class="bi bi-calendar3"></i>
 
-Periodo
+    Periodo
 
 </label>
-
 
 <select
     class="form-select"
     name="periodo"
-    id="periodo"
->
+    id="periodo">
 
+    <option value="I Semestre">
+        I Semestre
+    </option>
 
-<option value="I Semestre">
-
-I Semestre
-
-</option>
-
-
-<option value="II Semestre">
-
-II Semestre
-
-</option>
-
+    <option value="II Semestre">
+        II Semestre
+    </option>
 
 </select>
-
 
 </div>
 
@@ -943,121 +552,88 @@ II Semestre
 
 <div class="col-lg-4">
 
-
 <label class="form-label">
 
-<i class="bi bi-clipboard-check"></i>
+    <i class="bi bi-clipboard-check"></i>
 
-Evaluación
+    Evaluación
 
 </label>
-
 
 <select
     class="form-select"
     name="evaluacion"
-    id="evaluacion"
->
+    id="evaluacion">
 
+    <option value="Primer Parcial">
+        Primer Parcial
+    </option>
 
-<option value="Primer Parcial">
+    <option value="Segundo Parcial">
+        Segundo Parcial
+    </option>
 
-Primer Parcial
+    <option value="Tercer Parcial">
+        Tercer Parcial
+    </option>
 
-</option>
-
-
-<option value="Segundo Parcial">
-
-Segundo Parcial
-
-</option>
-
-
-<option value="Tercer Parcial">
-
-Tercer Parcial
-
-</option>
-
-
-<option value="Cuarto Parcial">
-
-Cuarto Parcial
-
-</option>
-
+    <option value="Cuarto Parcial">
+        Cuarto Parcial
+    </option>
 
 </select>
 
+</div>
 
 </div>
 
-
 </div>
-
-
-</div>
-
 
 
 <!-- =====================================================
-     TABLA DE NOTAS
+     TABLA
 ====================================================== -->
 
 <div class="mt-4">
 
-
 <div class="section-title">
 
-<i class="bi bi-pencil-square"></i>
+    <i class="bi bi-pencil-square"></i>
 
-Registro de Evaluaciones
+    Registro de Evaluaciones
 
 </div>
 
 
 <div class="tabla-wrapper">
 
-
 <table
-    class="table table-bordered tabla-notas"
->
-
+    class="table table-bordered tabla-notas">
 
 <thead>
 
 <tr>
 
-<th>#</th>
+    <th>#</th>
 
-<th>Estudiante</th>
+    <th>Estudiante</th>
 
-<th>EP1</th>
+    <th>EP1</th>
+    <th>EP2</th>
+    <th>EP3</th>
+    <th>EP4</th>
+    <th>EP5</th>
+    <th>EP6</th>
+    <th>EP7</th>
+    <th>EP8</th>
+    <th>EP9</th>
+    <th>EP10</th>
 
-<th>EP2</th>
+    <th>Acumulado</th>
 
-<th>EP3</th>
+    <th>Promedio</th>
 
-<th>EP4</th>
-
-<th>EP5</th>
-
-<th>EP6</th>
-
-<th>EP7</th>
-
-<th>EP8</th>
-
-<th>EP9</th>
-
-<th>EP10</th>
-
-<th>Acumulado</th>
-
-<th>Promedio</th>
-
-<th>Estado</th>
+    <th>Estado</th>
 
 </tr>
 
@@ -1066,29 +642,38 @@ Registro de Evaluaciones
 
 <tbody>
 
-
 {% for e in estudiantes %}
+
+{% set id_estudiante = e._id|string %}
+
+{% set nota_estudiante = {} %}
+
+{% for n in notas_existentes %}
+
+    {% if n.estudiante_id|string == id_estudiante
+          and n.periodo == "I Semestre"
+          and n.evaluacion == "Primer Parcial" %}
+
+        {% set nota_estudiante = n %}
+
+    {% endif %}
+
+{% endfor %}
 
 
 <tr>
 
-
 <td>
-
-{{ loop.index }}
-
+    {{ loop.index }}
 </td>
 
 
 <td>
-
-{{ e.nombre }}
-
+    {{ e.nombre }}
 </td>
 
 
 {% for numero in range(1, 11) %}
-
 
 <td>
 
@@ -1099,46 +684,41 @@ Registro de Evaluaciones
     step="0.1"
     class="form-control nota"
     name="ep{{ numero }}_{{ e._id }}"
-    value="0"
+    value="{{ nota_estudiante.get('ep' ~ numero, 0) }}"
 >
 
-
 </td>
-
 
 {% endfor %}
 
 
 <td class="acumulado">
 
-0 / 100
+    0 / 100
 
 </td>
 
 
 <td class="promedio">
 
-0.0
+    0.00
 
 </td>
 
 
 <td class="estado">
 
-<span class="badge bg-secondary">
+    <span class="badge bg-secondary">
 
-Pendiente
+        Pendiente
 
-</span>
+    </span>
 
 </td>
 
-
 </tr>
 
-
 {% endfor %}
-
 
 </tbody>
 
@@ -1147,64 +727,27 @@ Pendiente
 </div>
 
 
-
 <!-- =====================================================
      BOTONES
 ====================================================== -->
 
 <div class="acciones-notas">
 
-
-<!-- GUARDAR -->
-
 <button
     type="submit"
-    class="btn btn-ciem"
->
+    class="btn btn-ciem">
 
-<i class="bi bi-save"></i>
+    <i class="bi bi-save"></i>
 
-Guardar Calificaciones
+    Guardar Calificaciones
 
 </button>
 
 
-<!-- VER REPORTE -->
-
-<a
-    href="{{ url_for(
-        'docente.ver_reporte_notas',
-        asignatura_id=asignatura._id
-    ) }}"
-    class="btn btn-reporte"
->
-
-<i class="bi bi-eye"></i>
-
-Ver Reporte de Notas
-
-</a>
-
-
-<!-- DESCARGAR -->
-
-<a
-    href="{{ url_for(
-        'docente.descargar_reporte_notas',
-        asignatura_id=asignatura._id
-    ) }}"
-    class="btn btn-descargar"
->
-    <i class="bi bi-file-earmark-pdf"></i>
-    Descargar PDF
-</a>
-
 
 </div>
 
-
 </div>
-
 
 </form>
 
@@ -1213,52 +756,45 @@ Ver Reporte de Notas
 </div>
 
 
-
 <!-- =====================================================
      RESUMEN DE CORTES
 ====================================================== -->
 
 <div class="card">
 
-
 <div class="card-body">
-
 
 <div class="section-title">
 
-<i class="bi bi-file-earmark-bar-graph"></i>
+    <i class="bi bi-file-earmark-bar-graph"></i>
 
-Resumen de Cortes
+    Resumen de Cortes
 
 </div>
 
 
 <div class="table-responsive">
 
-
-<table
-    class="table table-bordered
-           table-hover
-           text-center
-           tabla-cortes"
->
-
+<table class="table table-bordered
+              table-hover
+              text-center
+              tabla-cortes">
 
 <thead>
 
 <tr>
 
-<th>Asignatura</th>
+    <th>Asignatura</th>
 
-<th>I Corte</th>
+    <th>I Corte</th>
 
-<th>II Corte</th>
+    <th>II Corte</th>
 
-<th>III Corte</th>
+    <th>III Corte</th>
 
-<th>IV Corte</th>
+    <th>IV Corte</th>
 
-<th>Nota Final</th>
+    <th>Nota Final</th>
 
 </tr>
 
@@ -1269,48 +805,29 @@ Resumen de Cortes
 
 <tr>
 
-
 <td>
-
-{{ asignatura.nombre }}
-
+    {{ asignatura.nombre }}
 </td>
 
-
-<td>
-
-{{ corte1 if corte1 is not none else '-' }}
-
+<td id="corte1">
+    -
 </td>
 
-
-<td>
-
-{{ corte2 if corte2 is not none else '-' }}
-
+<td id="corte2">
+    -
 </td>
 
-
-<td>
-
-{{ corte3 if corte3 is not none else '-' }}
-
+<td id="corte3">
+    -
 </td>
 
-
-<td>
-
-{{ corte4 if corte4 is not none else '-' }}
-
+<td id="corte4">
+    -
 </td>
 
-
-<td>
-
-{{ nota_final if nota_final is not none else '-' }}
-
+<td id="notaFinal">
+    -
 </td>
-
 
 </tr>
 
@@ -1320,11 +837,9 @@ Resumen de Cortes
 
 </div>
 
-
 </div>
 
 </div>
-
 
 
 <!-- =====================================================
@@ -1333,15 +848,13 @@ Resumen de Cortes
 
 <div class="card">
 
-
 <div class="card-body">
-
 
 <div class="section-title">
 
-<i class="bi bi-bar-chart-line"></i>
+    <i class="bi bi-bar-chart-line"></i>
 
-Resumen Académico
+    Resumen Académico
 
 </div>
 
@@ -1349,133 +862,76 @@ Resumen Académico
 <div class="stats-grid">
 
 
-<!-- ESTUDIANTES -->
+<div class="stat-card">
+
+    <div class="stat-icon">
+        <i class="bi bi-people"></i>
+    </div>
+
+    <div class="stat-label">
+        Estudiantes
+    </div>
+
+    <div class="stat-value">
+        {{ estudiantes|length }}
+    </div>
+
+</div>
+
 
 <div class="stat-card">
 
+    <div class="stat-icon">
+        <i class="bi bi-graph-up-arrow"></i>
+    </div>
 
-<div class="stat-icon">
+    <div class="stat-label">
+        Promedio General
+    </div>
 
-<i class="bi bi-people"></i>
-
-</div>
-
-
-<div class="stat-label">
-
-Estudiantes
-
-</div>
-
-
-<div class="stat-value">
-
-{{ estudiantes|length }}
+    <div
+        class="stat-value"
+        id="promedioGeneral">
+        0.00
+    </div>
 
 </div>
 
-
-</div>
-
-
-
-<!-- PROMEDIO -->
 
 <div class="stat-card">
 
+    <div class="stat-icon">
+        <i class="bi bi-check-circle"></i>
+    </div>
 
-<div class="stat-icon">
+    <div class="stat-label">
+        Aprobados
+    </div>
 
-<i class="bi bi-graph-up-arrow"></i>
-
-</div>
-
-
-<div class="stat-label">
-
-Promedio General
-
-</div>
-
-
-<div
-    class="stat-value"
-    id="promedioGeneral"
->
-
-0.0
+    <div
+        class="stat-value"
+        id="aprobados">
+        0
+    </div>
 
 </div>
 
-
-</div>
-
-
-
-<!-- APROBADOS -->
 
 <div class="stat-card">
 
+    <div class="stat-icon">
+        <i class="bi bi-exclamation-circle"></i>
+    </div>
 
-<div class="stat-icon">
+    <div class="stat-label">
+        Reforzamiento
+    </div>
 
-<i class="bi bi-check-circle"></i>
-
-</div>
-
-
-<div class="stat-label">
-
-Aprobados
-
-</div>
-
-
-<div
-    class="stat-value"
-    id="aprobados"
->
-
-0
-
-</div>
-
-
-</div>
-
-
-
-<!-- REFORZAMIENTO -->
-
-<div class="stat-card">
-
-
-<div class="stat-icon">
-
-<i class="bi bi-exclamation-circle"></i>
-
-</div>
-
-
-<div class="stat-label">
-
-Reforzamiento
-
-</div>
-
-
-<div
-    class="stat-value"
-    id="reforzamiento"
->
-
-0
-
-</div>
-
-
-</div>
-
+    <div
+        class="stat-value"
+        id="reforzamiento">
+        0
+    </div>
 
 </div>
 
@@ -1484,30 +940,19 @@ Reforzamiento
 
 </div>
 
+</div>
 
 
 </div>
 
 </div>
 
-
-
-<!-- =====================================================
-     JAVASCRIPT
-====================================================== -->
 
 <script>
-
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
-
-
-        /* =================================================
-           FILAS
-        ================================================= */
-
 
         const filas =
             document.querySelectorAll(
@@ -1515,167 +960,95 @@ document.addEventListener(
             );
 
 
-        filas.forEach(
-            function (fila) {
+        function calcularFila(fila) {
 
+            const inputs =
+                fila.querySelectorAll(".nota");
 
-                const inputs =
-                    fila.querySelectorAll(
-                        ".nota"
-                    );
+            const acumulado =
+                fila.querySelector(".acumulado");
 
+            const promedio =
+                fila.querySelector(".promedio");
 
-                const acumulado =
-                    fila.querySelector(
-                        ".acumulado"
-                    );
+            const estado =
+                fila.querySelector(".estado");
 
 
-                const promedio =
-                    fila.querySelector(
-                        ".promedio"
-                    );
+            let suma = 0;
 
 
-                const estado =
-                    fila.querySelector(
-                        ".estado"
-                    );
+            inputs.forEach(
+                function (input) {
 
+                    let valor =
+                        parseFloat(input.value) || 0;
 
-                /* =========================================
-                   EVENTOS
-                ========================================= */
 
-
-                inputs.forEach(
-                    function (input) {
-
-
-                        input.addEventListener(
-                            "input",
-                            calcularFila
-                        );
-
-
-                    }
-                );
-
-
-                /* =========================================
-                   CALCULAR FILA
-                ========================================= */
-
-
-                function calcularFila() {
-
-
-                    let suma = 0;
-
-
-                    inputs.forEach(
-                        function (input) {
-
-
-                            let valor =
-                                parseFloat(
-                                    input.value
-                                ) || 0;
-
-
-                            if (valor > 10) {
-
-                                valor = 10;
-
-                                input.value = 10;
-
-                            }
-
-
-                            if (valor < 0) {
-
-                                valor = 0;
-
-                                input.value = 0;
-
-                            }
-
-
-                            suma += valor;
-
-
-                        }
-                    );
-
-
-                    const prom =
-                        (suma / 10)
-                        .toFixed(2);
-
-
-                    acumulado.textContent =
-                        suma.toFixed(1)
-                        + " / 100";
-
-
-                    promedio.textContent =
-                        prom;
-
-
-                    if (prom >= 6) {
-
-
-                        estado.innerHTML = `
-
-                            <span class="badge bg-success">
-
-                                <i class="bi bi-check-circle"></i>
-
-                                Aprobado
-
-                            </span>
-
-                        `;
-
-
-                    }
-
-                    else {
-
-
-                        estado.innerHTML = `
-
-                            <span class="badge bg-danger">
-
-                                <i class="bi bi-exclamation-circle"></i>
-
-                                Reforzamiento
-
-                            </span>
-
-                        `;
-
-
+                    if (valor < 0) {
+                        valor = 0;
+                        input.value = 0;
                     }
 
 
-                    actualizarResumen();
+                    if (valor > 10) {
+                        valor = 10;
+                        input.value = 10;
+                    }
 
+
+                    suma += valor;
 
                 }
+            );
 
+
+            const prom =
+                suma / 10;
+
+
+            acumulado.textContent =
+                suma.toFixed(1) + " / 100";
+
+
+            promedio.textContent =
+                prom.toFixed(2);
+
+
+            if (suma >= 60) {
+
+                estado.innerHTML = `
+                    <span class="badge bg-success">
+                        <i class="bi bi-check-circle"></i>
+                        Aprobado
+                    </span>
+                `;
 
             }
-        );
+            else if (suma > 0) {
 
+                estado.innerHTML = `
+                    <span class="badge bg-warning text-dark">
+                        <i class="bi bi-exclamation-circle"></i>
+                        Reforzamiento
+                    </span>
+                `;
 
-        /* =================================================
-           RESUMEN
-        ================================================= */
+            }
+            else {
+
+                estado.innerHTML = `
+                    <span class="badge bg-secondary">
+                        Pendiente
+                    </span>
+                `;
+
+            }
+
+        }
 
 
         function actualizarResumen() {
-
 
             let total = 0;
 
@@ -1686,106 +1059,108 @@ document.addEventListener(
             let reforzamiento = 0;
 
 
-            document
-                .querySelectorAll(".promedio")
-                .forEach(
-                    function (elemento) {
+            filas.forEach(
+                function (fila) {
+
+                    calcularFila(fila);
 
 
-                        const valor =
-                            parseFloat(
-                                elemento.textContent
-                            ) || 0;
+                    const promedio =
+                        parseFloat(
+                            fila.querySelector(
+                                ".promedio"
+                            ).textContent
+                        ) || 0;
 
 
-                        sumaPromedios += valor;
+                    const acumuladoTexto =
+                        fila.querySelector(
+                            ".acumulado"
+                        ).textContent;
+
+
+                    const acumulado =
+                        parseFloat(
+                            acumuladoTexto
+                        ) || 0;
+
+
+                    if (acumulado > 0) {
 
                         total++;
 
+                        sumaPromedios += promedio;
 
-                        if (valor >= 6) {
+
+                        if (acumulado >= 60) {
 
                             aprobados++;
 
                         }
-
                         else {
 
                             reforzamiento++;
 
                         }
 
-
                     }
-                );
+
+                }
+            );
 
 
-            if (total > 0) {
+            document.getElementById(
+                "promedioGeneral"
+            ).textContent =
+                total > 0
+                ? (sumaPromedios / total).toFixed(2)
+                : "0.00";
 
 
-                document
-                    .getElementById(
-                        "promedioGeneral"
-                    )
-                    .textContent =
-                    (
-                        sumaPromedios / total
-                    ).toFixed(2);
-
-
-            }
-
-
-            document
-                .getElementById(
-                    "aprobados"
-                )
-                .textContent =
+            document.getElementById(
+                "aprobados"
+            ).textContent =
                 aprobados;
 
 
-            document
-                .getElementById(
-                    "reforzamiento"
-                )
-                .textContent =
+            document.getElementById(
+                "reforzamiento"
+            ).textContent =
                 reforzamiento;
 
-
         }
-
-
-        /* =================================================
-           CALCULAR AL CARGAR
-        ================================================= */
 
 
         filas.forEach(
             function (fila) {
 
+                fila.querySelectorAll(
+                    ".nota"
+                ).forEach(
+                    function (input) {
 
-                const primerInput =
-                    fila.querySelector(
-                        ".nota"
-                    );
+                        input.addEventListener(
+                            "input",
+                            actualizarResumen
+                        );
 
-
-                if (primerInput) {
-
-                    primerInput.dispatchEvent(
-                        new Event("input")
-                    );
-
-                }
-
+                    }
+                );
 
             }
         );
 
 
+        actualizarResumen();
+
     }
 );
 
+</script>
+
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
 </script>
 
 

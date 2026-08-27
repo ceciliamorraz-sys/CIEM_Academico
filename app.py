@@ -1,35 +1,398 @@
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Table,
+    TableStyle,
+    Paragraph,
+    Spacer,
+    Image
+)
+
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    session,
+    flash,
+    send_file
+)
+
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
-from flask import request, url_for
 from weasyprint import HTML
+
 from io import BytesIO
 from datetime import datetime
 from bson import ObjectId
 from functools import wraps
-from datetime import datetime
+
 import os
 import re
 
 from config.database import db
 
+# ==========================================================
+# USUARIOS DOCENTES
+# ==========================================================
+
+usuarios_docentes = [
+    {
+        "_id": "USR007",
+        "usuario": "daniela",
+        "password": "1234",
+        "rol": "docente",
+        "docente_id": "DOC007",
+        "activo": True
+    },
+    {
+        "_id": "USR009",
+        "usuario": "anielka",
+        "password": "1234",
+        "rol": "docente",
+        "docente_id": "DOC009",
+        "activo": True
+    },
+    {
+        "_id": "USR010",
+        "usuario": "erlin",
+        "password": "1234",
+        "rol": "docente",
+        "docente_id": "DOC010",
+        "activo": True
+    },
+    {
+        "_id": "USR011",
+        "usuario": "carla",
+        "password": "1234",
+        "rol": "docente",
+        "docente_id": "DOC011",
+        "activo": True
+    }
+]
+
+for usuario_docente in usuarios_docentes:
+
+    db.usuarios.update_one(
+        {"_id": usuario_docente["_id"]},
+        {"$set": usuario_docente},
+        upsert=True
+    )
+
+print("==============================================")
+print("USUARIOS DOCENTES VERIFICADOS")
+print("==============================================")
+print("DANIELA:", db.usuarios.find_one({"usuario": "daniela"}))
+print("ERLIN:", db.usuarios.find_one({"usuario": "erlin"}))
+print("==============================================")
+# ==========================================================
+# APLICACIÓN
+# ==========================================================
 
 app = Flask(__name__)
 
 app.secret_key = "CIEM_clave_segura_2026"
+
+
+# ==========================================================
+# LOGIN
+# ==========================================================
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+
+    if request.method == "POST":
+
+        usuario = request.form.get(
+            "usuario",
+            ""
+        ).strip().lower()
+
+        password = request.form.get(
+            "password",
+            ""
+        ).strip()
+
+        # --------------------------------------------------
+        # VALIDAR DATOS
+        # --------------------------------------------------
+
+        if not usuario or not password:
+
+            flash(
+                "Debe ingresar usuario y contraseña.",
+                "warning"
+            )
+
+            return render_template("login.html")
+
+        # --------------------------------------------------
+        # BUSCAR USUARIO
+        # --------------------------------------------------
+
+        user = db["usuarios"].find_one({
+            "usuario": usuario
+        })
+
+        # --------------------------------------------------
+        # BUSCAR SIN IMPORTAR MAYÚSCULAS
+        # --------------------------------------------------
+
+        if user is None:
+
+            user = db["usuarios"].find_one({
+                "usuario": {
+                    "$regex": "^" + re.escape(usuario) + "$",
+                    "$options": "i"
+                }
+            })
+
+        # --------------------------------------------------
+        # USUARIO NO ENCONTRADO
+        # --------------------------------------------------
+
+        if user is None:
+
+            flash(
+                "Usuario no encontrado.",
+                "danger"
+            )
+
+            return render_template("login.html")
+
+        # --------------------------------------------------
+        # USUARIO INACTIVO
+        # --------------------------------------------------
+
+        if user.get("activo") is False:
+
+            flash(
+                "El usuario está inactivo.",
+                "danger"
+            )
+
+            return render_template("login.html")
+
+        # --------------------------------------------------
+        # CONTRASEÑA
+        # --------------------------------------------------
+
+        password_bd = str(
+            user.get(
+                "password",
+                ""
+            )
+        ).strip()
+
+        if password_bd != password:
+
+            flash(
+                "Contraseña incorrecta.",
+                "danger"
+            )
+
+            return render_template("login.html")
+
+        # ==================================================
+        # LIMPIAR SESIÓN
+        # ==================================================
+
+        session.clear()
+
+        # ==================================================
+        # DATOS DEL USUARIO
+        # ==================================================
+
+        session["usuario"] = user.get(
+            "usuario"
+        )
+
+        session["rol"] = str(
+            user.get(
+                "rol",
+                ""
+            )
+        ).strip().lower()
+
+        session["id"] = str(
+            user.get(
+                "_id",
+                ""
+            )
+        )
+
+        # ==================================================
+        # DOCENTE
+        # ==================================================
+
+        if session["rol"] == "docente":
+
+            docente_id = user.get(
+                "docente_id"
+            )
+
+            if not docente_id:
+
+                session.clear()
+
+                flash(
+                    "El usuario docente no tiene docente_id asociado.",
+                    "danger"
+                )
+
+                return render_template(
+                    "login.html"
+                )
+
+            docente_id = str(
+                docente_id
+            ).strip().upper()
+
+            # 007 -> DOC007
+            if not docente_id.startswith("DOC"):
+
+                docente_id = (
+                    "DOC"
+                    + docente_id.zfill(3)
+                )
+
+            session["docente_id"] = docente_id
+
+            print("==============================================")
+            print("LOGIN DOCENTE")
+            print("Usuario:", session["usuario"])
+            print("Usuario ID:", session["id"])
+            print("Docente ID:", session["docente_id"])
+            print("==============================================")
+
+            return redirect(
+                url_for(
+                    "docente.dashboard_docente"
+                )
+            )
+
+        # ==================================================
+        # ADMIN
+        # ==================================================
+
+        elif session["rol"] == "admin":
+
+            return redirect(
+                url_for(
+                    "admin_dashboard"
+                )
+            )
+
+        # ==================================================
+        # SECRETARIA
+        # ==================================================
+
+        elif session["rol"] == "secretaria":
+
+            return redirect(
+                url_for(
+                    "admin_dashboard"
+                )
+            )
+
+        # ==================================================
+        # ESTUDIANTE
+        # ==================================================
+
+        elif session["rol"] == "estudiante":
+
+            return redirect(
+                url_for(
+                    "estudiante.dashboard"
+                )
+            )
+
+        # ==================================================
+        # PADRE
+        # ==================================================
+
+        elif session["rol"] == "padre":
+
+            return redirect(
+                url_for(
+                    "estudiante.dashboard"
+                )
+            )
+
+        # ==================================================
+        # ROL NO VÁLIDO
+        # ==================================================
+
+        session.clear()
+
+        flash(
+            "Rol no válido.",
+            "danger"
+        )
+
+        return render_template(
+            "login.html"
+        )
+
+    # ======================================================
+    # MOSTRAR LOGIN
+    # ======================================================
+
+    return render_template(
+        "login.html"
+    )
+
+
+# ==========================================================
+# BLUEPRINTS
+# ==========================================================
 
 from routes.docentes import docente_bp
 from routes.estudiante import estudiante_bp
 from routes.mensajes import mensajes_bp
 from routes.ciem_ai import ciem_ai_bp
 
-app.register_blueprint(docente_bp)
-app.register_blueprint(estudiante_bp)
-app.register_blueprint(mensajes_bp)
-app.register_blueprint(ciem_ai_bp)
+
+app.register_blueprint(
+    docente_bp
+)
+
+app.register_blueprint(
+    estudiante_bp
+)
+
+app.register_blueprint(
+    mensajes_bp
+)
+
+app.register_blueprint(
+    ciem_ai_bp
+)
 
 
+# ==========================================================
+# HOME
+# ==========================================================
+
+@app.route("/")
+def home():
+
+    return redirect(
+        url_for("login")
+    )
+
+
+# ==========================================================
+# SERVIDOR
+# ==========================================================
+
+if __name__ == "__main__":
+
+    print("==============================================")
+    print("🌐 CIEM ACADÉMICO")
+    print("🌐 SERVIDOR: http://127.0.0.1:5000")
+    print("🔐 LOGIN: http://127.0.0.1:5000/login")
+    print("==============================================")
 
 # =========================
 # FUNCIONES BASE CIEM
@@ -96,60 +459,6 @@ def role_required(*roles):
         return wrapper
     return decorator
 
-
-# =========================
-# HOME
-# =========================
-@app.route("/")
-def home():
-    return redirect(url_for("login"))
-
-
-
-# =====================================
-# LOGIN
-# =====================================
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-
-    if request.method == "POST":
-
-        usuario = request.form.get("usuario", "").strip()
-        password = request.form.get("password", "").strip()
-
-        user = db.usuarios.find_one({"usuario": usuario})
-
-        print("Resultado búsqueda:", user)
-
-        if not user:
-            flash("Usuario no encontrado", "danger")
-            return render_template("login.html")
-
-        if user.get("password") != password:
-            flash("Contraseña incorrecta", "danger")
-            return render_template("login.html")
-
-        session["usuario"] = user.get("usuario")
-        session["rol"] = user.get("rol")
-        session["id"] = str(user.get("_id"))
-
-        if user.get("rol") == "admin":
-            return redirect(url_for("admin_dashboard"))
-
-        elif user.get("rol") == "docente":
-            return redirect(url_for("docente.dashboard_docente"))
-
-        elif user.get("rol") == "estudiante":
-            return redirect(url_for("estudiante.dashboard"))
-
-        elif user.get("rol") == "padre":
-            return redirect(url_for("estudiante.dashboard"))
-
-        else:
-            flash("Rol no válido", "danger")
-
-    return render_template("login.html")
 # =========================
 # LOGOUT (ÚNICO)
 # =========================
@@ -205,7 +514,7 @@ print("========================================\n")
 # ADMIN DASHBOARD
 # =========================
 
-@app.route("/admin")
+@app.route("/admin", endpoint="admin_dashboard")
 @role_required("admin")
 def admin_dashboard():
 
@@ -214,7 +523,6 @@ def admin_dashboard():
     total_asignaturas = db.asignaturas.count_documents({})
     total_matriculas = db.matriculas.count_documents({})
 
-
     return render_template(
         "admin/admin_dashboard.html",
         total_estudiantes=total_estudiantes,
@@ -222,7 +530,6 @@ def admin_dashboard():
         total_asignaturas=total_asignaturas,
         total_matriculas=total_matriculas
     )
-
 # ==========================================================
 # ADMIN - CREAR COMUNICADO
 # ==========================================================
@@ -4360,6 +4667,7 @@ def listar_asignaturas():
 
 # =========================================================
 # ASIGNAR CLASE A DOCENTE
+# COLECCIÓN OFICIAL: db.clase
 # =========================================================
 
 @app.route("/asignar-clase", methods=["GET", "POST"])
@@ -4368,64 +4676,103 @@ def asignar_clase():
 
     print("========================================")
     print("👨‍🏫 ASIGNAR CLASE")
+    print("📂 COLECCIÓN OFICIAL: db.clase")
     print("========================================")
 
     # =====================================================
-    # OBTENER ASIGNATURAS
+    # 1. OBTENER ASIGNATURAS
     # =====================================================
 
     asignaturas = list(
-        db.asignaturas.find({}).sort(
+        db.asignaturas.find({
+            "activo": {
+                "$ne": False
+            }
+        }).sort(
             "nombre",
             1
         )
     )
 
     # =====================================================
-    # OBTENER DOCENTES
+    # 2. OBTENER DOCENTES
     # =====================================================
 
     docentes = list(
-        db.docentes.find({}).sort(
+        db.docentes.find({
+            "activo": {
+                "$ne": False
+            }
+        }).sort(
             "nombre",
             1
         )
     )
 
     # =====================================================
-    # GUARDAR ASIGNACIÓN
+    # 3. PROCESAR FORMULARIO
     # =====================================================
 
     if request.method == "POST":
 
-        asignatura_id = request.form.get(
-            "asignatura_id"
-        )
+        print("")
+        print("========================================")
+        print("📥 DATOS RECIBIDOS DEL FORMULARIO")
+        print("========================================")
 
-        docente_id = request.form.get(
-            "docente_id"
-        )
+        asignatura_id = str(
+            request.form.get(
+                "asignatura_id",
+                ""
+            )
+        ).strip()
 
-        nivel = request.form.get(
-            "nivel"
-        )
+        docente_codigo = str(
+            request.form.get(
+                "docente_id",
+                ""
+            )
+        ).strip()
 
-        grado = request.form.get(
-            "grado"
-        )
+        nivel = str(
+            request.form.get(
+                "nivel",
+                ""
+            )
+        ).strip()
 
-        seccion = request.form.get(
-            "seccion"
-        )
+        grado = str(
+            request.form.get(
+                "grado",
+                ""
+            )
+        ).strip()
+
+        seccion = str(
+            request.form.get(
+                "seccion",
+                ""
+            )
+        ).strip().upper()
+
+        activo_form = str(
+            request.form.get(
+                "activo",
+                "True"
+            )
+        ).strip()
 
         print("📚 ASIGNATURA ID:", asignatura_id)
-        print("👨‍🏫 DOCENTE ID:", docente_id)
+        print("👨‍🏫 DOCENTE:", docente_codigo)
         print("🎓 NIVEL:", nivel)
-        print("📖 GRADO:", grado)
+        print("🎓 GRADO:", grado)
         print("🏫 SECCIÓN:", seccion)
+        print("📌 ACTIVO:", activo_form)
+
+        print("========================================")
 
         # =================================================
-        # VALIDACIONES
+        # 4. VALIDACIONES
         # =================================================
 
         if not asignatura_id:
@@ -4439,7 +4786,7 @@ def asignar_clase():
                 url_for("asignar_clase")
             )
 
-        if not docente_id:
+        if not docente_codigo:
 
             flash(
                 "Debe seleccionar un docente.",
@@ -4484,14 +4831,84 @@ def asignar_clase():
             )
 
         # =================================================
-        # BUSCAR ASIGNATURA
+        # 5. BUSCAR ASIGNATURA
         # =================================================
+
+        print("")
+        print("========================================")
+        print("🔎 BUSCANDO ASIGNATURA")
+        print("========================================")
+
+        asignatura = None
+
+        # -------------------------------------------------
+        # 5.1 Buscar por _id como texto
+        # -------------------------------------------------
 
         asignatura = db.asignaturas.find_one({
             "_id": asignatura_id
         })
 
+        # -------------------------------------------------
+        # 5.2 Buscar por ObjectId
+        # -------------------------------------------------
+
         if not asignatura:
+
+            try:
+
+                from bson import ObjectId
+
+                if ObjectId.is_valid(
+                    asignatura_id
+                ):
+
+                    asignatura = db.asignaturas.find_one({
+                        "_id": ObjectId(
+                            asignatura_id
+                        )
+                    })
+
+            except Exception as e:
+
+                print(
+                    "⚠️ ERROR BUSCANDO ASIGNATURA POR OBJECTID:",
+                    e
+                )
+
+        # -------------------------------------------------
+        # 5.3 Buscar por código
+        # -------------------------------------------------
+
+        if not asignatura:
+
+            asignatura = db.asignaturas.find_one({
+                "codigo": asignatura_id
+            })
+
+        # -------------------------------------------------
+        # 5.4 Buscar por código en mayúsculas
+        # -------------------------------------------------
+
+        if not asignatura:
+
+            asignatura = db.asignaturas.find_one({
+                "codigo": asignatura_id.upper()
+            })
+
+        # =================================================
+        # 6. VALIDAR ASIGNATURA
+        # =================================================
+
+        if not asignatura:
+
+            print("")
+            print("❌ ASIGNATURA NO ENCONTRADA")
+            print(
+                "VALOR RECIBIDO:",
+                asignatura_id
+            )
+            print("========================================")
 
             flash(
                 "La asignatura seleccionada no existe.",
@@ -4502,15 +4919,98 @@ def asignar_clase():
                 url_for("asignar_clase")
             )
 
+        print("✅ ASIGNATURA ENCONTRADA")
+        print(
+            "🆔 ID:",
+            asignatura.get("_id")
+        )
+        print(
+            "🔤 CÓDIGO:",
+            asignatura.get("codigo", "")
+        )
+        print(
+            "📖 NOMBRE:",
+            asignatura.get("nombre", "")
+        )
+
         # =================================================
-        # BUSCAR DOCENTE
+        # 7. BUSCAR DOCENTE
         # =================================================
+
+        print("")
+        print("========================================")
+        print("🔎 BUSCANDO DOCENTE")
+        print("========================================")
+
+        docente = None
+
+        # -------------------------------------------------
+        # 7.1 Buscar por código
+        # -------------------------------------------------
 
         docente = db.docentes.find_one({
-            "codigo": docente_id
+            "codigo": docente_codigo
         })
 
+        # -------------------------------------------------
+        # 7.2 Buscar por ObjectId
+        # -------------------------------------------------
+
         if not docente:
+
+            try:
+
+                from bson import ObjectId
+
+                if ObjectId.is_valid(
+                    docente_codigo
+                ):
+
+                    docente = db.docentes.find_one({
+                        "_id": ObjectId(
+                            docente_codigo
+                        )
+                    })
+
+            except Exception as e:
+
+                print(
+                    "⚠️ ERROR BUSCANDO DOCENTE POR OBJECTID:",
+                    e
+                )
+
+        # -------------------------------------------------
+        # 7.3 Buscar por _id como texto
+        # -------------------------------------------------
+
+        if not docente:
+
+            docente = db.docentes.find_one({
+                "_id": docente_codigo
+            })
+
+        # -------------------------------------------------
+        # 7.4 Buscar por usuario
+        # -------------------------------------------------
+
+        if not docente:
+
+            docente = db.docentes.find_one({
+                "usuario": docente_codigo
+            })
+
+        # =================================================
+        # 8. VALIDAR DOCENTE
+        # =================================================
+
+        if not docente:
+
+            print("")
+            print(
+                "❌ DOCENTE NO ENCONTRADO:",
+                docente_codigo
+            )
+            print("========================================")
 
             flash(
                 "El docente seleccionado no existe.",
@@ -4521,62 +5021,109 @@ def asignar_clase():
                 url_for("asignar_clase")
             )
 
+        print("✅ DOCENTE ENCONTRADO")
+        print(
+            "🆔 ID:",
+            docente.get("_id")
+        )
+        print(
+            "🔢 CÓDIGO:",
+            docente.get("codigo", "")
+        )
+        print(
+            "👨‍🏫 NOMBRE:",
+            docente.get("nombre", "")
+        )
+        print(
+            "👤 USUARIO:",
+            docente.get("usuario", "")
+        )
+
         # =================================================
-        # EVITAR DUPLICADOS
+        # 9. NORMALIZAR ID DEL DOCENTE
         # =================================================
 
-        clase_existente = db.clases.find_one({
+        codigo_real = str(
+            docente.get(
+                "codigo",
+                ""
+            )
+        ).strip().upper()
 
-            "asignatura_id": asignatura_id,
+        if codigo_real.startswith("DOC"):
 
-            "docente_id": docente_id,
+            docente_id = codigo_real
 
-            "grado": grado,
+        else:
 
-            "seccion": seccion
-
-        })
-
-        if clase_existente:
-
-            flash(
-                "Esta clase ya está asignada a este docente.",
-                "warning"
+            docente_id = (
+                "DOC" +
+                codigo_real
             )
 
-            return redirect(
-                url_for("asignar_clase")
+        print(
+            "🆔 DOCENTE ID NORMALIZADO:",
+            docente_id
+        )
+
+        # =================================================
+        # 10. DATOS DE LA ASIGNATURA
+        # =================================================
+
+        codigo_asignatura = str(
+            asignatura.get(
+                "codigo",
+                ""
             )
+        ).strip().upper()
+
+        nombre_asignatura = str(
+            asignatura.get(
+                "nombre",
+                ""
+            )
+        ).strip()
+
+        asignatura_id_real = str(
+            asignatura.get(
+                "_id"
+            )
+        )
 
         # =================================================
-        # CREAR ASIGNACIÓN DE CLASE
+        # 11. ESTADO
         # =================================================
 
-        clase = {
+        activo = (
+            activo_form.lower()
+            in [
+                "true",
+                "1",
+                "on",
+                "si",
+                "sí"
+            ]
+        )
+
+        # =================================================
+        # 12. VERIFICAR CLASE DUPLICADA
+        #
+        # COLECCIÓN ÚNICA:
+        # db.clase
+        # =================================================
+
+        print("")
+        print("========================================")
+        print("🔎 VERIFICANDO CLASE DUPLICADA")
+        print("========================================")
+
+        clase_existente = db.clase.find_one({
 
             "asignatura_id":
-                asignatura_id,
-
-            "codigo_asignatura":
-                asignatura.get(
-                    "codigo",
-                    ""
-                ),
-
-            "asignatura":
-                asignatura.get(
-                    "nombre",
-                    ""
-                ),
+                asignatura_id_real,
 
             "docente_id":
                 docente_id,
-
-            "docente":
-                docente.get(
-                    "nombre",
-                    ""
-                ),
 
             "nivel":
                 nivel,
@@ -4587,22 +5134,212 @@ def asignar_clase():
             "seccion":
                 seccion,
 
-            "estado":
-                "Activa"
+            "activo":
+                True
+
+        })
+
+        if clase_existente:
+
+            print("⚠️ CLASE DUPLICADA")
+            print(
+                "ID EXISTENTE:",
+                clase_existente.get("_id")
+            )
+
+            print(
+                "ASIGNATURA:",
+                clase_existente.get(
+                    "asignatura_codigo",
+                    ""
+                )
+            )
+
+            print(
+                "DOCENTE:",
+                clase_existente.get(
+                    "docente_id",
+                    ""
+                )
+            )
+
+            print(
+                "GRADO:",
+                clase_existente.get(
+                    "grado",
+                    ""
+                )
+            )
+
+            print(
+                "SECCIÓN:",
+                clase_existente.get(
+                    "seccion",
+                    ""
+                )
+            )
+
+            print("========================================")
+
+            flash(
+                "Esta clase ya está asignada a este docente para ese grado y sección.",
+                "warning"
+            )
+
+            return redirect(
+                url_for("asignar_clase")
+            )
+
+        # =================================================
+        # 13. CREAR DOCUMENTO DE CLASE
+        # =================================================
+
+        nueva_clase = {
+
+            # ---------------------------------------------
+            # IDENTIFICACIÓN
+            # ---------------------------------------------
+
+            "asignatura_id":
+                asignatura_id_real,
+
+            "asignatura_codigo":
+                codigo_asignatura,
+
+            "asignatura_nombre":
+                nombre_asignatura,
+
+            # ---------------------------------------------
+            # UBICACIÓN ACADÉMICA
+            # ---------------------------------------------
+
+            "nivel":
+                nivel,
+
+            "grado":
+                grado,
+
+            "seccion":
+                seccion,
+
+            # ---------------------------------------------
+            # DOCENTE
+            # ---------------------------------------------
+
+            "docente_id":
+                docente_id,
+
+            "docente_codigo":
+                codigo_real,
+
+            "docente_nombre":
+                docente.get(
+                    "nombre",
+                    ""
+                ),
+
+            "tipo_docente":
+                docente.get(
+                    "tipo_docente",
+                    "docente"
+                ),
+
+            # ---------------------------------------------
+            # ESTADO
+            # ---------------------------------------------
+
+            "activo":
+                activo
 
         }
 
         # =================================================
-        # GUARDAR EN MONGODB
+        # 14. MOSTRAR DOCUMENTO
         # =================================================
 
-        resultado = db.clases.insert_one(
-            clase
-        )
+        print("")
+        print("========================================")
+        print("💾 DOCUMENTO QUE SE GUARDARÁ EN db.clase")
+        print("========================================")
+
+        for campo, valor in nueva_clase.items():
+
+            print(
+                f"{campo}: {valor}"
+            )
 
         print("========================================")
-        print("✅ CLASE ASIGNADA")
-        print("ID:", resultado.inserted_id)
+
+        # =================================================
+        # 15. GUARDAR EN db.clase
+        # =================================================
+
+        resultado = db.clase.insert_one(
+            nueva_clase
+        )
+
+        # =================================================
+        # 16. CONFIRMACIÓN
+        # =================================================
+
+        print("")
+        print("========================================")
+        print("✅ CLASE GUARDADA CORRECTAMENTE")
+        print("========================================")
+
+        print(
+            "🆔 ID GENERADO:",
+            resultado.inserted_id
+        )
+
+        print(
+            "📂 COLECCIÓN:",
+            "clase"
+        )
+
+        print(
+            "🔤 CÓDIGO:",
+            codigo_asignatura
+        )
+
+        print(
+            "📖 ASIGNATURA:",
+            nombre_asignatura
+        )
+
+        print(
+            "👨‍🏫 DOCENTE:",
+            docente_id
+        )
+
+        print(
+            "👤 DOCENTE:",
+            docente.get(
+                "nombre",
+                ""
+            )
+        )
+
+        print(
+            "🎓 NIVEL:",
+            nivel
+        )
+
+        print(
+            "🎓 GRADO:",
+            grado
+        )
+
+        print(
+            "🏫 SECCIÓN:",
+            seccion
+        )
+
+        print(
+            "📌 ACTIVO:",
+            activo
+        )
+
         print("========================================")
 
         flash(
@@ -4615,8 +5352,22 @@ def asignar_clase():
         )
 
     # =====================================================
-    # MOSTRAR FORMULARIO
+    # 17. MOSTRAR FORMULARIO
     # =====================================================
+
+    print("")
+    print("========================================")
+    print("📋 MOSTRANDO FORMULARIO DE ASIGNACIÓN")
+    print("========================================")
+    print(
+        "📚 ASIGNATURAS:",
+        len(asignaturas)
+    )
+    print(
+        "👨‍🏫 DOCENTES:",
+        len(docentes)
+    )
+    print("========================================")
 
     return render_template(
 
@@ -4683,13 +5434,43 @@ def editar_nota(id):
 def agregar_asignatura():
 
     # ======================================================
+    # OBTENER DOCENTES
+    # ======================================================
+
+    docentes = list(
+        db.docentes.find({}).sort("nombre", 1)
+    )
+
+    # ======================================================
     # GUARDAR ASIGNATURA
     # ======================================================
 
     if request.method == "POST":
 
-        codigo = request.form.get("codigo", "").strip().upper()
-        nombre = request.form.get("nombre", "").strip()
+        codigo = request.form.get(
+            "codigo",
+            ""
+        ).strip().upper()
+
+        nombre = request.form.get(
+            "nombre",
+            ""
+        ).strip()
+
+        nivel = request.form.get(
+            "nivel",
+            ""
+        ).strip()
+
+        grado = request.form.get(
+            "grado",
+            ""
+        ).strip()
+
+        docente_id = request.form.get(
+            "docente_id",
+            ""
+        ).strip()
 
         print("")
         print("========================================================")
@@ -4697,10 +5478,13 @@ def agregar_asignatura():
         print("========================================================")
         print("CÓDIGO:", codigo)
         print("NOMBRE:", nombre)
+        print("NIVEL:", nivel)
+        print("GRADO:", grado)
+        print("DOCENTE RECIBIDO:", docente_id)
         print("========================================================")
 
         # ==================================================
-        # VALIDAR CÓDIGO
+        # VALIDAR CAMPOS
         # ==================================================
 
         if not codigo:
@@ -4714,10 +5498,6 @@ def agregar_asignatura():
                 url_for("agregar_asignatura")
             )
 
-        # ==================================================
-        # VALIDAR NOMBRE
-        # ==================================================
-
         if not nombre:
 
             flash(
@@ -4729,18 +5509,115 @@ def agregar_asignatura():
                 url_for("agregar_asignatura")
             )
 
+        if not nivel:
+
+            flash(
+                "Debe seleccionar el nivel.",
+                "warning"
+            )
+
+            return redirect(
+                url_for("agregar_asignatura")
+            )
+
+        if not grado:
+
+            flash(
+                "Debe ingresar el grado.",
+                "warning"
+            )
+
+            return redirect(
+                url_for("agregar_asignatura")
+            )
+
+        if not docente_id:
+
+            flash(
+                "Debe seleccionar el docente responsable.",
+                "warning"
+            )
+
+            return redirect(
+                url_for("agregar_asignatura")
+            )
+
         # ==================================================
-        # VERIFICAR SI YA EXISTE
+        # BUSCAR DOCENTE
+        # ==================================================
+
+        docente = None
+
+        # Primero intentamos encontrarlo por código
+        docente = db.docentes.find_one({
+            "codigo": docente_id
+        })
+
+        # Si no existe, intentamos por _id
+        if not docente:
+
+            docente = db.docentes.find_one({
+                "_id": docente_id
+            })
+
+        if not docente:
+
+            flash(
+                "El docente seleccionado no existe.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("agregar_asignatura")
+            )
+
+        # ==================================================
+        # NORMALIZAR ID DEL DOCENTE
+        # ==================================================
+
+        codigo_docente = str(
+            docente.get("codigo", "")
+        ).strip().upper()
+
+        if not codigo_docente:
+
+            flash(
+                "El docente seleccionado no tiene código.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("agregar_asignatura")
+            )
+
+        # Siempre trabajaremos con DOCxxx
+        if codigo_docente.startswith("DOC"):
+
+            docente_id_final = codigo_docente
+
+        else:
+
+            docente_id_final = (
+                "DOC" + codigo_docente
+            )
+
+        # ==================================================
+        # VERIFICAR DUPLICADO
         # ==================================================
 
         asignatura_existente = db.asignaturas.find_one({
-            "codigo": codigo
+            "codigo": codigo,
+            "nivel": nivel,
+            "grado": grado,
+            "docente_id": docente_id_final,
+            "activo": True
         })
 
         if asignatura_existente:
 
             flash(
-                f"La asignatura con código {codigo} ya existe.",
+                "Esta asignatura ya está asignada a "
+                "ese docente, nivel y grado.",
                 "warning"
             )
 
@@ -4758,6 +5635,17 @@ def agregar_asignatura():
 
             "nombre": nombre,
 
+            "nivel": nivel,
+
+            "grado": grado,
+
+            "docente_id": docente_id_final,
+
+            "docente_nombre": docente.get(
+                "nombre",
+                ""
+            ),
+
             "activo": True
         }
 
@@ -4765,12 +5653,11 @@ def agregar_asignatura():
         # MOSTRAR DOCUMENTO
         # ==================================================
 
+        print("")
         print("========================================================")
         print("💾 DOCUMENTO QUE SE VA A GUARDAR")
         print("========================================================")
-
         print(nueva_asignatura)
-
         print("========================================================")
 
         # ==================================================
@@ -4787,17 +5674,30 @@ def agregar_asignatura():
 
         if resultado.inserted_id:
 
-            print("========================================")
-            print("✅ ASIGNATURA GUARDADA")
-            print("========================================")
+            print("")
+            print("========================================================")
+            print("✅ ASIGNATURA GUARDADA CORRECTAMENTE")
+            print("========================================================")
             print("ID:", resultado.inserted_id)
             print("CÓDIGO:", codigo)
             print("NOMBRE:", nombre)
-            print("========================================")
+            print("NIVEL:", nivel)
+            print("GRADO:", grado)
+            print("DOCENTE:", docente_id_final)
+            print("DOCENTE NOMBRE:", docente.get("nombre", ""))
+            print("========================================================")
 
             flash(
-                f"Asignatura {nombre} agregada correctamente.",
+                f"La asignatura {nombre} fue agregada "
+                f"y asignada correctamente al docente.",
                 "success"
+            )
+
+        else:
+
+            flash(
+                "No fue posible guardar la asignatura.",
+                "danger"
             )
 
         return redirect(
@@ -4805,59 +5705,6 @@ def agregar_asignatura():
         )
 
     # ======================================================
-    # MOSTRAR FORMULARIO DIRECTAMENTE
-    # ======================================================
-
-    return render_template(
-        "asignaturas/agregar.html"
-    )
-
-    # ======================================================
-    # OBTENER CATÁLOGO DE ASIGNATURAS
-    # ======================================================
-
-    asignaturas_catalogo = list(
-        db.asignaturas.find(
-            {},
-            {
-                "_id": 0,
-                "codigo": 1,
-                "nombre": 1
-            }
-        ).sort("nombre", 1)
-    )
-
-    # ======================================================
-    # ELIMINAR CÓDIGOS DUPLICADOS
-    # ======================================================
-
-    catalogo_asignaturas = {}
-
-    for asignatura in asignaturas_catalogo:
-
-        codigo = str(
-            asignatura.get("codigo", "")
-        ).strip().upper()
-
-        nombre = str(
-            asignatura.get("nombre", "")
-        ).strip()
-
-        if codigo and nombre:
-
-            catalogo_asignaturas[codigo] = nombre
-
-
-    # ======================================================
-    # MOSTRAR FORMULARIO
-    # ======================================================
-
-    return render_template(
-        "asignaturas/agregar.html",
-        docentes=docentes,
-        catalogo_asignaturas=catalogo_asignaturas
-    )
-        # ======================================================
     # MOSTRAR FORMULARIO
     # ======================================================
 
@@ -4865,7 +5712,6 @@ def agregar_asignatura():
         "asignaturas/agregar.html",
         docentes=docentes
     )
-
 
 # ==========================================================
 # EDITAR ASIGNATURA
@@ -4878,10 +5724,12 @@ def agregar_asignatura():
 @role_required("admin")
 def editar_asignatura(id):
 
-    print("==============================")
-    print("EDITAR ASIGNATURA")
-    print("ID:", id)
-    print("==============================")
+    print("")
+    print("========================================================")
+    print("✏️ EDITAR ASIGNATURA")
+    print("========================================================")
+    print("ID RECIBIDO:", id)
+    print("========================================================")
 
     # ======================================================
     # CONSTRUIR FILTRO
@@ -4938,7 +5786,7 @@ def editar_asignatura(id):
         codigo = request.form.get(
             "codigo",
             ""
-        ).strip()
+        ).strip().upper()
 
         nombre = request.form.get(
             "nombre",
@@ -4958,13 +5806,30 @@ def editar_asignatura(id):
         docente_id = request.form.get(
             "docente_id",
             ""
-        ).strip()
+        ).strip().upper()
+
+        print("")
+        print("========================================================")
+        print("💾 ACTUALIZANDO ASIGNATURA")
+        print("========================================================")
+        print("CÓDIGO:", codigo)
+        print("NOMBRE:", nombre)
+        print("NIVEL:", nivel)
+        print("GRADO:", grado)
+        print("DOCENTE RECIBIDO:", docente_id)
+        print("========================================================")
 
         # ==================================================
-        # VALIDACIÓN
+        # VALIDAR
         # ==================================================
 
-        if not codigo or not nombre or not nivel or not grado or not docente_id:
+        if (
+            not codigo
+            or not nombre
+            or not nivel
+            or not grado
+            or not docente_id
+        ):
 
             flash(
                 "Debe completar todos los campos.",
@@ -4979,12 +5844,42 @@ def editar_asignatura(id):
             )
 
         # ==================================================
-        # BUSCAR DOCENTE
+        # NORMALIZAR DOCENTE
+        # ==================================================
+
+        if docente_id.startswith("DOC"):
+
+            codigo_docente_busqueda = docente_id[3:]
+
+        else:
+
+            codigo_docente_busqueda = docente_id
+
+            docente_id = (
+                "DOC" + docente_id
+            )
+
+        # ==================================================
+        # BUSCAR DOCENTE POR CÓDIGO
         # ==================================================
 
         docente = db.docentes.find_one({
-            "codigo": docente_id
+            "codigo": codigo_docente_busqueda
         })
+
+        # ==================================================
+        # SI NO SE ENCUENTRA, BUSCAR POR DOCxxx
+        # ==================================================
+
+        if not docente:
+
+            docente = db.docentes.find_one({
+                "codigo": docente_id
+            })
+
+        # ==================================================
+        # SI NO EXISTE
+        # ==================================================
 
         if not docente:
 
@@ -4998,6 +5893,27 @@ def editar_asignatura(id):
                     "editar_asignatura",
                     id=id
                 )
+            )
+
+        # ==================================================
+        # OBTENER CÓDIGO DEFINITIVO
+        # ==================================================
+
+        codigo_real = str(
+            docente.get(
+                "codigo",
+                ""
+            )
+        ).strip().upper()
+
+        if codigo_real.startswith("DOC"):
+
+            docente_id_final = codigo_real
+
+        else:
+
+            docente_id_final = (
+                "DOC" + codigo_real
             )
 
         # ==================================================
@@ -5019,18 +5935,31 @@ def editar_asignatura(id):
 
                     "grado": grado,
 
-                    "docente_id": docente_id,
+                    "docente_id":
+                        docente_id_final,
 
                     "docente_nombre":
                         docente.get(
                             "nombre",
                             ""
-                        )
+                        ),
 
+                    "activo": True
                 }
             }
-
         )
+
+        print("")
+        print("========================================================")
+        print("✅ ASIGNATURA ACTUALIZADA")
+        print("========================================================")
+        print("CÓDIGO:", codigo)
+        print("NOMBRE:", nombre)
+        print("NIVEL:", nivel)
+        print("GRADO:", grado)
+        print("DOCENTE:", docente_id_final)
+        print("DOCENTE NOMBRE:", docente.get("nombre", ""))
+        print("========================================================")
 
         flash(
             "Asignatura actualizada correctamente.",
@@ -5042,15 +5971,17 @@ def editar_asignatura(id):
         )
 
     # ======================================================
-    # MOSTRAR FORMULARIO DE EDICIÓN
+    # MOSTRAR FORMULARIO
     # ======================================================
 
     return render_template(
+
         "asignaturas/editar.html",
+
         asignatura=asignatura,
+
         docentes=docentes
     )
-
 
 # ==========================================================
 # ELIMINAR ASIGNATURA
@@ -5108,103 +6039,8 @@ def eliminar_asignatura(id):
     return redirect(
         url_for("listar_asignaturas")
     )
-# =========================
-# NOTAS DE LA ASIGNATURA
-# =========================
-@app.route("/docente/notas/<id>")
-@role_required("docente")
-def notas_clase(id):
 
-    asignatura = db.asignaturas.find_one({
-        "_id": id
-    })
-
-    if not asignatura:
-        return "Asignatura no encontrada"
-
-
-    estudiantes = list(db.estudiantes.find({
-        "grado": asignatura["grado"],
-        "seccion": asignatura["seccion"]
-    }))
-
-
-    notas = list(db.notas.find({
-        "asignatura_id": id
-    }))
-
-
-    return render_template(
-        "docente/notas.html",
-        asignatura=asignatura,
-        estudiantes=estudiantes,
-        notas=notas
-    )
-
-
-# =========================
-# GUARDAR NOTAS DE LA CLASE
-# =========================
-@app.route("/docente/notas/guardar", methods=["POST"])
-@role_required("docente")
-def guardar_nota_clase():
-
-    asignatura_id = request.form["asignatura_id"]
-
-    docente = db.docentes.find_one({
-        "usuario": session["usuario"]
-    })
-
-    if not docente:
-        return redirect(url_for("login"))
-
-    for campo, valor in request.form.items():
-
-        if campo.startswith("nota_"):
-
-            estudiante_id = campo.replace("nota_", "")
-
-            db.notas.update_one(
-
-                {
-                    "estudiante_id": estudiante_id,
-                    "asignatura_id": asignatura_id
-                },
-
-                {
-                    "$setOnInsert": {
-                        "ep1": 0,
-                        "ep2": 0,
-                        "ep3": 0,
-                        "ep4": 0,
-                        "ep5": 0,
-                        "ep6": 0,
-                        "ep7": 0,
-                        "ep8": 0,
-                        "ep9": 0,
-                        "ep10": 0
-                    },
-
-                    "$set": {
-                        "ep1": float(valor),
-                        "docente": docente["usuario"]
-                    }
-
-                },
-
-                upsert=True
-
-            )
-
-    return redirect(
-        url_for(
-            "notas_clase",
-            id=asignatura_id
-        )
-    )
-
-
-
+   
 # =========================
 # PANEL DE REPORTES
 # =========================
@@ -5522,22 +6358,33 @@ print("==========================================")
 # =========================
 # RUN
 # =========================
-print("\n========= RUTAS REGISTRADAS =========")
-print("==========================================")
-print("📋 RUTAS REGISTRADAS")
-print("==========================================")
-
-for regla in app.url_map.iter_rules():
-    print(regla, "=>", regla.endpoint)
-
-print("==========================================")
-
 if __name__ == "__main__":
-    app.run(debug=True)
 
-for ruta in app.url_map.iter_rules():
-    print(ruta.endpoint, " ---> ", ruta)
+    print("================================================")
+    print("🚀 CIEM ACADÉMICO")
+    print("================================================")
+    print("📄 ARCHIVO:", os.path.abspath(__file__))
+    print("🗄️ BASE DE DATOS:", db.name)
+    print("")
 
-print("====================================\n")
-if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    print("📌 RUTAS REGISTRADAS:")
+
+    for ruta in app.url_map.iter_rules():
+        print(
+            ruta.rule,
+            "->",
+            ruta.endpoint,
+            "|",
+            ",".join(sorted(ruta.methods))
+        )
+
+    print("================================================")
+    print("🌐 SERVIDOR: http://127.0.0.1:5000")
+    print("🔐 LOGIN: http://127.0.0.1:5000/login")
+    print("================================================")
+
+    app.run(
+        host="127.0.0.1",
+        port=5000,
+        debug=True
+    )

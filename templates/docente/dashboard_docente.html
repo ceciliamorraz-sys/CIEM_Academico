@@ -547,51 +547,47 @@
 
 
         <!-- ==================================================
-             CONSULTA ACADÉMICA
-        =================================================== -->
+     CONSULTA ACADÉMICA
+=================================================== -->
 
-        <section class="consulta-estudiantes">
+<section class="consulta-estudiantes">
 
-            <a
-                href="{{ url_for(
-                    'docente.consulta_estudiantes'
-                ) }}"
-                class="consulta-card"
-            >
+    <a
+        href="{{ url_for('docente.estudiantes') }}"
+        class="consulta-card"
+    >
 
-                <div class="consulta-icono">
+        <div class="consulta-icono">
 
-                    <i class="bi bi-person-vcard-fill"></i>
+            <i class="bi bi-person-vcard-fill"></i>
 
-                </div>
+        </div>
 
+        <div class="consulta-texto">
 
-                <div class="consulta-texto">
+            <span>
+                CONSULTA ACADÉMICA
+            </span>
 
-                    <span>
-                        CONSULTA ACADÉMICA
-                    </span>
+            <strong>
+                Consulta de estudiantes
+            </strong>
 
-                    <strong>
-                        Consulta de estudiantes
-                    </strong>
+            <small>
+                Revisa asistencia, incidencias y seguimiento académico.
+            </small>
 
-                    <small>
-                        Revisa asistencia, incidencias y seguimiento académico.
-                    </small>
+        </div>
 
-                </div>
+        <div class="consulta-flecha">
 
+            <i class="bi bi-arrow-right"></i>
 
-                <div class="consulta-flecha">
+        </div>
 
-                    <i class="bi bi-arrow-right"></i>
+    </a>
 
-                </div>
-
-            </a>
-
-        </section>
+</section>
 
 
 
