@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -38,9 +39,7 @@
             );
 
             color: white;
-
             padding: 30px;
-
             border-radius: 20px;
 
             box-shadow:
@@ -77,9 +76,7 @@
 
         .card-header h5 {
             margin: 0;
-
             color: #08142C;
-
             font-weight: 700;
         }
 
@@ -89,9 +86,7 @@
 
         label {
             font-weight: 600;
-
             color: #1f2937;
-
             margin-bottom: 8px;
         }
 
@@ -276,10 +271,6 @@
 <div class="container container-main">
 
 
-    <!-- =====================================================
-         ENCABEZADO
-    ====================================================== -->
-
     <div class="header mb-4">
 
         <div
@@ -317,10 +308,6 @@
     </div>
 
 
-    <!-- =====================================================
-         TARJETA PRINCIPAL
-    ====================================================== -->
-
     <div class="card">
 
 
@@ -335,10 +322,6 @@
 
         <div class="card-body">
 
-
-            <!-- =================================================
-                 INFORMACIÓN
-            ================================================== -->
 
             <div class="info-box">
 
@@ -356,10 +339,6 @@
             </div>
 
 
-            <!-- =================================================
-                 FORMULARIO
-            ================================================== -->
-
             <form
                 id="formAsignacion"
                 method="POST"
@@ -369,10 +348,6 @@
 
                 <div class="row g-4">
 
-
-                    <!-- =========================================
-                         ASIGNATURA
-                    ========================================== -->
 
                     <div class="col-md-6">
 
@@ -428,10 +403,6 @@
 
                     </div>
 
-
-                    <!-- =========================================
-                         DOCENTE
-                    ========================================== -->
 
                     <div class="col-md-6">
 
@@ -494,10 +465,6 @@
                     </div>
 
 
-                    <!-- =========================================
-                         NIVEL
-                    ========================================== -->
-
                     <div class="col-md-6">
 
                         <label for="nivel">
@@ -539,10 +506,6 @@
                     </div>
 
 
-                    <!-- =========================================
-                         GRADO
-                    ========================================== -->
-
                     <div class="col-md-6">
 
                         <label for="grado">
@@ -570,16 +533,16 @@
 
                             <optgroup label="Preescolar">
 
-                                <option value="I Nivel">
-                                    I Nivel
+                                <option value="1er Nivel de Preescolar">
+                                    1er Nivel de Preescolar
                                 </option>
 
-                                <option value="II Nivel">
-                                    II Nivel
+                                <option value="2do Nivel de Preescolar">
+                                    2do Nivel de Preescolar
                                 </option>
 
-                                <option value="III Nivel">
-                                    III Nivel
+                                <option value="3er Nivel de Preescolar">
+                                    3er Nivel de Preescolar
                                 </option>
 
                             </optgroup>
@@ -644,10 +607,6 @@
                     </div>
 
 
-                    <!-- =========================================
-                         SECCIÓN
-                    ========================================== -->
-
                     <div class="col-md-6">
 
                         <label for="seccion">
@@ -693,10 +652,6 @@
                     </div>
 
 
-                    <!-- =========================================
-                         ESTADO
-                    ========================================== -->
-
                     <div class="col-md-6">
 
                         <label for="activo">
@@ -729,10 +684,6 @@
 
                     </div>
 
-
-                    <!-- =========================================
-                         PREVISUALIZACIÓN ASIGNATURA
-                    ========================================== -->
 
                     <div
                         class="col-md-12"
@@ -770,10 +721,6 @@
                     </div>
 
 
-                    <!-- =========================================
-                         PREVISUALIZACIÓN DOCENTE
-                    ========================================== -->
-
                     <div
                         class="col-md-12"
                         id="previewDocente"
@@ -810,10 +757,6 @@
                     </div>
 
 
-                    <!-- =========================================
-                         PREVISUALIZACIÓN COMPLETA
-                    ========================================== -->
-
                     <div
                         class="col-md-12"
                         id="previewClase"
@@ -839,10 +782,6 @@
 
                 </div>
 
-
-                <!-- =================================================
-                     BOTONES
-                ================================================== -->
 
                 <div class="acciones">
 
@@ -880,10 +819,6 @@
 </div>
 
 
-<!-- =====================================================
-     BOOTSTRAP
-====================================================== -->
-
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 ></script>
@@ -891,10 +826,6 @@
 
 <script>
 
-
-// =========================================================
-// ELEMENTOS
-// =========================================================
 
 const asignatura =
     document.getElementById(
@@ -925,10 +856,6 @@ const seccion =
         "seccion"
     );
 
-
-// =========================================================
-// ASIGNATURA
-// =========================================================
 
 asignatura.addEventListener(
     "change",
@@ -979,10 +906,6 @@ asignatura.addEventListener(
 );
 
 
-// =========================================================
-// DOCENTE
-// =========================================================
-
 docente.addEventListener(
     "change",
     function () {
@@ -1031,10 +954,6 @@ docente.addEventListener(
     }
 );
 
-
-// =========================================================
-// ACTUALIZAR PREVISUALIZACIÓN
-// =========================================================
 
 function actualizarPreview() {
 
@@ -1115,10 +1034,6 @@ function actualizarPreview() {
 }
 
 
-// =========================================================
-// EVENTOS
-// =========================================================
-
 nivel.addEventListener(
     "change",
     actualizarPreview
@@ -1136,10 +1051,6 @@ seccion.addEventListener(
     actualizarPreview
 );
 
-
-// =========================================================
-// VALIDAR FORMULARIO
-// =========================================================
 
 document
     .getElementById(
@@ -1211,47 +1122,32 @@ document
 
 
             console.log(
-                "========================================"
+                "ASIGNACIÓN DE CLASE"
             );
-
-
-            console.log(
-                "💾 ASIGNACIÓN DE CLASE"
-            );
-
 
             console.log(
                 "ASIGNATURA ID:",
                 asignatura.value
             );
 
-
             console.log(
                 "DOCENTE:",
                 docente.value
             );
-
 
             console.log(
                 "NIVEL:",
                 nivel.value
             );
 
-
             console.log(
                 "GRADO:",
                 grado.value
             );
 
-
             console.log(
                 "SECCIÓN:",
                 seccion.value
-            );
-
-
-            console.log(
-                "========================================"
             );
 
         }

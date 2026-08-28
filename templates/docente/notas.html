@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
 
-```
+
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0">
 
@@ -493,11 +493,10 @@
 
 <div class="section-title">
 
-```
+
 <i class="bi bi-sliders"></i>
 
 Configuración de Evaluación
-```
 
 </div>
 
@@ -523,11 +522,11 @@ value="{{ asignatura._id }}"
 
 <label class="form-label">
 
-```
+
 <i class="bi bi-book"></i>
 
 Asignatura
-```
+
 
 </label>
 
@@ -544,11 +543,11 @@ Asignatura
 
 <label class="form-label">
 
-```
+
 <i class="bi bi-calendar3"></i>
 
 Periodo
-```
+
 
 </label>
 
@@ -557,7 +556,7 @@ Periodo
  name="periodo"
  id="periodo">
 
-```
+
 <option value="I Semestre">
     I Semestre
 </option>
@@ -565,7 +564,7 @@ Periodo
 <option value="II Semestre">
     II Semestre
 </option>
-```
+
 
 </select>
 
@@ -577,11 +576,10 @@ Periodo
 
 <label class="form-label">
 
-```
 <i class="bi bi-clipboard-check"></i>
 
 Evaluación
-```
+
 
 </label>
 
@@ -590,7 +588,7 @@ Evaluación
  name="evaluacion"
  id="evaluacion">
 
-```
+
 <option value="Primer Parcial">
     Primer Parcial
 </option>
@@ -606,7 +604,7 @@ Evaluación
 <option value="Cuarto Parcial">
     Cuarto Parcial
 </option>
-```
+
 
 </select>
 
@@ -624,11 +622,11 @@ Evaluación
 
 <div class="section-title">
 
-```
+
 <i class="bi bi-pencil-square"></i>
 
 Registro de Evaluaciones
-```
+
 
 </div>
 
@@ -641,7 +639,7 @@ Registro de Evaluaciones
 
 <tr>
 
-```
+
 <th>#</th>
 
 <th>Estudiante</th>
@@ -662,7 +660,7 @@ Registro de Evaluaciones
 <th>Promedio</th>
 
 <th>Estado</th>
-```
+
 
 </tr>
 
@@ -678,7 +676,7 @@ Registro de Evaluaciones
 
 {% for n in notas_existentes %}
 
-```
+
 {% if n.estudiante_id|string == id_estudiante
       and n.periodo == "I Semestre"
       and n.evaluacion == "Primer Parcial" %}
@@ -686,7 +684,7 @@ Registro de Evaluaciones
     {% set nota_estudiante = n %}
 
 {% endif %}
-```
+
 
 {% endfor %}
 
@@ -721,29 +719,29 @@ value="{{ nota_estudiante.get('ep' ~ numero, 0) }}"
 
 <td class="acumulado">
 
-```
+`
 0 / 100
-```
+
 
 </td>
 
 <td class="promedio">
 
-```
+
 0.00
-```
+
 
 </td>
 
 <td class="estado">
 
-```
+
 <span class="badge bg-secondary">
 
     Pendiente
 
 </span>
-```
+
 
 </td>
 
@@ -763,7 +761,7 @@ value="{{ nota_estudiante.get('ep' ~ numero, 0) }}"
 
 <div class="acciones-notas">
 
-```
+
 <!-- GUARDAR -->
 
 <button
@@ -807,7 +805,7 @@ value="{{ nota_estudiante.get('ep' ~ numero, 0) }}"
     Descargar PDF
 
 </a>
-```
+
 
 </div>
 
@@ -829,11 +827,11 @@ value="{{ nota_estudiante.get('ep' ~ numero, 0) }}"
 
 <div class="section-title">
 
-```
+
 <i class="bi bi-file-earmark-bar-graph"></i>
 
 Resumen de Cortes
-```
+
 
 </div>
 
@@ -848,7 +846,7 @@ Resumen de Cortes
 
 <tr>
 
-```
+
 <th>Asignatura</th>
 
 <th>I Corte</th>
@@ -860,7 +858,7 @@ Resumen de Cortes
 <th>IV Corte</th>
 
 <th>Nota Final</th>
-```
+
 
 </tr>
 
@@ -875,23 +873,23 @@ Resumen de Cortes
 </td>
 
 <td id="corte1">
-    -
+    
 </td>
 
 <td id="corte2">
-    -
+    
 </td>
 
 <td id="corte3">
-    -
+    
 </td>
 
 <td id="corte4">
-    -
+    
 </td>
 
 <td id="notaFinal">
-    -
+    
 </td>
 
 </tr>
@@ -916,11 +914,11 @@ Resumen de Cortes
 
 <div class="section-title">
 
-```
+
 <i class="bi bi-bar-chart-line"></i>
 
 Resumen Académico
-```
+
 
 </div>
 
@@ -928,7 +926,7 @@ Resumen Académico
 
 <div class="stat-card">
 
-```
+
 <div class="stat-icon">
 
     <i class="bi bi-people"></i>
@@ -946,13 +944,13 @@ Resumen Académico
     {{ estudiantes|length }}
 
 </div>
-```
+
 
 </div>
 
 <div class="stat-card">
 
-```
+
 <div class="stat-icon">
 
     <i class="bi bi-graph-up-arrow"></i>
@@ -972,13 +970,12 @@ Resumen Académico
     0.00
 
 </div>
-```
+
 
 </div>
 
 <div class="stat-card">
 
-```
 <div class="stat-icon">
 
     <i class="bi bi-check-circle"></i>
@@ -998,13 +995,13 @@ Resumen Académico
     0
 
 </div>
-```
+
 
 </div>
 
 <div class="stat-card">
 
-```
+
 <div class="stat-icon">
 
     <i class="bi bi-exclamation-circle"></i>
@@ -1024,7 +1021,7 @@ Resumen Académico
     0
 
 </div>
-```
+
 
 </div>
 

@@ -86,65 +86,19 @@ def role_required(rol):
         print("📂 FUENTE: asignaciones_clase")
         print("============================================================")
 
-        # --------------------------------------------------------
+       # --------------------------------------------------------
         # BUSCAR ÚNICAMENTE LAS ASIGNACIONES DEL DOCENTE
         # --------------------------------------------------------
 
         clases = list(
             db.asignaciones_clase.find({
                 "docente_id": docente_id,
-                "estado": "Activa"
+                "estado": {
+                    "$regex": "^activa$",
+                    "$options": "i"
+                }
             })
         )
-
-        # --------------------------------------------------------
-        # ORDENAR LAS CLASES
-        # --------------------------------------------------------
-
-        clases.sort(
-            key=lambda clase: (
-                str(clase.get("nivel", "")),
-                str(clase.get("grado", "")),
-                str(clase.get("seccion", "")),
-                str(
-                    clase.get(
-                        "asignatura",
-                        clase.get("asignatura_nombre", "")
-                    )
-                ).lower()
-            )
-        )
-
-        # --------------------------------------------------------
-        # MOSTRAR EN CONSOLA LO QUE REALMENTE SE ENVIARÁ
-        # AL DASHBOARD
-        # --------------------------------------------------------
-
-        print("📚 CLASES ENCONTRADAS:", len(clases))
-
-        for clase in clases:
-
-            print(
-                "➡️",
-                clase.get(
-                    "codigo_asignatura",
-                    clase.get("codigo", "")
-                ),
-                "|",
-                clase.get(
-                    "asignatura",
-                    clase.get("asignatura_nombre", "")
-                ),
-                "| Grado:",
-                clase.get("grado", ""),
-                "| Sección:",
-                clase.get("seccion", "")
-            )
-
-        print("============================================================")
-
-        return clases
-
 #===========================================================
 # DASHBOARD DOCENTE
 # ============================================================
@@ -722,6 +676,400 @@ def dashboard_docente():
 
         mensajes_pendientes=mensajes_pendientes
 
+    )
+
+# ============================================================
+# CONSULTA DE ESTUDIANTES
+# GRADO → SECCIÓN → ESTUDIANTE
+# HISTORIAL DE ASISTENCIA E INCIDENCIAS
+# ============================================================
+
+@docente_bp.route("/consulta-estudiantes")
+@role_required("docente")
+def consulta_estudiantes():
+
+    print("========================================================")
+    print("📋 CONSULTA DE ESTUDIANTES")
+    print("========================================================")
+
+    usuario = session.get("usuario")
+
+    if not usuario:
+        flash("La sesión ha expirado.", "warning")
+        return redirect(url_for("login"))
+
+    # ========================================================
+    # 1. BUSCAR DOCENTE
+    # ========================================================
+
+    docente = db.docentes.find_one({
+        "usuario": usuario
+    })
+
+    if not docente:
+        flash("Docente no encontrado.", "danger")
+        return redirect(url_for("login"))
+
+    codigo_docente = str(
+        docente.get("codigo", "")
+    ).strip().upper()
+
+    if codigo_docente.startswith("DOC"):
+        docente_id = codigo_docente
+    else:
+        docente_id = "DOC" + codigo_docente
+
+    print("👨‍🏫 DOCENTE:", docente.get("nombre"))
+    print("🆔 DOCENTE ID:", docente_id)
+
+    # ========================================================
+    # 2. PARÁMETROS
+    # ========================================================
+
+    grado = request.args.get(
+        "grado",
+        ""
+    ).strip()
+
+    seccion = request.args.get(
+        "seccion",
+        ""
+    ).strip().upper()
+
+    estudiante_id = request.args.get(
+        "estudiante_id",
+        ""
+    ).strip()
+
+    # ========================================================
+    # 3. GRADOS DISPONIBLES
+    # ========================================================
+
+    grados = [
+        "1er Nivel de Preescolar",
+        "2do Nivel de Preescolar",
+        "3er Nivel de Preescolar",
+        "1er Grado",
+        "2do Grado",
+        "3er Grado",
+        "4to Grado",
+        "5to Grado",
+        "6to Grado",
+        "1 Año",
+        "2 Año",
+        "3 Año",
+        "4 Año",
+        "5 Año"
+    ]
+
+    # ========================================================
+    # 4. BUSCAR ESTUDIANTES
+    # ========================================================
+
+    estudiantes = []
+
+    if grado:
+
+        filtro_estudiantes = {
+            "grado": grado,
+            "estado": "activo"
+        }
+
+        if seccion:
+            filtro_estudiantes["seccion"] = {
+                "$regex": "^" + seccion + "$",
+                "$options": "i"
+            }
+
+        estudiantes = list(
+            db.estudiantes.find(
+                filtro_estudiantes
+            ).sort(
+                "nombre",
+                1
+            )
+        )
+
+    print(
+        "🎓 GRADO:",
+        grado
+    )
+
+    print(
+        "🏫 SECCIÓN:",
+        seccion
+    )
+
+    print(
+        "👥 ESTUDIANTES:",
+        len(estudiantes)
+    )
+
+    # ========================================================
+    # 5. BUSCAR ESTUDIANTE SELECCIONADO
+    # ========================================================
+
+    estudiante = None
+
+    if estudiante_id:
+
+        estudiante = db.estudiantes.find_one({
+            "_id": estudiante_id
+        })
+
+        # Por si el ID fuera ObjectId
+        if not estudiante:
+
+            try:
+
+                estudiante = db.estudiantes.find_one({
+                    "_id": ObjectId(estudiante_id)
+                })
+
+            except Exception:
+
+                pass
+
+    # ========================================================
+    # 6. HISTORIAL DE ASISTENCIA
+    # ========================================================
+
+    asistencias = []
+
+    if estudiante:
+
+        id_estudiante = estudiante.get("_id")
+
+        ids_estudiante = [
+            str(id_estudiante)
+        ]
+
+        try:
+            ids_estudiante.append(
+                ObjectId(str(id_estudiante))
+            )
+        except Exception:
+            pass
+
+        asistencias = list(
+            db.asistencias.find({
+                "estudiante_id": {
+                    "$in": ids_estudiante
+                }
+            }).sort(
+                "fecha",
+                -1
+            )
+        )
+
+    print(
+        "📋 ASISTENCIAS:",
+        len(asistencias)
+    )
+
+    # ========================================================
+    # 7. HISTORIAL DE INCIDENCIAS
+    # ========================================================
+
+    incidencias = []
+
+    if estudiante:
+
+        id_estudiante = estudiante.get("_id")
+
+        ids_estudiante = [
+            str(id_estudiante)
+        ]
+
+        try:
+            ids_estudiante.append(
+                ObjectId(str(id_estudiante))
+            )
+        except Exception:
+            pass
+
+        incidencias = list(
+            db.incidencias.find({
+                "estudiante_id": {
+                    "$in": ids_estudiante
+                }
+            }).sort(
+                "fecha",
+                -1
+            )
+        )
+
+    print(
+        "⚠️ INCIDENCIAS:",
+        len(incidencias)
+    )
+
+    # ========================================================
+    # 8. CALCULAR ASISTENCIA
+    # ========================================================
+
+    presentes = 0
+    ausentes = 0
+
+    for asistencia in asistencias:
+
+        estado = str(
+            asistencia.get(
+                "estado",
+                ""
+            )
+        ).strip().lower()
+
+        if estado == "presente":
+            presentes += 1
+
+        elif estado == "ausente":
+            ausentes += 1
+
+    total_asistencias = (
+        presentes +
+        ausentes
+    )
+
+    if total_asistencias > 0:
+
+        porcentaje_asistencia = round(
+            (
+                presentes /
+                total_asistencias
+            ) * 100,
+            1
+        )
+
+    else:
+
+        porcentaje_asistencia = 0
+
+    # ========================================================
+    # 9. ENRIQUECER ASISTENCIAS
+    # ========================================================
+
+    for asistencia in asistencias:
+
+        asignatura_id = asistencia.get(
+            "asignatura_id"
+        )
+
+        asignatura_nombre = (
+            asistencia.get(
+                "asignatura",
+                ""
+            )
+        )
+
+        if not asignatura_nombre and asignatura_id:
+
+            asignacion = db.asignaciones_clase.find_one({
+                "_id": asignatura_id
+            })
+
+            if not asignacion:
+
+                try:
+
+                    asignacion = db.asignaciones_clase.find_one({
+                        "_id": ObjectId(
+                            str(asignatura_id)
+                        )
+                    })
+
+                except Exception:
+
+                    asignacion = None
+
+            if asignacion:
+
+                asignatura_nombre = (
+                    asignacion.get(
+                        "asignatura_nombre",
+                        ""
+                    )
+                )
+
+        asistencia["asignatura"] = (
+            asignatura_nombre or
+            "—"
+        )
+
+    # ========================================================
+    # 10. ENRIQUECER INCIDENCIAS
+    # ========================================================
+
+    for incidencia in incidencias:
+
+        if not incidencia.get("docente"):
+
+            docente_inc = db.docentes.find_one({
+                "codigo": incidencia.get(
+                    "docente_id"
+                )
+            })
+
+            if docente_inc:
+
+                incidencia["docente"] = (
+                    docente_inc.get(
+                        "nombre",
+                        ""
+                    )
+                )
+
+            else:
+
+                incidencia["docente"] = "—"
+
+    # ========================================================
+    # 11. RESULTADO
+    # ========================================================
+
+    print("========================================================")
+    print("📊 RESULTADO CONSULTA")
+    print("========================================================")
+    print("👤 ESTUDIANTE:",
+          estudiante.get("nombre") if estudiante else "Ninguno")
+    print("📋 ASISTENCIAS:",
+          len(asistencias))
+    print("⚠️ INCIDENCIAS:",
+          len(incidencias))
+    print("📈 PORCENTAJE:",
+          porcentaje_asistencia)
+    print("========================================================")
+
+    # ========================================================
+    # 12. MOSTRAR HTML
+    # ========================================================
+
+    return render_template(
+        "docente/consulta_estudiantes.html",
+
+        grados=grados,
+
+        grado=grado,
+
+        seccion=seccion,
+
+        estudiantes=estudiantes,
+
+        estudiante=estudiante,
+
+        asistencias=asistencias,
+
+        incidencias=incidencias,
+
+        presentes=presentes,
+
+        ausentes=ausentes,
+
+        porcentaje_asistencia=porcentaje_asistencia,
+
+        docente=docente,
+
+        docente_id=docente_id
     )
 
 # ============================================================
@@ -2059,44 +2407,192 @@ def asistencia(asignatura_id):
         [grado_texto]
     )
 
-    # =====================================
+    # ======================================================
     # 8. BUSCAR ESTUDIANTES
-    # =====================================
+    # ======================================================
 
-    filtro_estudiantes = {
-
-        "grado": {
-            "$in": grados_busqueda
-        },
-
-        "estado": "activo"
-
-    }
-
-    if seccion:
-
-        filtro_estudiantes["seccion"] = seccion
-
+    print("")
     print("========================================")
-    print("🔎 FILTRO ESTUDIANTES")
-    print(
-        filtro_estudiantes
-    )
+    print("🔎 BUSCANDO ESTUDIANTES")
     print("========================================")
 
-    estudiantes = list(
-        db.estudiantes.find(
-            filtro_estudiantes
-        ).sort(
-            "nombre",
-            1
+    estudiantes = []
+
+    nivel_normalizado = str(nivel).strip().lower()
+    grado_normalizado = str(grado).strip()
+    seccion_normalizada = str(seccion).strip().upper()
+
+    print("🎓 NIVEL:", nivel_normalizado)
+    print("📖 GRADO:", grado_normalizado)
+    print("🏫 SECCIÓN:", seccion_normalizada)
+
+
+    # ======================================================
+    # PREESCOLAR
+    # ======================================================
+
+    if nivel_normalizado == "preescolar":
+
+        if grado_normalizado.lower() == "i nivel":
+
+            grados_busqueda = [
+                "I Nivel",
+                "1er Nivel de Preescolar",
+                "Preescolar I Nivel"
+            ]
+
+        elif grado_normalizado.lower() == "ii nivel":
+
+            grados_busqueda = [
+                "II Nivel",
+                "2do Nivel de Preescolar",
+                "Preescolar II Nivel"
+            ]
+
+        elif grado_normalizado.lower() == "iii nivel":
+
+            grados_busqueda = [
+                "III Nivel",
+                "3er Nivel de Preescolar",
+                "Preescolar III Nivel"
+            ]
+
+        else:
+
+            grados_busqueda = [
+                grado_normalizado
+            ]
+
+        print(
+            "🎒 GRADOS A BUSCAR:",
+            grados_busqueda
         )
-    )
 
+        estudiantes = list(
+            db.estudiantes.find({
+                "grado": {
+                    "$in": grados_busqueda
+                },
+                "seccion": {
+                    "$regex": "^" + seccion_normalizada + "$",
+                    "$options": "i"
+                },
+                "estado": "activo"
+            }).sort(
+                "nombre",
+                1
+            )
+        )
+
+
+    # ======================================================
+    # PRIMARIA
+    # ======================================================
+
+    elif nivel_normalizado == "primaria":
+
+        mapa_primaria = {
+            "1": ["1", "1er Grado"],
+            "2": ["2", "2do Grado"],
+            "3": ["3", "3er Grado"],
+            "4": ["4", "4to Grado"],
+            "5": ["5", "5to Grado"],
+            "6": ["6", "6to Grado"]
+        }
+
+        grados_busqueda = mapa_primaria.get(
+            grado_normalizado,
+            [grado_normalizado]
+        )
+
+        print(
+            "📖 GRADOS A BUSCAR:",
+            grados_busqueda
+        )
+
+        estudiantes = list(
+            db.estudiantes.find({
+                "grado": {
+                    "$in": grados_busqueda
+                },
+                "seccion": {
+                    "$regex": "^" + seccion_normalizada + "$",
+                    "$options": "i"
+                },
+                "estado": "activo"
+            }).sort(
+                "nombre",
+                1
+            )
+        )
+
+
+    # ======================================================
+    # SECUNDARIA
+    # ======================================================
+
+    elif nivel_normalizado == "secundaria":
+
+        estudiantes = list(
+            db.estudiantes.find({
+                "grado": grado_normalizado,
+                "seccion": {
+                    "$regex": "^" + seccion_normalizada + "$",
+                    "$options": "i"
+                },
+                "estado": "activo"
+            }).sort(
+                "nombre",
+                1
+            )
+        )
+
+
+    # ======================================================
+    # OTROS
+    # ======================================================
+
+    else:
+
+        estudiantes = list(
+            db.estudiantes.find({
+                "grado": grado_normalizado,
+                "seccion": {
+                    "$regex": "^" + seccion_normalizada + "$",
+                    "$options": "i"
+                },
+                "estado": "activo"
+            }).sort(
+                "nombre",
+                1
+            )
+        )
+
+
+    # ======================================================
+    # RESULTADO
+    # ======================================================
+
+    print("")
+    print("========================================")
     print(
         "👥 ESTUDIANTES ENCONTRADOS:",
         len(estudiantes)
     )
+    print("========================================")
+
+    for estudiante in estudiantes[:10]:
+
+        print(
+            "→",
+            estudiante.get("nombre", ""),
+            "| GRADO:",
+            estudiante.get("grado", ""),
+            "| SECCIÓN:",
+            estudiante.get("seccion", ""),
+            "| ESTADO:",
+            estudiante.get("estado", "")
+        )
 
     # =====================================
     # 9. FECHA
@@ -2240,7 +2736,7 @@ def asistencia(asignatura_id):
     )
 
 # ==========================================================
-# NOTAS
+# NOTAS / CALIFICACIONES
 # ==========================================================
 
 @docente_bp.route("/notas/<asignatura_id>")
@@ -2248,40 +2744,135 @@ def asistencia(asignatura_id):
 def notas(asignatura_id):
 
     print("========================================")
-    print("📝 NOTAS")
+    print("📝 NOTAS / CALIFICACIONES")
     print("ASIGNACIÓN ID:", asignatura_id)
     print("========================================")
 
+    # ======================================================
+    # 1. USUARIO
+    # ======================================================
+
     usuario = session.get("usuario")
+
+    if not usuario:
+
+        flash(
+            "La sesión ha expirado.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+    print("👤 USUARIO:", usuario)
+
+    # ======================================================
+    # 2. BUSCAR DOCENTE
+    # ======================================================
 
     docente = db.docentes.find_one({
         "usuario": usuario
     })
 
     if not docente:
-        flash("Docente no encontrado.", "danger")
-        return redirect(url_for("login"))
+
+        print("❌ DOCENTE NO ENCONTRADO")
+
+        flash(
+            "Docente no encontrado.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+    # ======================================================
+    # 3. ID OFICIAL DEL DOCENTE
+    # ======================================================
 
     codigo_docente = str(
-        docente.get("codigo", "")
-    ).strip()
+        docente.get(
+            "codigo",
+            ""
+        )
+    ).strip().upper()
 
-    docente_id = f"DOC{codigo_docente}"
+    if codigo_docente.startswith("DOC"):
 
-    ids_busqueda = [asignatura_id]
+        docente_id = codigo_docente
+
+    else:
+
+        docente_id = "DOC" + codigo_docente
+
+    print(
+        "👨‍🏫 DOCENTE:",
+        docente.get(
+            "nombre",
+            ""
+        )
+    )
+
+    print(
+        "🆔 DOCENTE ID:",
+        docente_id
+    )
+
+    # ======================================================
+    # 4. PREPARAR ID DE ASIGNACIÓN
+    # ======================================================
+
+    ids_busqueda = [
+        str(asignatura_id)
+    ]
 
     try:
-        ids_busqueda.append(ObjectId(asignatura_id))
-    except Exception:
-        pass
+
+        if ObjectId.is_valid(
+            str(asignatura_id)
+        ):
+
+            ids_busqueda.append(
+                ObjectId(
+                    str(asignatura_id)
+                )
+            )
+
+    except Exception as e:
+
+        print(
+            "⚠️ ERROR OBJECTID:",
+            e
+        )
+
+    print(
+        "🔎 IDS PARA BUSCAR:",
+        ids_busqueda
+    )
+
+    # ======================================================
+    # 5. BUSCAR ASIGNACIÓN
+    # COLECCIÓN OFICIAL:
+    # db.asignaciones_clase
+    # ======================================================
 
     asignacion = db.asignaciones_clase.find_one({
+
         "_id": {
             "$in": ids_busqueda
         },
+
         "docente_id": docente_id,
+
         "activo": True
+
     })
+
+    # ======================================================
+    # 6. VALIDAR ASIGNACIÓN
+    # ======================================================
 
     if not asignacion:
 
@@ -2296,34 +2887,491 @@ def notas(asignatura_id):
             url_for("docente.aulas")
         )
 
-    grado = asignacion.get("grado")
-    seccion = asignacion.get("seccion")
+    # ======================================================
+    # 7. DATOS DE LA CLASE
+    # ======================================================
 
-    mapa_grados = {
-        "1": "1er Grado",
-        "2": "2do Grado",
-        "3": "3er Grado",
-        "4": "4to Grado",
-        "5": "5to Grado",
-        "6": "6to Grado"
+    nivel = str(
+        asignacion.get(
+            "nivel",
+            ""
+        )
+    ).strip()
+
+    grado = str(
+        asignacion.get(
+            "grado",
+            ""
+        )
+    ).strip()
+
+    seccion = str(
+        asignacion.get(
+            "seccion",
+            ""
+        )
+    ).strip().upper()
+
+    asignatura_codigo = asignacion.get(
+        "asignatura_codigo",
+        ""
+    )
+
+    asignatura_nombre = asignacion.get(
+        "asignatura_nombre",
+        ""
+    )
+
+    print("========================================")
+    print("✅ ASIGNACIÓN ENCONTRADA")
+    print("========================================")
+    print(
+        "🆔 ID:",
+        asignacion.get("_id")
+    )
+    print(
+        "📚 CÓDIGO:",
+        asignatura_codigo
+    )
+    print(
+        "📖 ASIGNATURA:",
+        asignatura_nombre
+    )
+    print(
+        "🎓 NIVEL:",
+        nivel
+    )
+    print(
+        "📖 GRADO:",
+        grado
+    )
+    print(
+        "🏫 SECCIÓN:",
+        seccion
+    )
+    print(
+        "👨‍🏫 DOCENTE:",
+        docente_id
+    )
+    print("========================================")
+
+    # ======================================================
+    # 8. NORMALIZAR NIVEL
+    # ======================================================
+
+    nivel_normalizado = nivel.lower()
+
+    # ======================================================
+    # 9. MAPA DE PREESCOLAR
+    # ======================================================
+
+    mapa_preescolar = {
+
+        "i nivel": [
+            "I Nivel",
+            "1er Nivel de Preescolar",
+            "Preescolar I Nivel"
+        ],
+
+        "ii nivel": [
+            "II Nivel",
+            "2do Nivel de Preescolar",
+            "Preescolar II Nivel"
+        ],
+
+        "iii nivel": [
+            "III Nivel",
+            "3er Nivel de Preescolar",
+            "Preescolar III Nivel"
+        ]
+
     }
 
-    grado_estudiante = mapa_grados.get(
-        str(grado),
+    # ======================================================
+    # 10. MAPA DE PRIMARIA
+    # ======================================================
+
+    mapa_primaria = {
+
+        "1": [
+            "1",
+            "1er Grado"
+        ],
+
+        "2": [
+            "2",
+            "2do Grado"
+        ],
+
+        "3": [
+            "3",
+            "3er Grado"
+        ],
+
+        "4": [
+            "4",
+            "4to Grado"
+        ],
+
+        "5": [
+            "5",
+            "5to Grado"
+        ],
+
+        "6": [
+            "6",
+            "6to Grado"
+        ]
+
+    }
+
+    # ======================================================
+    # 11. DETERMINAR GRADOS A BUSCAR
+    # ======================================================
+
+    if nivel_normalizado == "preescolar":
+
+        grados_busqueda = mapa_preescolar.get(
+            grado.lower(),
+            [grado]
+        )
+
+        print(
+            "🎒 PREESCOLAR"
+        )
+
+    elif nivel_normalizado == "primaria":
+
+        grados_busqueda = mapa_primaria.get(
+            grado,
+            [grado]
+        )
+
+        print(
+            "📚 PRIMARIA"
+        )
+
+    else:
+
+        grados_busqueda = [
+            grado
+        ]
+
+        print(
+            "🎓 OTRO NIVEL"
+        )
+
+    # ======================================================
+    # 12. MOSTRAR BÚSQUEDA
+    # ======================================================
+
+    print("========================================")
+    print("🔎 BÚSQUEDA DE ESTUDIANTES")
+    print("========================================")
+
+    print(
+        "🎓 NIVEL:",
+        nivel_normalizado
+    )
+
+    print(
+        "📖 GRADO DE LA CLASE:",
         grado
     )
 
+    print(
+        "🏫 SECCIÓN:",
+        seccion
+    )
+
+    print(
+        "🎯 GRADOS A BUSCAR:",
+        grados_busqueda
+    )
+
+    print("========================================")
+
+    # ======================================================
+    # 13. FILTRO DE ESTUDIANTES
+    # ======================================================
+
+    filtro_estudiantes = {
+
+        "grado": {
+            "$in": grados_busqueda
+        },
+
+        "estado": "activo"
+
+    }
+
+    if seccion:
+
+        filtro_estudiantes["seccion"] = {
+
+            "$regex":
+                "^" +
+                seccion +
+                "$",
+
+            "$options":
+                "i"
+
+        }
+
+    print(
+        "🔎 FILTRO FINAL:",
+        filtro_estudiantes
+    )
+
+    # ======================================================
+    # 14. BUSCAR ESTUDIANTES
+    # ======================================================
+
     estudiantes = list(
-        db.estudiantes.find({
-            "grado": grado_estudiante,
-            "seccion": seccion,
-            "estado": "activo"
-        }).sort(
+
+        db.estudiantes.find(
+            filtro_estudiantes
+        ).sort(
             "nombre",
             1
         )
+
     )
 
+    # ======================================================
+    # 15. RESULTADO
+    # ======================================================
+
+    print("========================================")
+    print(
+        "👥 ESTUDIANTES ENCONTRADOS:",
+        len(estudiantes)
+    )
+    print("========================================")
+
+    for estudiante in estudiantes:
+
+        print(
+            "→",
+            estudiante.get(
+                "_id"
+            ),
+            "|",
+            estudiante.get(
+                "nombre",
+                ""
+            ),
+            "| GRADO:",
+            estudiante.get(
+                "grado",
+                ""
+            ),
+            "| SECCIÓN:",
+            estudiante.get(
+                "seccion",
+                ""
+            ),
+            "| ESTADO:",
+            estudiante.get(
+                "estado",
+                ""
+            )
+        )
+
+    # ======================================================
+    # 16. BUSCAR NOTAS EXISTENTES
+    # ======================================================
+
+    asignacion_id_string = str(
+        asignacion.get("_id")
+    )
+
+    notas_existentes = list(
+
+        db.notas.find({
+
+            "asignatura_id":
+                str(asignatura_id)
+
+        })
+
+    )
+
+    # ======================================================
+    # 17. TAMBIÉN BUSCAR NOTAS CON EL ID REAL
+    # DE LA ASIGNACIÓN
+    # ======================================================
+
+    if asignacion_id_string != str(
+        asignatura_id
+    ):
+
+        notas_por_asignacion = list(
+
+            db.notas.find({
+
+                "asignatura_id":
+                    asignacion_id_string
+
+            })
+
+        )
+
+        ids_notas = {
+
+            str(
+                nota.get("_id")
+            )
+
+            for nota in notas_existentes
+
+        }
+
+        for nota in notas_por_asignacion:
+
+            if str(
+                nota.get("_id")
+            ) not in ids_notas:
+
+                notas_existentes.append(
+                    nota
+                )
+
+    print(
+        "📝 NOTAS EXISTENTES:",
+        len(notas_existentes)
+    )
+
+    # ======================================================
+    # 18. ORGANIZAR NOTAS
+    # ======================================================
+
+    notas_mapa = {}
+
+    for nota in notas_existentes:
+
+        estudiante_id = str(
+            nota.get(
+                "estudiante_id",
+                ""
+            )
+        )
+
+        periodo = str(
+            nota.get(
+                "periodo",
+                ""
+            )
+        )
+
+        evaluacion = str(
+            nota.get(
+                "evaluacion",
+                ""
+            )
+        )
+
+        clave = (
+
+            estudiante_id,
+            periodo,
+            evaluacion
+
+        )
+
+        notas_mapa[
+            clave
+        ] = nota
+
+    # ======================================================
+    # 19. CONSTRUIR ASIGNATURA
+    # ======================================================
+
+    asignatura = {
+
+        "_id":
+            asignacion.get("_id"),
+
+        "codigo":
+            asignatura_codigo,
+
+        "nombre":
+            asignatura_nombre,
+
+        "nivel":
+            nivel,
+
+        "grado":
+            grado,
+
+        "seccion":
+            seccion,
+
+        "docente_id":
+            docente_id
+
+    }
+
+    # ======================================================
+    # 20. RESUMEN
+    # ======================================================
+
+    print("========================================")
+    print("📦 DATOS PARA CALIFICACIONES")
+    print("========================================")
+
+    print(
+        "📚 ASIGNATURA:",
+        asignatura_nombre
+    )
+
+    print(
+        "🎓 NIVEL:",
+        nivel
+    )
+
+    print(
+        "📖 GRADO:",
+        grado
+    )
+
+    print(
+        "🏫 SECCIÓN:",
+        seccion
+    )
+
+    print(
+        "👥 ESTUDIANTES:",
+        len(estudiantes)
+    )
+
+    print(
+        "📝 NOTAS:",
+        len(notas_existentes)
+    )
+
+    print("========================================")
+
+    # ======================================================
+    # 21. MOSTRAR PÁGINA
+    # ======================================================
+
+    return render_template(
+
+        "docente/notas.html",
+
+        asignatura=asignatura,
+
+        estudiantes=estudiantes,
+
+        notas_existentes=notas_existentes,
+
+        notas_mapa=notas_mapa,
+
+        docente=docente
+
+    )
     # ======================================================
     # NOTAS EXISTENTES
     # ======================================================
@@ -2384,20 +3432,100 @@ def notas(asignatura_id):
         "docente_id": docente_id
     }
 
+    
     print("========================================")
     print("📚 ASIGNATURA:", asignatura["nombre"])
     print("👥 ESTUDIANTES:", len(estudiantes))
     print("📝 NOTAS EXISTENTES:", len(notas_existentes))
     print("========================================")
 
-    return render_template(
-        "docente/notas.html",
-        asignatura=asignatura,
-        estudiantes=estudiantes,
-        notas_existentes=notas_existentes,
-        notas_mapa=notas_mapa,
-        docente=docente
+    print("")
+
+    print("")
+    print("========================================")
+    print("🔍 DIAGNÓSTICO REAL DE ESTUDIANTES")
+    print("========================================")
+
+    # =====================================
+    # TOTAL DE ESTUDIANTES
+    # =====================================
+
+    total_estudiantes = db.estudiantes.count_documents({})
+
+    print(
+        "👥 TOTAL ESTUDIANTES EN db.estudiantes:",
+        total_estudiantes
     )
+
+    # =====================================
+    # PRIMEROS 30 ESTUDIANTES
+    # =====================================
+
+    print("")
+    print("========================================")
+    print("📋 PRIMEROS 30 ESTUDIANTES")
+    print("========================================")
+
+    for e in db.estudiantes.find({}).limit(30):
+
+        print(
+            "ID:",
+            e.get("_id"),
+            "| NOMBRE:",
+            repr(e.get("nombre")),
+            "| GRADO:",
+            repr(e.get("grado")),
+            "| SECCIÓN:",
+            repr(e.get("seccion")),
+            "| ESTADO:",
+            repr(e.get("estado")),
+            "| NIVEL:",
+            repr(e.get("nivel"))
+        )
+
+        # =====================================
+        # BUSCAR PREESCOLAR SIN FILTRAR
+        # =====================================
+
+        print("")
+        print("========================================")
+        print("🔍 ESTUDIANTES QUE PARECEN PREESCOLAR")
+        print("========================================")
+
+        for e in db.estudiantes.find({
+            "grado": {
+                "$regex": "preescolar|nivel",
+                "$options": "i"
+            }
+        }).limit(30):
+
+            print(
+                "ID:",
+                e.get("_id"),
+                "| NOMBRE:",
+                repr(e.get("nombre")),
+                "| GRADO:",
+                repr(e.get("grado")),
+                "| SECCIÓN:",
+                repr(e.get("seccion")),
+                "| ESTADO:",
+                repr(e.get("estado")),
+                "| NIVEL:",
+                repr(e.get("nivel"))
+            )
+
+        print("========================================")
+        print("🔍 FIN DEL DIAGNÓSTICO")
+        print("========================================")
+
+        return render_template(
+            "docente/notas.html",
+            asignatura=asignatura,
+            estudiantes=estudiantes,
+            notas_existentes=notas_existentes,
+            notas_mapa=notas_mapa,
+            docente=docente
+        )
 
 
 # ==========================================================
@@ -5145,7 +6273,10 @@ def registrar_incidencia(asignatura_id):
     # =====================================================
 
     codigo_docente = str(
-        docente.get("codigo", "")
+        docente.get(
+            "codigo",
+            ""
+        )
     ).strip().upper()
 
     if codigo_docente.startswith("DOC"):
@@ -5156,8 +6287,15 @@ def registrar_incidencia(asignatura_id):
 
         docente_id = f"DOC{codigo_docente}"
 
-    print("👨‍🏫 DOCENTE:", docente.get("nombre"))
-    print("🆔 DOCENTE ID:", docente_id)
+    print(
+        "👨‍🏫 DOCENTE:",
+        docente.get("nombre", "")
+    )
+
+    print(
+        "🆔 DOCENTE ID:",
+        docente_id
+    )
 
     # =====================================================
     # 3. PREPARAR ID DE ASIGNACIÓN
@@ -5169,18 +6307,33 @@ def registrar_incidencia(asignatura_id):
 
     try:
 
-        ids_busqueda.append(
-            ObjectId(str(asignatura_id))
+        from bson import ObjectId
+
+        if ObjectId.is_valid(
+            str(asignatura_id)
+        ):
+
+            ids_busqueda.append(
+                ObjectId(
+                    str(asignatura_id)
+                )
+            )
+
+    except Exception as e:
+
+        print(
+            "⚠️ ERROR CON OBJECTID:",
+            e
         )
 
-    except Exception:
-
-        pass
-
-    print("🔎 IDS PARA BUSCAR:", ids_busqueda)
+    print(
+        "🔎 IDS PARA BUSCAR:",
+        ids_busqueda
+    )
 
     # =====================================================
     # 4. BUSCAR ASIGNACIÓN
+    # COLECCIÓN OFICIAL: asignaciones_clase
     # =====================================================
 
     asignacion = db.asignaciones_clase.find_one({
@@ -5195,8 +6348,10 @@ def registrar_incidencia(asignatura_id):
 
     })
 
-    print("📚 ASIGNACIÓN ENCONTRADA:")
-    print(asignacion)
+    print(
+        "📚 ASIGNACIÓN ENCONTRADA:",
+        asignacion
+    )
 
     # =====================================================
     # 5. VALIDAR ASIGNACIÓN
@@ -5204,9 +6359,19 @@ def registrar_incidencia(asignatura_id):
 
     if not asignacion:
 
-        print("❌ ASIGNACIÓN NO ENCONTRADA")
-        print("❌ ID RECIBIDO:", asignatura_id)
-        print("❌ DOCENTE:", docente_id)
+        print(
+            "❌ ASIGNACIÓN NO ENCONTRADA"
+        )
+
+        print(
+            "❌ ID RECIBIDO:",
+            asignatura_id
+        )
+
+        print(
+            "❌ DOCENTE:",
+            docente_id
+        )
 
         flash(
             "La clase seleccionada no existe o no está asignada al docente.",
@@ -5223,41 +6388,82 @@ def registrar_incidencia(asignatura_id):
     # 6. INFORMACIÓN DE LA CLASE
     # =====================================================
 
-    grado = asignacion.get(
-        "grado",
-        ""
-    )
+    nivel = str(
+        asignacion.get(
+            "nivel",
+            ""
+        )
+    ).strip()
 
-    seccion = asignacion.get(
-        "seccion",
-        ""
-    )
+    grado = str(
+        asignacion.get(
+            "grado",
+            ""
+        )
+    ).strip()
 
-    asignatura_codigo = asignacion.get(
-        "asignatura_codigo",
-        ""
-    )
+    seccion = str(
+        asignacion.get(
+            "seccion",
+            ""
+        )
+    ).strip().upper()
 
-    asignatura_nombre = asignacion.get(
-        "asignatura_nombre",
-        ""
-    )
+    asignatura_codigo = str(
+        asignacion.get(
+            "asignatura_codigo",
+            ""
+        )
+    ).strip().upper()
+
+    asignatura_nombre = str(
+        asignacion.get(
+            "asignatura_nombre",
+            ""
+        )
+    ).strip()
 
     print("========================================")
     print("✅ CLASE ENCONTRADA")
-    print("🆔 ID:", asignacion.get("_id"))
-    print("📚 CÓDIGO:", asignatura_codigo)
-    print("📖 NOMBRE:", asignatura_nombre)
-    print("🎓 GRADO:", grado)
-    print("🏫 SECCIÓN:", seccion)
-    print("👨‍🏫 DOCENTE:", docente_id)
+    print(
+        "🆔 ID:",
+        asignacion.get("_id")
+    )
+    print(
+        "📚 CÓDIGO:",
+        asignatura_codigo
+    )
+    print(
+        "📖 NOMBRE:",
+        asignatura_nombre
+    )
+    print(
+        "🎓 NIVEL:",
+        nivel
+    )
+    print(
+        "📖 GRADO:",
+        grado
+    )
+    print(
+        "🏫 SECCIÓN:",
+        seccion
+    )
+    print(
+        "👨‍🏫 DOCENTE:",
+        docente_id
+    )
     print("========================================")
 
     # =====================================================
-    # 7. CONVERTIR GRADO
+    # 7. NORMALIZAR GRADO
     # =====================================================
 
-    mapa_grados = {
+    # -----------------------------------------------------
+    # PRIMARIA
+    # -----------------------------------------------------
+
+    mapa_grados_primaria = {
 
         "1": "1er Grado",
         "2": "2do Grado",
@@ -5268,59 +6474,309 @@ def registrar_incidencia(asignatura_id):
 
     }
 
-    grado_estudiante = mapa_grados.get(
-        str(grado).strip(),
-        grado
-    )
+    # -----------------------------------------------------
+    # PREESCOLAR
+    #
+    # CLASE:
+    # I Nivel
+    # II Nivel
+    # III Nivel
+    #
+    # ESTUDIANTE:
+    # 1er Nivel de Preescolar
+    # 2do Nivel de Preescolar
+    # 3er Nivel de Preescolar
+    # -----------------------------------------------------
 
-    print(
-        "🎓 GRADO PARA ESTUDIANTES:",
-        grado_estudiante
-    )
+    mapa_grados_preescolar = {
 
-    print(
-        "🏫 SECCIÓN PARA ESTUDIANTES:",
-        seccion
-    )
+        "I Nivel": [
+            "I Nivel",
+            "1er Nivel de Preescolar",
+            "Preescolar I Nivel"
+        ],
+
+        "II Nivel": [
+            "II Nivel",
+            "2do Nivel de Preescolar",
+            "Preescolar II Nivel"
+        ],
+
+        "III Nivel": [
+            "III Nivel",
+            "3er Nivel de Preescolar",
+            "Preescolar III Nivel"
+        ]
+
+    }
 
     # =====================================================
     # 8. BUSCAR ESTUDIANTES
     # =====================================================
 
-    estudiantes = list(
-        db.estudiantes.find({
+    estudiantes = []
 
-            "grado": grado_estudiante,
+    # =====================================================
+    # PREESCOLAR
+    # =====================================================
+
+    if nivel.lower() == "preescolar":
+
+        grados_busqueda = mapa_grados_preescolar.get(
+            grado,
+            [grado]
+        )
+
+        print("========================================")
+        print("🎒 BUSCANDO ESTUDIANTES DE PREESCOLAR")
+        print(
+            "🎓 GRADO DE LA CLASE:",
+            grado
+        )
+        print(
+            "🔎 GRADOS A BUSCAR:",
+            grados_busqueda
+        )
+        print(
+            "🏫 SECCIÓN:",
+            seccion
+        )
+        print("========================================")
+
+        filtro_estudiantes = {
+
+            "grado": {
+                "$in": grados_busqueda
+            },
 
             "seccion": seccion,
 
             "estado": "activo"
 
-        }).sort(
-            "nombre",
-            1
-        )
-    )
+        }
 
+        print(
+            "🔎 FILTRO:",
+            filtro_estudiantes
+        )
+
+        estudiantes = list(
+            db.estudiantes.find(
+                filtro_estudiantes
+            ).sort(
+                "nombre",
+                1
+            )
+        )
+
+        # -------------------------------------------------
+        # RESPALDO: buscar sin sección si no encontró
+        # -------------------------------------------------
+
+        if not estudiantes:
+
+            print(
+                "⚠️ NO SE ENCONTRARON ESTUDIANTES CON SECCIÓN"
+            )
+
+            filtro_sin_seccion = {
+
+                "grado": {
+                    "$in": grados_busqueda
+                },
+
+                "estado": "activo"
+
+            }
+
+            estudiantes_sin_seccion = list(
+                db.estudiantes.find(
+                    filtro_sin_seccion
+                ).sort(
+                    "nombre",
+                    1
+                )
+            )
+
+            print(
+                "👥 ENCONTRADOS SIN FILTRO DE SECCIÓN:",
+                len(estudiantes_sin_seccion)
+            )
+
+            # Solo utilizar el respaldo si realmente existen
+            # estudiantes del grado correspondiente.
+
+            if estudiantes_sin_seccion:
+
+                estudiantes = [
+                    estudiante
+                    for estudiante in estudiantes_sin_seccion
+                    if str(
+                        estudiante.get(
+                            "seccion",
+                            ""
+                        )
+                    ).strip().upper() == seccion
+                ]
+
+        # -------------------------------------------------
+        # RESPALDO FINAL: MATRÍCULAS
+        # -------------------------------------------------
+
+        if not estudiantes:
+
+            print(
+                "⚠️ PROBANDO COLECCIÓN db.matriculas"
+            )
+
+            estudiantes = list(
+                db.matriculas.find({
+
+                    "grado": {
+                        "$in": grados_busqueda
+                    },
+
+                    "seccion": seccion,
+
+                    "estado": {
+                        "$ne": "inactivo"
+                    }
+
+                }).sort(
+                    "nombre",
+                    1
+                )
+            )
+
+    # =====================================================
+    # PRIMARIA
+    # =====================================================
+
+    elif nivel.lower() == "primaria":
+
+        grado_estudiante = mapa_grados_primaria.get(
+            grado,
+            grado
+        )
+
+        print("========================================")
+        print("📖 BUSCANDO ESTUDIANTES DE PRIMARIA")
+        print(
+            "🎓 GRADO CLASE:",
+            grado
+        )
+        print(
+            "🎓 GRADO ESTUDIANTE:",
+            grado_estudiante
+        )
+        print(
+            "🏫 SECCIÓN:",
+            seccion
+        )
+        print("========================================")
+
+        estudiantes = list(
+            db.estudiantes.find({
+
+                "grado": grado_estudiante,
+
+                "seccion": seccion,
+
+                "estado": "activo"
+
+            }).sort(
+                "nombre",
+                1
+            )
+        )
+
+    # =====================================================
+    # SECUNDARIA
+    # =====================================================
+
+    elif nivel.lower() == "secundaria":
+
+        print("========================================")
+        print("🎓 BUSCANDO ESTUDIANTES DE SECUNDARIA")
+        print(
+            "📖 GRADO:",
+            grado
+        )
+        print(
+            "🏫 SECCIÓN:",
+            seccion
+        )
+        print("========================================")
+
+        estudiantes = list(
+            db.estudiantes.find({
+
+                "grado": grado,
+
+                "seccion": seccion,
+
+                "estado": "activo"
+
+            }).sort(
+                "nombre",
+                1
+            )
+        )
+
+    # =====================================================
+    # OTROS NIVELES
+    # =====================================================
+
+    else:
+
+        print(
+            "⚠️ NIVEL NO RECONOCIDO:",
+            nivel
+        )
+
+        estudiantes = list(
+            db.estudiantes.find({
+
+                "grado": grado,
+
+                "seccion": seccion,
+
+                "estado": "activo"
+
+            }).sort(
+                "nombre",
+                1
+            )
+        )
+
+    # =====================================================
+    # 9. MOSTRAR ESTUDIANTES EN CONSOLA
+    # =====================================================
+
+    print("========================================")
     print(
-        "👥 TOTAL ESTUDIANTES:",
+        "👥 TOTAL ESTUDIANTES ENCONTRADOS:",
         len(estudiantes)
     )
+    print("========================================")
 
     for estudiante in estudiantes:
 
         print(
+            "ID:",
             estudiante.get("_id"),
-            "|",
+            "| NOMBRE:",
             estudiante.get("nombre"),
             "| GRADO:",
             estudiante.get("grado"),
             "| SECCIÓN:",
-            estudiante.get("seccion")
+            estudiante.get("seccion"),
+            "| ESTADO:",
+            estudiante.get("estado")
         )
 
     # =====================================================
-    # 9. BUSCAR INCIDENCIAS EXISTENTES
+    # 10. BUSCAR INCIDENCIAS EXISTENTES
     # =====================================================
 
     incidencia_id = str(
@@ -5344,7 +6800,7 @@ def registrar_incidencia(asignatura_id):
     )
 
     # =====================================================
-    # 10. PREPARAR DATOS PARA EL HTML
+    # 11. PREPARAR DATOS PARA HTML
     # =====================================================
 
     asignatura = {
@@ -5359,10 +6815,7 @@ def registrar_incidencia(asignatura_id):
             asignatura_nombre,
 
         "nivel":
-            asignacion.get(
-                "nivel",
-                ""
-            ),
+            nivel,
 
         "grado":
             grado,
@@ -5376,7 +6829,7 @@ def registrar_incidencia(asignatura_id):
     }
 
     # =====================================================
-    # 11. FECHA ACTUAL
+    # 12. FECHA ACTUAL
     # =====================================================
 
     fecha = datetime.now().strftime(
@@ -5384,13 +6837,33 @@ def registrar_incidencia(asignatura_id):
     )
 
     # =====================================================
-    # 12. MOSTRAR FORMULARIO
+    # 13. MOSTRAR FORMULARIO
     # =====================================================
 
     print("========================================")
-    print("✅ ABRIENDO FORMULARIO DE INCIDENCIA")
-    print("📚 ASIGNATURA:", asignatura_nombre)
-    print("👥 ESTUDIANTES:", len(estudiantes))
+    print(
+        "✅ ABRIENDO FORMULARIO DE INCIDENCIA"
+    )
+    print(
+        "📚 ASIGNATURA:",
+        asignatura_nombre
+    )
+    print(
+        "🎓 NIVEL:",
+        nivel
+    )
+    print(
+        "📖 GRADO:",
+        grado
+    )
+    print(
+        "🏫 SECCIÓN:",
+        seccion
+    )
+    print(
+        "👥 ESTUDIANTES:",
+        len(estudiantes)
+    )
     print("========================================")
 
     return render_template(

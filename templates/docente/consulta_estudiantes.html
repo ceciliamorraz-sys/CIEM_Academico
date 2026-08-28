@@ -1,36 +1,119 @@
 <!DOCTYPE html>
+
 <html lang="es">
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>
-        Consulta de Estudiantes | CIEM Académico
-    </title>
+<title>Consulta de Estudiantes | CIEM Académico</title>
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+>
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-        rel="stylesheet"
-    >
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    rel="stylesheet"
+>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for(
-            'static',
-            filename='css/clases.css'
-        ) }}"
-    >
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/clases.css') }}"
+>
+
+<style>
+
+    body {
+        background: #f5f7fa;
+    }
+
+    .consulta-header {
+        background: #08142C;
+        color: white;
+        border-radius: 18px;
+        padding: 25px 30px;
+        margin-bottom: 25px;
+    }
+
+    .consulta-header h2 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .consulta-header p {
+        margin: 5px 0 0;
+        color: #dce5f2;
+    }
+
+    .filtro-card {
+        border: none;
+        border-radius: 18px;
+        box-shadow: 0 5px 20px rgba(0,0,0,.08);
+    }
+
+    .filtro-titulo {
+        color: #08142C;
+        font-weight: 700;
+    }
+
+    .btn-consultar {
+        background: #0D2A52;
+        border-color: #0D2A52;
+        padding: 10px 22px;
+        font-weight: 600;
+    }
+
+    .btn-consultar:hover {
+        background: #1E4E8C;
+        border-color: #1E4E8C;
+    }
+
+    .estudiante-card {
+        border: none;
+        border-radius: 18px;
+        box-shadow: 0 5px 20px rgba(0,0,0,.08);
+    }
+
+    .estudiante-icon {
+        width: 65px;
+        height: 65px;
+        border-radius: 18px;
+        background: #0D2A52;
+        color: #FFC107;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+    }
+
+    .resumen-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,.07);
+    }
+
+    .historial-card {
+        border: none;
+        border-radius: 18px;
+        box-shadow: 0 5px 20px rgba(0,0,0,.08);
+    }
+
+    .historial-titulo {
+        color: #08142C;
+        font-weight: 700;
+    }
+
+    .tabla-head {
+        background: #08142C;
+        color: white;
+    }
+
+</style>
+```
 
 </head>
 
@@ -38,39 +121,42 @@
 
 <div class="container-fluid py-4">
 
-    <div class="container">
+```
+<div class="container">
 
-        <!-- ==========================================
-             ENCABEZADO
-        =========================================== -->
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
 
-        <div class="header-clases">
+    <div class="consulta-header">
+
+        <div class="d-flex justify-content-between align-items-center">
 
             <div>
 
                 <h2>
 
-                    <i class="bi bi-search"></i>
+                    <i class="bi bi-person-vcard-fill me-2"></i>
 
                     Consulta de Estudiantes
 
                 </h2>
 
                 <p>
-                    Consulte incidencias y asistencia
+
+                    Consulte el historial de asistencia e incidencias
                     de sus estudiantes.
+
                 </p>
 
             </div>
 
             <a
-                href="{{ url_for(
-                    'docente.lista_incidencias'
-                ) }}"
+                href="{{ url_for('docente.dashboard_docente') }}"
                 class="btn btn-light"
             >
 
-                <i class="bi bi-arrow-left"></i>
+                <i class="bi bi-arrow-left me-1"></i>
 
                 Volver
 
@@ -78,242 +164,265 @@
 
         </div>
 
-
-        <!-- ==========================================
-             FILTROS
-        =========================================== -->
-
-        <div class="card border-0 shadow-sm mt-4">
-
-            <div class="card-body p-4">
-
-                <h5
-                    class="mb-4"
-                    style="color:#08142C;"
-                >
-
-                    <i
-                        class="bi bi-funnel-fill me-2"
-                        style="color:#1E4E8C;"
-                    ></i>
-
-                    Buscar estudiante
-
-                </h5>
+    </div>
 
 
-                <form method="GET">
+    <!-- =====================================================
+         BUSCADOR
+    ====================================================== -->
 
-                    <div class="row g-3">
+    <div class="card filtro-card">
 
+        <div class="card-body p-4">
 
-                        <!-- GRADO -->
+            <h5 class="filtro-titulo mb-4">
 
-                        <div class="col-md-4">
+                <i
+                    class="bi bi-search me-2"
+                    style="color:#1E4E8C;"
+                ></i>
 
-                            <label class="form-label fw-semibold">
+                Seleccionar estudiante
 
-                                Grado
-
-                            </label>
-
-                            <select
-                                name="grado"
-                                class="form-select"
-                                onchange="this.form.submit()"
-                            >
-
-                                <option value="">
-
-                                    Seleccione un grado
-
-                                </option>
-
-                                {% for g in grados %}
-
-                                    <option
-                                        value="{{ g }}"
-                                        {% if grado == g %}
-                                            selected
-                                        {% endif %}
-                                    >
-
-                                        {{ g }}
-
-                                    </option>
-
-                                {% endfor %}
-
-                            </select>
-
-                        </div>
+            </h5>
 
 
-                        <!-- SECCIÓN -->
+            <form method="GET">
 
-                        <div class="col-md-3">
+                <div class="row g-3">
 
-                            <label class="form-label fw-semibold">
+                    <!-- GRADO -->
 
-                                Sección
+                    <div class="col-md-4">
 
-                            </label>
+                        <label class="form-label fw-semibold">
 
-                            <input
-                                type="text"
-                                name="seccion"
-                                class="form-control"
-                                value="{{ seccion }}"
-                                placeholder="Ej. A"
-                            >
+                            <i class="bi bi-mortarboard me-1"></i>
 
-                        </div>
+                            Grado
 
+                        </label>
 
-                        <!-- ESTUDIANTE -->
+                        <select
+                            name="grado"
+                            class="form-select"
+                            onchange="this.form.submit()"
+                        >
 
-                        <div class="col-md-5">
+                            <option value="">
 
-                            <label class="form-label fw-semibold">
+                                Seleccione un grado
 
-                                Estudiante
+                            </option>
 
-                            </label>
+                            {% for g in grados %}
 
-                            <select
-                                name="estudiante_id"
-                                class="form-select"
-                                {% if not estudiantes %}
-                                    disabled
-                                {% endif %}
-                            >
+                                <option
+                                    value="{{ g }}"
+                                    {% if grado == g %}
+                                        selected
+                                    {% endif %}
+                                >
 
-                                <option value="">
-
-                                    Seleccione un estudiante
+                                    {{ g }}
 
                                 </option>
 
-                                {% for e in estudiantes %}
+                            {% endfor %}
 
-                                    <option
-                                        value="{{ e._id }}"
-                                        {% if estudiante
-                                            and estudiante._id == e._id %}
-                                            selected
-                                        {% endif %}
-                                    >
-
-                                        {{ e.nombre }}
-
-                                    </option>
-
-                                {% endfor %}
-
-                            </select>
-
-                        </div>
-
-
-                        <!-- BOTÓN -->
-
-                        <div class="col-12">
-
-                            <button
-                                type="submit"
-                                class="btn btn-primary"
-                                style="
-                                    background:#0D2A52;
-                                    border-color:#0D2A52;
-                                "
-                            >
-
-                                <i class="bi bi-search me-1"></i>
-
-                                Consultar estudiante
-
-                            </button>
-
-                        </div>
+                        </select>
 
                     </div>
 
-                </form>
 
-            </div>
+                    <!-- SECCIÓN -->
+
+                    <div class="col-md-3">
+
+                        <label class="form-label fw-semibold">
+
+                            <i class="bi bi-people me-1"></i>
+
+                            Sección
+
+                        </label>
+
+                        <input
+                            type="text"
+                            name="seccion"
+                            class="form-control"
+                            value="{{ seccion or '' }}"
+                            placeholder="Ej. A"
+                        >
+
+                    </div>
+
+
+                    <!-- ESTUDIANTE -->
+
+                    <div class="col-md-5">
+
+                        <label class="form-label fw-semibold">
+
+                            <i class="bi bi-person me-1"></i>
+
+                            Estudiante
+
+                        </label>
+
+                        <select
+                            name="estudiante_id"
+                            class="form-select"
+                            {% if not estudiantes %}
+                                disabled
+                            {% endif %}
+                        >
+
+                            <option value="">
+
+                                Seleccione un estudiante
+
+                            </option>
+
+                            {% for e in estudiantes %}
+
+                                <option
+                                    value="{{ e._id }}"
+                                    {% if estudiante and estudiante._id|string == e._id|string %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ e.nombre }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- BOTÓN -->
+
+                    <div class="col-12 mt-3">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary btn-consultar"
+                        >
+
+                            <i class="bi bi-search me-1"></i>
+
+                            Consultar estudiante
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
 
         </div>
 
+    </div>
 
-        {% if estudiante %}
 
-        <!-- ==========================================
-             DATOS DEL ESTUDIANTE
-        =========================================== -->
+    {% if estudiante %}
 
-        <div class="card border-0 shadow-sm mt-4">
 
-            <div class="card-body p-4">
+    <!-- =====================================================
+         INFORMACIÓN DEL ESTUDIANTE
+    ====================================================== -->
 
-                <div class="d-flex align-items-center gap-3">
+    <div class="card estudiante-card mt-4">
 
-                    <div
+        <div class="card-body p-4">
+
+            <div class="d-flex align-items-center gap-3">
+
+                <div class="estudiante-icon">
+
+                    <i class="bi bi-person-fill"></i>
+
+                </div>
+
+                <div>
+
+                    <small
+                        class="fw-bold"
                         style="
-                            width:60px;
-                            height:60px;
-                            border-radius:15px;
-                            background:#0D2A52;
-                            color:#FFC107;
-                            display:flex;
-                            align-items:center;
-                            justify-content:center;
-                            font-size:25px;
+                            color:#1E4E8C;
+                            letter-spacing:1px;
                         "
                     >
 
-                        <i class="bi bi-person-fill"></i>
+                        ESTUDIANTE
 
-                    </div>
+                    </small>
+
+                    <h3
+                        class="mb-1"
+                        style="color:#08142C;"
+                    >
+
+                        {{ estudiante.nombre }}
+
+                    </h3>
+
+                    <p class="mb-0 text-muted">
+
+                        <strong>Grado:</strong>
+
+                        {{ estudiante.grado }}
+
+                        &nbsp; | &nbsp;
+
+                        <strong>Sección:</strong>
+
+                        {{ estudiante.seccion }}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 
-                    <div>
+    <!-- =====================================================
+         RESUMEN
+    ====================================================== -->
 
-                        <span
-                            style="
-                                font-size:11px;
-                                font-weight:800;
-                                letter-spacing:1px;
-                                color:#1E4E8C;
-                            "
-                        >
+    <div class="row g-4 mt-1">
 
-                            ESTUDIANTE
+        <!-- ASISTENCIA -->
 
-                        </span>
+        <div class="col-md-3">
 
-                        <h3
-                            class="mb-1"
-                            style="color:#08142C;"
-                        >
+            <div class="card resumen-card h-100">
 
-                            {{ estudiante.nombre }}
+                <div class="card-body">
 
-                        </h3>
+                    <small class="text-muted">
 
-                        <p
-                            class="mb-0"
-                            style="color:#667085;"
-                        >
+                        Porcentaje de asistencia
 
-                            {{ estudiante.grado }}
+                    </small>
 
-                            · Sección
+                    <h2
+                        class="mt-2"
+                        style="color:#198754;"
+                    >
 
-                            {{ estudiante.seccion }}
+                        {{ porcentaje_asistencia }}%
 
-                        </p>
-
-                    </div>
+                    </h2>
 
                 </div>
 
@@ -322,111 +431,28 @@
         </div>
 
 
-        <!-- ==========================================
-             RESUMEN
-        =========================================== -->
+        <!-- PRESENTES -->
 
-        <div class="row g-4 mt-1">
+        <div class="col-md-3">
 
+            <div class="card resumen-card h-100">
 
-            <div class="col-md-3">
+                <div class="card-body">
 
-                <div class="card border-0 shadow-sm h-100">
+                    <small class="text-muted">
 
-                    <div class="card-body">
+                        Presentes
 
-                        <small class="text-muted">
-                            Asistencia
-                        </small>
+                    </small>
 
-                        <h2
-                            style="color:#198754;"
-                            class="mt-2"
-                        >
+                    <h2
+                        class="mt-2"
+                        style="color:#1E4E8C;"
+                    >
 
-                            {{ porcentaje_asistencia }}%
+                        {{ presentes }}
 
-                        </h2>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="col-md-3">
-
-                <div class="card border-0 shadow-sm h-100">
-
-                    <div class="card-body">
-
-                        <small class="text-muted">
-                            Presentes
-                        </small>
-
-                        <h2
-                            style="color:#1E4E8C;"
-                            class="mt-2"
-                        >
-
-                            {{ presentes }}
-
-                        </h2>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="col-md-3">
-
-                <div class="card border-0 shadow-sm h-100">
-
-                    <div class="card-body">
-
-                        <small class="text-muted">
-                            Ausencias
-                        </small>
-
-                        <h2
-                            style="color:#DC3545;"
-                            class="mt-2"
-                        >
-
-                            {{ ausentes }}
-
-                        </h2>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="col-md-3">
-
-                <div class="card border-0 shadow-sm h-100">
-
-                    <div class="card-body">
-
-                        <small class="text-muted">
-                            Incidencias
-                        </small>
-
-                        <h2
-                            style="color:#D89F00;"
-                            class="mt-2"
-                        >
-
-                            {{ incidencias|length }}
-
-                        </h2>
-
-                    </div>
+                    </h2>
 
                 </div>
 
@@ -435,232 +461,307 @@
         </div>
 
 
-        <!-- ==========================================
-             INCIDENCIAS
-        =========================================== -->
+        <!-- AUSENCIAS -->
 
-        <div class="card border-0 shadow-sm mt-4">
+        <div class="col-md-3">
 
-            <div class="card-body p-4">
+            <div class="card resumen-card h-100">
 
-                <h4 style="color:#08142C;">
+                <div class="card-body">
 
-                    <i
-                        class="bi bi-exclamation-triangle-fill me-2"
-                        style="color:#FFC107;"
-                    ></i>
+                    <small class="text-muted">
 
-                    Historial de incidencias
+                        Ausencias
 
-                </h4>
+                    </small>
+
+                    <h2
+                        class="mt-2"
+                        style="color:#DC3545;"
+                    >
+
+                        {{ ausentes }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
 
 
-                {% if incidencias %}
+        <!-- INCIDENCIAS -->
 
-                    <div class="table-responsive mt-3">
+        <div class="col-md-3">
 
-                        <table class="table align-middle">
+            <div class="card resumen-card h-100">
 
-                            <thead>
+                <div class="card-body">
+
+                    <small class="text-muted">
+
+                        Incidencias
+
+                    </small>
+
+                    <h2
+                        class="mt-2"
+                        style="color:#D89F00;"
+                    >
+
+                        {{ incidencias|length }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         HISTORIAL DE INCIDENCIAS
+    ====================================================== -->
+
+    <div class="card historial-card mt-4">
+
+        <div class="card-body p-4">
+
+            <h4 class="historial-titulo">
+
+                <i
+                    class="bi bi-exclamation-triangle-fill me-2"
+                    style="color:#FFC107;"
+                ></i>
+
+                Historial de incidencias
+
+            </h4>
+
+
+            {% if incidencias %}
+
+                <div class="table-responsive mt-3">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="tabla-head">
+
+                            <tr>
+
+                                <th>Fecha</th>
+
+                                <th>Tipo</th>
+
+                                <th>Descripción</th>
+
+                                <th>Docente</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for incidencia in incidencias %}
 
                                 <tr>
 
-                                    <th>
-                                        Fecha
-                                    </th>
+                                    <td>
 
-                                    <th>
-                                        Tipo
-                                    </th>
+                                        {{ incidencia.fecha }}
 
-                                    <th>
-                                        Descripción
-                                    </th>
+                                    </td>
 
-                                    <th>
-                                        Docente
-                                    </th>
+                                    <td>
+
+                                        <span class="badge bg-warning text-dark">
+
+                                            {{ incidencia.tipo or "Incidencia" }}
+
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+
+                                        {{ incidencia.descripcion or "—" }}
+
+                                    </td>
+
+                                    <td>
+
+                                        {{ incidencia.docente or "—" }}
+
+                                    </td>
 
                                 </tr>
 
-                            </thead>
+                            {% endfor %}
 
-                            <tbody>
+                        </tbody>
 
-                                {% for incidencia in incidencias %}
+                    </table>
 
-                                    <tr>
+                </div>
 
-                                        <td>
-                                            {{ incidencia.fecha }}
-                                        </td>
+            {% else %}
 
-                                        <td>
+                <div class="alert alert-light mt-3">
 
-                                            <span class="badge bg-warning text-dark">
+                    <i class="bi bi-check-circle me-2"></i>
 
-                                                {{ incidencia.tipo }}
+                    Este estudiante no tiene incidencias registradas.
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         HISTORIAL DE ASISTENCIA
+    ====================================================== -->
+
+    <div class="card historial-card mt-4">
+
+        <div class="card-body p-4">
+
+            <h4 class="historial-titulo">
+
+                <i
+                    class="bi bi-calendar-check-fill me-2"
+                    style="color:#1E4E8C;"
+                ></i>
+
+                Historial de asistencia
+
+            </h4>
+
+
+            {% if asistencias %}
+
+                <div class="table-responsive mt-3">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="tabla-head">
+
+                            <tr>
+
+                                <th>Fecha</th>
+
+                                <th>Asignatura</th>
+
+                                <th>Estado</th>
+
+                                <th>Motivo</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for asistencia in asistencias %}
+
+                                <tr>
+
+                                    <td>
+
+                                        {{ asistencia.fecha }}
+
+                                    </td>
+
+                                    <td>
+
+                                        {{ asistencia.asignatura or "—" }}
+
+                                    </td>
+
+                                    <td>
+
+                                        {% if asistencia.estado == "Presente" %}
+
+                                            <span class="badge bg-success">
+
+                                                Presente
 
                                             </span>
 
-                                        </td>
+                                        {% elif asistencia.estado == "Ausente" %}
 
-                                        <td>
-                                            {{ incidencia.descripcion }}
-                                        </td>
+                                            <span class="badge bg-danger">
 
-                                        <td>
-                                            {{ incidencia.docente }}
-                                        </td>
+                                                Ausente
 
-                                    </tr>
+                                            </span>
 
-                                {% endfor %}
+                                        {% elif asistencia.estado == "Tardanza" %}
 
-                            </tbody>
+                                            <span class="badge bg-warning text-dark">
 
-                        </table>
+                                                Tardanza
 
-                    </div>
+                                            </span>
 
-                {% else %}
+                                        {% else %}
 
-                    <div class="alert alert-light mt-3">
+                                            <span class="badge bg-secondary">
 
-                        <i class="bi bi-check-circle me-2"></i>
+                                                {{ asistencia.estado }}
 
-                        Este estudiante no tiene incidencias registradas.
+                                            </span>
 
-                    </div>
+                                        {% endif %}
 
-                {% endif %}
+                                    </td>
 
-            </div>
+                                    <td>
 
-        </div>
+                                        {{ asistencia.motivo or "—" }}
 
-
-        <!-- ==========================================
-             ASISTENCIA
-        =========================================== -->
-
-        <div class="card border-0 shadow-sm mt-4">
-
-            <div class="card-body p-4">
-
-                <h4 style="color:#08142C;">
-
-                    <i
-                        class="bi bi-calendar-check-fill me-2"
-                        style="color:#1E4E8C;"
-                    ></i>
-
-                    Historial de asistencia
-
-                </h4>
-
-
-                {% if asistencias %}
-
-                    <div class="table-responsive mt-3">
-
-                        <table class="table align-middle">
-
-                            <thead>
-
-                                <tr>
-
-                                    <th>
-                                        Fecha
-                                    </th>
-
-                                    <th>
-                                        Asignatura
-                                    </th>
-
-                                    <th>
-                                        Estado
-                                    </th>
-
-                                    <th>
-                                        Motivo
-                                    </th>
+                                    </td>
 
                                 </tr>
 
-                            </thead>
+                            {% endfor %}
 
-                            <tbody>
+                        </tbody>
 
-                                {% for asistencia in asistencias %}
+                    </table>
 
-                                    <tr>
+                </div>
 
-                                        <td>
-                                            {{ asistencia.fecha }}
-                                        </td>
+            {% else %}
 
-                                        <td>
-                                            {{ asistencia.asignatura }}
-                                        </td>
+                <div class="alert alert-light mt-3">
 
-                                        <td>
+                    <i class="bi bi-info-circle me-2"></i>
 
-                                            {% if asistencia.estado == "Presente" %}
+                    Este estudiante todavía no tiene registros
+                    de asistencia.
 
-                                                <span class="badge bg-success">
-                                                    Presente
-                                                </span>
+                </div>
 
-                                            {% elif asistencia.estado == "Ausente" %}
-
-                                                <span class="badge bg-danger">
-                                                    Ausente
-                                                </span>
-
-                                            {% else %}
-
-                                                <span class="badge bg-warning text-dark">
-                                                    {{ asistencia.estado }}
-                                                </span>
-
-                                            {% endif %}
-
-                                        </td>
-
-                                        <td>
-                                            {{ asistencia.motivo or "—" }}
-                                        </td>
-
-                                    </tr>
-
-                                {% endfor %}
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                {% else %}
-
-                    <div class="alert alert-light mt-3">
-
-                        <i class="bi bi-info-circle me-2"></i>
-
-                        Este estudiante todavía no tiene registros de asistencia.
-
-                    </div>
-
-                {% endif %}
-
-            </div>
+            {% endif %}
 
         </div>
 
-        {% endif %}
-
     </div>
+
+
+    {% endif %}
+
+</div>
+
 
 </div>
 
