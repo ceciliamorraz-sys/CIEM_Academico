@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Boletín — {{ estudiante.nombre if estudiante else "Estudiante" }}</title>
+
+    <style>
+
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap');
+
+        :root {
+            --tinta: #14213D;
+            --tinta-suave: #3D4C6B;
+            --papel: #FAF7F1;
+            --regla: #DCD5C4;
+            --bronce: #C08A28;
+            --bronce-suave: #F2E4C6;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: #DEDAD0;
+            color: var(--tinta);
+            font-family: 'Work Sans', system-ui, sans-serif;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Fraunces', Georgia, serif;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .barra-preview {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            padding: 14px 24px;
+            background: var(--tinta);
+            color: #fff;
+        }
+
+        .barra-preview p {
+            margin: 0;
+            font-size: .85rem;
+            color: rgba(255,255,255,.72);
+        }
+
+        .barra-preview .acciones { display: flex; gap: 10px; }
+
+        .btn-preview {
+            padding: 9px 18px;
+            border-radius: 999px;
+            font-size: .85rem;
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-preview.descargar { background: var(--bronce); color: var(--tinta); }
+        .btn-preview.volver { border: 1px solid rgba(255,255,255,.4); color: #fff; }
+
+        .hoja {
+            max-width: 780px;
+            margin: 28px auto;
+            background: var(--papel);
+            padding: 46px 52px;
+            box-shadow: 0 12px 34px rgba(20,33,61,.16);
+        }
+
+        .encabezado {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding-bottom: 22px;
+            border-bottom: 2px solid var(--tinta);
+            margin-bottom: 26px;
+        }
+
+        .encabezado img { width: 58px; height: 58px; border-radius: 50%; object-fit: cover; }
+        .encabezado h1 { font-size: 1.3rem; }
+        .encabezado p { margin: 3px 0 0; font-size: .8rem; color: var(--tinta-suave); }
+        .titulo-doc { text-align: right; margin-left: auto; }
+        .titulo-doc span { display: block; font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 600; }
+        .titulo-doc small { font-size: .74rem; color: var(--tinta-suave); }
+
+        .datos-estudiante {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px 24px;
+            padding: 18px 22px;
+            background: #fff;
+            border: 1px solid var(--regla);
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .dato label { display: block; font-size: .7rem; color: var(--tinta-suave); margin-bottom: 2px; }
+        .dato span { font-weight: 600; font-size: .92rem; }
+
+        .seccion-titulo { font-size: 1rem; margin-bottom: 14px; }
+
+        table.tabla-boletin { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: .86rem; }
+
+        table.tabla-boletin thead th {
+            text-align: left;
+            font-weight: 600;
+            font-size: .74rem;
+            color: var(--tinta-suave);
+            padding: 0 8px 9px;
+            border-bottom: 2px solid var(--tinta);
+        }
+
+        table.tabla-boletin thead th.centro { text-align: center; }
+        table.tabla-boletin tbody td { padding: 9px 8px; border-bottom: 1px solid var(--regla); }
+        table.tabla-boletin tbody td.centro { text-align: center; font-variant-numeric: tabular-nums; }
+        table.tabla-boletin td.nombre-asig { font-family: 'Fraunces', serif; font-weight: 600; }
+        table.tabla-boletin td.promedio-fila { font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
+
+        table.tabla-boletin tfoot td {
+            padding-top: 14px;
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            font-size: .95rem;
+            border-top: 2px solid var(--tinta);
+        }
+
+        table.tabla-boletin tfoot td.promedio-general-valor { text-align: center; font-variant-numeric: tabular-nums; }
+
+        .observacion {
+            background: var(--bronce-suave);
+            border: 1px solid #e8d6ae;
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 34px;
+        }
+
+        .observacion h3 { font-size: .88rem; margin-bottom: 6px; }
+        .observacion p { margin: 0; font-size: .86rem; color: var(--tinta-suave); line-height: 1.6; }
+
+        .firmas { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 54px; }
+
+        .firma {
+            text-align: center;
+            padding-top: 10px;
+            border-top: 1px solid var(--tinta);
+            font-size: .78rem;
+            color: var(--tinta-suave);
+        }
+
+        .pie {
+            margin-top: 40px;
+            padding-top: 14px;
+            border-top: 1px solid var(--regla);
+            font-size: .7rem;
+            color: var(--tinta-suave);
+            text-align: center;
+        }
+
+        @media print {
+            .no-imprimir { display: none !important; }
+            body { background: #fff; }
+            .hoja { margin: 0 auto; box-shadow: none; }
+        }
+
+        @page { size: letter; margin: 1.6cm; }
+
+    </style>
+
+</head>
+
+<body>
+
+    {% if modo_preview %}
+
+        <div class="barra-preview no-imprimir">
+
+            <p>Vista previa · así se verá el boletín en PDF</p>
+
+            <div class="acciones">
+
+                <a href="{{ url_for('estudiante.dashboard') }}" class="btn-preview volver">
+                    ← Volver
+                </a>
+
+                <a href="{{ url_for('estudiante.boletin_pdf') }}" class="btn-preview descargar">
+                    ⬇️ Descargar PDF
+                </a>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+    <div class="hoja">
+
+        <div class="encabezado">
+
+            <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="CIEM">
+
+            <div>
+                <h1>Colegio Integral Emanuel</h1>
+                <p>CIEM ONE · Sistema Académico</p>
+            </div>
+
+            <div class="titulo-doc">
+                <span>Boletín de calificaciones</span>
+                <small>Año lectivo 2026</small>
+            </div>
+
+        </div>
+
+        <div class="datos-estudiante">
+
+            <div class="dato">
+                <label>Estudiante</label>
+                <span>{{ estudiante.nombre if estudiante else "—" }}</span>
+            </div>
+
+            <div class="dato">
+                <label>Grado</label>
+                <span>{{ estudiante.grado if estudiante else "—" }}</span>
+            </div>
+
+            <div class="dato">
+                <label>Sección</label>
+                <span>{{ estudiante.seccion if estudiante and

@@ -37,8 +37,6 @@ conversaciones = db.conversaciones
 mensajes = db.mensajes
 
 
-
-
 # ==========================================================
 # FUNCIONES AUXILIARES DE MENSAJERÍA
 # ==========================================================
@@ -49,14 +47,8 @@ def obtener_estudiante():
     usuario = session.get("usuario")
     rol = session.get("rol")
 
-    print("====================================")
-    print("🔎 BUSCANDO ESTUDIANTE")
-    print("ROL:", rol)
-    print("USUARIO:", usuario)
-    print("====================================")
 
     if not usuario:
-        print("❌ No existe usuario en sesión")
         return None
 
     estudiante = None
@@ -77,9 +69,7 @@ def obtener_estudiante():
 
         if estudiante:
 
-            print("✅ ESTUDIANTE ENCONTRADO POR MADRE")
-            print("MADRE USUARIO:", usuario)
-            print("ESTUDIANTE:", estudiante.get("nombre"))
+            pass
 
         # --------------------------------------------------
         # PRIORIDAD 2: TUTOR
@@ -93,9 +83,7 @@ def obtener_estudiante():
 
             if estudiante:
 
-                print("✅ ESTUDIANTE ENCONTRADO POR TUTOR")
-                print("TUTOR USUARIO:", usuario)
-                print("ESTUDIANTE:", estudiante.get("nombre"))
+                pass
 
         # --------------------------------------------------
         # NO BUSCAR padre_usuario COMO PRIORIDAD
@@ -118,31 +106,21 @@ def obtener_estudiante():
 
         if estudiante:
 
-            print("✅ ESTUDIANTE ENCONTRADO POR USUARIO")
-            print("USUARIO:", usuario)
-            print("ESTUDIANTE:", estudiante.get("nombre"))
+            pass
 
     # ======================================================
     # RESULTADO
     # ======================================================
 
-    print("====================================")
-    print("📚 RESULTADO ESTUDIANTE")
-    print("====================================")
 
     if estudiante:
 
-        print("ID:", estudiante.get("_id"))
-        print("NOMBRE:", estudiante.get("nombre"))
-        print("MADRE:", estudiante.get("madre"))
-        print("MADRE USUARIO:", estudiante.get("madre_usuario"))
-        print("TUTOR:", estudiante.get("tutor"))
+        pass
 
     else:
 
-        print("❌ NO SE ENCONTRÓ ESTUDIANTE")
+        pass
 
-    print("====================================")
 
     return estudiante
 
@@ -155,14 +133,9 @@ def obtener_docente():
 
     usuario = session.get("usuario")
 
-    print("====================================")
-    print("🔎 BUSCANDO DOCENTE")
-    print("USUARIO:", usuario)
-    print("====================================")
 
     if not usuario:
 
-        print("❌ No existe usuario en sesión")
 
         return None
 
@@ -180,18 +153,12 @@ def obtener_docente():
 
     if docente:
 
-        print("✅ DOCENTE ENCONTRADO")
-        print("ID:", docente.get("_id"))
-        print("CÓDIGO:", docente.get("codigo"))
-        print("NOMBRE:", docente.get("nombre"))
-        print("USUARIO:", docente.get("usuario"))
+        pass
 
     else:
 
-        print("❌ DOCENTE NO ENCONTRADO")
-        print("USUARIO BUSCADO:", usuario)
+        pass
 
-    print("====================================")
 
     return docente
 
@@ -250,6 +217,80 @@ def convertir_objectid(valor):
 
 
 # ==========================================================
+# NORMALIZAR IDENTIFICADORES DE DOCENTE
+# ==========================================================
+#
+# La colección "docentes" no es consistente: la mayoría de
+# documentos tiene un _id tipo código ("DOC012"), pero algunos
+# fueron insertados dejando que Mongo generara un ObjectId real
+# como _id. Como "conversaciones", "notas", etc. guardan
+# "docente_id" copiando ese _id tal cual, el mismo docente puede
+# terminar identificado de formas distintas según cuándo se creó
+# el registro que lo referencia.
+#
+# Estas dos funciones centralizan cómo se busca un docente y
+# cómo se buscan sus conversaciones, para no repetir el mismo
+# parche de "probar _id, código y usuario" en cada ruta.
+# ==========================================================
+
+def resolver_docente(valor):
+    """
+    Recibe un valor de docente_id (puede ser _id como string,
+    ObjectId, o código tipo "DOC012") y devuelve el documento
+    del docente, probando en orden: _id tal cual, código, y
+    _id como ObjectId.
+    """
+
+    if not valor:
+        return None
+
+    docente = docentes.find_one({
+        "_id": valor
+    })
+
+    if docente:
+        return docente
+
+    docente = docentes.find_one({
+        "codigo": valor
+    })
+
+    if docente:
+        return docente
+
+    try:
+        docente = docentes.find_one({
+            "_id": ObjectId(str(valor))
+        })
+    except Exception:
+        docente = None
+
+    return docente
+
+
+def condiciones_docente_id(docente):
+    """
+    Devuelve la lista de condiciones ($or) para encontrar
+    conversaciones de un docente, cubriendo los distintos
+    formatos con los que "docente_id" pudo haber quedado
+    guardado (_id, código, usuario).
+    """
+
+    condiciones = []
+
+    for campo in ("_id", "codigo", "usuario"):
+
+        valor = docente.get(campo)
+
+        if valor:
+            condiciones.append({
+                "docente_id": valor
+            })
+
+    return condiciones
+
+
+# ==========================================================
 # CREAR CONVERSACIÓN
 # PADRE / DOCENTE
 # ==========================================================
@@ -257,9 +298,6 @@ def convertir_objectid(valor):
 @mensajes_bp.route("/crear", methods=["POST"])
 def crear():
 
-    print("====================================")
-    print("📨 CREANDO MENSAJE")
-    print("====================================")
 
     # ======================================================
     # OBTENER ESTUDIANTE
@@ -293,8 +331,6 @@ def crear():
         ""
     ).strip()
 
-    print("DOCENTE ID:", docente_id)
-    print("MENSAJE:", texto)
 
     # ======================================================
     # VALIDAR DOCENTE
@@ -332,29 +368,7 @@ def crear():
     # BUSCAR DOCENTE
     # ======================================================
 
-    docente = docentes.find_one({
-        "_id": docente_id
-    })
-
-    # Si no lo encuentra, intentar por código
-    if not docente:
-
-        docente = docentes.find_one({
-            "codigo": docente_id
-        })
-
-    # Si todavía no existe, intentar ObjectId
-    if not docente:
-
-        try:
-
-            docente = docentes.find_one({
-                "_id": ObjectId(docente_id)
-            })
-
-        except Exception:
-
-            pass
+    docente = resolver_docente(docente_id)
 
     # ======================================================
     # VALIDAR DOCENTE
@@ -362,7 +376,6 @@ def crear():
 
     if not docente:
 
-        print("❌ DOCENTE NO ENCONTRADO")
 
         flash(
             "No se encontró el docente seleccionado.",
@@ -381,13 +394,6 @@ def crear():
     estudiante_id = estudiante.get("_id")
     docente_real_id = docente.get("_id")
 
-    print("====================================")
-    print("✅ DOCENTE ENCONTRADO")
-    print("DOCENTE ID:", docente_real_id)
-    print("DOCENTE:", docente.get("nombre"))
-    print("ESTUDIANTE ID:", estudiante_id)
-    print("ESTUDIANTE:", estudiante.get("nombre"))
-    print("====================================")
 
     # ======================================================
     # BUSCAR CONVERSACIÓN EXISTENTE
@@ -431,7 +437,6 @@ def crear():
             }
         )
 
-        print("♻️ CONVERSACIÓN ACTUALIZADA")
 
     # ======================================================
     # NUEVA CONVERSACIÓN
@@ -472,7 +477,6 @@ def crear():
 
         conversacion_id = resultado.inserted_id
 
-        print("🆕 NUEVA CONVERSACIÓN")
 
     # ======================================================
     # GUARDAR MENSAJE
@@ -497,10 +501,6 @@ def crear():
 
     })
 
-    print("====================================")
-    print("✅ MENSAJE GUARDADO")
-    print("CONVERSACIÓN:", conversacion_id)
-    print("====================================")
 
     return redirect(
 
@@ -517,10 +517,6 @@ def crear():
 @mensajes_bp.route("/chat/<conversacion_id>")
 def chat(conversacion_id):
 
-    print("====================================")
-    print("💬 ABRIENDO CHAT")
-    print("ID:", conversacion_id)
-    print("====================================")
 
     try:
 
@@ -548,10 +544,6 @@ def chat(conversacion_id):
 
     })
 
-    print("====================================")
-    print("🔎 CONVERSACIÓN ENCONTRADA:")
-    print(conversacion)
-    print("====================================")
 
     if not conversacion:
 
@@ -582,21 +574,11 @@ def chat(conversacion_id):
 
     )
 
-    print("====================================")
-    print("📨 MENSAJES ENCONTRADOS")
-    print("TOTAL:", len(lista_mensajes))
 
     for mensaje in lista_mensajes:
 
-        print("------------------------------------")
-        print("ID MENSAJE:", mensaje.get("_id"))
-        print("CONVERSACIÓN:", mensaje.get("conversacion_id"))
-        print("EMISOR:", mensaje.get("emisor"))
-        print("MENSAJE:", mensaje.get("mensaje"))
-        print("FECHA:", mensaje.get("fecha"))
-        print("LEÍDO:", mensaje.get("leido"))
+        pass
 
-    print("====================================")
 
     
     # ======================================================
@@ -639,7 +621,6 @@ def chat(conversacion_id):
 
         )
 
-    print("TOTAL MENSAJES:", len(lista_mensajes))
 
     return render_template(
 
@@ -677,71 +658,12 @@ def bandeja_docente():
     docente_id = docente.get("_id")
     docente_codigo = docente.get("codigo")
     docente_usuario = docente.get("usuario")
-    print("====================================")
-    print("🔎 IDENTIFICADORES DEL DOCENTE")
-    print("NOMBRE:", docente.get("nombre"))
-    print("_id:", docente.get("_id"))
-    print("codigo:", docente.get("codigo"))
-    print("usuario:", docente.get("usuario"))
-    print("====================================")
-
-    print("🔎 BUSCANDO CONVERSACIONES POR CADA IDENTIFICADOR")
-
-    if docente.get("_id") is not None:
-        prueba_id = list(
-            conversaciones.find({
-                "docente_id": docente.get("_id")
-            })
-        )
-        print("POR _id:", len(prueba_id))
-
-    if docente.get("codigo"):
-        prueba_codigo = list(
-            conversaciones.find({
-                "docente_id": docente.get("codigo")
-            })
-        )
-        print("POR codigo:", len(prueba_codigo))
-
-    if docente.get("usuario"):
-        prueba_usuario = list(
-            conversaciones.find({
-                "docente_id": docente.get("usuario")
-            })
-        )
-        print("POR usuario:", len(prueba_usuario))
-
-    print("====================================")
-    print("📨 BANDEJA DOCENTE")
-    print("DOCENTE:", docente.get("nombre"))
-    print("ID:", docente_id)
-    print("CODIGO:", docente_codigo)
-    print("USUARIO:", docente_usuario)
-    print("====================================")
 
     # ======================================================
     # BUSCAR CONVERSACIONES
     # ======================================================
 
-    condiciones = []
-
-    if docente_id:
-
-        condiciones.append({
-            "docente_id": docente_id
-        })
-
-    if docente_codigo:
-
-        condiciones.append({
-            "docente_id": docente_codigo
-        })
-
-    if docente_usuario:
-
-        condiciones.append({
-            "docente_id": docente_usuario
-        })
+    condiciones = condiciones_docente_id(docente)
 
     lista = []
 
@@ -837,67 +759,11 @@ def bandeja_docente():
     # DEBUG
     # ======================================================
 
-    print("====================================")
-    print("📬 TOTAL CONVERSACIONES:", len(lista))
-    print("====================================")
 
     for conversacion in lista:
 
-        print("------------------------------------")
+        pass
 
-        print(
-            "ID:",
-            conversacion.get("_id")
-        )
-
-        print(
-            "MADRE:",
-            conversacion.get(
-                "madre",
-                "Madre"
-            )
-        )
-
-        print(
-            "MADRE USUARIO:",
-            conversacion.get(
-                "madre_usuario",
-                ""
-            )
-        )
-
-        print(
-            "ESTUDIANTE:",
-            conversacion.get(
-                "estudiante",
-                ""
-            )
-        )
-
-        print(
-            "DOCENTE ID:",
-            conversacion.get(
-                "docente_id"
-            )
-        )
-
-        print(
-            "ÚLTIMO MENSAJE:",
-            conversacion.get(
-                "ultimo_mensaje",
-                ""
-            )
-        )
-
-        print(
-            "NO LEÍDOS DOCENTE:",
-            conversacion.get(
-                "no_leidos_docente",
-                0
-            )
-        )
-
-    print("====================================")
 
     # ======================================================
     # MOSTRAR BANDEJA
@@ -913,6 +779,106 @@ def bandeja_docente():
 
     )
 # ==========================================================
+# BANDEJA DE MENSAJES DEL ESTUDIANTE
+# ==========================================================
+
+@mensajes_bp.route("/estudiante")
+def bandeja_estudiante():
+
+    usuario = session.get("usuario")
+    rol = session.get("rol")
+
+    # ======================================================
+    # VERIFICAR SESIÓN
+    # ======================================================
+
+    if not usuario or rol not in ("estudiante", "padre"):
+
+        flash(
+            "Debe iniciar sesión para ver sus mensajes.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+    # ======================================================
+    # BUSCAR ESTUDIANTE SEGÚN EL ROL
+    # ======================================================
+
+    if rol == "estudiante":
+
+        estudiante = estudiantes.find_one({
+            "usuario": usuario,
+            "estado": "activo"
+        })
+
+    else:
+
+        estudiante = estudiantes.find_one({
+            "madre_usuario": usuario,
+            "estado": "activo"
+        })
+
+    if not estudiante:
+
+        flash(
+            "No se encontró la información del estudiante.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("estudiante.dashboard")
+        )
+
+    # ======================================================
+    # OBTENER DOCENTES
+    # ======================================================
+
+    lista_docentes = list(
+        docentes.find({
+            "activo": {
+                "$ne": False
+            }
+        }).sort(
+            "nombre",
+            1
+        )
+    )
+
+    # ======================================================
+    # BUSCAR CONVERSACIONES DEL ESTUDIANTE
+    # ======================================================
+
+    estudiante_id = estudiante.get("_id")
+
+    conversaciones_estudiante = list(
+        conversaciones.find({
+            "estudiante_id": estudiante_id
+        }).sort(
+            "ultima_actualizacion",
+            -1
+        )
+    )
+
+    # ======================================================
+    # MOSTRAR BANDEJA
+    # ======================================================
+
+    return render_template(
+
+        "mensaje/bandeja_padre.html",
+
+        conversaciones=conversaciones_estudiante,
+
+        estudiante=estudiante,
+
+        docentes=lista_docentes
+
+    )
+
+# ==========================================================
 # BANDEJA DE MENSAJES DE LA MADRE
 # ==========================================================
 
@@ -922,11 +888,6 @@ def bandeja_padre():
     usuario = session.get("usuario")
     rol = session.get("rol")
 
-    print("====================================")
-    print("💬 BANDEJA DE MENSAJES")
-    print("ROL:", rol)
-    print("USUARIO:", usuario)
-    print("====================================")
 
     # ======================================================
     # VERIFICAR SESIÓN
@@ -951,11 +912,6 @@ def bandeja_padre():
         "madre_usuario": usuario
     })
 
-    print("====================================")
-    print("🔎 BUSCANDO HIJO DE LA MADRE")
-    print("MADRE:", usuario)
-    print("ESTUDIANTE:", estudiante)
-    print("====================================")
 
     if not estudiante:
 
@@ -973,99 +929,6 @@ def bandeja_padre():
 
     estudiante_id_actual = estudiante.get("_id")
 
-    print("====================================")
-    print("🔧 REVISANDO CONVERSACIONES")
-    print("ESTUDIANTE ID ACTUAL:", estudiante_id_actual)
-    print("ESTUDIANTE:", estudiante.get("nombre"))
-    print("MADRE:", estudiante.get("madre_nombre"))
-    print("MADRE USUARIO:", estudiante.get("madre_usuario"))
-    print("====================================")
-
-    # Buscar conversaciones que pertenecen a esta estudiante
-    # pero que todavía tienen el ID antiguo
-
-    conversaciones_antiguas = list(
-        conversaciones.find({
-            "estudiante": {
-                "$regex": "^Kayla Marcela",
-                "$options": "i"
-            }
-        })
-    )
-
-    print(
-        "CONVERSACIONES ENCONTRADAS:",
-        len(conversaciones_antiguas)
-    )
-
-    for conversacion in conversaciones_antiguas:
-
-        print("------------------------------------")
-        print(
-            "ID CONVERSACIÓN:",
-            conversacion.get("_id")
-        )
-
-        print(
-            "ID ANTIGUO:",
-            conversacion.get("estudiante_id")
-        )
-
-        print(
-            "DOCENTE:",
-            conversacion.get("docente")
-        )
-
-        print(
-            "DOCENTE ID:",
-            conversacion.get("docente_id")
-        )
-
-    # ======================================================
-    # ACTUALIZAR LAS CONVERSACIONES
-    # ======================================================
-
-    for conversacion in conversaciones_antiguas:
-
-        conversaciones.update_one(
-
-            {
-                "_id":
-                    conversacion.get("_id")
-            },
-
-            {
-                "$set": {
-
-                    "estudiante_id":
-                        estudiante_id_actual,
-
-                    "estudiante":
-                        estudiante.get("nombre"),
-
-                    "madre":
-                        estudiante.get(
-                            "madre_nombre",
-                            "Alma Nubia Morráz Tórrez"
-                        ),
-
-                    "madre_usuario":
-                        estudiante.get(
-                            "madre_usuario",
-                            usuario
-                        )
-
-                }
-            }
-
-        )
-
-    print("====================================")
-    print("✅ CONVERSACIONES ACTUALIZADAS")
-    print("NUEVO ID:", estudiante_id_actual)
-    print("MADRE USUARIO:", usuario)
-    print("====================================")
-
     # ======================================================
     # OBTENER DOCENTES
     # ======================================================
@@ -1081,64 +944,17 @@ def bandeja_padre():
         )
     )
 
-    print("====================================")
-    print("👨‍🏫 DOCENTES DISPONIBLES")
-    print("TOTAL:", len(lista_docentes))
 
     for docente in lista_docentes:
 
-        print(
-            "DOCENTE:",
-            docente.get("nombre"),
-            "| ID:",
-            docente.get("_id"),
-            "| USUARIO:",
-            docente.get("usuario")
-        )
+        pass
 
-    print("====================================")
 
     # ======================================================
     # BUSCAR CONVERSACIONES
     # ======================================================
 
     estudiante_id = estudiante.get("_id")
-    print("====================================")
-    print("🔎 BUSCANDO CONVERSACIONES DE KAYLA")
-    print("ID ACTUAL:", estudiante_id)
-    print("MADRE:", estudiante.get("madre_nombre"))
-    print("MADRE USUARIO:", estudiante.get("madre_usuario"))
-    print("====================================")
-
-    prueba_nombre = list(
-        conversaciones.find({
-            "estudiante": {
-                "$regex": "^Kayla Marcela",
-                "$options": "i"
-            }
-        })
-    )
-
-    print(
-        "CONVERSACIONES ENCONTRADAS POR NOMBRE:",
-        len(prueba_nombre)
-    )
-
-    for c in prueba_nombre:
-
-        print("------------------------------------")
-        print("ID CONVERSACIÓN:", c.get("_id"))
-        print("ESTUDIANTE ID:", c.get("estudiante_id"))
-        print("ESTUDIANTE:", c.get("estudiante"))
-        print("DOCENTE ID:", c.get("docente_id"))
-        print("DOCENTE:", c.get("docente"))
-        print("ÚLTIMO MENSAJE:", c.get("ultimo_mensaje"))
-        print(
-            "NO LEÍDOS MADRE:",
-            c.get("no_leidos_padre", 0)
-        )
-
-    print("====================================")
 
     conversaciones_padre = list(
         conversaciones.find({
@@ -1153,47 +969,11 @@ def bandeja_padre():
     # DEBUG
     # ======================================================
 
-    print("====================================")
-    print("📬 CONVERSACIONES DE LA MADRE")
-    print("ESTUDIANTE ID:", estudiante_id)
-    print(
-        "TOTAL:",
-        len(conversaciones_padre)
-    )
 
     for conversacion in conversaciones_padre:
 
-        print("------------------------------------")
+        pass
 
-        print(
-            "ID:",
-            conversacion.get("_id")
-        )
-
-        print(
-            "DOCENTE:",
-            conversacion.get("docente")
-        )
-
-        print(
-            "DOCENTE ID:",
-            conversacion.get("docente_id")
-        )
-
-        print(
-            "ÚLTIMO MENSAJE:",
-            conversacion.get("ultimo_mensaje")
-        )
-
-        print(
-            "NO LEÍDOS:",
-            conversacion.get(
-                "no_leidos_padre",
-                0
-            )
-        )
-
-    print("====================================")
 
     # ======================================================
     # MOSTRAR BANDEJA
@@ -1276,11 +1056,6 @@ def responder():
 
     if not conversacion:
 
-        print("❌ CONVERSACIÓN NO ENCONTRADA")
-        print(
-            "ID:",
-            conversacion_id_obj
-        )
 
         flash(
             "Conversación no encontrada.",
@@ -1295,30 +1070,6 @@ def responder():
     # MOSTRAR INFORMACIÓN
     # ======================================================
 
-    print("====================================")
-    print("🔎 CONVERSACIÓN PARA RESPONDER")
-    print("ID:", conversacion_id_obj)
-    print(
-        "ESTUDIANTE ID:",
-        conversacion.get("estudiante_id")
-    )
-    print(
-        "ESTUDIANTE:",
-        conversacion.get("estudiante")
-    )
-    print(
-        "DOCENTE ID:",
-        conversacion.get("docente_id")
-    )
-    print(
-        "DOCENTE:",
-        conversacion.get("docente")
-    )
-    print(
-        "MADRE:",
-        conversacion.get("madre")
-    )
-    print("====================================")
 
     # ======================================================
     # OBTENER ROL
@@ -1408,21 +1159,6 @@ def responder():
 
     })
 
-    print("====================================")
-    print("✅ MENSAJE GUARDADO")
-    print(
-        "ID MENSAJE:",
-        resultado_mensaje.inserted_id
-    )
-    print(
-        "EMISOR:",
-        emisor
-    )
-    print(
-        "MENSAJE:",
-        texto
-    )
-    print("====================================")
 
     # ======================================================
     # ACTUALIZAR CONVERSACIÓN
@@ -1442,39 +1178,6 @@ def responder():
 
     )
 
-    print("====================================")
-    print("📬 ACTUALIZACIÓN DE CONVERSACIÓN")
-    print("====================================")
-
-    print(
-        "ROL:",
-        rol
-    )
-
-    print(
-        "EMISOR:",
-        emisor
-    )
-
-    print(
-        "CONVERSACIÓN:",
-        conversacion_id
-    )
-
-    print(
-        "MENSAJE:",
-        texto
-    )
-
-    print(
-        "DOCUMENTOS ENCONTRADOS:",
-        resultado_actualizacion.matched_count
-    )
-
-    print(
-        "DOCUMENTOS MODIFICADOS:",
-        resultado_actualizacion.modified_count
-    )
 
     # ======================================================
     # MOSTRAR DESTINATARIO
@@ -1482,31 +1185,13 @@ def responder():
 
     if rol == "docente":
 
-        print(
-            "➡️ DESTINATARIO: MADRE"
-        )
+        pass
 
-        print(
-            "NO LEÍDOS MADRE:",
-            actualizar.get(
-                "no_leidos_padre"
-            )
-        )
 
     elif rol == "padre":
 
-        print(
-            "➡️ DESTINATARIO: DOCENTE"
-        )
+        pass
 
-        print(
-            "NO LEÍDOS DOCENTE:",
-            actualizar.get(
-                "no_leidos_docente"
-            )
-        )
-
-    print("====================================")
 
     # ======================================================
     # COMPROBAR CONVERSACIÓN
@@ -1519,71 +1204,11 @@ def responder():
         }
     )
 
-    print("====================================")
-    print("🔎 CONVERSACIÓN DESPUÉS DE ACTUALIZAR")
-    print("====================================")
 
     if conversacion_comprobada:
 
-        print(
-            "ESTUDIANTE ID:",
-            conversacion_comprobada.get(
-                "estudiante_id"
-            )
-        )
+        pass
 
-        print(
-            "ESTUDIANTE:",
-            conversacion_comprobada.get(
-                "estudiante"
-            )
-        )
-
-        print(
-            "DOCENTE ID:",
-            conversacion_comprobada.get(
-                "docente_id"
-            )
-        )
-
-        print(
-            "DOCENTE:",
-            conversacion_comprobada.get(
-                "docente"
-            )
-        )
-
-        print(
-            "MADRE:",
-            conversacion_comprobada.get(
-                "madre"
-            )
-        )
-
-        print(
-            "ÚLTIMO MENSAJE:",
-            conversacion_comprobada.get(
-                "ultimo_mensaje"
-            )
-        )
-
-        print(
-            "NO LEÍDOS MADRE:",
-            conversacion_comprobada.get(
-                "no_leidos_padre",
-                0
-            )
-        )
-
-        print(
-            "NO LEÍDOS DOCENTE:",
-            conversacion_comprobada.get(
-                "no_leidos_docente",
-                0
-            )
-        )
-
-    print("====================================")
 
     # ======================================================
     # VOLVER AL CHAT
@@ -1622,18 +1247,19 @@ def contador():
 
         if docente:
 
-            docente_id = docente.get("_id")
+            condiciones = condiciones_docente_id(docente)
 
-            total = conversaciones.count_documents({
+            if condiciones:
 
-                "docente_id":
-                    docente_id,
+                total = conversaciones.count_documents({
 
-                "no_leidos_docente": {
-                    "$gt": 0
-                }
+                    "$or": condiciones,
 
-            })
+                    "no_leidos_docente": {
+                        "$gt": 0
+                    }
+
+                })
 
     # ======================================================
     # PADRE

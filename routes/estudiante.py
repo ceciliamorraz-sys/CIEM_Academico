@@ -10,6 +10,7 @@ from flask import (
 )
 
 from io import BytesIO
+from datetime import datetime
 
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import (
@@ -25,6 +26,57 @@ from reportlab.lib.enums import TA_CENTER
 
 from config.database import db
 from utils.decorators import role_required
+
+
+# ==================================================
+# DOCENTE ACTUAL DE UNA NOTA (no el histórico)
+# ==================================================
+#
+# nota.docente / nota.docente_nombre reflejan quién
+# registró esa nota en su momento. Si la materia se
+# reasignó a otro docente después, eso queda viejo.
+# Esta función busca quién da la materia ACTUALMENTE
+# (asignación activa) para mostrar el nombre correcto
+# en el dashboard del estudiante.
+
+def _docente_actual_para_nota(nota):
+
+    asignacion_actual = db.asignaciones_clase.find_one({
+        "asignatura_nombre": nota.get("asignatura_nombre"),
+        "grado": nota.get("grado"),
+        "seccion": nota.get("seccion"),
+        "activo": True
+    })
+
+    if not asignacion_actual:
+        return (
+            nota.get("docente_nombre")
+            or nota.get("docente")
+            or "No registrado"
+        )
+
+    docente_id = asignacion_actual.get("docente_id", "")
+
+    codigo_limpio = docente_id.replace("DOC", "").strip()
+
+    posibles_codigos = list(dict.fromkeys([
+        docente_id,
+        codigo_limpio,
+        "DOC" + codigo_limpio
+    ]))
+
+    docente = db.docentes.find_one({
+        "codigo": {"$in": posibles_codigos}
+    })
+
+    if docente and docente.get("nombre"):
+        return docente["nombre"]
+
+    return (
+        nota.get("docente_nombre")
+        or nota.get("docente")
+        or "No registrado"
+    )
 
 
 # ==========================================================
@@ -48,11 +100,6 @@ def obtener_estudiante_sesion():
     rol = session.get("rol")
     usuario = session.get("usuario")
 
-    print("====================================")
-    print("🔎 BUSCANDO ESTUDIANTE")
-    print("ROL:", rol)
-    print("USUARIO SESIÓN:", usuario)
-    print("====================================")
 
     estudiante = None
 
@@ -62,7 +109,6 @@ def obtener_estudiante_sesion():
 
     if rol == "estudiante":
 
-        print("👨‍🎓 BUSCANDO ESTUDIANTE POR USUARIO")
 
         estudiante = db.estudiantes.find_one({
             "usuario": usuario,
@@ -75,11 +121,6 @@ def obtener_estudiante_sesion():
 
     elif rol == "padre":
 
-        print("====================================")
-        print("👩‍👧 BUSCANDO HIJO DEL PADRE")
-        print("====================================")
-
-        print("USUARIO PADRE:", usuario)
 
         # --------------------------------------------------
         # BUSCAR ESTUDIANTE POR USUARIO DE LA MADRE
@@ -90,10 +131,6 @@ def obtener_estudiante_sesion():
             "estado": "activo"
         })
 
-        print("------------------------------------")
-        print("BÚSQUEDA POR madre_usuario")
-        print("USUARIO:", usuario)
-        print("RESULTADO:", estudiante)
 
         # --------------------------------------------------
         # RESULTADO
@@ -101,21 +138,12 @@ def obtener_estudiante_sesion():
 
         if estudiante:
 
-            print("------------------------------------")
-            print("✅ ESTUDIANTE ENCONTRADO")
-            print("ID:", estudiante.get("_id"))
-            print("NOMBRE:", estudiante.get("nombre"))
-            print("MADRE:", estudiante.get("madre"))
-            print("TUTOR:", estudiante.get("tutor"))
-            print("MADRE USUARIO:", estudiante.get("madre_usuario"))
+            pass
 
         else:
 
-            print("------------------------------------")
-            print("❌ NO SE ENCONTRÓ ESTUDIANTE")
-            print("MADRE_USUARIO BUSCADO:", usuario)
+            pass
 
-        print("====================================")
 
         return estudiante
 # ==========================================================
@@ -129,22 +157,17 @@ def configuracion():
     rol = session.get("rol")
     usuario = session.get("usuario")
 
-    print("====================================")
-    print("⚙️ CONFIGURACIÓN")
-    print("====================================")
-    print("ROL:", rol)
-    print("USUARIO:", usuario)
-
     estudiante = obtener_estudiante_sesion()
 
-    print("ESTUDIANTE:", estudiante)
-    print("====================================")
+    usuario_db = db.usuarios.find_one({
+        "usuario": usuario
+    })
 
     return render_template(
         "estudiante/configuracion_estudiante.html",
         estudiante=estudiante,
         rol=rol,
-        usuario=usuario
+        usuario=usuario_db
     )
 
 
@@ -166,12 +189,6 @@ def cambiar_correo():
         ""
     ).strip().lower()
 
-    print("====================================")
-    print("📧 CAMBIANDO CORREO")
-    print("====================================")
-    print("USUARIO:", usuario)
-    print("NUEVO CORREO:", nuevo_correo)
-    print("====================================")
 
     # ======================================================
     # VALIDAR CORREO
@@ -196,8 +213,6 @@ def cambiar_correo():
         "usuario": usuario
     })
 
-    print("USUARIO ENCONTRADO:")
-    print(usuario_db)
 
     if not usuario_db:
 
@@ -225,12 +240,6 @@ def cambiar_correo():
         }
     )
 
-    print("====================================")
-    print("📊 RESULTADO ACTUALIZACIÓN")
-    print("====================================")
-    print("MATCHED:", resultado.matched_count)
-    print("MODIFIED:", resultado.modified_count)
-    print("====================================")
 
     # ======================================================
     # MENSAJE
@@ -267,11 +276,6 @@ def cambiar_password():
 
     usuario = session.get("usuario")
 
-    print("====================================")
-    print("🔐 CAMBIO DE CONTRASEÑA")
-    print("====================================")
-    print("USUARIO:", usuario)
-    print("====================================")
 
     if not usuario:
 
@@ -396,12 +400,6 @@ def cambiar_password():
         }
     )
 
-    print("====================================")
-    print("🔐 RESULTADO CAMBIO CONTRASEÑA")
-    print("====================================")
-    print("MATCHED:", resultado.matched_count)
-    print("MODIFIED:", resultado.modified_count)
-    print("====================================")
 
     if resultado.modified_count > 0:
 
@@ -432,11 +430,6 @@ def dashboard():
     rol = session.get("rol")
     usuario = session.get("usuario")
 
-    print("====================================")
-    print("🏠 DASHBOARD ESTUDIANTE / PADRE")
-    print("ROL:", rol)
-    print("USUARIO:", usuario)
-    print("====================================")
 
     estudiante = obtener_estudiante_sesion()
 
@@ -450,9 +443,6 @@ def dashboard():
     # CARGAR DOCENTES
     # ======================================================
 
-    print("====================================")
-    print("👨‍🏫 BUSCANDO DOCENTES")
-    print("====================================")
 
     try:
 
@@ -460,29 +450,16 @@ def dashboard():
             db.docentes.find()
         )
 
-        print(
-            "TOTAL DOCENTES:",
-            len(docentes)
-        )
 
         for docente in docentes:
 
-            print("------------------------------------")
-            print("DOCENTE ID:", docente.get("_id"))
-            print("NOMBRE:", docente.get("nombre"))
-            print("USUARIO:", docente.get("usuario"))
-            print("ESTADO:", docente.get("estado"))
+            pass
 
     except Exception as e:
 
-        print(
-            "❌ ERROR AL CARGAR DOCENTES:",
-            e
-        )
 
         docentes = []
 
-    print("====================================")
 
     # ======================================================
     # SI SE ENCONTRÓ ESTUDIANTE
@@ -494,10 +471,6 @@ def dashboard():
             estudiante.get("_id")
         )
 
-        print("====================================")
-        print("📚 CARGANDO INFORMACIÓN ACADÉMICA")
-        print("ID ESTUDIANTE:", estudiante_id)
-        print("====================================")
 
         # ==================================================
         # OBTENER NOTAS
@@ -509,16 +482,17 @@ def dashboard():
             })
         )
 
-        print(
-            "TOTAL NOTAS:",
-            len(notas)
-        )
+        for nota in notas:
+            nota["docente_actual_nombre"] = (
+                _docente_actual_para_nota(nota)
+            )
+
 
         # ==================================================
-        # CONVERSACIONES DEL PADRE
+        # CONVERSACIONES (PADRE O ESTUDIANTE)
         # ==================================================
 
-        if rol == "padre":
+        if rol in ("padre", "estudiante"):
 
             conversaciones_padre = list(
                 db.conversaciones.find({
@@ -529,16 +503,18 @@ def dashboard():
                 )
             )
 
-            print(
-                "TOTAL CONVERSACIONES:",
-                len(conversaciones_padre)
-            )
+            # ----------------------------------------------
+            # CONTADOR DE MENSAJES SIN LEER
+            # ----------------------------------------------
+
+            mensajes = [
+                c for c in conversaciones_padre
+                if c.get("no_leidos_padre", 0) > 0
+            ]
 
     else:
 
-        print(
-            "❌ NO SE ENCONTRÓ ESTUDIANTE PARA LA SESIÓN"
-        )
+        pass
 
     # ======================================================
     # AVISOS INSTITUCIONALES
@@ -546,60 +522,15 @@ def dashboard():
 
     usuario_actual = session.get("usuario")
 
-    print("====================================")
-    print("🔎 PRUEBA COLECCIÓN avisos_padres")
-    print("USUARIO ACTUAL:", usuario_actual)
-    print("====================================")
 
     todos_avisos_padres = list(
         db.avisos_padres.find()
     )
 
-    print(
-        "TOTAL AVISOS EN avisos_padres:",
-        len(todos_avisos_padres)
-    )
 
     for aviso in todos_avisos_padres:
 
-        print("------------------------------------")
-
-        print(
-            "ID:",
-            aviso.get("_id")
-        )
-
-        print(
-            "USUARIO PADRE:",
-            aviso.get("usuario_padre")
-        )
-
-        print(
-            "NOMBRE PADRE:",
-            aviso.get("nombre_padre")
-        )
-
-        print(
-            "TÍTULO:",
-            aviso.get("titulo")
-        )
-
-        print(
-            "MENSAJE:",
-            aviso.get("mensaje")
-        )
-
-        print(
-            "ESTADO:",
-            aviso.get("estado")
-        )
-
-        print(
-            "FECHA:",
-            aviso.get("fecha")
-        )
-
-    print("====================================")
+        pass
 
 
    # ======================================================
@@ -629,42 +560,11 @@ def dashboard():
     # DEBUG AVISOS
     # ======================================================
 
-    print("====================================")
-    print("📢 AVISOS INSTITUCIONALES")
-    print("USUARIO PADRE:", usuario_actual)
-    print("TOTAL AVISOS:", len(avisos))
-    print("------------------------------------")
 
     for aviso in avisos:
 
-        print(
-            "ID:",
-            aviso.get("_id")
-        )
+        pass
 
-        print(
-            "TÍTULO:",
-            aviso.get("titulo")
-        )
-
-        print(
-            "CONTENIDO:",
-            aviso.get("contenido")
-        )
-
-        print(
-            "FECHA:",
-            aviso.get("fecha")
-        )
-
-        print(
-            "ESTADO:",
-            aviso.get("estado")
-        )
-
-        print("------------------------------------")
-
-    print("====================================")
 
     # ======================================================
     # MOSTRAR DASHBOARD
@@ -1039,26 +939,7 @@ def perfil():
 # GENERAR BOLETÍN PDF
 # ==========================================================
 
-@estudiante_bp.route("/boletin/pdf")
-@role_required("estudiante", "padre")
-def boletin_pdf():
-
-    # ======================================================
-    # OBTENER ESTUDIANTE
-    # ======================================================
-
-    estudiante = obtener_estudiante_sesion()
-
-    if not estudiante:
-
-        flash(
-            "No se encontró el estudiante asociado.",
-            "danger"
-        )
-
-        return redirect(
-            url_for("estudiante.dashboard")
-        )
+def _construir_datos_boletin(estudiante):
 
     # ======================================================
     # ID ESTUDIANTE
@@ -1306,6 +1187,79 @@ def boletin_pdf():
             "su desempeño."
         )
 
+    return notas, boletin, promedio_general, observacion
+
+
+# ==========================================================
+# VISTA PREVIA DEL BOLETÍN (EN NAVEGADOR, SIN DESCARGAR)
+# ==========================================================
+
+@estudiante_bp.route("/boletin")
+@role_required("estudiante", "padre")
+def boletin_preview():
+
+    estudiante = obtener_estudiante_sesion()
+
+    if not estudiante:
+
+        flash(
+            "No se encontró el estudiante asociado.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("estudiante.dashboard")
+        )
+
+    notas, boletin, promedio_general, observacion = (
+        _construir_datos_boletin(estudiante)
+    )
+
+    return render_template(
+
+        "boletin.html",
+
+        estudiante=estudiante,
+
+        notas=notas,
+
+        boletin=boletin,
+
+        promedio_general=promedio_general,
+
+        observacion=observacion,
+
+        fecha_emision=datetime.now().strftime("%d/%m/%Y"),
+
+        modo_preview=True
+    )
+
+
+@estudiante_bp.route("/boletin/pdf")
+@role_required("estudiante", "padre")
+def boletin_pdf():
+
+    # ======================================================
+    # OBTENER ESTUDIANTE
+    # ======================================================
+
+    estudiante = obtener_estudiante_sesion()
+
+    if not estudiante:
+
+        flash(
+            "No se encontró el estudiante asociado.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("estudiante.dashboard")
+        )
+
+    notas, boletin, promedio_general, observacion = (
+        _construir_datos_boletin(estudiante)
+    )
+
     # ======================================================
     # GENERAR HTML
     # ======================================================
@@ -1322,7 +1276,11 @@ def boletin_pdf():
 
         promedio_general=promedio_general,
 
-        observacion=observacion
+        observacion=observacion,
+
+        fecha_emision=datetime.now().strftime("%d/%m/%Y"),
+
+        modo_preview=False
     )
 
     # ======================================================

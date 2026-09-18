@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Historial de Matrícula | CIEM Académico</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+            background: #f3f6fa;
+            color: #1d3256;
+        }
+
+        .contenedor {
+            width: 94%;
+            max-width: 900px;
+            margin: 30px auto;
+        }
+
+        .encabezado {
+            background:
+                linear-gradient(
+                    135deg,
+                    #08142C,
+                    #0D2A52
+                );
+
+            color: white;
+
+            padding: 28px 35px;
+
+            border-radius:
+                14px 14px 0 0;
+
+            box-shadow:
+                0 5px 18px
+                rgba(0,0,0,.12);
+        }
+
+        .encabezado h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        .encabezado p {
+            margin: 7px 0 0;
+            font-size: 14px;
+            opacity: .85;
+        }
+
+        .contenido {
+            background: white;
+            padding: 30px;
+
+            border-radius:
+                0 0 14px 14px;
+
+            box-shadow:
+                0 5px 18px
+                rgba(0,0,0,.08);
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .campo label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        .campo input {
+            width: 100%;
+
+            padding:
+                12px 14px;
+
+            border:
+                1px solid #ccd5df;
+
+            border-radius: 7px;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+        .campo input:focus {
+            border-color: #1E4E8C;
+
+            box-shadow:
+                0 0 0 2px
+                rgba(30,78,140,.10);
+        }
+
+        #resultadosBusqueda {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ccd5df;
+            border-radius: 7px;
+            margin-top: 4px;
+            max-height: 260px;
+            overflow-y: auto;
+            z-index: 10;
+            box-shadow: 0 6px 16px rgba(0,0,0,.12);
+        }
+
+        .resultado-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #eef1f5;
+            font-size: 14px;
+        }
+
+        .resultado-item:hover {
+            background: #f3f6fa;
+        }
+
+        /* ==========================================
+           FICHA DEL ESTUDIANTE
+        ========================================== */
+
+        #fichaEstudiante {
+            display: none;
+            margin-top: 25px;
+        }
+
+        .ficha-titulo {
+            font-size: 19px;
+            font-weight: 700;
+            color: #0D2A52;
+            margin-bottom: 3px;
+        }
+
+        .ficha-codigo {
+            font-size: 13px;
+            color: #6c7a90;
+            margin-bottom: 20px;
+        }
+
+        /* ==========================================
+           LÍNEA DE TIEMPO
+        ========================================== */
+
+        .timeline {
+            border-left: 3px solid #1E4E8C;
+            margin-left: 10px;
+            padding-left: 25px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 22px;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -32px;
+            top: 4px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #FFC107;
+            border: 3px solid #0D2A52;
+        }
+
+        .timeline-anio {
+            font-size: 17px;
+            font-weight: 700;
+            color: #0D2A52;
+        }
+
+        .timeline-detalle {
+            font-size: 14px;
+            margin-top: 4px;
+            color: #1d3256;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        .badge-renovacion {
+            background: #e6f4ea;
+            color: #1e7a34;
+        }
+
+        .badge-nuevo {
+            background: #e8f0fb;
+            color: #1E4E8C;
+        }
+
+        .badge-inactiva {
+            background: #fbe8e8;
+            color: #a32424;
+        }
+
+        .sin-historial {
+            font-size: 14px;
+            color: #6c7a90;
+        }
+
+        .btn-volver {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #1E4E8C;
+            font-size: 14px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="contenedor">
+
+    <div class="encabezado">
+
+        <h1>
+            🗂️ Historial de Matrícula
+        </h1>
+
+        <p>
+            Colegio Integral Emanuel Matagalpa - CIEM
+        </p>
+
+    </div>
+
+
+    <div class="contenido">
+
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="btn-volver"
+        >
+            ← Volver al panel
+        </a>
+
+
+        <div class="campo">
+
+            <label>
+                Buscar estudiante por nombre o código
+            </label>
+
+            <input
+                type="text"
+                id="buscarEstudiante"
+                placeholder="Escriba el nombre o el código..."
+                autocomplete="off"
+            >
+
+            <div id="resultadosBusqueda"></div>
+
+        </div>
+
+
+        <div id="fichaEstudiante">
+
+            <div class="ficha-titulo" id="nombreEstudiante"></div>
+
+            <div class="ficha-codigo" id="codigoEstudiante"></div>
+
+            <div id="timeline" class="timeline"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const inputBuscar =
+    document.getElementById("buscarEstudiante");
+
+const divResultados =
+    document.getElementById("resultadosBusqueda");
+
+const divFicha =
+    document.getElementById("fichaEstudiante");
+
+const elNombre =
+    document.getElementById("nombreEstudiante");
+
+const elCodigo =
+    document.getElementById("codigoEstudiante");
+
+const elTimeline =
+    document.getElementById("timeline");
+
+
+let temporizadorBusqueda = null;
+
+
+/* ==========================================
+   BUSCAR MIENTRAS SE ESCRIBE
+========================================== */
+
+inputBuscar.addEventListener("input", function () {
+
+    const termino = this.value.trim();
+
+    clearTimeout(temporizadorBusqueda);
+
+    if (termino.length < 2) {
+
+        divResultados.style.display = "none";
+        divResultados.innerHTML = "";
+
+        return;
+    }
+
+    temporizadorBusqueda = setTimeout(function () {
+
+        fetch(
+            "/admin/api/estudiantes/buscar?q=" +
+            encodeURIComponent(termino)
+        )
+            .then(function (respuesta) {
+                return respuesta.json();
+            })
+            .then(function (estudiantes) {
+
+                if (!estudiantes.length) {
+
+                    divResultados.innerHTML =
+                        '<div style="padding:10px;font-size:13px;color:#6c7a90;">' +
+                        "No se encontraron estudiantes." +
+                        "</div>";
+
+                    divResultados.style.display = "block";
+
+                    return;
+                }
+
+                divResultados.innerHTML = estudiantes.map(function (e) {
+
+                    return (
+                        '<div class="resultado-item" data-codigo="' +
+                        e.codigo +
+                        '">' +
+                        "<strong>" + e.nombre + "</strong><br>" +
+                        '<span style="font-size:12px;color:#6c7a90;">' +
+                        e.codigo +
+                        "</span>" +
+                        "</div>"
+                    );
+
+                }).join("");
+
+                divResultados.style.display = "block";
+
+            });
+
+    }, 300);
+
+});
+
+
+/* ==========================================
+   SELECCIONAR ESTUDIANTE Y CARGAR HISTORIAL
+========================================== */
+
+divResultados.addEventListener("click", function (evento) {
+
+    const item = evento.target.closest(".resultado-item");
+
+    if (!item) {
+        return;
+    }
+
+    const codigo = item.getAttribute("data-codigo");
+
+    fetch("/admin/api/estudiante/" + encodeURIComponent(codigo) + "/historial")
+        .then(function (respuesta) {
+            return respuesta.json();
+        })
+        .then(function (datos) {
+
+            if (datos.error) {
+
+                alert("No se pudo cargar el historial.");
+
+                return;
+            }
+
+            mostrarFicha(datos);
+
+            divResultados.style.display = "none";
+            divResultados.innerHTML = "";
+
+            inputBuscar.value = "";
+
+        });
+
+});
+
+
+/* ==========================================
+   MOSTRAR LA FICHA CON LA LÍNEA DE TIEMPO
+========================================== */
+
+function mostrarFicha(datos) {
+
+    elNombre.textContent = datos.nombre || "(sin nombre)";
+    elCodigo.textContent = "Código: " + datos.codigo;
+
+    if (!datos.historial || !datos.historial.length) {
+
+        elTimeline.innerHTML =
+            '<div class="sin-historial">' +
+            "Este estudiante aún no tiene matrículas registradas." +
+            "</div>";
+
+        divFicha.style.display = "block";
+
+        return;
+    }
+
+    // Más reciente primero
+
+    const historialOrdenado =
+        datos.historial.slice().reverse();
+
+    elTimeline.innerHTML = historialOrdenado.map(function (m) {
+
+        let claseBadge = "badge-nuevo";
+        let textoBadge = "Nuevo ingreso";
+
+        if (m.tipo_matricula === "renovacion") {
+            claseBadge = "badge-renovacion";
+            textoBadge = "Renovación";
+        }
+
+        const badgeEstado =
+            (m.estado && m.estado !== "activa")
+                ? '<span class="badge badge-inactiva">' + m.estado + "</span>"
+                : "";
+
+        return (
+            '<div class="timeline-item">' +
+                '<div class="timeline-anio">' +
+                    m.anio_lectivo +
+                    '<span class="badge ' + claseBadge + '">' +
+                        textoBadge +
+                    "</span>" +
+                    badgeEstado +
+                "</div>" +
+                '<div class="timeline-detalle">' +
+                    "Grado: " + (m.grado || "—") +
+                    " &nbsp;·&nbsp; Sección: " + (m.seccion || "—") +
+                    (m.fecha_matricula
+                        ? " &nbsp;·&nbsp; Matriculado el " + m.fecha_matricula
+                        : "") +
+                "</div>" +
+            "</div>"
+        );
+
+    }).join("");
+
+    divFicha.style.display = "block";
+
+}
+
+</script>
+
+
+</body>
+
+</html>

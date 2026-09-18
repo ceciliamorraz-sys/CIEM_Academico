@@ -1,965 +1,157 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <title>Boletín Académico | CIEM ONE</title>
-
-    <style>
-
-        @page {
-            size: Letter;
-            margin: 12mm;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: "Segoe UI", Arial, sans-serif;
-            color: #1D3256;
-            background: white;
-            font-size: 12px;
-        }
-
-        .boletin {
-            width: 100%;
-            background: white;
-            border: 1px solid #E1E6ED;
-        }
-
-        /* ==========================================
-           ENCABEZADO
-        ========================================== */
-
-        .encabezado {
-            background: #08142C;
-            color: white;
-            padding: 18px;
-            display: table;
-            width: 100%;
-        }
-
-        .logo-contenedor {
-            display: table-cell;
-            width: 90px;
-            vertical-align: middle;
-            text-align: center;
-        }
-
-        .logo {
-            width: 70px;
-            height: 70px;
-            object-fit: contain;
-            background: white;
-            padding: 4px;
-        }
-
-        .institucion {
-            display: table-cell;
-            vertical-align: middle;
-            text-align: center;
-            padding-right: 70px;
-        }
-
-        .institucion h1 {
-            margin: 0;
-            font-size: 21px;
-            letter-spacing: .5px;
-        }
-
-        .institucion h2 {
-            margin: 5px 0;
-            font-size: 15px;
-            font-weight: 500;
-        }
-
-        .institucion p {
-            margin: 3px 0;
-            font-size: 9px;
-            color: #D8E2F0;
-        }
-
-        /* ==========================================
-           TÍTULO
-        ========================================== */
-
-        .titulo-boletin {
-            text-align: center;
-            padding: 13px;
-            border-bottom: 1px solid #E5EAF0;
-        }
-
-        .titulo-boletin h2 {
-            margin: 0;
-            color: #08142C;
-            font-size: 19px;
-            text-transform: uppercase;
-        }
-
-        .titulo-boletin p {
-            margin: 4px 0 0;
-            color: #667085;
-            font-size: 10px;
-        }
-
-        /* ==========================================
-           DATOS
-        ========================================== */
-
-        .datos {
-            padding: 14px;
-            background: #FAFBFD;
-            display: table;
-            width: 100%;
-        }
-
-        .fila-datos {
-            display: table-row;
-        }
-
-        .dato {
-            display: table-cell;
-            width: 50%;
-            padding: 7px;
-        }
-
-        .dato-interior {
-            background: white;
-            border: 1px solid #E2E7EF;
-            padding: 8px 10px;
-            min-height: 42px;
-        }
-
-        .dato span {
-            display: block;
-            font-size: 8px;
-            color: #7A8494;
-            margin-bottom: 3px;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        .dato strong {
-            color: #08142C;
-            font-size: 11px;
-        }
-
-        /* ==========================================
-           RESULTADOS
-        ========================================== */
-
-        .tabla-contenedor {
-            padding: 15px;
-        }
-
-        .tabla-titulo {
-            width: 100%;
-            margin-bottom: 8px;
-            display: table;
-        }
-
-        .tabla-titulo h3 {
-            display: table-cell;
-            margin: 0;
-            color: #08142C;
-            font-size: 14px;
-            vertical-align: middle;
-        }
-
-        .periodo {
-            display: table-cell;
-            text-align: right;
-            color: #1E4E8C;
-            font-size: 9px;
-            font-weight: bold;
-            vertical-align: middle;
-        }
-
-        /* ==========================================
-           TABLA
-        ========================================== */
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background: #08142C;
-            color: white;
-        }
-
-        th {
-            padding: 8px 5px;
-            font-size: 8px;
-            text-align: center;
-            border: 1px solid #08142C;
-        }
-
-        th:first-child {
-            text-align: left;
-            padding-left: 8px;
-        }
-
-        td {
-            padding: 8px 5px;
-            border: 1px solid #E2E7EF;
-            text-align: center;
-            font-size: 8.5px;
-        }
-
-        td:first-child {
-            text-align: left;
-            font-weight: bold;
-            color: #1D3256;
-            padding-left: 8px;
-        }
-
-        tbody tr:nth-child(even) {
-            background: #FAFBFD;
-        }
-
-        /* ==========================================
-           NOTAS
-        ========================================== */
-
-        .nota {
-            display: inline-block;
-            min-width: 30px;
-            padding: 3px 5px;
-            text-align: center;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-
-        .aprobado {
-            background: #D1E7DD;
-            color: #0F5132;
-        }
-
-        .reprobado {
-            background: #F8D7DA;
-            color: #842029;
-        }
-
-        .sin-nota {
-            background: #EEF1F5;
-            color: #667085;
-        }
-
-        /* ==========================================
-           SIN REGISTROS
-        ========================================== */
-
-        .sin-registros {
-            text-align: center !important;
-            padding: 20px !important;
-            color: #667085 !important;
-        }
-
-        /* ==========================================
-           RESUMEN
-        ========================================== */
-
-        .resumen {
-            display: table;
-            width: calc(100% - 30px);
-            margin: 0 15px 15px;
-        }
-
-        .resumen-card {
-            display: table-cell;
-            width: 33.33%;
-            text-align: center;
-            padding: 10px;
-            background: #F7F9FC;
-            border: 1px solid #E2E7EF;
-        }
-
-        .resumen-card span {
-            display: block;
-            font-size: 8px;
-            color: #667085;
-            text-transform: uppercase;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-
-        .resumen-card strong {
-            font-size: 17px;
-            color: #08142C;
-        }
-
-        /* ==========================================
-           OBSERVACIONES
-        ========================================== */
-
-        .observaciones {
-            margin: 0 15px 15px;
-            padding: 12px;
-            background: #FFF9E6;
-            border-left: 4px solid #FFC107;
-            border-top: 1px solid #F1E2A8;
-            border-right: 1px solid #F1E2A8;
-            border-bottom: 1px solid #F1E2A8;
-        }
-
-        .observaciones h3 {
-            margin: 0 0 5px;
-            color: #08142C;
-            font-size: 11px;
-        }
-
-        .observaciones p {
-            margin: 0;
-            color: #667085;
-            font-size: 9px;
-            line-height: 1.5;
-        }
-
-        /* ==========================================
-           FIRMAS
-        ========================================== */
-
-        .firmas {
-            display: table;
-            width: 100%;
-            padding: 25px 30px 20px;
-        }
-
-        .firma {
-            display: table-cell;
-            width: 50%;
-            text-align: center;
-            padding: 0 25px;
-        }
-
-        .firma-linea {
-            border-top: 1px solid #7A8494;
-            padding-top: 6px;
-            color: #667085;
-            font-size: 9px;
-        }
-
-        /* ==========================================
-           PIE
-        ========================================== */
-
-        .pie {
-            background: #08142C;
-            color: #C8D2E8;
-            text-align: center;
-            padding: 9px;
-            font-size: 8px;
-        }
-
-        /* ==========================================
-           IMPRESIÓN
-        ========================================== */
-
-        .no-imprimir {
-            display: none;
-        }
-
-    </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boletín | {{ estudiante.nombre }}</title>
+
+{% if modo_preview %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+{% endif %}
+
+<style>
+body { background:#f4f6f9; font-family:'Segoe UI',sans-serif; color:#1D3256; margin:0; }
+
+.container-boletin { max-width: 950px; margin: auto; padding: 30px; }
+
+.header-ciem {
+    background: linear-gradient(135deg, #08142C, #1E4E8C);
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.15);
+    margin-bottom: 25px;
+}
+
+.boletin-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+    margin-bottom: 20px;
+}
+
+.btn-ciem {
+    background: #FFC107;
+    color: #08142C;
+    font-weight: bold;
+    border-radius: 12px;
+    padding: 12px 25px;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-ciem:hover { background: #e0a800; color:#08142C; }
+
+.btn-volver {
+    background: white;
+    color: #1E4E8C;
+    border: 1px solid #E1E6ED;
+    border-radius: 12px;
+    padding: 12px 25px;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 600;
+}
+.btn-volver:hover { background: #1E4E8C; color: white; }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px; text-align: center; border-bottom: 1px solid #E2E7EF; }
+th { background: #F8FAFC; color: #7A8494; font-size: 12px; text-transform: uppercase; }
+td:first-child, th:first-child { text-align: left; }
+
+.observacion {
+    padding: 17px 20px;
+    border-left: 5px solid #FFC107;
+    background: #FFF9E6;
+    border-radius: 10px;
+    color: #667085;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.acciones { margin-bottom: 20px; display: flex; gap: 10px; }
+
+@media print {
+    .acciones { display: none; }
+    body { background: white; }
+    .boletin-card { box-shadow: none; border: 1px solid #E2E7EF; }
+}
+</style>
 </head>
 
 <body>
+<div class="container-boletin">
 
-<div class="boletin">
-
-    <!-- ==========================================
-         ENCABEZADO
-    ========================================== -->
-
-    <div class="encabezado">
-
-        <div class="logo-contenedor">
-
-            <img
-                class="logo"
-                src="{{ url_for(
-                    'static',
-                    filename='img/logo.jpg',
-                    _external=True
-                ) }}"
-                alt="Logo CIEM"
-            >
-
-        </div>
-
-        <div class="institucion">
-
-            <h1>
-                COLEGIO INTEGRAL EMANUEL
-            </h1>
-
-            <h2>
-                CIEM ONE
-            </h2>
-
-            <p>
-                Formación Integral para una Educación de Excelencia
+    <div class="header-ciem d-flex justify-content-between align-items-center">
+        <div>
+            <h1 style="margin:0;">Boletín de Notas</h1>
+            <p style="margin:7px 0 0; color:#D8E2F0;">
+                {{ estudiante.nombre }} · {{ estudiante.grado }} {{ estudiante.seccion }}
             </p>
-
-            <p>
-                Matagalpa, Nicaragua
-            </p>
-
         </div>
-
     </div>
 
+    {% if modo_preview %}
+    <div class="acciones">
+        <a href="{{ url_for('estudiante.dashboard') }}" class="btn-volver">
+            ← Volver
+        </a>
 
-    <!-- ==========================================
-         TÍTULO
-    ========================================== -->
-
-    <div class="titulo-boletin">
-
-        <h2>
-            Boletín Académico
-        </h2>
-
-        <p>
-            Informe de rendimiento académico del estudiante
-        </p>
-
+        <a href="{{ url_for('estudiante.boletin_pdf') }}" class="btn-ciem">
+            Descargar PDF
+        </a>
     </div>
+    {% endif %}
 
-
-    <!-- ==========================================
-         DATOS DEL ESTUDIANTE
-    ========================================== -->
-
-    <div class="datos">
-
-        <div class="fila-datos">
-
-            <div class="dato">
-
-                <div class="dato-interior">
-
-                    <span>
-                        Estudiante
-                    </span>
-
-                    <strong>
-                        {{ estudiante.nombre
-                           if estudiante
-                           else 'No disponible' }}
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-            <div class="dato">
-
-                <div class="dato-interior">
-
-                    <span>
-                        Grado
-                    </span>
-
-                    <strong>
-                        {{ estudiante.grado
-                           if estudiante
-                           else 'No disponible' }}
-                    </strong>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="fila-datos">
-
-            <div class="dato">
-
-                <div class="dato-interior">
-
-                    <span>
-                        Sección
-                    </span>
-
-                    <strong>
-                        {{ estudiante.seccion
-                           if estudiante and estudiante.seccion
-                           else 'No disponible' }}
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-            <div class="dato">
-
-                <div class="dato-interior">
-
-                    <span>
-                        Año lectivo
-                    </span>
-
-                    <strong>
-                        2026
-                    </strong>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- ==========================================
-         RESULTADOS ACADÉMICOS
-    ========================================== -->
-
-    <div class="tabla-contenedor">
-
-        <div class="tabla-titulo">
-
-            <h3>
-                Resultados académicos
-            </h3>
-
-            <span class="periodo">
-                Año Lectivo 2026
-            </span>
-
-        </div>
-
-
+    <div class="boletin-card">
         <table>
-
             <thead>
-
                 <tr>
-
-                    <th>
-                        Asignatura
-                    </th>
-
-                    <th>
-                        I Corte
-                    </th>
-
-                    <th>
-                        II Corte
-                    </th>
-
-                    <th>
-                        III Corte
-                    </th>
-
-                    <th>
-                        IV Corte
-                    </th>
-
-                    <th>
-                        Promedio
-                    </th>
-
-                    <th>
-                        Estado
-                    </th>
-
+                    <th>Asignatura</th>
+                    <th>Corte 1</th>
+                    <th>Corte 2</th>
+                    <th>Corte 3</th>
+                    <th>Corte 4</th>
+                    <th>Promedio</th>
                 </tr>
-
             </thead>
-
-
             <tbody>
-
-                {% if boletin %}
-
-                    {% for b in boletin %}
-
-                    <tr>
-
-                        <td>
-                            {{ b.asignatura }}
-                        </td>
-
-
-                        <!-- I CORTE -->
-
-                        <td>
-
-                            {% if b.corte1 is not none %}
-
-                                {% if b.corte1 >= 60 %}
-
-                                    <span class="nota aprobado">
-                                        {{ b.corte1 }}
-                                    </span>
-
-                                {% else %}
-
-                                    <span class="nota reprobado">
-                                        {{ b.corte1 }}
-                                    </span>
-
-                                {% endif %}
-
-                            {% else %}
-
-                                <span class="nota sin-nota">
-                                    —
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <!-- II CORTE -->
-
-                        <td>
-
-                            {% if b.corte2 is not none %}
-
-                                {% if b.corte2 >= 60 %}
-
-                                    <span class="nota aprobado">
-                                        {{ b.corte2 }}
-                                    </span>
-
-                                {% else %}
-
-                                    <span class="nota reprobado">
-                                        {{ b.corte2 }}
-                                    </span>
-
-                                {% endif %}
-
-                            {% else %}
-
-                                <span class="nota sin-nota">
-                                    —
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <!-- III CORTE -->
-
-                        <td>
-
-                            {% if b.corte3 is not none %}
-
-                                {% if b.corte3 >= 60 %}
-
-                                    <span class="nota aprobado">
-                                        {{ b.corte3 }}
-                                    </span>
-
-                                {% else %}
-
-                                    <span class="nota reprobado">
-                                        {{ b.corte3 }}
-                                    </span>
-
-                                {% endif %}
-
-                            {% else %}
-
-                                <span class="nota sin-nota">
-                                    —
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <!-- IV CORTE -->
-
-                        <td>
-
-                            {% if b.corte4 is not none %}
-
-                                {% if b.corte4 >= 60 %}
-
-                                    <span class="nota aprobado">
-                                        {{ b.corte4 }}
-                                    </span>
-
-                                {% else %}
-
-                                    <span class="nota reprobado">
-                                        {{ b.corte4 }}
-                                    </span>
-
-                                {% endif %}
-
-                            {% else %}
-
-                                <span class="nota sin-nota">
-                                    —
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <!-- PROMEDIO -->
-
-                        <td>
-
-                            {% if b.promedio is not none %}
-
-                                <strong>
-                                    {{ b.promedio }}
-                                </strong>
-
-                            {% else %}
-
-                                <span class="nota sin-nota">
-                                    —
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <!-- ESTADO -->
-
-                        <td>
-
-                            {% if b.promedio is not none %}
-
-                                {% if b.promedio >= 60 %}
-
-                                    <span class="nota aprobado">
-                                        Aprobado
-                                    </span>
-
-                                {% else %}
-
-                                    <span class="nota reprobado">
-                                        Reforzamiento
-                                    </span>
-
-                                {% endif %}
-
-                            {% else %}
-
-                                <span class="nota sin-nota">
-                                    Pendiente
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
-
+                {% for item in boletin %}
+                <tr>
+                    <td>{{ item.asignatura }}</td>
+                    <td>{{ item.corte1 if item.corte1 is not none else '-' }}</td>
+                    <td>{{ item.corte2 if item.corte2 is not none else '-' }}</td>
+                    <td>{{ item.corte3 if item.corte3 is not none else '-' }}</td>
+                    <td>{{ item.corte4 if item.corte4 is not none else '-' }}</td>
+                    <td><strong>{{ item.promedio if item.promedio is not none else '-' }}</strong></td>
+                </tr>
                 {% else %}
-
-                    <tr>
-
-                        <td
-                            colspan="7"
-                            class="sin-registros"
-                        >
-
-                            Aún no hay notas registradas
-                            para este estudiante.
-
-                        </td>
-
-                    </tr>
-
-                {% endif %}
-
+                <tr>
+                    <td colspan="6" style="text-align:center; color:#7A8494; padding:30px;">
+                        Aún no hay calificaciones registradas.
+                    </td>
+                </tr>
+                {% endfor %}
             </tbody>
-
         </table>
-
     </div>
 
-
-    <!-- ==========================================
-         RESUMEN
-    ========================================== -->
-
-    <div class="resumen">
-
-        <div class="resumen-card">
-
-            <span>
-                Promedio general
-            </span>
-
-            <strong>
-
-                {% if promedio_general is not none %}
-
-                    {{ promedio_general }}
-
-                {% else %}
-
-                    —
-
-                {% endif %}
-
-            </strong>
-
-        </div>
-
-
-        <div class="resumen-card">
-
-            <span>
-                Asignaturas
-            </span>
-
-            <strong>
-                {{ boletin|length }}
-            </strong>
-
-        </div>
-
-
-        <div class="resumen-card">
-
-            <span>
-                Estado académico
-            </span>
-
-            <strong>
-
-                {% if promedio_general is not none %}
-
-                    {% if promedio_general >= 60 %}
-
-                        Aprobado
-
-                    {% else %}
-
-                        Reforzamiento
-
-                    {% endif %}
-
-                {% else %}
-
-                    Pendiente
-
-                {% endif %}
-
-            </strong>
-
-        </div>
-
+    <div class="boletin-card d-flex justify-content-between align-items-center">
+        <strong>Promedio general</strong>
+        <span style="font-size:22px; font-weight:bold; color:#1E4E8C;">
+            {{ promedio_general if promedio_general is not none else '—' }}
+        </span>
     </div>
 
-
-    <!-- ==========================================
-         OBSERVACIONES
-    ========================================== -->
-
-    <div class="observaciones">
-
-        <h3>
-            Observaciones
-        </h3>
-
-        <p>
-
-            {% if observacion %}
-
-                {{ observacion }}
-
-            {% elif promedio_general is none %}
-
-                Aún no se han registrado calificaciones
-                para este estudiante.
-
-            {% elif promedio_general >= 90 %}
-
-                El estudiante presenta un desempeño académico
-                excelente durante el período evaluado.
-                Se recomienda continuar fortaleciendo sus
-                hábitos de estudio y participación.
-
-            {% elif promedio_general >= 60 %}
-
-                El estudiante presenta un desempeño académico
-                satisfactorio durante el período evaluado.
-                Se recomienda continuar fortaleciendo sus
-                hábitos de estudio y participación.
-
-            {% else %}
-
-                El estudiante requiere reforzamiento académico.
-                Se recomienda brindar acompañamiento y
-                fortalecer los hábitos de estudio.
-
-            {% endif %}
-
-        </p>
-
+    <div class="observacion">
+        <strong>Observación:</strong> {{ observacion }}
     </div>
 
-
-    <!-- ==========================================
-         FIRMAS
-    ========================================== -->
-
-    <div class="firmas">
-
-        <div class="firma">
-
-            <div class="firma-linea">
-                Docente / Tutor
-            </div>
-
-        </div>
-
-
-        <div class="firma">
-
-            <div class="firma-linea">
-                Dirección Académica
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- ==========================================
-         PIE
-    ========================================== -->
-
-    <div class="pie">
-
-        CIEM ONE · Boletín Académico · Año Lectivo 2026
-
-    </div>
+    <p style="text-align:center; color:#7A8494; font-size:12px; margin-top:20px;">
+        Emitido el {{ fecha_emision }} · CIEM ONE
+    </p>
 
 </div>
-
 </body>
-
 </html>

@@ -1,426 +1,860 @@
-/* =====================================
-   CIEM ONE
-   DASHBOARD ESTUDIANTE / PADRE
-   Diseño Moderno Institucional
-===================================== */
+/* ==========================================================
+   CIEM ONE — BOLETÍN DIGITAL (vista de padre/madre)
+   Sistema de diseño: tinta / papel / bronce
+   ========================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+
+    --papel: #FAF7F1;
+    --papel-sombra: #F1EAD9;
+    --tinta: #14213D;
+    --tinta-suave: #3D4C6B;
+    --regla: #DCD5C4;
+    --regla-fuerte: #C7BFA9;
+
+    --bronce: #C08A28;
+    --bronce-suave: #F2E4C6;
+
+    --bosque: #2F6F52;
+    --bosque-suave: #E4EFE9;
+
+    --ladrillo: #A8422E;
+    --ladrillo-suave: #F3E2DD;
+
+    --gris: #6B7280;
+    --gris-suave: #EEECE6;
+
+    --radio: 14px;
+    --sombra-sello:
+        0 10px 30px rgba(20, 33, 61, .18);
+}
 
 * {
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    * {
+        animation-duration: .001ms !important;
+        transition-duration: .001ms !important;
+    }
+}
+
 body {
+
     margin: 0;
-    font-family: "Segoe UI", Arial, sans-serif;
-    background: #F4F7FB;
-    color: #1D3256;
+    background: var(--papel);
+    color: var(--tinta);
+    font-family: 'Work Sans', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+
+    font-family: 'Fraunces', Georgia, serif;
+    color: var(--tinta);
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: -.01em;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+:focus-visible {
+
+    outline: 2px solid var(--bronce);
+    outline-offset: 3px;
+    border-radius: 4px;
 }
 
 
-/* =====================================
-        ESTRUCTURA PRINCIPAL
-===================================== */
+/* ==========================================================
+   ESTRUCTURA GENERAL
+   ========================================================== */
 
-.dashboard {
-    display: flex;
+.portal {
+
+    display: grid;
+    grid-template-columns: 264px 1fr;
     min-height: 100vh;
 }
 
 
-/* =====================================
-        SIDEBAR
-===================================== */
-
-.sidebar {
-    width: 270px;
-    background: #08142C;
-    color: white;
-    padding: 25px 18px;
-    position: fixed;
-    height: 100vh;
-    overflow-y: auto;
-}
-
-.logo-box {
-    text-align: center;
-    padding-bottom: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, .15);
-}
-
-.logo {
-    width: 90px;
-    height: 90px;
-    object-fit: contain;
-    border-radius: 50%;
-    background: white;
-    padding: 5px;
-}
-
-.logo-box h2 {
-    margin: 10px 0 5px;
-    color: #FFC107;
-}
-
-.logo-box p {
-    font-size: 13px;
-    color: #d5dbea;
-}
-
-
-/* PERFIL */
-
-.perfil {
-    text-align: center;
-    margin: 30px 0;
-}
-
-.avatar {
-    width: 75px;
-    height: 75px;
-    margin: auto;
-    border-radius: 50%;
-    background: #FFC107;
-    color: #08142C;
-    font-size: 35px;
-    font-weight: bold;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.perfil h3 {
-    margin: 15px 0 5px;
-}
-
-.perfil p {
-    margin: 0;
-    color: #c8d2e8;
-    font-size: 14px;
-}
-
-
-/* MENU */
-
-.sidebar nav a {
-    display: block;
-    padding: 14px;
-    margin: 8px 0;
-    color: white;
-    text-decoration: none;
-    border-radius: 12px;
-    transition: .3s;
-}
-
-.sidebar nav a:hover,
-.sidebar nav .activo {
-    background: #1E4E8C;
-    transform: translateX(5px);
-}
-
-
-/* =====================================
-        CONTENIDO
-===================================== */
-
-.contenido {
-    margin-left: 270px;
-    width: calc(100% - 270px);
-    padding: 30px;
-}
-
-
-/* HEADER */
-
-.top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: white;
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, .08);
-}
-
-.top h1 {
-    margin: 0;
-    color: #08142C;
-}
-
-.top p {
-    margin-top: 8px;
-    color: #667;
-}
-
-.fecha {
-    background: #08142C;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 30px;
-}
-
-
-/* =====================================
-        TARJETAS
-===================================== */
-
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-    margin: 25px 0;
-}
-
-.card {
-    padding: 25px;
-    border-radius: 22px;
-    color: white;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, .15);
-    transition: .3s;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-.card span {
-    font-size: 35px;
-}
-
-.card h3 {
-    margin: 15px 0 5px;
-}
-
-.card h2 {
-    font-size: 35px;
-    margin: 0;
-}
-
-.azul {
-    background: linear-gradient(135deg, #1E4E8C, #0D2A52);
-}
-
-.dorado {
-    background: linear-gradient(135deg, #FFC107, #E09B00);
-    color: #08142C;
-}
-
-.verde {
-    background: linear-gradient(135deg, #198754, #0F5132);
-}
-
-
-/* =====================================
-        PANELES
-===================================== */
-
-.panel {
-    background: white;
-    padding: 25px;
-    border-radius: 22px;
-    margin-top: 25px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, .08);
-}
-
-.panel h2 {
-    color: #08142C;
-    margin-top: 0;
-}
-
-
-/* DATOS */
-
-.info {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-}
-
-.badge {
-    background: #198754;
-    color: white;
-    padding: 6px 15px;
-    border-radius: 20px;
-}
-
-
-/* BOTONES */
-
-.acciones {
-    margin-top: 20px;
-}
-
-button {
-    border: none;
-    background: #1E4E8C;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-right: 10px;
-}
-
-button:hover {
-    background: #08142C;
-}
-
-
-/* =====================================
-        TABLAS
-===================================== */
-
-.tabla {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-thead {
-    background: #08142C;
-    color: white;
-}
-
-th {
-    padding: 14px;
-    text-align: center;
-}
-
-td {
-    padding: 14px;
-    border-bottom: 1px solid #ddd;
-    text-align: center;
-}
-
-tbody tr:hover {
-    background: #F4F7FB;
-}
-
-.acum,
-.final {
-    font-weight: bold;
-    color: #198754;
-}
-
-
-/* =====================================
-        SELECT Y FORMULARIOS
-===================================== */
-
-select,
-textarea {
-    width: 100%;
-    padding: 14px;
-    border-radius: 12px;
-    border: 1px solid #ddd;
-    margin: 10px 0;
-    font-size: 15px;
-}
-
-textarea {
-    resize: none;
-}
-
-.btn-enviar {
-    background: #FFC107;
-    color: #08142C;
-    font-weight: bold;
-}
-
-
-/* MENSAJES */
-
-.mensaje {
-    background: #F4F7FB;
-    border-left: 5px solid #1E4E8C;
-    padding: 18px;
-    margin-top: 15px;
-    border-radius: 12px;
-}
-
-.mensaje h4 {
-    margin: 0;
-    color: #08142C;
-}
-
-.mensaje small {
-    color: #777;
-}
-
-
-/* =====================================
-        RESPONSIVE
-===================================== */
-
-@media(max-width:900px) {
-    .sidebar {
-        position: relative;
-        width: 100%;
-        height: auto;
-    }
-    .dashboard {
-        display: block;
-    }
-    .contenido {
-        margin-left: 0;
-        width: 100%;
-        padding: 15px;
-    }
-    .top {
-        flex-direction: column;
-        gap: 15px;
-    }
-    .cards {
-        grid-template-columns: 1fr;
-    }
-}
-
-.selector-corte {
-    width: 180px;
-    min-width: 180px;
-    height: 40px;
-    padding: 8px 12px;
-    margin: 0;
-    box-sizing: border-box;
-}
-
-
-/* =====================================================
-   MENÚ LATERAL
-   ===================================================== */
-
-.sidebar-menu {
+/* ==========================================================
+   BARRA LATERAL
+   ========================================================== */
+
+.rail {
+
+    background: var(--tinta);
+    color: #EEF1F8;
+    padding: 28px 22px;
     display: flex;
     flex-direction: column;
-    width: 100%;
+    gap: 30px;
+}
+
+.brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+}
+
+.brand-mark {
+
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 6px;
+    border: 2px solid rgba(255,255,255,.18);
+}
+
+.brand-name {
+
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.brand-sub {
+
+    margin: 0;
+    font-size: .78rem;
+    color: rgba(238,241,248,.6);
+}
+
+.viewer {
+
+    border-top: 1px solid rgba(238,241,248,.14);
+    border-bottom: 1px solid rgba(238,241,248,.14);
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     gap: 6px;
 }
 
-.sidebar-menu a {
+.viewer-avatar {
+
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--bronce);
+    color: var(--tinta);
     display: flex;
     align-items: center;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px 18px;
-    text-decoration: none;
-    color: #ffffff;
-    border-radius: 8px;
-    transition: all 0.2s ease;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 1.1rem;
 }
 
-.sidebar-menu a span:first-child {
-    width: 30px;
-    min-width: 30px;
-    font-size: 18px;
+.viewer-name {
+
+    margin: 0;
+    font-weight: 600;
+    font-size: .95rem;
 }
 
-.sidebar-menu a span:last-child {
-    display: inline-block;
+.viewer-meta {
+
+    margin: 0;
+    font-size: .8rem;
+    color: rgba(238,241,248,.62);
+}
+
+.rail-nav {
+
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.rail-link {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: .9rem;
+    color: rgba(238,241,248,.78);
+    transition: background .15s ease, color .15s ease;
+}
+
+.rail-link:hover {
+
+    background: rgba(238,241,248,.08);
+    color: #fff;
+}
+
+.rail-link.is-active {
+
+    background: rgba(192,138,40,.16);
+    color: #fff;
+    font-weight: 600;
+}
+
+.rail-contador {
+
+    background: var(--bronce);
+    color: var(--tinta);
+    font-size: .72rem;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 999px;
+}
+
+.rail-salir {
+    margin-top: 10px;
+    opacity: .7;
+}
+
+
+/* ==========================================================
+   HOJA PRINCIPAL
+   ========================================================== */
+
+.sheet {
+
+    padding: 40px 48px 64px;
+    max-width: 1180px;
+}
+
+.sheet-head {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding-bottom: 26px;
+    border-bottom: 1px solid var(--regla);
+    margin-bottom: 34px;
+}
+
+.sheet-head h1 {
+
+    font-size: clamp(1.6rem, 2.3vw, 2.15rem);
+    max-width: 620px;
+}
+
+.sheet-head p {
+
+    margin: 8px 0 0;
+    color: var(--tinta-suave);
+    font-size: .95rem;
+}
+
+.stamp-date {
+
+    font-family: 'Fraunces', serif;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--tinta);
+    background: var(--bronce-suave);
+    border: 1px solid var(--regla-fuerte);
+    padding: 7px 14px;
+    border-radius: 999px;
     white-space: nowrap;
 }
 
-.sidebar-menu a:hover {
-    background: rgba(255, 255, 255, 0.10);
-    transform: translateX(3px);
+
+/* ==========================================================
+   FRANJA HERO: SELLO + LEDGER DE CIFRAS
+   ========================================================== */
+
+.hero-row {
+
+    display: flex;
+    align-items: center;
+    gap: 44px;
+    flex-wrap: wrap;
+    padding-bottom: 40px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--regla);
+}
+
+.sello {
+
+    flex-shrink: 0;
+    width: 148px;
+    height: 148px;
+    border-radius: 50%;
+    background: var(--tinta);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--sombra-sello);
+    border: 4px solid var(--bronce);
+    position: relative;
+}
+
+.sello-valor {
+
+    font-family: 'Fraunces', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.sello-label {
+
+    font-size: .74rem;
+    color: rgba(255,255,255,.72);
+    margin-top: 4px;
+}
+
+.stat-ledger {
+
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.stat-ledger li {
+    min-width: 140px;
+}
+
+.stat-num {
+
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.stat-num.color-bosque { color: var(--bosque); }
+.stat-num.color-ladrillo { color: var(--ladrillo); }
+
+.stat-label {
+
+    display: block;
+    font-size: .82rem;
+    color: var(--tinta-suave);
+    margin-top: 2px;
+}
+
+
+/* ==========================================================
+   BANDA DE ESTADO ACADÉMICO
+   ========================================================== */
+
+.estado-banda {
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 26px;
+    border-radius: var(--radio);
+    margin-bottom: 44px;
+    border: 1px solid var(--regla);
+}
+
+.estado-banda.ok {
+    background: var(--bosque-suave);
+    border-color: #cfe3d8;
+}
+
+.estado-banda.alerta {
+    background: var(--ladrillo-suave);
+    border-color: #ecd3cc;
+}
+
+.estado-banda.pendiente {
+    background: var(--gris-suave);
+    border-color: var(--regla);
+}
+
+.estado-icono {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.estado-texto h3 {
+    font-size: 1.15rem;
+    margin-bottom: 3px;
+}
+
+.estado-texto p {
+    margin: 0;
+    color: var(--tinta-suave);
+    font-size: .9rem;
+}
+
+.pastilla {
+
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: .76rem;
+    font-weight: 600;
+    border: 1px solid currentColor;
+}
+
+.pastilla.ok { color: var(--bosque); }
+.pastilla.alerta { color: var(--ladrillo); }
+.pastilla.pendiente { color: var(--gris); }
+
+
+/* ==========================================================
+   PANELES (separados por regla, no tarjetas repetidas)
+   ========================================================== */
+
+.panel {
+
+    padding: 34px 0;
+    border-bottom: 1px solid var(--regla);
+}
+
+.panel:last-of-type {
+    border-bottom: none;
+}
+
+.panel-head {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.panel-head h2 {
+    font-size: 1.25rem;
+}
+
+.panel-head p {
+    margin: 5px 0 0;
+    color: var(--tinta-suave);
+    font-size: .88rem;
+}
+
+.panel-contador {
+
+    font-size: .8rem;
+    color: var(--tinta-suave);
+    background: var(--papel-sombra);
+    padding: 4px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   TABLA DE CALIFICACIONES (estilo ledger)
+   ========================================================== */
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+.tabla-notas {
+
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .85rem;
+}
+
+.tabla-notas thead th {
+
+    text-align: left;
+    font-weight: 600;
+    font-size: .76rem;
+    color: var(--tinta-suave);
+    padding: 0 10px 10px;
+    border-bottom: 2px solid var(--tinta);
+    white-space: nowrap;
+}
+
+.tabla-notas tbody td {
+
+    padding: 11px 10px;
+    border-bottom: 1px solid var(--regla);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.tabla-notas tbody tr:hover td {
+    background: var(--papel-sombra);
+}
+
+.tabla-notas .col-asignatura {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    white-space: normal;
+    min-width: 160px;
+}
+
+.tabla-notas .num {
+    text-align: center;
+    color: var(--tinta-suave);
+}
+
+.tabla-notas .destacado {
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   ESTADO (badges dentro de tabla y otros lugares)
+   ========================================================== */
+
+.estado-pill {
+
+    display: inline-block;
+    padding: 3px 11px;
+    border-radius: 999px;
+    font-size: .76rem;
+    font-weight: 600;
+    border: 1px solid currentColor;
+    white-space: nowrap;
+}
+
+.estado-pill.ok { color: var(--bosque); }
+.estado-pill.alerta { color: var(--ladrillo); }
+.estado-pill.pendiente { color: var(--gris); }
+
+
+/* ==========================================================
+   ACCIONES ACADÉMICAS (filas, no botones sueltos)
+   ========================================================== */
+
+.acciones-lista {
+
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--regla);
+}
+
+.accion-fila {
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 6px;
+    border-bottom: 1px solid var(--regla);
+    transition: background .15s ease;
+}
+
+.accion-fila:hover {
+    background: var(--papel-sombra);
+}
+
+.accion-icono {
+    font-size: 1.3rem;
+}
+
+.accion-texto {
+    flex: 1;
+}
+
+.accion-texto strong {
+    display: block;
+    font-size: .94rem;
+}
+
+.accion-texto span {
+    font-size: .8rem;
+    color: var(--tinta-suave);
+}
+
+.accion-flecha {
+    color: var(--tinta-suave);
+    font-size: 1.1rem;
+}
+
+
+/* ==========================================================
+   FORMULARIO DE MENSAJE
+   ========================================================== */
+
+.nota-form {
+
+    background: var(--papel-sombra);
+    border: 1px solid var(--regla);
+    border-radius: var(--radio);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 560px;
+}
+
+.nota-form label {
+
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--tinta-suave);
+}
+
+.nota-form select,
+.nota-form textarea {
+
+    width: 100%;
+    padding: 11px 13px;
+    border: 1px solid var(--regla-fuerte);
+    border-radius: 10px;
+    background: var(--papel);
+    font-family: inherit;
+    font-size: .92rem;
+    color: var(--tinta);
+}
+
+.nota-form textarea {
+    min-height: 96px;
+    resize: vertical;
+}
+
+.nota-form select:focus,
+.nota-form textarea:focus {
+    outline: none;
+    border-color: var(--bronce);
+    box-shadow: 0 0 0 3px rgba(192,138,40,.18);
+}
+
+.btn-tinta {
+
+    align-self: flex-start;
+    background: var(--tinta);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 10px;
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease;
+}
+
+.btn-tinta:hover {
+    background: #1e2f52;
+}
+
+
+/* ==========================================================
+   CONVERSACIONES
+   ========================================================== */
+
+.conversaciones {
+
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--regla);
+}
+
+.conversacion-fila {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 4px;
+    border-bottom: 1px solid var(--regla);
+    flex-wrap: wrap;
+}
+
+.conversacion-info h4 {
+
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.conversacion-info p {
+
+    margin: 0 0 4px;
+    font-size: .86rem;
+    color: var(--tinta-suave);
+}
+
+.conversacion-info small {
+
+    font-size: .75rem;
+    color: var(--gris);
+}
+
+.btn-linea {
+
+    border: 1px solid var(--tinta);
+    color: var(--tinta);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: .84rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background .15s ease, color .15s ease;
+}
+
+.btn-linea:hover {
+    background: var(--tinta);
+    color: #fff;
+}
+
+
+/* ==========================================================
+   AVISOS (nota fijada — único otro tratamiento de tarjeta)
+   ========================================================== */
+
+.lista-avisos {
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.aviso-card {
+
+    display: flex;
+    gap: 16px;
+    padding: 18px 20px;
+    background: #fff;
+    border: 1px solid var(--regla);
+    border-left: 4px solid var(--bronce);
+    border-radius: 10px;
+}
+
+.aviso-icono {
+    font-size: 1.4rem;
+}
+
+.aviso-contenido h3 {
+
+    font-size: 1.02rem;
+    margin-bottom: 5px;
+}
+
+.aviso-contenido p {
+
+    margin: 0 0 10px;
+    font-size: .88rem;
+    color: var(--tinta-suave);
+    line-height: 1.55;
+}
+
+.aviso-pie {
+
+    display: flex;
+    gap: 16px;
+    font-size: .78rem;
+    color: var(--gris);
+    flex-wrap: wrap;
+}
+
+
+/* ==========================================================
+   ESTADOS VACÍOS
+   ========================================================== */
+
+.vacio {
+
+    padding: 34px 10px;
+    text-align: center;
+    color: var(--tinta-suave);
+    font-size: .92rem;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 980px) {
+
+    .portal {
+        grid-template-columns: 1fr;
+    }
+
+    .rail {
+
+        flex-direction: row;
+        align-items: center;
+        padding: 14px 18px;
+        gap: 18px;
+        overflow-x: auto;
+    }
+
+    .brand {
+        flex-direction: row;
+        text-align: left;
+    }
+
+    .brand-mark {
+        margin-bottom: 0;
+        width: 38px;
+        height: 38px;
+    }
+
+    .viewer {
+        border: none;
+        padding: 0;
+        flex-direction: row;
+    }
+
+    .rail-nav {
+        flex-direction: row;
+    }
+
+    .rail-link span.rail-texto {
+        display: none;
+    }
+
+    .sheet {
+        padding: 28px 20px 48px;
+    }
+
+    .hero-row {
+        gap: 28px;
+    }
+
+    .sello {
+        width: 116px;
+        height: 116px;
+    }
+
+    .sello-valor {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 560px) {
+
+    .sheet-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .stat-ledger {
+        gap: 24px;
+    }
 }

@@ -72,33 +72,6 @@ def role_required(rol):
         return wrapper
     return decorator
 
-    # ============================================================
-    # OBTENER CLASES REALES DEL DOCENTE
-    # ============================================================
-
-    def obtener_clases_docente(docente_id):
-
-        docente_id = str(docente_id).strip().upper()
-
-        print("============================================================")
-        print("🔎 OBTENIENDO CLASES REALES DEL DOCENTE")
-        print("👨‍🏫 DOCENTE ID:", docente_id)
-        print("📂 FUENTE: asignaciones_clase")
-        print("============================================================")
-
-       # --------------------------------------------------------
-        # BUSCAR ÚNICAMENTE LAS ASIGNACIONES DEL DOCENTE
-        # --------------------------------------------------------
-
-        clases = list(
-            db.asignaciones_clase.find({
-                "docente_id": docente_id,
-                "estado": {
-                    "$regex": "^activa$",
-                    "$options": "i"
-                }
-            })
-        )
 #===========================================================
 # DASHBOARD DOCENTE
 # ============================================================
@@ -107,9 +80,6 @@ def role_required(rol):
 @role_required("docente")
 def dashboard_docente():
 
-    print("========================================================")
-    print("📊 DASHBOARD DOCENTE")
-    print("========================================================")
 
     # ========================================================
     # 1. USUARIO
@@ -117,11 +87,9 @@ def dashboard_docente():
 
     usuario = session.get("usuario")
 
-    print("👤 USUARIO:", usuario)
 
     if not usuario:
 
-        print("❌ NO HAY USUARIO EN LA SESIÓN")
 
         flash(
             "La sesión ha expirado.",
@@ -142,7 +110,6 @@ def dashboard_docente():
 
     if not docente:
 
-        print("❌ DOCENTE NO ENCONTRADO")
 
         flash(
             "Docente no encontrado.",
@@ -172,33 +139,11 @@ def dashboard_docente():
 
         docente_id = "DOC" + codigo_docente
 
-    print(
-        "👨‍🏫 DOCENTE:",
-        docente.get(
-            "nombre",
-            ""
-        )
-    )
-
-    print(
-        "🔢 CÓDIGO:",
-        codigo_docente
-    )
-
-    print(
-        "🆔 ID DOCENTE:",
-        docente_id
-    )
-
-    print("========================================================")
-
 
     # ========================================================
     # 4. BUSCAR CLASES REALES DEL DOCENTE
     # ========================================================
 
-    print("🔎 BUSCANDO CLASES DEL DOCENTE")
-    print("========================================================")
 
     # --------------------------------------------------------
     # GENERAR POSIBLES IDs DEL DOCENTE
@@ -217,10 +162,6 @@ def dashboard_docente():
         dict.fromkeys(ids_docente)
     )
 
-    print(
-        "👨‍🏫 IDs A BUSCAR:",
-        ids_docente
-    )
 
     # --------------------------------------------------------
     # BUSCAR EN ASIGNACIONES_CLASE
@@ -233,21 +174,14 @@ def dashboard_docente():
         db.asignaciones_clase.find({
             "docente_id": {
                 "$in": ids_docente
-            }
+            },
+            "activo": True
         }).sort(
             "asignatura",
             1
         )
     )
 
-    print(
-        "📂 COLECCIÓN: asignaciones_clase"
-    )
-
-    print(
-        "📚 ASIGNACIONES ENCONTRADAS:",
-        len(clases)
-    )
 
     # --------------------------------------------------------
     # MOSTRAR LAS CLASES ENCONTRADAS
@@ -255,45 +189,8 @@ def dashboard_docente():
 
     for clase in clases:
 
-        print(
-            "➡️",
-            clase.get(
-                "codigo_asignatura",
-                ""
-            ),
-            "|",
-            clase.get(
-                "asignatura",
-                ""
-            ),
-            "| Nivel:",
-            clase.get(
-                "nivel",
-                ""
-            ),
-            "| Grado:",
-            clase.get(
-                "grado",
-                ""
-            ),
-            "| Sección:",
-            clase.get(
-                "seccion",
-                ""
-            ),
-            "| Docente:",
-            clase.get(
-                "docente_id",
-                ""
-            ),
-            "| Estado:",
-            clase.get(
-                "estado",
-                ""
-            )
-        )
+        pass
 
-    print("========================================================")
 
     # ========================================================
     # 5. PREPARAR CLASES PARA EL DASHBOARD
@@ -311,13 +208,13 @@ def dashboard_docente():
 
         # CÓDIGO DE ASIGNATURA
         clase["codigo"] = clase.get(
-            "codigo_asignatura",
+            "asignatura_codigo",
             ""
         )
 
         # NOMBRE DE ASIGNATURA
         clase["nombre"] = clase.get(
-            "asignatura",
+            "asignatura_nombre",
             ""
         )
 
@@ -340,7 +237,7 @@ def dashboard_docente():
         )
 
         clase["docente_nombre"] = clase.get(
-            "docente",
+            "docente_nombre",
             docente.get(
                 "nombre",
                 ""
@@ -366,9 +263,8 @@ def dashboard_docente():
         )
 
         # ESTADO REAL DE MONGODB
-        clase["estado"] = clase.get(
-            "estado",
-            "Activa"
+        clase["estado"] = (
+            "Activa" if clase.get("activo", True) else "Inactiva"
         )
 
     # ========================================================
@@ -379,87 +275,16 @@ def dashboard_docente():
         clases
     )
 
-    print(
-        "📚 TOTAL FINAL CLASES:",
-        total_asignaturas
-    )
-
-    print("========================================================")
 
     # ========================================================
     # 6. MOSTRAR CLASES PREPARADAS
     # ========================================================
 
-    print("📋 CLASES PREPARADAS PARA EL HTML")
-    print("========================================================")
 
     for clase in clases:
 
-        print(
-            "🆔 ID:",
-            clase.get(
-                "id_str",
-                ""
-            )
-        )
+        pass
 
-        print(
-            "🔤 CÓDIGO:",
-            clase.get(
-                "codigo",
-                ""
-            )
-        )
-
-        print(
-            "📖 ASIGNATURA:",
-            clase.get(
-                "nombre",
-                ""
-            )
-        )
-
-        print(
-            "🎓 NIVEL:",
-            clase.get(
-                "nivel",
-                ""
-            )
-        )
-
-        print(
-            "🎓 GRADO:",
-            clase.get(
-                "grado",
-                ""
-            )
-        )
-
-        print(
-            "🏫 SECCIÓN:",
-            clase.get(
-                "seccion",
-                ""
-            )
-        )
-
-        print(
-            "👨‍🏫 DOCENTE:",
-            clase.get(
-                "docente_id",
-                ""
-            )
-        )
-
-        print(
-            "📌 ESTADO:",
-            clase.get(
-                "estado",
-                ""
-            )
-        )
-
-        print("----------------------------------------")
 
     # ========================================================
     # 7. TOTAL DE ASIGNATURAS
@@ -469,10 +294,6 @@ def dashboard_docente():
         clases
     )
 
-    print(
-        "📚 TOTAL ASIGNATURAS:",
-        total_asignaturas
-    )
 
     # ========================================================
     # 8. ESTUDIANTES
@@ -508,10 +329,6 @@ def dashboard_docente():
 
     except Exception as e:
 
-        print(
-            "⚠️ ERROR INCIDENCIAS:",
-            e
-        )
 
         total_incidencias = 0
 
@@ -529,10 +346,6 @@ def dashboard_docente():
 
     except Exception as e:
 
-        print(
-            "⚠️ ERROR CONVERSACIONES:",
-            e
-        )
 
         total_conversaciones = 0
 
@@ -551,10 +364,6 @@ def dashboard_docente():
 
     except Exception as e:
 
-        print(
-            "⚠️ ERROR MENSAJES:",
-            e
-        )
 
         mensajes_pendientes = 0
 
@@ -590,59 +399,6 @@ def dashboard_docente():
     # 16. RESUMEN FINAL
     # ========================================================
 
-    print("========================================================")
-    print("📊 RESUMEN DASHBOARD DOCENTE")
-    print("========================================================")
-
-    print(
-        "👨‍🏫 DOCENTE:",
-        docente.get(
-            "nombre",
-            ""
-        )
-    )
-
-    print(
-        "🆔 DOCENTE ID:",
-        docente_id
-    )
-
-    print(
-        "📚 CLASES:",
-        total_asignaturas
-    )
-
-    print(
-        "👥 ESTUDIANTES:",
-        total_estudiantes
-    )
-
-    print(
-        "📋 ASISTENCIAS:",
-        total_asistencias
-    )
-
-    print(
-        "📝 NOTAS:",
-        total_notas
-    )
-
-    print(
-        "⚠️ INCIDENCIAS:",
-        total_incidencias
-    )
-
-    print(
-        "💬 CONVERSACIONES:",
-        total_conversaciones
-    )
-
-    print(
-        "💬 MENSAJES PENDIENTES:",
-        mensajes_pendientes
-    )
-
-    print("========================================================")
 
     # ========================================================
     # 17. ENVIAR DATOS AL HTML
@@ -688,9 +444,6 @@ def dashboard_docente():
 @role_required("docente")
 def consulta_estudiantes():
 
-    print("========================================================")
-    print("📋 CONSULTA DE ESTUDIANTES")
-    print("========================================================")
 
     usuario = session.get("usuario")
 
@@ -719,8 +472,6 @@ def consulta_estudiantes():
     else:
         docente_id = "DOC" + codigo_docente
 
-    print("👨‍🏫 DOCENTE:", docente.get("nombre"))
-    print("🆔 DOCENTE ID:", docente_id)
 
     # ========================================================
     # 2. PARÁMETROS
@@ -790,20 +541,6 @@ def consulta_estudiantes():
             )
         )
 
-    print(
-        "🎓 GRADO:",
-        grado
-    )
-
-    print(
-        "🏫 SECCIÓN:",
-        seccion
-    )
-
-    print(
-        "👥 ESTUDIANTES:",
-        len(estudiantes)
-    )
 
     # ========================================================
     # 5. BUSCAR ESTUDIANTE SELECCIONADO
@@ -862,10 +599,6 @@ def consulta_estudiantes():
             )
         )
 
-    print(
-        "📋 ASISTENCIAS:",
-        len(asistencias)
-    )
 
     # ========================================================
     # 7. HISTORIAL DE INCIDENCIAS
@@ -899,10 +632,6 @@ def consulta_estudiantes():
             )
         )
 
-    print(
-        "⚠️ INCIDENCIAS:",
-        len(incidencias)
-    )
 
     # ========================================================
     # 8. CALCULAR ASISTENCIA
@@ -1027,18 +756,6 @@ def consulta_estudiantes():
     # 11. RESULTADO
     # ========================================================
 
-    print("========================================================")
-    print("📊 RESULTADO CONSULTA")
-    print("========================================================")
-    print("👤 ESTUDIANTE:",
-          estudiante.get("nombre") if estudiante else "Ninguno")
-    print("📋 ASISTENCIAS:",
-          len(asistencias))
-    print("⚠️ INCIDENCIAS:",
-          len(incidencias))
-    print("📈 PORCENTAJE:",
-          porcentaje_asistencia)
-    print("========================================================")
 
     # ========================================================
     # 12. MOSTRAR HTML
@@ -1080,9 +797,6 @@ def consulta_estudiantes():
 @role_required("docente")
 def lista_incidencias():
 
-    print("========================================================")
-    print("⚠️ SELECCIÓN DE CLASE PARA INCIDENCIAS")
-    print("========================================================")
 
     # ========================================================
     # 1. USUARIO
@@ -1101,7 +815,6 @@ def lista_incidencias():
             url_for("login")
         )
 
-    print("👤 USUARIO:", usuario)
 
     # ========================================================
     # 2. BUSCAR DOCENTE
@@ -1141,18 +854,6 @@ def lista_incidencias():
 
         docente_id = "DOC" + codigo_docente
 
-    print(
-        "👨‍🏫 DOCENTE:",
-        docente.get(
-            "nombre",
-            ""
-        )
-    )
-
-    print(
-        "🆔 DOCENTE ID:",
-        docente_id
-    )
 
     # ========================================================
     # 4. BUSCAR CLASES
@@ -1263,35 +964,11 @@ def lista_incidencias():
     # 6. MOSTRAR CLASES
     # ========================================================
 
-    print("========================================================")
-    print("📚 CLASES PARA INCIDENCIAS")
-    print("========================================================")
 
     for clase in clases:
 
-        print(
-            "🆔",
-            clase.get("id_str"),
-            "|",
-            clase.get("codigo"),
-            "|",
-            clase.get("nombre"),
-            "| NIVEL:",
-            clase.get("nivel"),
-            "| GRADO:",
-            clase.get("grado"),
-            "| SECCIÓN:",
-            clase.get("seccion")
-        )
+        pass
 
-    print("========================================================")
-
-    print(
-        "📚 TOTAL CLASES PARA INCIDENCIAS:",
-        len(clases)
-    )
-
-    print("========================================================")
 
     # ========================================================
     # 7. HTML
@@ -1415,18 +1092,11 @@ def lista_incidencias():
         # 🔎 ESTRUCTURA REAL DE LAS NOTAS
         # ========================================================
 
-        print("")
-        print("========================================================")
-        print("🔎 ESTRUCTURA REAL DE LAS NOTAS")
-        print("========================================================")
 
         for nota in notas_docente[:10]:
 
-            print("----------------------------------------")
-            print(nota)
-            print("----------------------------------------")
+            pass
 
-        print("========================================================")
 
     # ========================================================
     # 6. PROMEDIO GENERAL
@@ -1672,10 +1342,15 @@ def mis_clases():
     # ======================================================
     # ID DEL DOCENTE
     # ======================================================
+    #
+    # IMPORTANTE: asignaciones_clase guarda el docente_id como
+    # su CÓDIGO (ej. "DOC010"), no como el ObjectId de Mongo.
+    # Antes aquí se usaba str(docente["_id"]), por lo que esta
+    # consulta nunca coincidía con lo que "Asignar Clase" y
+    # aulas() escriben/leen. Se deja igual que en aulas().
+    # ======================================================
 
-    docente_id = str(
-        docente.get("_id")
-    )
+    docente_id = docente.get("codigo")
 
     # ======================================================
     # OBTENER ASIGNACIONES DE CLASE
@@ -1712,33 +1387,11 @@ def mis_clases():
     # INFORMACIÓN PARA DEPURACIÓN
     # ======================================================
 
-    print("")
-    print("========================================================")
-    print("📚 MIS CLASES")
-    print("========================================================")
-    print("DOCENTE:", docente.get("nombre"))
-    print("DOCENTE ID:", docente_id)
-    print("TOTAL CLASES:", len(clases))
 
     for clase in clases:
 
-        print(
-            clase.get("_id"),
-            "|",
-            clase.get("asignatura_codigo"),
-            "|",
-            clase.get("asignatura_nombre"),
-            "| NIVEL:",
-            clase.get("nivel"),
-            "| GRADO:",
-            clase.get("grado"),
-            "| SECCIÓN:",
-            clase.get("seccion"),
-            "| DOCENTE:",
-            clase.get("docente_id")
-        )
+        pass
 
-    print("========================================================")
 
     # ======================================================
     # MOSTRAR MIS CLASES
@@ -1751,33 +1404,6 @@ def mis_clases():
         docente_id=docente_id
     )
 
-    # ==========================================================
-    # BUSCAR ASIGNACIÓN DE CLASE
-    # ==========================================================
-
-    codigo_docente = str(
-        docente.get("codigo", "")
-    ).strip().upper()
-
-    if codigo_docente.startswith("DOC"):
-        docente_id = codigo_docente
-    else:
-        docente_id = f"DOC{codigo_docente}"
-
-    ids_busqueda = [asignatura_id]
-
-    try:
-        ids_busqueda.append(ObjectId(asignatura_id))
-    except Exception:
-        pass
-
-    asignatura = db.asignaciones_clase.find_one({
-        "_id": {
-            "$in": ids_busqueda
-        },
-        "docente_id": docente_id,
-        "activo": True
-    })
 # =====================================
 # CERRAR SESIÓN DOCENTE
 # =====================================
@@ -1797,9 +1423,6 @@ def logout():
 @role_required("docente")
 def lista_asistencia():
 
-    print("========================================================")
-    print("📋 SELECCIÓN DE CLASE PARA ASISTENCIA")
-    print("========================================================")
 
     # ========================================================
     # 1. USUARIO
@@ -1818,7 +1441,6 @@ def lista_asistencia():
             url_for("login")
         )
 
-    print("👤 USUARIO:", usuario)
 
     # ========================================================
     # 2. BUSCAR DOCENTE
@@ -1858,8 +1480,6 @@ def lista_asistencia():
 
         docente_id = "DOC" + codigo_docente
 
-    print("👨‍🏫 DOCENTE:", docente.get("nombre"))
-    print("🆔 DOCENTE ID:", docente_id)
 
     # ========================================================
     # 4. BUSCAR CLASES
@@ -1946,35 +1566,11 @@ def lista_asistencia():
     # 6. MOSTRAR RESULTADO
     # ========================================================
 
-    print("========================================================")
-    print("📚 CLASES DE ASISTENCIA")
-    print("========================================================")
 
     for clase in clases:
 
-        print(
-            "🆔",
-            clase.get("id_str"),
-            "|",
-            clase.get("codigo"),
-            "|",
-            clase.get("nombre"),
-            "|",
-            clase.get("nivel"),
-            "| GRADO:",
-            clase.get("grado"),
-            "| SECCIÓN:",
-            clase.get("seccion")
-        )
+        pass
 
-    print("========================================================")
-
-    print(
-        "📚 TOTAL CLASES PARA ASISTENCIA:",
-        len(clases)
-    )
-
-    print("========================================================")
 
     # ========================================================
     # 7. ENVIAR AL HTML
@@ -1982,7 +1578,7 @@ def lista_asistencia():
 
     return render_template(
 
-        "docente/seleccionar_asistencia.html",
+        "docente/asignatura.html",
 
         clases=clases,
 
@@ -2002,10 +1598,6 @@ def lista_asistencia():
 @role_required("docente")
 def asistencia(asignatura_id):
 
-    print("========================================")
-    print("🔥 ABRIENDO ASISTENCIA")
-    print("🆔 ASIGNACIÓN ID:", repr(asignatura_id))
-    print("========================================")
 
     # =====================================
     # 1. USUARIO
@@ -2062,18 +1654,6 @@ def asistencia(asignatura_id):
 
         docente_id = "DOC" + codigo_docente
 
-    print(
-        "👨‍🏫 DOCENTE:",
-        docente.get(
-            "nombre",
-            ""
-        )
-    )
-
-    print(
-        "🆔 DOCENTE ID:",
-        docente_id
-    )
 
     # =====================================
     # 4. BUSCAR ASIGNACIÓN
@@ -2082,10 +1662,6 @@ def asistencia(asignatura_id):
     # CALIFICACIONES
     # =====================================
 
-    print("========================================")
-    print("🔎 BUSCANDO ASIGNACIÓN")
-    print("📂 COLECCIÓN: asignaciones_clase")
-    print("========================================")
 
     asignacion = None
 
@@ -2127,10 +1703,7 @@ def asistencia(asignatura_id):
 
         except Exception as e:
 
-            print(
-                "⚠️ ERROR OBJECTID:",
-                e
-            )
+            pass
 
     # =====================================
     # 4.3 CORRECCIÓN PARA DOC014
@@ -2155,9 +1728,6 @@ def asistencia(asignatura_id):
 
         ):
 
-            print(
-                "❌ INF NO PERTENECE A DOC014"
-            )
 
             asignacion = None
 
@@ -2167,7 +1737,6 @@ def asistencia(asignatura_id):
 
     if not asignacion:
 
-        print("❌ ASIGNACIÓN NO ENCONTRADA")
 
         flash(
             "Asignación de clase no encontrada.",
@@ -2178,28 +1747,6 @@ def asistencia(asignatura_id):
             url_for("docente.aulas")
         )
 
-    print("✅ ASIGNACIÓN ENCONTRADA")
-
-    print(
-        "🆔 ID:",
-        asignacion.get("_id")
-    )
-
-    print(
-        "🔤 CÓDIGO:",
-        asignacion.get(
-            "asignatura_codigo",
-            ""
-        )
-    )
-
-    print(
-        "📖 ASIGNATURA:",
-        asignacion.get(
-            "asignatura_nombre",
-            ""
-        )
-    )
 
     # =====================================
     # 6. DATOS DE LA CLASE
@@ -2411,20 +1958,12 @@ def asistencia(asignatura_id):
     # 8. BUSCAR ESTUDIANTES
     # ======================================================
 
-    print("")
-    print("========================================")
-    print("🔎 BUSCANDO ESTUDIANTES")
-    print("========================================")
 
     estudiantes = []
 
     nivel_normalizado = str(nivel).strip().lower()
     grado_normalizado = str(grado).strip()
     seccion_normalizada = str(seccion).strip().upper()
-
-    print("🎓 NIVEL:", nivel_normalizado)
-    print("📖 GRADO:", grado_normalizado)
-    print("🏫 SECCIÓN:", seccion_normalizada)
 
 
     # ======================================================
@@ -2463,10 +2002,6 @@ def asistencia(asignatura_id):
                 grado_normalizado
             ]
 
-        print(
-            "🎒 GRADOS A BUSCAR:",
-            grados_busqueda
-        )
 
         estudiantes = list(
             db.estudiantes.find({
@@ -2505,10 +2040,6 @@ def asistencia(asignatura_id):
             [grado_normalizado]
         )
 
-        print(
-            "📖 GRADOS A BUSCAR:",
-            grados_busqueda
-        )
 
         estudiantes = list(
             db.estudiantes.find({
@@ -2573,26 +2104,10 @@ def asistencia(asignatura_id):
     # RESULTADO
     # ======================================================
 
-    print("")
-    print("========================================")
-    print(
-        "👥 ESTUDIANTES ENCONTRADOS:",
-        len(estudiantes)
-    )
-    print("========================================")
 
     for estudiante in estudiantes[:10]:
 
-        print(
-            "→",
-            estudiante.get("nombre", ""),
-            "| GRADO:",
-            estudiante.get("grado", ""),
-            "| SECCIÓN:",
-            estudiante.get("seccion", ""),
-            "| ESTADO:",
-            estudiante.get("estado", "")
-        )
+        pass
 
     # =====================================
     # 9. FECHA
@@ -2618,10 +2133,6 @@ def asistencia(asignatura_id):
         })
     )
 
-    print(
-        "📋 ASISTENCIAS GUARDADAS:",
-        len(asistencias_guardadas)
-    )
 
     # =====================================
     # 11. CONSTRUIR DICCIONARIO
@@ -2694,26 +2205,6 @@ def asistencia(asignatura_id):
     # 13. RESUMEN
     # =====================================
 
-    print("========================================")
-    print("📦 DATOS PARA ASISTENCIA")
-    print("========================================")
-
-    print(
-        "ASIGNATURA:",
-        asignatura
-    )
-
-    print(
-        "ESTUDIANTES:",
-        len(estudiantes)
-    )
-
-    print(
-        "ASISTENCIAS:",
-        len(asistencia)
-    )
-
-    print("========================================")
 
     # =====================================
     # 14. HTML
@@ -2743,10 +2234,6 @@ def asistencia(asignatura_id):
 @role_required("docente")
 def notas(asignatura_id):
 
-    print("========================================")
-    print("📝 NOTAS / CALIFICACIONES")
-    print("ASIGNACIÓN ID:", asignatura_id)
-    print("========================================")
 
     # ======================================================
     # 1. USUARIO
@@ -2765,7 +2252,6 @@ def notas(asignatura_id):
             url_for("login")
         )
 
-    print("👤 USUARIO:", usuario)
 
     # ======================================================
     # 2. BUSCAR DOCENTE
@@ -2777,7 +2263,6 @@ def notas(asignatura_id):
 
     if not docente:
 
-        print("❌ DOCENTE NO ENCONTRADO")
 
         flash(
             "Docente no encontrado.",
@@ -2807,18 +2292,6 @@ def notas(asignatura_id):
 
         docente_id = "DOC" + codigo_docente
 
-    print(
-        "👨‍🏫 DOCENTE:",
-        docente.get(
-            "nombre",
-            ""
-        )
-    )
-
-    print(
-        "🆔 DOCENTE ID:",
-        docente_id
-    )
 
     # ======================================================
     # 4. PREPARAR ID DE ASIGNACIÓN
@@ -2842,15 +2315,8 @@ def notas(asignatura_id):
 
     except Exception as e:
 
-        print(
-            "⚠️ ERROR OBJECTID:",
-            e
-        )
+        pass
 
-    print(
-        "🔎 IDS PARA BUSCAR:",
-        ids_busqueda
-    )
 
     # ======================================================
     # 5. BUSCAR ASIGNACIÓN
@@ -2876,7 +2342,6 @@ def notas(asignatura_id):
 
     if not asignacion:
 
-        print("❌ ASIGNACIÓN NO ENCONTRADA")
 
         flash(
             "Asignación de clase no encontrada.",
@@ -2922,38 +2387,6 @@ def notas(asignatura_id):
         ""
     )
 
-    print("========================================")
-    print("✅ ASIGNACIÓN ENCONTRADA")
-    print("========================================")
-    print(
-        "🆔 ID:",
-        asignacion.get("_id")
-    )
-    print(
-        "📚 CÓDIGO:",
-        asignatura_codigo
-    )
-    print(
-        "📖 ASIGNATURA:",
-        asignatura_nombre
-    )
-    print(
-        "🎓 NIVEL:",
-        nivel
-    )
-    print(
-        "📖 GRADO:",
-        grado
-    )
-    print(
-        "🏫 SECCIÓN:",
-        seccion
-    )
-    print(
-        "👨‍🏫 DOCENTE:",
-        docente_id
-    )
-    print("========================================")
 
     # ======================================================
     # 8. NORMALIZAR NIVEL
@@ -3036,9 +2469,6 @@ def notas(asignatura_id):
             [grado]
         )
 
-        print(
-            "🎒 PREESCOLAR"
-        )
 
     elif nivel_normalizado == "primaria":
 
@@ -3047,9 +2477,6 @@ def notas(asignatura_id):
             [grado]
         )
 
-        print(
-            "📚 PRIMARIA"
-        )
 
     else:
 
@@ -3057,39 +2484,11 @@ def notas(asignatura_id):
             grado
         ]
 
-        print(
-            "🎓 OTRO NIVEL"
-        )
 
     # ======================================================
     # 12. MOSTRAR BÚSQUEDA
     # ======================================================
 
-    print("========================================")
-    print("🔎 BÚSQUEDA DE ESTUDIANTES")
-    print("========================================")
-
-    print(
-        "🎓 NIVEL:",
-        nivel_normalizado
-    )
-
-    print(
-        "📖 GRADO DE LA CLASE:",
-        grado
-    )
-
-    print(
-        "🏫 SECCIÓN:",
-        seccion
-    )
-
-    print(
-        "🎯 GRADOS A BUSCAR:",
-        grados_busqueda
-    )
-
-    print("========================================")
 
     # ======================================================
     # 13. FILTRO DE ESTUDIANTES
@@ -3119,10 +2518,6 @@ def notas(asignatura_id):
 
         }
 
-    print(
-        "🔎 FILTRO FINAL:",
-        filtro_estudiantes
-    )
 
     # ======================================================
     # 14. BUSCAR ESTUDIANTES
@@ -3143,41 +2538,10 @@ def notas(asignatura_id):
     # 15. RESULTADO
     # ======================================================
 
-    print("========================================")
-    print(
-        "👥 ESTUDIANTES ENCONTRADOS:",
-        len(estudiantes)
-    )
-    print("========================================")
 
     for estudiante in estudiantes:
 
-        print(
-            "→",
-            estudiante.get(
-                "_id"
-            ),
-            "|",
-            estudiante.get(
-                "nombre",
-                ""
-            ),
-            "| GRADO:",
-            estudiante.get(
-                "grado",
-                ""
-            ),
-            "| SECCIÓN:",
-            estudiante.get(
-                "seccion",
-                ""
-            ),
-            "| ESTADO:",
-            estudiante.get(
-                "estado",
-                ""
-            )
-        )
+        pass
 
     # ======================================================
     # 16. BUSCAR NOTAS EXISTENTES
@@ -3238,10 +2602,6 @@ def notas(asignatura_id):
                     nota
                 )
 
-    print(
-        "📝 NOTAS EXISTENTES:",
-        len(notas_existentes)
-    )
 
     # ======================================================
     # 18. ORGANIZAR NOTAS
@@ -3317,41 +2677,6 @@ def notas(asignatura_id):
     # 20. RESUMEN
     # ======================================================
 
-    print("========================================")
-    print("📦 DATOS PARA CALIFICACIONES")
-    print("========================================")
-
-    print(
-        "📚 ASIGNATURA:",
-        asignatura_nombre
-    )
-
-    print(
-        "🎓 NIVEL:",
-        nivel
-    )
-
-    print(
-        "📖 GRADO:",
-        grado
-    )
-
-    print(
-        "🏫 SECCIÓN:",
-        seccion
-    )
-
-    print(
-        "👥 ESTUDIANTES:",
-        len(estudiantes)
-    )
-
-    print(
-        "📝 NOTAS:",
-        len(notas_existentes)
-    )
-
-    print("========================================")
 
     # ======================================================
     # 21. MOSTRAR PÁGINA
@@ -3433,18 +2758,7 @@ def notas(asignatura_id):
     }
 
     
-    print("========================================")
-    print("📚 ASIGNATURA:", asignatura["nombre"])
-    print("👥 ESTUDIANTES:", len(estudiantes))
-    print("📝 NOTAS EXISTENTES:", len(notas_existentes))
-    print("========================================")
 
-    print("")
-
-    print("")
-    print("========================================")
-    print("🔍 DIAGNÓSTICO REAL DE ESTUDIANTES")
-    print("========================================")
 
     # =====================================
     # TOTAL DE ESTUDIANTES
@@ -3452,45 +2766,19 @@ def notas(asignatura_id):
 
     total_estudiantes = db.estudiantes.count_documents({})
 
-    print(
-        "👥 TOTAL ESTUDIANTES EN db.estudiantes:",
-        total_estudiantes
-    )
 
     # =====================================
     # PRIMEROS 30 ESTUDIANTES
     # =====================================
 
-    print("")
-    print("========================================")
-    print("📋 PRIMEROS 30 ESTUDIANTES")
-    print("========================================")
 
     for e in db.estudiantes.find({}).limit(30):
 
-        print(
-            "ID:",
-            e.get("_id"),
-            "| NOMBRE:",
-            repr(e.get("nombre")),
-            "| GRADO:",
-            repr(e.get("grado")),
-            "| SECCIÓN:",
-            repr(e.get("seccion")),
-            "| ESTADO:",
-            repr(e.get("estado")),
-            "| NIVEL:",
-            repr(e.get("nivel"))
-        )
 
         # =====================================
         # BUSCAR PREESCOLAR SIN FILTRAR
         # =====================================
 
-        print("")
-        print("========================================")
-        print("🔍 ESTUDIANTES QUE PARECEN PREESCOLAR")
-        print("========================================")
 
         for e in db.estudiantes.find({
             "grado": {
@@ -3499,24 +2787,8 @@ def notas(asignatura_id):
             }
         }).limit(30):
 
-            print(
-                "ID:",
-                e.get("_id"),
-                "| NOMBRE:",
-                repr(e.get("nombre")),
-                "| GRADO:",
-                repr(e.get("grado")),
-                "| SECCIÓN:",
-                repr(e.get("seccion")),
-                "| ESTADO:",
-                repr(e.get("estado")),
-                "| NIVEL:",
-                repr(e.get("nivel"))
-            )
+            pass
 
-        print("========================================")
-        print("🔍 FIN DEL DIAGNÓSTICO")
-        print("========================================")
 
         return render_template(
             "docente/notas.html",
@@ -3539,9 +2811,6 @@ def notas(asignatura_id):
 @role_required("docente")
 def guardar_notas():
 
-    print("========================================")
-    print("💾 GUARDAR NOTAS")
-    print("========================================")
 
     asignatura_id = request.form.get(
         "asignatura_id"
@@ -3602,9 +2871,15 @@ def guardar_notas():
 
     codigo_docente = str(
         docente.get("codigo", "")
-    ).strip()
+    ).strip().upper()
 
-    docente_id = f"DOC{codigo_docente}"
+    if codigo_docente.startswith("DOC"):
+
+        docente_id = codigo_docente
+
+    else:
+
+        docente_id = "DOC" + codigo_docente
 
     # ======================================================
     # ASIGNACIÓN
@@ -3786,6 +3061,9 @@ def guardar_notas():
             "asignatura_id":
                 asignatura_id,
 
+            "asignatura_nombre":
+                asignacion.get("asignatura_nombre", ""),
+
             "estudiante_id":
                 estudiante_id,
 
@@ -3806,6 +3084,9 @@ def guardar_notas():
 
             "docente_id":
                 docente_id,
+
+            "docente_nombre":
+                docente.get("nombre", ""),
 
             "acumulado":
                 acumulado,
@@ -3861,12 +3142,6 @@ def guardar_notas():
 
         guardados += 1
 
-    print("========================================")
-    print(
-        "✅ TOTAL GUARDADOS:",
-        guardados
-    )
-    print("========================================")
 
     flash(
         f"Notas guardadas correctamente. "
@@ -3889,10 +3164,6 @@ def guardar_notas():
 @role_required("docente")
 def reporte_notas(asignatura_id):
 
-    print("========================================")
-    print("📊 REPORTE DE NOTAS")
-    print("ASIGNACIÓN ID:", asignatura_id)
-    print("========================================")
 
     usuario = session.get("usuario")
 
@@ -4104,10 +3375,6 @@ def reporte_notas(asignatura_id):
             "estado": estado
         })
 
-    print(
-        "📚 ESTUDIANTES EN REPORTE:",
-        len(reporte)
-    )
 
     # ======================================================
     # MOSTRAR REPORTE
@@ -4147,10 +3414,6 @@ def reporte_notas(asignatura_id):
 @role_required("docente")
 def reporte_notas_pdf(asignatura_id):
 
-    print("========================================")
-    print("📄 REPORTE DE NOTAS PDF")
-    print("ASIGNACIÓN ID:", asignatura_id)
-    print("========================================")
 
     usuario = session.get("usuario")
 
@@ -4665,10 +3928,6 @@ def reporte_notas_pdf(asignatura_id):
         + ".pdf"
     )
 
-    print(
-        "✅ PDF GENERADO:",
-        nombre_archivo
-    )
 
     return send_file(
         buffer,
@@ -4685,10 +3944,6 @@ def reporte_notas_pdf(asignatura_id):
 @role_required("docente")
 def descargar_reporte_notas(asignatura_id):
 
-    print("========================================")
-    print("📄 DESCARGANDO PDF DE NOTAS")
-    print("ASIGNACIÓN ID:", asignatura_id)
-    print("========================================")
 
     usuario = session.get("usuario")
 
@@ -5188,55 +4443,17 @@ def aulas():
     # DEPURACIÓN
     # =====================================
 
-    print("")
-    print("========================================================")
-    print("🏫 AULAS DEL DOCENTE")
-    print("========================================================")
-    print("USUARIO:", usuario)
-    print("DOCENTE:", docente.get("nombre"))
-    print("DOCENTE ID:", docente_id)
-    print("TOTAL AULAS:", len(clases))
-    print("========================================================")
 
     for clase in clases:
 
-        print(
-            clase.get("_id"),
-            "|",
-            clase.get("asignatura_codigo"),
-            "|",
-            clase.get("asignatura_nombre"),
-            "| NIVEL:",
-            clase.get("nivel"),
-            "| GRADO:",
-            clase.get("grado"),
-            "| SECCIÓN:",
-            clase.get("seccion"),
-            "| DOCENTE:",
-            clase.get("docente_id")
-        )
+        pass
 
-    print("========================================================")
-
-    print("")
-    print("========== VERIFICACIÓN REAL DE IDs ==========")
 
     for clase in clases:
 
         id_clase = clase.get("_id")
 
-        print(
-            "ID:",
-            repr(id_clase),
-            "| TIPO:",
-            type(id_clase),
-            "| EXISTE:",
-            db.asignaciones_clase.count_documents({
-                "_id": id_clase
-            })
-        )
 
-    print("==============================================")
         # =====================================
     # MOSTRAR AULAS
     # =====================================
@@ -5310,21 +4527,6 @@ def estudiantes():
     # DEBUG
     # =====================================
 
-    print("")
-    print("=====================================")
-    print("👨‍🏫 ESTUDIANTES DEL DOCENTE")
-    print("=====================================")
-    print("DOCENTE:", docente.get("nombre"))
-    print("USUARIO:", usuario)
-    print(
-        "ID DOCENTE:",
-        docente.get("codigo")
-    )
-    print(
-        "TOTAL ESTUDIANTES:",
-        total_estudiantes
-    )
-    print("=====================================")
 
     # =====================================
     # RENDERIZAR
@@ -5345,9 +4547,6 @@ def estudiantes():
 @role_required("docente")
 def lista_calificaciones():
 
-    print("========================================================")
-    print("📋 SELECCIÓN DE CLASE PARA CALIFICACIONES")
-    print("========================================================")
 
     # ========================================================
     # 1. USUARIO DE LA SESIÓN
@@ -5355,11 +4554,9 @@ def lista_calificaciones():
 
     usuario = session.get("usuario")
 
-    print("👤 USUARIO:", usuario)
 
     if not usuario:
 
-        print("❌ NO HAY USUARIO EN LA SESIÓN")
 
         flash(
             "La sesión ha expirado.",
@@ -5380,7 +4577,6 @@ def lista_calificaciones():
 
     if not docente:
 
-        print("❌ DOCENTE NO ENCONTRADO")
 
         flash(
             "Docente no encontrado.",
@@ -5404,7 +4600,6 @@ def lista_calificaciones():
 
     if not codigo_docente:
 
-        print("❌ EL DOCENTE NO TIENE CÓDIGO")
 
         flash(
             "El docente no tiene un código asignado.",
@@ -5423,30 +4618,11 @@ def lista_calificaciones():
 
         docente_id = "DOC" + codigo_docente
 
-    print(
-        "👨‍🏫 DOCENTE:",
-        docente.get(
-            "nombre",
-            ""
-        )
-    )
 
-    print(
-        "🔢 CÓDIGO:",
-        codigo_docente
-    )
-
-    print(
-        "🆔 DOCENTE ID:",
-        docente_id
-    )
     # ========================================================
     # 4. BUSCAR CLASES
     # ========================================================
 
-    print("========================================================")
-    print("🔎 BUSCANDO CLASES DEL DOCENTE")
-    print("========================================================")
 
     # --------------------------------------------------------
     # FUENTE OFICIAL DEL DASHBOARD:
@@ -5483,19 +4659,6 @@ def lista_calificaciones():
         )
     )
 
-    print(
-        "📂 COLECCIÓN: asignaciones_clase"
-    )
-
-    print(
-        "👨‍🏫 DOCENTE ID:",
-        repr(docente_id)
-    )
-
-    print(
-        "📚 TOTAL CLASES ENCONTRADAS:",
-        len(clases)
-    )
 
     # --------------------------------------------------------
     # MOSTRAR LAS CLASES ENCONTRADAS
@@ -5503,70 +4666,8 @@ def lista_calificaciones():
 
     for clase in clases:
 
-        print("----------------------------------------")
+        pass
 
-        print(
-            "🆔 ID:",
-            clase.get("_id")
-        )
-
-        print(
-            "🔤 CÓDIGO:",
-            clase.get(
-                "asignatura_codigo",
-                ""
-            )
-        )
-
-        print(
-            "📖 ASIGNATURA:",
-            clase.get(
-                "asignatura_nombre",
-                ""
-            )
-        )
-
-        print(
-            "🎓 NIVEL:",
-            clase.get(
-                "nivel",
-                ""
-            )
-        )
-
-        print(
-            "🎓 GRADO:",
-            clase.get(
-                "grado",
-                ""
-            )
-        )
-
-        print(
-            "🏫 SECCIÓN:",
-            clase.get(
-                "seccion",
-                ""
-            )
-        )
-
-        print(
-            "👨‍🏫 DOCENTE:",
-            clase.get(
-                "docente_id",
-                ""
-            )
-        )
-
-        print(
-            "📌 ACTIVO:",
-            clase.get(
-                "activo",
-                False
-            )
-        )
-
-    print("========================================================")
 
     # ========================================================
     # 5. PREPARAR DATOS PARA EL HTML
@@ -5671,70 +4772,8 @@ def lista_calificaciones():
 
     for clase in clases:
 
-        print("----------------------------------------")
+        pass
 
-        print(
-            "🆔 ID:",
-            clase.get("_id")
-        )
-
-        print(
-            "🔤 CÓDIGO:",
-            clase.get(
-                "codigo",
-                ""
-            )
-        )
-
-        print(
-            "📖 ASIGNATURA:",
-            clase.get(
-                "nombre",
-                ""
-            )
-        )
-
-        print(
-            "👨‍🏫 DOCENTE:",
-            clase.get(
-                "docente_id",
-                ""
-            )
-        )
-
-        print(
-            "🎓 NIVEL:",
-            clase.get(
-                "nivel",
-                ""
-            )
-        )
-
-        print(
-            "🎓 GRADO:",
-            clase.get(
-                "grado",
-                ""
-            )
-        )
-
-        print(
-            "🏫 SECCIÓN:",
-            clase.get(
-                "seccion",
-                ""
-            )
-        )
-
-        print(
-            "📌 ESTADO:",
-            clase.get(
-                "estado",
-                ""
-            )
-        )
-
-    print("========================================================")
 
     # ========================================================
     # 7. TOTAL DE CLASES
@@ -5744,59 +4783,16 @@ def lista_calificaciones():
         clases
     )
 
-    print(
-        "📚 TOTAL CLASES PARA CALIFICACIONES:",
-        total_asignaturas
-    )
 
     # ========================================================
     # 8. RESUMEN FINAL
     # ========================================================
 
-    print("========================================================")
-    print("📋 RESUMEN DE CALIFICACIONES")
-    print("========================================================")
 
     for clase in clases:
 
-        print(
-            clase.get(
-                "id_str",
-                ""
-            ),
-            "|",
-            clase.get(
-                "codigo",
-                ""
-            ),
-            "|",
-            clase.get(
-                "nombre",
-                ""
-            ),
-            "| NIVEL:",
-            clase.get(
-                "nivel",
-                ""
-            ),
-            "| GRADO:",
-            clase.get(
-                "grado",
-                ""
-            ),
-            "| SECCIÓN:",
-            clase.get(
-                "seccion",
-                ""
-            ),
-            "| DOCENTE:",
-            clase.get(
-                "docente_id",
-                ""
-            )
-        )
+        pass
 
-    print("========================================================")
 
     # ========================================================
     # 9. MOSTRAR PANTALLA
@@ -5826,9 +4822,6 @@ def lista_calificaciones():
 @role_required("docente")
 def guardar_incidencia():
 
-    print("========================================")
-    print("💾 GUARDANDO INCIDENCIA")
-    print("========================================")
 
     usuario = session.get("usuario")
 
@@ -5865,30 +4858,6 @@ def guardar_incidencia():
         )
     ).strip()
 
-    print(
-        "👤 ESTUDIANTE:",
-        estudiante_id
-    )
-
-    print(
-        "⚠️ TIPO:",
-        tipo
-    )
-
-    print(
-        "📝 DESCRIPCIÓN:",
-        descripcion
-    )
-
-    print(
-        "📅 FECHA:",
-        fecha
-    )
-
-    print(
-        "📚 ASIGNACIÓN:",
-        asignatura_id
-    )
 
     # ========================================================
     # 2. FUNCIÓN PARA REGRESAR A LA CLASE
@@ -5998,15 +4967,6 @@ def guardar_incidencia():
 
         docente_id = f"DOC{codigo_docente}"
 
-    print(
-        "👨‍🏫 DOCENTE:",
-        docente.get("nombre")
-    )
-
-    print(
-        "🆔 DOCENTE ID:",
-        docente_id
-    )
 
     # ========================================================
     # 9. BUSCAR ESTUDIANTE
@@ -6045,10 +5005,6 @@ def guardar_incidencia():
 
         return regresar()
 
-    print(
-        "✅ ESTUDIANTE ENCONTRADO:",
-        estudiante.get("nombre")
-    )
 
     # ========================================================
     # 10. BUSCAR ASIGNACIÓN
@@ -6080,10 +5036,6 @@ def guardar_incidencia():
 
     })
 
-    print("========================================")
-    print("📚 ASIGNACIÓN ENCONTRADA:")
-    print(asignacion)
-    print("========================================")
 
     if not asignacion:
 
@@ -6195,25 +5147,6 @@ def guardar_incidencia():
         incidencia
     )
 
-    print("========================================")
-    print("✅ INCIDENCIA GUARDADA")
-    print(
-        "🆔 ID:",
-        resultado.inserted_id
-    )
-    print(
-        "👤 ESTUDIANTE:",
-        estudiante.get("nombre")
-    )
-    print(
-        "📚 ASIGNATURA:",
-        asignatura_nombre
-    )
-    print(
-        "⚠️ TIPO:",
-        tipo
-    )
-    print("========================================")
 
     # ========================================================
     # 14. MENSAJE
@@ -6240,10 +5173,6 @@ def guardar_incidencia():
 @role_required("docente")
 def registrar_incidencia(asignatura_id):
 
-    print("========================================")
-    print("⚠️ REGISTRAR INCIDENCIA")
-    print("ASIGNACIÓN:", asignatura_id)
-    print("========================================")
 
     usuario = session.get("usuario")
 
@@ -6257,7 +5186,6 @@ def registrar_incidencia(asignatura_id):
 
     if not docente:
 
-        print("❌ DOCENTE NO ENCONTRADO")
 
         flash(
             "Docente no encontrado.",
@@ -6287,15 +5215,6 @@ def registrar_incidencia(asignatura_id):
 
         docente_id = f"DOC{codigo_docente}"
 
-    print(
-        "👨‍🏫 DOCENTE:",
-        docente.get("nombre", "")
-    )
-
-    print(
-        "🆔 DOCENTE ID:",
-        docente_id
-    )
 
     # =====================================================
     # 3. PREPARAR ID DE ASIGNACIÓN
@@ -6321,15 +5240,8 @@ def registrar_incidencia(asignatura_id):
 
     except Exception as e:
 
-        print(
-            "⚠️ ERROR CON OBJECTID:",
-            e
-        )
+        pass
 
-    print(
-        "🔎 IDS PARA BUSCAR:",
-        ids_busqueda
-    )
 
     # =====================================================
     # 4. BUSCAR ASIGNACIÓN
@@ -6348,10 +5260,6 @@ def registrar_incidencia(asignatura_id):
 
     })
 
-    print(
-        "📚 ASIGNACIÓN ENCONTRADA:",
-        asignacion
-    )
 
     # =====================================================
     # 5. VALIDAR ASIGNACIÓN
@@ -6359,19 +5267,6 @@ def registrar_incidencia(asignatura_id):
 
     if not asignacion:
 
-        print(
-            "❌ ASIGNACIÓN NO ENCONTRADA"
-        )
-
-        print(
-            "❌ ID RECIBIDO:",
-            asignatura_id
-        )
-
-        print(
-            "❌ DOCENTE:",
-            docente_id
-        )
 
         flash(
             "La clase seleccionada no existe o no está asignada al docente.",
@@ -6423,37 +5318,6 @@ def registrar_incidencia(asignatura_id):
         )
     ).strip()
 
-    print("========================================")
-    print("✅ CLASE ENCONTRADA")
-    print(
-        "🆔 ID:",
-        asignacion.get("_id")
-    )
-    print(
-        "📚 CÓDIGO:",
-        asignatura_codigo
-    )
-    print(
-        "📖 NOMBRE:",
-        asignatura_nombre
-    )
-    print(
-        "🎓 NIVEL:",
-        nivel
-    )
-    print(
-        "📖 GRADO:",
-        grado
-    )
-    print(
-        "🏫 SECCIÓN:",
-        seccion
-    )
-    print(
-        "👨‍🏫 DOCENTE:",
-        docente_id
-    )
-    print("========================================")
 
     # =====================================================
     # 7. NORMALIZAR GRADO
@@ -6527,21 +5391,6 @@ def registrar_incidencia(asignatura_id):
             [grado]
         )
 
-        print("========================================")
-        print("🎒 BUSCANDO ESTUDIANTES DE PREESCOLAR")
-        print(
-            "🎓 GRADO DE LA CLASE:",
-            grado
-        )
-        print(
-            "🔎 GRADOS A BUSCAR:",
-            grados_busqueda
-        )
-        print(
-            "🏫 SECCIÓN:",
-            seccion
-        )
-        print("========================================")
 
         filtro_estudiantes = {
 
@@ -6555,10 +5404,6 @@ def registrar_incidencia(asignatura_id):
 
         }
 
-        print(
-            "🔎 FILTRO:",
-            filtro_estudiantes
-        )
 
         estudiantes = list(
             db.estudiantes.find(
@@ -6575,9 +5420,6 @@ def registrar_incidencia(asignatura_id):
 
         if not estudiantes:
 
-            print(
-                "⚠️ NO SE ENCONTRARON ESTUDIANTES CON SECCIÓN"
-            )
 
             filtro_sin_seccion = {
 
@@ -6598,10 +5440,6 @@ def registrar_incidencia(asignatura_id):
                 )
             )
 
-            print(
-                "👥 ENCONTRADOS SIN FILTRO DE SECCIÓN:",
-                len(estudiantes_sin_seccion)
-            )
 
             # Solo utilizar el respaldo si realmente existen
             # estudiantes del grado correspondiente.
@@ -6625,9 +5463,6 @@ def registrar_incidencia(asignatura_id):
 
         if not estudiantes:
 
-            print(
-                "⚠️ PROBANDO COLECCIÓN db.matriculas"
-            )
 
             estudiantes = list(
                 db.matriculas.find({
@@ -6659,21 +5494,6 @@ def registrar_incidencia(asignatura_id):
             grado
         )
 
-        print("========================================")
-        print("📖 BUSCANDO ESTUDIANTES DE PRIMARIA")
-        print(
-            "🎓 GRADO CLASE:",
-            grado
-        )
-        print(
-            "🎓 GRADO ESTUDIANTE:",
-            grado_estudiante
-        )
-        print(
-            "🏫 SECCIÓN:",
-            seccion
-        )
-        print("========================================")
 
         estudiantes = list(
             db.estudiantes.find({
@@ -6696,17 +5516,6 @@ def registrar_incidencia(asignatura_id):
 
     elif nivel.lower() == "secundaria":
 
-        print("========================================")
-        print("🎓 BUSCANDO ESTUDIANTES DE SECUNDARIA")
-        print(
-            "📖 GRADO:",
-            grado
-        )
-        print(
-            "🏫 SECCIÓN:",
-            seccion
-        )
-        print("========================================")
 
         estudiantes = list(
             db.estudiantes.find({
@@ -6729,10 +5538,6 @@ def registrar_incidencia(asignatura_id):
 
     else:
 
-        print(
-            "⚠️ NIVEL NO RECONOCIDO:",
-            nivel
-        )
 
         estudiantes = list(
             db.estudiantes.find({
@@ -6753,27 +5558,10 @@ def registrar_incidencia(asignatura_id):
     # 9. MOSTRAR ESTUDIANTES EN CONSOLA
     # =====================================================
 
-    print("========================================")
-    print(
-        "👥 TOTAL ESTUDIANTES ENCONTRADOS:",
-        len(estudiantes)
-    )
-    print("========================================")
 
     for estudiante in estudiantes:
 
-        print(
-            "ID:",
-            estudiante.get("_id"),
-            "| NOMBRE:",
-            estudiante.get("nombre"),
-            "| GRADO:",
-            estudiante.get("grado"),
-            "| SECCIÓN:",
-            estudiante.get("seccion"),
-            "| ESTADO:",
-            estudiante.get("estado")
-        )
+        pass
 
     # =====================================================
     # 10. BUSCAR INCIDENCIAS EXISTENTES
@@ -6794,10 +5582,6 @@ def registrar_incidencia(asignatura_id):
         )
     )
 
-    print(
-        "⚠️ INCIDENCIAS EXISTENTES:",
-        len(incidencias)
-    )
 
     # =====================================================
     # 11. PREPARAR DATOS PARA HTML
@@ -6840,31 +5624,6 @@ def registrar_incidencia(asignatura_id):
     # 13. MOSTRAR FORMULARIO
     # =====================================================
 
-    print("========================================")
-    print(
-        "✅ ABRIENDO FORMULARIO DE INCIDENCIA"
-    )
-    print(
-        "📚 ASIGNATURA:",
-        asignatura_nombre
-    )
-    print(
-        "🎓 NIVEL:",
-        nivel
-    )
-    print(
-        "📖 GRADO:",
-        grado
-    )
-    print(
-        "🏫 SECCIÓN:",
-        seccion
-    )
-    print(
-        "👥 ESTUDIANTES:",
-        len(estudiantes)
-    )
-    print("========================================")
 
     return render_template(
 
@@ -6893,13 +5652,9 @@ def registrar_incidencia(asignatura_id):
 @role_required("docente")
 def comunicacion():
 
-    print("====================================")
-    print("📨 COMUNICACIÓN CON PADRES")
-    print("====================================")
 
     usuario = session.get("usuario")
 
-    print("USUARIO DOCENTE:", usuario)
 
     # =====================================
     # BUSCAR DOCENTE
@@ -6911,7 +5666,6 @@ def comunicacion():
 
     if not docente:
 
-        print("❌ DOCENTE NO ENCONTRADO")
 
         flash(
             "Docente no encontrado.",
@@ -6924,8 +5678,6 @@ def comunicacion():
 
     docente_id = docente.get("_id")
 
-    print("DOCENTE ENCONTRADO:", docente.get("nombre"))
-    print("ID DOCENTE:", docente_id)
 
     # =====================================
     # BUSCAR ASIGNATURAS DEL DOCENTE
@@ -6937,21 +5689,10 @@ def comunicacion():
         })
     )
 
-    print("------------------------------------")
-    print("📚 ASIGNATURAS DEL DOCENTE")
-    print("CANTIDAD:", len(clases))
 
     for clase in clases:
 
-        print(
-            clase.get("_id"),
-            "|",
-            clase.get("nombre"),
-            "| GRADO:",
-            clase.get("grado"),
-            "| SECCIÓN:",
-            clase.get("seccion")
-        )
+        pass
 
     # =====================================
     # OBTENER GRADOS DEL DOCENTE
@@ -6975,9 +5716,6 @@ def comunicacion():
                     grado
                 )
 
-    print("------------------------------------")
-    print("GRADOS DEL DOCENTE:")
-    print(grados_docente)
 
     # =====================================
     # NORMALIZAR GRADOS
@@ -7016,9 +5754,6 @@ def comunicacion():
                 grado_normalizado
             )
 
-    print("------------------------------------")
-    print("GRADOS PARA BUSCAR ESTUDIANTES:")
-    print(grados_busqueda)
 
     # =====================================
     # BUSCAR ESTUDIANTES
@@ -7037,9 +5772,6 @@ def comunicacion():
             })
         )
 
-    print("------------------------------------")
-    print("👨‍🎓 ESTUDIANTES PARA COMUNICACIÓN")
-    print("CANTIDAD:", len(estudiantes))
 
     # =====================================
     # MOSTRAR ESTUDIANTES EN CONSOLA
@@ -7047,20 +5779,8 @@ def comunicacion():
 
     for estudiante in estudiantes:
 
-        print(
-            "ID:",
-            estudiante.get("_id"),
-            "| NOMBRE:",
-            estudiante.get("nombre"),
-            "| GRADO:",
-            estudiante.get("grado"),
-            "| SECCIÓN:",
-            estudiante.get("seccion"),
-            "| MADRE USUARIO:",
-            estudiante.get("madre_usuario")
-        )
+        pass
 
-    print("====================================")
 
     return render_template(
         "docente/comunicacion.html",
@@ -7080,9 +5800,6 @@ def comunicacion():
 @role_required("docente")
 def guardar_comunicacion():
 
-    print("====================================")
-    print("📨 GUARDANDO COMUNICACIÓN")
-    print("====================================")
 
     # =====================================
     # DOCENTE
@@ -7092,10 +5809,6 @@ def guardar_comunicacion():
         "usuario"
     )
 
-    print(
-        "USUARIO DOCENTE:",
-        usuario_docente
-    )
 
     # =====================================
     # DATOS DEL FORMULARIO
@@ -7111,15 +5824,6 @@ def guardar_comunicacion():
         ""
     ).strip()
 
-    print(
-        "ESTUDIANTE ID:",
-        estudiante_id
-    )
-
-    print(
-        "MENSAJE:",
-        mensaje_texto
-    )
 
     # =====================================
     # VALIDAR ESTUDIANTE
@@ -7166,9 +5870,6 @@ def guardar_comunicacion():
 
     if not estudiante:
 
-        print(
-            "❌ ESTUDIANTE NO ENCONTRADO"
-        )
 
         flash(
             "No se encontró el estudiante.",
@@ -7181,28 +5882,6 @@ def guardar_comunicacion():
             )
         )
 
-    print("------------------------------------")
-    print("✅ ESTUDIANTE ENCONTRADO")
-    print(
-        "ID:",
-        estudiante.get("_id")
-    )
-    print(
-        "NOMBRE:",
-        estudiante.get("nombre")
-    )
-    print(
-        "MADRE:",
-        estudiante.get("madre")
-    )
-    print(
-        "TUTOR:",
-        estudiante.get("tutor")
-    )
-    print(
-        "MADRE_USUARIO:",
-        estudiante.get("madre_usuario")
-    )
 
     # =====================================
     # OBTENER USUARIO DE LA MADRE
@@ -7214,9 +5893,6 @@ def guardar_comunicacion():
 
     if not madre_usuario:
 
-        print(
-            "❌ EL ESTUDIANTE NO TIENE madre_usuario"
-        )
 
         flash(
             "Este estudiante no tiene una madre/tutora vinculada al sistema.",
@@ -7233,10 +5909,6 @@ def guardar_comunicacion():
         madre_usuario
     ).strip()
 
-    print(
-        "USUARIO MADRE:",
-        madre_usuario
-    )
 
     # =====================================
     # BUSCAR USUARIO MADRE
@@ -7248,15 +5920,9 @@ def guardar_comunicacion():
         "activo": True
     })
 
-    print("------------------------------------")
-    print("USUARIO MADRE EN MONGODB:")
-    print(usuario_madre)
 
     if not usuario_madre:
 
-        print(
-            "❌ NO EXISTE USUARIO MADRE"
-        )
 
         flash(
             "No se encontró la cuenta de la madre/tutora.",
@@ -7376,10 +6042,6 @@ def guardar_comunicacion():
             resultado_conversacion.inserted_id
         )
 
-        print(
-            "✅ CONVERSACIÓN CREADA:",
-            conversacion_id
-        )
 
     else:
 
@@ -7387,10 +6049,6 @@ def guardar_comunicacion():
             conversacion.get("_id")
         )
 
-        print(
-            "✅ CONVERSACIÓN EXISTENTE:",
-            conversacion_id
-        )
 
         # =================================
         # ACTUALIZAR CONVERSACIÓN
@@ -7429,11 +6087,6 @@ def guardar_comunicacion():
     # GUARDAR MENSAJE
     # =====================================
 
-    print("🚨 LLEGAMOS A GUARDAR EL MENSAJE")
-    print("MADRE USUARIO:", madre_usuario)
-    print("ESTUDIANTE ID:", estudiante_id)
-    print("DOCENTE ID:", docente_id)
-    print("MENSAJE:", mensaje_texto)
 
     mensaje = {
 
@@ -7466,12 +6119,6 @@ def guardar_comunicacion():
         mensaje
     )
 
-    print("------------------------------------")
-    print("✅ MENSAJE GUARDADO")
-    print("ID MENSAJE:", resultado_mensaje.inserted_id)
-    print("DESTINATARIO:", madre_usuario)
-    print("ESTUDIANTE:", estudiante.get("nombre"))
-    print("====================================")
 
     flash(
         f"Mensaje enviado correctamente a {nombre_madre}.",
@@ -7802,7 +6449,6 @@ def reporte_mined_pdf():
     )
 
 
-
 # ======================================================
 # INFORME RENDIMIENTO ACADÉMICO
 # ======================================================
@@ -7859,7 +6505,6 @@ def informe_rendimiento():
         estudiantes = set()
 
 
-
         for nota in notas_grado:
 
             estudiantes.add(
@@ -7871,13 +6516,11 @@ def informe_rendimiento():
             )
 
 
-
         aprobados = 0
 
         reprobados = 0
 
         suma_promedios = 0
-
 
 
         for estudiante in estudiantes:
@@ -7896,7 +6539,6 @@ def informe_rendimiento():
                 })
 
             )
-
 
 
             if notas_estudiante:
@@ -7921,9 +6563,7 @@ def informe_rendimiento():
                 )
 
 
-
                 suma_promedios += promedio_estudiante
-
 
 
                 if promedio_estudiante >= 6:
@@ -7935,10 +6575,7 @@ def informe_rendimiento():
                     reprobados += 1
 
 
-
-
         cantidad = len(estudiantes)
-
 
 
         promedio_grado = 0
@@ -7954,7 +6591,6 @@ def informe_rendimiento():
                 2
 
             )
-
 
 
         detalle.append({
@@ -8070,7 +6706,6 @@ def informe_rendimiento():
         )
 
 
-
     return {
 
 
@@ -8115,7 +6750,6 @@ def vista_rendimiento():
 # ======================================================
 # PDF RENDIMIENTO ACADÉMICO
 # ======================================================
-print("CARGANDO INFORME RENDIMIENTO")
 @docente_bp.route("/informes/rendimiento/pdf")
 @role_required("docente")
 def reporte_rendimiento_pdf():
@@ -8165,7 +6799,6 @@ def reporte_rendimiento_pdf():
 )
 
 
-
     titulo = Paragraph(
 
         """
@@ -8177,7 +6810,6 @@ def reporte_rendimiento_pdf():
         estilos["Title"]
 
     )
-
 
 
     encabezado = Table(
@@ -8199,7 +6831,6 @@ def reporte_rendimiento_pdf():
         colWidths=[90,300,90]
 
     )
-
 
 
     encabezado.setStyle(
@@ -8225,7 +6856,6 @@ def reporte_rendimiento_pdf():
     )
 
 
-
     elementos.append(encabezado)
 
 
@@ -8234,7 +6864,6 @@ def reporte_rendimiento_pdf():
         Spacer(1,20)
 
     )
-
 
 
     # ==========================================
@@ -8274,7 +6903,6 @@ def reporte_rendimiento_pdf():
     ]
 
 
-
     for fila in datos["detalle"]:
 
 
@@ -8297,9 +6925,7 @@ def reporte_rendimiento_pdf():
         )
 
 
-
     tabla1 = Table(tabla_grado)
-
 
 
     tabla1.setStyle(
@@ -8347,7 +6973,6 @@ def reporte_rendimiento_pdf():
     )
 
 
-
     # ==========================================
     # TABLA POR ASIGNATURA
     # ==========================================
@@ -8366,7 +6991,6 @@ def reporte_rendimiento_pdf():
     )
 
 
-
     tabla_asignaturas = [
 
         [
@@ -8380,7 +7004,6 @@ def reporte_rendimiento_pdf():
         ]
 
     ]
-
 
 
     for fila in datos["asignaturas"]:
@@ -8401,9 +7024,7 @@ def reporte_rendimiento_pdf():
         )
 
 
-
     tabla2 = Table(tabla_asignaturas)
-
 
 
     tabla2.setStyle(
@@ -8441,7 +7062,6 @@ def reporte_rendimiento_pdf():
     )
 
 
-
     elementos.append(tabla2)
 
 
@@ -8450,7 +7070,6 @@ def reporte_rendimiento_pdf():
         Spacer(1,20)
 
     )
-
 
 
     # ==========================================
@@ -8477,9 +7096,7 @@ def reporte_rendimiento_pdf():
     )
 
 
-
     doc.build(elementos)
-
 
 
     return send_file(
@@ -8528,7 +7145,6 @@ def informe_promocion():
     total_no_promovidos = 0
 
 
-
     for grado in grados:
 
 
@@ -8548,7 +7164,6 @@ def informe_promocion():
         estudiantes = set()
 
 
-
         for nota in registros:
 
 
@@ -8559,15 +7174,12 @@ def informe_promocion():
             )
 
 
-
         promovidos = 0
 
         no_promovidos = 0
 
 
-
         for estudiante in estudiantes:
-
 
 
             notas_estudiante = list(
@@ -8583,7 +7195,6 @@ def informe_promocion():
                 })
 
             )
-
 
 
             if notas_estudiante:
@@ -8611,7 +7222,6 @@ def informe_promocion():
                 )
 
 
-
                 # Escala CIEM sobre 10
 
                 if promedio_general >= 6:
@@ -8626,11 +7236,7 @@ def informe_promocion():
                     no_promovidos += 1
 
 
-
-
-
         matricula = len(estudiantes)
-
 
 
         if matricula > 0:
@@ -8650,8 +7256,6 @@ def informe_promocion():
             porcentaje = 0
 
 
-
-
         detalle.append({
 
             "grado": grado,
@@ -8667,15 +7271,11 @@ def informe_promocion():
         })
 
 
-
         total_estudiantes += matricula
 
         total_promovidos += promovidos
 
         total_no_promovidos += no_promovidos
-
-
-
 
 
     if total_estudiantes > 0:
@@ -8693,9 +7293,6 @@ def informe_promocion():
     else:
 
         porcentaje_general = 0
-
-
-
 
 
     return {
@@ -9205,7 +7802,7 @@ def perfil_estudiante(estudiante_id):
 
     estudiante = db.estudiantes.find_one(
         {
-            "_id": estudiante_id
+            "_id": ObjectId(estudiante_id)
         }
     )
 
@@ -9226,7 +7823,6 @@ def perfil_estudiante(estudiante_id):
         "docente/perfil_estudiante.html",
         estudiante=estudiante
     )
-
 
 
 # =====================================
@@ -9286,7 +7882,7 @@ def boletin_pdf_estudiante(estudiante_id):
     # ======================================================
 
     estudiante = db.estudiantes.find_one({
-        "_id": estudiante_id
+        "_id": ObjectId(estudiante_id)
     })
 
     if not estudiante:
@@ -9464,7 +8060,7 @@ def boletin_pdf_estudiante(estudiante_id):
     # ======================================================
 
     html_boletin = render_template(
-        "boletin.html",
+        "boletin_docente.html",
         estudiante=estudiante,
         notas=notas,
         boletin=boletin,
@@ -9574,9 +8170,6 @@ def materiales_estudiante(estudiante_id):
 @role_required("docente")
 def seleccionar_asistencia_estudiante(estudiante_id):
 
-    print("========================================")
-    print("📋 ASISTENCIA DESDE PERFIL DEL ESTUDIANTE")
-    print("========================================")
 
     # =====================================
     # BUSCAR ESTUDIANTE
@@ -9632,8 +8225,6 @@ def seleccionar_asistencia_estudiante(estudiante_id):
 
         docente_id = f"DOC{codigo_docente}"
 
-    print("👨‍🏫 DOCENTE:", docente.get("nombre"))
-    print("🆔 DOCENTE ID:", docente_id)
 
     # =====================================
     # DATOS DEL ESTUDIANTE
@@ -9642,8 +8233,6 @@ def seleccionar_asistencia_estudiante(estudiante_id):
     grado = estudiante.get("grado")
     seccion = estudiante.get("seccion")
 
-    print("🎓 GRADO:", grado)
-    print("🏫 SECCIÓN:", seccion)
 
     # =====================================
     # BUSCAR CLASE EN ASIGNACIONES_CLASE
@@ -9674,9 +8263,6 @@ def seleccionar_asistencia_estudiante(estudiante_id):
 
     if not asignacion:
 
-        print(
-            "❌ NO SE ENCONTRÓ ASIGNACIÓN"
-        )
 
         flash(
             "No existe una clase asignada a este docente para el grado y sección del estudiante.",
@@ -9691,26 +8277,6 @@ def seleccionar_asistencia_estudiante(estudiante_id):
     # MOSTRAR INFORMACIÓN
     # =====================================
 
-    print("✅ ASIGNACIÓN ENCONTRADA")
-    print(
-        "ID:",
-        asignacion.get("_id")
-    )
-
-    print(
-        "ASIGNATURA:",
-        asignacion.get("asignatura_nombre")
-    )
-
-    print(
-        "GRADO:",
-        asignacion.get("grado")
-    )
-
-    print(
-        "SECCIÓN:",
-        asignacion.get("seccion")
-    )
 
     # =====================================
     # IR A LA ASISTENCIA
@@ -9735,9 +8301,6 @@ def seleccionar_asistencia_estudiante(estudiante_id):
 @role_required("docente")
 def guardar_asistencia():
 
-    print("========================================")
-    print("💾 GUARDANDO ASISTENCIA")
-    print("========================================")
 
     # =====================================================
     # DATOS DEL FORMULARIO
@@ -9760,20 +8323,6 @@ def guardar_asistencia():
         "usuario"
     )
 
-    print(
-        "📚 ASIGNACIÓN:",
-        asignacion_id
-    )
-
-    print(
-        "📅 FECHA:",
-        fecha
-    )
-
-    print(
-        "👤 USUARIO:",
-        usuario
-    )
 
     # =====================================================
     # BUSCAR DOCENTE
@@ -9815,10 +8364,6 @@ def guardar_asistencia():
             f"DOC{codigo_docente}"
         )
 
-    print(
-        "🆔 DOCENTE ID:",
-        docente_id
-    )
 
     # =====================================================
     # BUSCAR ASIGNACIÓN
@@ -9866,10 +8411,7 @@ def guardar_asistencia():
 
         except Exception as e:
 
-            print(
-                "⚠️ Error ObjectId:",
-                e
-            )
+            pass
 
     # =====================================================
     # VALIDAR ASIGNACIÓN
@@ -9877,19 +8419,6 @@ def guardar_asistencia():
 
     if not asignacion:
 
-        print(
-            "❌ ASIGNACIÓN NO ENCONTRADA"
-        )
-
-        print(
-            "ID RECIBIDO:",
-            asignacion_id
-        )
-
-        print(
-            "DOCENTE:",
-            docente_id
-        )
 
         flash(
             "La asignación de clase no existe o no pertenece a este docente.",
@@ -9928,27 +8457,6 @@ def guardar_asistencia():
         ""
     )
 
-    print(
-        "📚 ASIGNATURA:",
-        asignatura_codigo,
-        "|",
-        asignatura_nombre
-    )
-
-    print(
-        "🎓 NIVEL:",
-        nivel
-    )
-
-    print(
-        "📖 GRADO:",
-        grado
-    )
-
-    print(
-        "🏫 SECCIÓN:",
-        seccion
-    )
 
     # =====================================================
     # CONVERTIR GRADO
@@ -9977,10 +8485,6 @@ def guardar_asistencia():
         grado
     )
 
-    print(
-        "🔄 GRADO ESTUDIANTE:",
-        grado_estudiante
-    )
 
     # =====================================================
     # BUSCAR ESTUDIANTES
@@ -10075,16 +8579,6 @@ def guardar_asistencia():
         [grado_asignacion]
     )
 
-    print("========================================")
-    print("🎓 GRADO DE LA ASIGNACIÓN:",
-        repr(grado_asignacion))
-
-    print("🎓 GRADOS A BUSCAR:",
-        grados_busqueda)
-
-    print("🏫 SECCIÓN:",
-        repr(seccion))
-    print("========================================")
 
     estudiantes = list(
         db.estudiantes.find({
@@ -10103,21 +8597,10 @@ def guardar_asistencia():
         )
     )
 
-    print(
-        "👥 TOTAL ESTUDIANTES:",
-        len(estudiantes)
-    )
 
     for estudiante in estudiantes:
 
-        print(
-            "👤",
-            estudiante.get("nombre"),
-            "| GRADO:",
-            estudiante.get("grado"),
-            "| SECCIÓN:",
-            estudiante.get("seccion")
-        )
+        pass
     # =====================================================
     # ESTADOS PERMITIDOS
     # =====================================================
@@ -10255,20 +8738,11 @@ def guardar_asistencia():
 
         )
 
-        print(
-            "💾 GUARDADO:",
-            estudiante.get("nombre"),
-            "|",
-            estado
-        )
 
     # =====================================================
     # FINALIZAR
     # =====================================================
 
-    print("========================================")
-    print("✅ ASISTENCIA GUARDADA CORRECTAMENTE")
-    print("========================================")
 
     flash(
         "La asistencia se guardó correctamente.",
@@ -10310,12 +8784,10 @@ def responder_mensaje(id):
         return redirect(request.referrer)
 
 
-
     mensajes = db.mensajes
 
 
     conversaciones = db.conversaciones
-
 
 
     nuevo = {
@@ -10348,9 +8820,7 @@ def responder_mensaje(id):
     }
 
 
-
     mensajes.insert_one(nuevo)
-
 
 
     conversaciones.update_one(
@@ -10447,11 +8917,6 @@ def configuracion():
     # DEPURACIÓN
     # ==========================================
 
-    print("=====================================")
-    print("CONFIGURACIÓN DOCENTE")
-    print("USUARIO:", usuario)
-    print("CORREO:", datos_usuario.get("correo"))
-    print("=====================================")
 
     # ==========================================
     # MOSTRAR CONFIGURACIÓN
@@ -10479,11 +8944,6 @@ def cambiar_correo():
         ""
     ).strip().lower()
 
-    print("====================================")
-    print("📧 CAMBIO DE CORREO DOCENTE")
-    print("USUARIO:", usuario)
-    print("NUEVO CORREO:", nuevo_correo)
-    print("====================================")
 
     # ======================================================
     # VALIDAR
@@ -10534,8 +8994,6 @@ def cambiar_correo():
         }
     )
 
-    print("DOCUMENTOS MODIFICADOS:")
-    print(resultado.modified_count)
 
     # ======================================================
     # RESULTADO
@@ -10588,10 +9046,6 @@ def cambiar_password():
         ""
     ).strip()
 
-    print("====================================")
-    print("🔐 CAMBIO DE CONTRASEÑA DOCENTE")
-    print("USUARIO:", usuario)
-    print("====================================")
 
     # ======================================================
     # VALIDAR CAMPOS
@@ -10717,8 +9171,6 @@ def cambiar_password():
         }
     )
 
-    print("DOCUMENTOS MODIFICADOS:")
-    print(resultado.modified_count)
 
     # ======================================================
     # RESULTADO

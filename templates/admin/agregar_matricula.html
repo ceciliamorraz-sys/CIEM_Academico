@@ -211,6 +211,12 @@
             resize: vertical;
         }
 
+        .campo .ayuda {
+            font-size: 12px;
+            color: #6c7a90;
+            margin-top: 5px;
+        }
+
         /* ==========================================
            CHECKBOXES
         ========================================== */
@@ -520,6 +526,75 @@
 
                 <div class="contenido-seccion">
 
+                    <!-- ==========================================
+                         BUSCAR ESTUDIANTE EXISTENTE (RENOVACIÓN)
+                    =========================================== -->
+
+                    <div
+                        class="campo"
+                        style="margin-bottom: 18px; position: relative;"
+                    >
+
+                        <label>
+                            🔎 ¿Ya estudió aquí? Búsquelo por nombre o código
+                        </label>
+
+                        <input
+                            type="text"
+                            id="buscarEstudiante"
+                            placeholder="Escriba el nombre o el código del estudiante..."
+                            autocomplete="off"
+                        >
+
+                        <div
+                            id="resultadosBusqueda"
+                            style="
+                                display: none;
+                                position: absolute;
+                                top: 100%;
+                                left: 0;
+                                right: 0;
+                                background: white;
+                                border: 1px solid #ccd5df;
+                                border-radius: 7px;
+                                margin-top: 4px;
+                                max-height: 220px;
+                                overflow-y: auto;
+                                z-index: 10;
+                                box-shadow: 0 6px 16px rgba(0,0,0,.12);
+                            "
+                        ></div>
+
+                        <div
+                            id="estudianteSeleccionado"
+                            class="nota"
+                            style="display: none; margin-top: 10px;"
+                        >
+                            ✅ Estudiante seleccionado:
+                            <strong id="nombreSeleccionado"></strong>
+                            (<span id="codigoSeleccionado"></span>)
+                            — se autocompletaron sus datos. Grado anterior:
+                            <strong id="gradoAnteriorSeleccionado"></strong>.
+                            Solo confirme el nuevo grado, sección y fecha
+                            de matrícula.
+                            <a
+                                href="#"
+                                id="quitarSeleccion"
+                                style="margin-left: 10px;"
+                            >
+                                Quitar selección / es un estudiante nuevo
+                            </a>
+                        </div>
+
+                        <input
+                            type="hidden"
+                            name="codigo_estudiante"
+                            id="codigo_estudiante"
+                        >
+
+                    </div>
+
+
                     <div class="grid">
 
                         <div class="campo">
@@ -531,22 +606,6 @@
                             <input
                                 type="date"
                                 name="fecha_matricula"
-                                required
-                            >
-
-                        </div>
-
-
-                        <div class="campo">
-
-                            <label>
-                                Código del estudiante
-                            </label>
-
-                            <input
-                                type="text"
-                                name="codigo"
-                                placeholder="Ej. CIEM-XXXX"
                                 required
                             >
 
@@ -1927,6 +1986,283 @@ formulario.addEventListener(
 
     }
 );
+
+</script>
+
+
+<!-- ==========================================
+     JAVASCRIPT - BUSCAR / AUTOCOMPLETAR
+     ESTUDIANTE EXISTENTE (RE-MATRÍCULA)
+========================================== -->
+
+<script>
+
+const inputBuscar =
+    document.getElementById("buscarEstudiante");
+
+const divResultados =
+    document.getElementById("resultadosBusqueda");
+
+const divSeleccionado =
+    document.getElementById("estudianteSeleccionado");
+
+const spanNombreSel =
+    document.getElementById("nombreSeleccionado");
+
+const spanCodigoSel =
+    document.getElementById("codigoSeleccionado");
+
+const inputCodigoEstudiante =
+    document.getElementById("codigo_estudiante");
+
+const linkQuitar =
+    document.getElementById("quitarSeleccion");
+
+
+let temporizadorBusqueda = null;
+
+
+/* ==========================================
+   BUSCAR MIENTRAS SE ESCRIBE (CON RETRASO)
+========================================== */
+
+inputBuscar.addEventListener("input", function () {
+
+    const termino = this.value.trim();
+
+    clearTimeout(temporizadorBusqueda);
+
+    if (termino.length < 2) {
+
+        divResultados.style.display = "none";
+        divResultados.innerHTML = "";
+
+        return;
+    }
+
+    temporizadorBusqueda = setTimeout(function () {
+
+        fetch(
+            "/admin/api/estudiantes/buscar?q=" +
+            encodeURIComponent(termino)
+        )
+            .then(function (respuesta) {
+                return respuesta.json();
+            })
+            .then(function (estudiantes) {
+
+                if (!estudiantes.length) {
+
+                    divResultados.innerHTML =
+                        '<div style="padding:10px;font-size:13px;color:#6c7a90;">' +
+                        "No se encontraron estudiantes." +
+                        "</div>";
+
+                    divResultados.style.display = "block";
+
+                    return;
+                }
+
+                divResultados.innerHTML = estudiantes.map(function (e) {
+
+                    return (
+                        '<div class="resultado-item" data-codigo="' +
+                        e.codigo +
+                        '" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #eef1f5;font-size:14px;">' +
+                        "<strong>" + e.nombre + "</strong><br>" +
+                        '<span style="font-size:12px;color:#6c7a90;">' +
+                        e.codigo +
+                        (e.grado ? " · Último grado: " + e.grado + " " + (e.seccion || "") : "") +
+                        "</span>" +
+                        "</div>"
+                    );
+
+                }).join("");
+
+                divResultados.style.display = "block";
+
+            });
+
+    }, 300);
+
+});
+
+
+/* ==========================================
+   SELECCIONAR UN RESULTADO
+========================================== */
+
+divResultados.addEventListener("click", function (evento) {
+
+    const item = evento.target.closest(".resultado-item");
+
+    if (!item) {
+        return;
+    }
+
+    const codigo = item.getAttribute("data-codigo");
+
+    fetch("/admin/api/estudiante/" + encodeURIComponent(codigo))
+        .then(function (respuesta) {
+            return respuesta.json();
+        })
+        .then(function (datos) {
+
+            if (datos.error) {
+
+                alert("No se pudo cargar el estudiante seleccionado.");
+
+                return;
+            }
+
+            llenarFormulario(datos);
+
+            inputCodigoEstudiante.value = datos.codigo;
+
+            spanNombreSel.textContent =
+                [datos.primer_nombre, datos.segundo_nombre,
+                 datos.primer_apellido, datos.segundo_apellido]
+                    .filter(Boolean).join(" ");
+
+            spanCodigoSel.textContent = datos.codigo;
+
+            document.getElementById(
+                "gradoAnteriorSeleccionado"
+            ).textContent =
+                (datos.grado_anterior || "—") +
+                (datos.seccion_anterior ? " " + datos.seccion_anterior : "");
+
+            divSeleccionado.style.display = "block";
+
+            divResultados.style.display = "none";
+            divResultados.innerHTML = "";
+
+            inputBuscar.value = "";
+
+        });
+
+});
+
+
+/* ==========================================
+   QUITAR SELECCIÓN (ES ESTUDIANTE NUEVO)
+========================================== */
+
+linkQuitar.addEventListener("click", function (evento) {
+
+    evento.preventDefault();
+
+    inputCodigoEstudiante.value = "";
+
+    divSeleccionado.style.display = "none";
+
+    formulario.reset();
+
+});
+
+
+/* ==========================================
+   LLENAR EL FORMULARIO CON LOS DATOS
+   DEL ESTUDIANTE SELECCIONADO
+========================================== */
+
+function llenarFormulario(datos) {
+
+    const camposTexto = [
+        "primer_nombre", "segundo_nombre",
+        "primer_apellido", "segundo_apellido",
+        "dia_nacimiento", "mes_nacimiento", "anio_nacimiento",
+        "edad", "lugar_nacimiento", "talla", "peso",
+        "direccion", "telefono", "celular",
+        "lengua_materna", "grupo_etnico", "observaciones",
+        "padre_nombre", "padre_cedula", "padre_telefono",
+        "padre_celular", "padre_ocupacion",
+        "madre_nombre", "madre_cedula", "madre_telefono",
+        "madre_celular", "madre_ocupacion",
+        "tutor_nombre", "tutor_parentesco", "tutor_cedula",
+        "tutor_celular", "tutor_ocupacion"
+    ];
+
+    camposTexto.forEach(function (nombreCampo) {
+
+        const campo = formulario.querySelector(
+            '[name="' + nombreCampo + '"]'
+        );
+
+        if (campo && datos[nombreCampo] !== undefined) {
+            campo.value = datos[nombreCampo];
+        }
+
+    });
+
+
+    // Selects simples
+
+    const camposSelect = [
+        "genero", "tipo_sangre", "idioma", "curso_ingles"
+    ];
+
+    camposSelect.forEach(function (nombreCampo) {
+
+        const campo = formulario.querySelector(
+            '[name="' + nombreCampo + '"]'
+        );
+
+        if (campo && datos[nombreCampo] !== undefined) {
+            campo.value = datos[nombreCampo];
+        }
+
+    });
+
+
+    // Barrio (con soporte para "otro barrio")
+
+    if (datos.barrio) {
+
+        const existeOpcion = Array.from(
+            selectBarrio.options
+        ).some(function (op) {
+            return op.value === datos.barrio;
+        });
+
+        if (existeOpcion) {
+
+            selectBarrio.value = datos.barrio;
+
+            campoOtroBarrio.style.display = "none";
+
+        } else {
+
+            selectBarrio.value = "__OTRO__";
+
+            campoOtroBarrio.style.display = "flex";
+
+            inputOtroBarrio.value = datos.barrio;
+
+        }
+
+    }
+
+
+    // Capacidades (checkboxes)
+
+    const checksCapacidades =
+        formulario.querySelectorAll('[name="capacidades"]');
+
+    checksCapacidades.forEach(function (chk) {
+
+        chk.checked = (datos.capacidades || []).includes(
+            chk.value
+        );
+
+    });
+
+
+    // NOTA: grado y sección se dejan en blanco a propósito
+    // para que la secretaria elija el nuevo grado/sección
+    // del año lectivo actual.
+
+}
 
 </script>
 

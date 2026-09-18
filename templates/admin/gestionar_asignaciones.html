@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>Gestionar Asignaciones | CIEM Académico</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        body {
+            background: #f1f5f9;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container-main {
+            max-width: 1100px;
+            margin: 40px auto;
+        }
+
+        .header {
+            background: linear-gradient(
+                135deg,
+                #08142C,
+                #1E4E8C
+            );
+
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+
+            box-shadow:
+                0 8px 25px rgba(0,0,0,.15);
+        }
+
+        .header h2 {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: .9;
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+
+            box-shadow:
+                0 8px 25px rgba(0,0,0,.10);
+
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: white;
+
+            border-bottom:
+                1px solid #e5e7eb;
+
+            padding: 22px 28px;
+        }
+
+        .card-header h5 {
+            margin: 0;
+            color: #08142C;
+            font-weight: 700;
+        }
+
+        .card-body {
+            padding: 0;
+        }
+
+        table {
+            margin-bottom: 0;
+        }
+
+        thead th {
+
+            background: #08142C;
+            color: white;
+            font-weight: 600;
+            border: none;
+            white-space: nowrap;
+        }
+
+        tbody td {
+            vertical-align: middle;
+        }
+
+        .badge-nivel {
+
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .badge-docente {
+
+            background: #08142C;
+            color: white;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .badge-sin-docente {
+
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .toolbar {
+
+            background: white;
+            border-radius: 16px;
+            padding: 18px 22px;
+            margin-bottom: 18px;
+
+            box-shadow:
+                0 8px 25px rgba(0,0,0,.08);
+        }
+
+        .toolbar .form-control,
+        .toolbar .form-select {
+            border-radius: 10px;
+        }
+
+        .contador-resultados {
+            color: #64748b;
+            font-size: .85rem;
+        }
+
+        tr.fila-oculta {
+            display: none;
+        }
+
+        .btn-desactivar {
+
+            background: #f59e0b;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-weight: 600;
+            font-size: .85rem;
+        }
+
+        .btn-desactivar:hover {
+            background: #d97706;
+            color: white;
+        }
+
+        .btn-eliminar {
+
+            background: #dc2626;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-weight: 600;
+            font-size: .85rem;
+        }
+
+        .btn-eliminar:hover {
+            background: #b91c1c;
+            color: white;
+        }
+
+        .vacio {
+
+            padding: 50px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        @media (max-width: 768px) {
+
+            .container-main {
+                margin: 20px 12px;
+            }
+
+            .header {
+                padding: 22px;
+            }
+
+            table {
+                font-size: .85rem;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container container-main">
+
+
+    <div class="header mb-4">
+
+        <div
+            class="
+                d-flex
+                justify-content-between
+                align-items-center
+                flex-wrap
+                gap-3
+            "
+        >
+
+            <div>
+
+                <h2>
+                    📋 Gestionar Asignaciones
+                </h2>
+
+                <p class="mb-0">
+                    Clases asignadas activas · CIEM Académico
+                </p>
+
+            </div>
+
+
+            <div
+                class="d-flex gap-2"
+            >
+
+                <a
+                    href="{{ url_for('admin_dashboard') }}"
+                    class="btn btn-outline-light"
+                >
+                    ← Volver al dashboard
+                </a>
+
+                <a
+                    href="{{ url_for('asignar_clase') }}"
+                    class="btn btn-light"
+                >
+                    ➕ Asignar clase
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+
+        {% if mensajes %}
+
+            {% for categoria, mensaje in mensajes %}
+
+                <div
+                    class="alert alert-{{ 'danger' if categoria == 'danger' else ('warning' if categoria == 'warning' else 'success') }}"
+                >
+                    {{ mensaje }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <div class="toolbar">
+
+        <div class="row g-2 align-items-center">
+
+            <div class="col-md-4">
+                <input
+                    type="text"
+                    id="filtroTexto"
+                    class="form-control"
+                    placeholder="🔎 Buscar por asignatura o docente..."
+                >
+            </div>
+
+            <div class="col-md-3">
+                <select id="filtroNivel" class="form-select">
+                    <option value="">Todos los niveles</option>
+                    {% for niv in asignaciones|map(attribute='nivel')|unique|list %}
+                        <option value="{{ niv }}">{{ niv }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <select id="filtroGrado" class="form-select">
+                    <option value="">Todos los grados</option>
+                    {% for gr in asignaciones|map(attribute='grado')|unique|list %}
+                        <option value="{{ gr }}">{{ gr }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-2 form-check ms-2">
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="filtroSinDocente"
+                >
+                <label class="form-check-label" for="filtroSinDocente">
+                    Solo sin docente
+                </label>
+            </div>
+
+        </div>
+
+        <div class="contador-resultados mt-2" id="contadorResultados"></div>
+
+    </div>
+
+
+    <div class="card">
+
+
+        <div class="card-header">
+
+            <h5>
+                🏫 Asignaciones activas
+                ({{ asignaciones|length }})
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+
+            {% if asignaciones %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Asignatura</th>
+                                <th>Nivel</th>
+                                <th>Grado</th>
+                                <th>Sección</th>
+                                <th>Docente</th>
+                                <th>Fecha asignación</th>
+                                <th class="text-end">Acciones</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for a in asignaciones %}
+
+                                {% set nombre_mostrar = a.docente_nombre_mostrar or "Sin asignar" %}
+
+                                <tr
+                                    data-texto="{{ (a.asignatura_nombre ~ ' ' ~ nombre_mostrar)|lower }}"
+                                    data-nivel="{{ a.nivel }}"
+                                    data-grado="{{ a.grado }}"
+                                    data-sin-docente="{{ 'si' if nombre_mostrar == 'Sin asignar' else 'no' }}"
+                                >
+
+                                    <td>
+                                        {{ a.asignatura_nombre }}
+                                    </td>
+
+                                    <td>
+                                        <span class="badge-nivel">
+                                            {{ a.nivel }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        {{ a.grado }}
+                                    </td>
+
+                                    <td>
+                                        {{ a.seccion }}
+                                    </td>
+
+                                    <td>
+
+                                        {% if nombre_mostrar == "Sin asignar" %}
+
+                                            <span class="badge-sin-docente">
+                                                ⚠️ Sin asignar
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="badge-docente">
+                                                {{ nombre_mostrar }}
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                    <td>
+
+                                        {% if a.fecha_asignacion %}
+                                            {{ a.fecha_asignacion.strftime('%d/%m/%Y') }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+
+                                    </td>
+
+                                    <td class="text-end">
+
+                                        <div class="d-flex gap-2 justify-content-end flex-wrap">
+
+                                            <a
+                                                href="{{ url_for('desactivar_asignacion', id=a._id) }}"
+                                                class="btn btn-desactivar"
+                                                onclick="return confirm('¿Desactivar esta asignación? Podrá reasignarla luego desde Asignar Clase.');"
+                                            >
+                                                Desactivar
+                                            </a>
+
+
+                                            <form
+                                                action="{{ url_for('eliminar_asignacion', id=a._id) }}"
+                                                method="POST"
+                                                class="d-inline"
+                                                onsubmit="return confirm('¿Seguro que deseas ELIMINAR esta asignación? Esta acción no se puede deshacer.');"
+                                            >
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-eliminar"
+                                                >
+                                                    Eliminar
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="vacio">
+
+                    No hay asignaciones activas todavía.
+
+                    <br>
+
+                    <a
+                        href="{{ url_for('asignar_clase') }}"
+                        class="btn btn-ciem mt-3"
+                    >
+                        ➕ Asignar la primera clase
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+
+
+<script>
+
+    (function () {
+
+        const inputTexto = document.getElementById("filtroTexto");
+        const selectNivel = document.getElementById("filtroNivel");
+        const selectGrado = document.getElementById("filtroGrado");
+        const checkSinDocente = document.getElementById("filtroSinDocente");
+        const contador = document.getElementById("contadorResultados");
+        const filas = document.querySelectorAll("tbody tr[data-texto]");
+
+        function aplicarFiltros() {
+
+            const texto = inputTexto.value.trim().toLowerCase();
+            const nivel = selectNivel.value;
+            const grado = selectGrado.value;
+            const soloSinDocente = checkSinDocente.checked;
+
+            let visibles = 0;
+
+            filas.forEach(function (fila) {
+
+                const coincideTexto =
+                    !texto || fila.dataset.texto.includes(texto);
+
+                const coincideNivel =
+                    !nivel || fila.dataset.nivel === nivel;
+
+                const coincideGrado =
+                    !grado || fila.dataset.grado === grado;
+
+                const coincideSinDocente =
+                    !soloSinDocente || fila.dataset.sinDocente === "si";
+
+                const mostrar =
+                    coincideTexto &&
+                    coincideNivel &&
+                    coincideGrado &&
+                    coincideSinDocente;
+
+                fila.classList.toggle("fila-oculta", !mostrar);
+
+                if (mostrar) {
+                    visibles++;
+                }
+
+            });
+
+            contador.textContent =
+                "Mostrando " + visibles + " de " + filas.length + " asignaciones";
+
+        }
+
+        [inputTexto, selectNivel, selectGrado, checkSinDocente].forEach(
+            function (el) {
+                el.addEventListener("input", aplicarFiltros);
+                el.addEventListener("change", aplicarFiltros);
+            }
+        );
+
+        aplicarFiltros();
+
+    })();
+
+</script>
+
+
+</body>
+
+</html>

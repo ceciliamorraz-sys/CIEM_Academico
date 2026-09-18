@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -191,6 +190,83 @@
             font-weight: 700;
         }
 
+        .grado-block {
+
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin-bottom: 14px;
+            background: #f8fafc;
+        }
+
+        .grado-block h6 {
+
+            color: #08142C;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .seccion-item {
+
+            display: inline-flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+            margin: 0 10px 10px 0;
+        }
+
+        .seccion-check {
+
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .seccion-check input {
+            margin: 0;
+        }
+
+        .seccion-check:has(input:checked) {
+
+            background: #eff6ff;
+            border-color: #2563eb;
+            color: #1d4ed8;
+        }
+
+        /* SECCIÓN CON DOCENTE YA ASIGNADO (DISTINTO AL SELECCIONADO) */
+
+        .seccion-check.tiene-docente {
+
+            border-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .seccion-check.tiene-docente:has(input:checked) {
+
+            border-color: #d97706;
+            background: #fef3c7;
+        }
+
+        .aviso-ocupada {
+
+            display: none;
+            font-size: .74rem;
+            font-weight: 600;
+            color: #b45309;
+            padding-left: 2px;
+        }
+
+        .aviso-ocupada.visible {
+            display: block;
+        }
+
         .acciones {
 
             border-top:
@@ -296,16 +372,46 @@
             </div>
 
 
-            <a
-                href="{{ url_for('listar_asignaturas') }}"
-                class="btn btn-light"
-            >
-                ← Regresar
-            </a>
+            <div class="d-flex gap-2">
+
+                <a
+                    href="{{ url_for('gestionar_asignaciones') }}"
+                    class="btn btn-light"
+                >
+                    📋 Ver asignaciones
+                </a>
+
+                <a
+                    href="{{ url_for('listar_asignaturas') }}"
+                    class="btn btn-light"
+                >
+                    ← Regresar
+                </a>
+
+            </div>
 
         </div>
 
     </div>
+
+
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+
+        {% if mensajes %}
+
+            {% for categoria, mensaje in mensajes %}
+
+                <div
+                    class="alert alert-{{ 'danger' if categoria == 'danger' else ('warning' if categoria == 'warning' else 'success') }}"
+                >
+                    {{ mensaje }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
 
 
     <div class="card">
@@ -327,14 +433,16 @@
 
                 <strong>ℹ️ Importante:</strong>
 
-                Seleccione una asignatura, un docente,
-                el nivel, grado y sección donde se impartirá
-                la clase.
+                Seleccione una asignatura, un nivel y un docente,
+                luego marque una o varias secciones donde impartirá
+                la clase. Puede marcar varias secciones a la vez.
 
                 <br>
 
-                La información será guardada en la colección
-                <strong>asignaciones_clase</strong>.
+                Si una sección ya tiene docente asignado, esta
+                acción la <strong>reasignará</strong> al docente
+                seleccionado — se le pedirá confirmar antes de
+                guardar.
 
             </div>
 
@@ -343,10 +451,11 @@
                 id="formAsignacion"
                 method="POST"
                 action="{{ url_for('asignar_clase') }}"
+                autocomplete="off"
             >
 
 
-                <div class="row g-4">
+                <div class="row g-4 mb-2">
 
 
                     <div class="col-md-6">
@@ -393,14 +502,6 @@
 
                         </select>
 
-
-                        <div class="ayuda">
-
-                            Seleccione la asignatura que desea
-                            asignar.
-
-                        </div>
-
                     </div>
 
 
@@ -440,27 +541,12 @@
                                     —
                                     {{ d.nombre }}
 
-                                    {% if d.cargo %}
-
-                                        —
-                                        {{ d.cargo }}
-
-                                    {% endif %}
-
                                 </option>
 
                             {% endfor %}
 
 
                         </select>
-
-
-                        <div class="ayuda">
-
-                            Seleccione el docente responsable
-                            de impartir la clase.
-
-                        </div>
 
                     </div>
 
@@ -489,196 +575,13 @@
                                 Seleccione nivel
                             </option>
 
-                            <option value="Preescolar">
-                                Preescolar
-                            </option>
+                            {% for n in niveles %}
 
-                            <option value="Primaria">
-                                Primaria
-                            </option>
-
-                            <option value="Secundaria">
-                                Secundaria
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <label for="grado">
-
-                            📖 Grado
-
-                            <span class="required">
-                                *
-                            </span>
-
-                        </label>
-
-
-                        <select
-                            id="grado"
-                            name="grado"
-                            class="form-select"
-                            required
-                        >
-
-                            <option value="">
-                                Seleccione grado
-                            </option>
-
-
-                            <optgroup label="Preescolar">
-
-                                <option value="1er Nivel de Preescolar">
-                                    1er Nivel de Preescolar
+                                <option value="{{ n }}">
+                                    {{ n }}
                                 </option>
 
-                                <option value="2do Nivel de Preescolar">
-                                    2do Nivel de Preescolar
-                                </option>
-
-                                <option value="3er Nivel de Preescolar">
-                                    3er Nivel de Preescolar
-                                </option>
-
-                            </optgroup>
-
-
-                            <optgroup label="Primaria">
-
-                                <option value="1">
-                                    1er Grado
-                                </option>
-
-                                <option value="2">
-                                    2do Grado
-                                </option>
-
-                                <option value="3">
-                                    3er Grado
-                                </option>
-
-                                <option value="4">
-                                    4to Grado
-                                </option>
-
-                                <option value="5">
-                                    5to Grado
-                                </option>
-
-                                <option value="6">
-                                    6to Grado
-                                </option>
-
-                            </optgroup>
-
-
-                            <optgroup label="Secundaria">
-
-                                <option value="1 Año">
-                                    1 Año
-                                </option>
-
-                                <option value="2 Año">
-                                    2 Año
-                                </option>
-
-                                <option value="3 Año">
-                                    3 Año
-                                </option>
-
-                                <option value="4 Año">
-                                    4 Año
-                                </option>
-
-                                <option value="5 Año">
-                                    5 Año
-                                </option>
-
-                            </optgroup>
-
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <label for="seccion">
-
-                            🏫 Sección
-
-                            <span class="required">
-                                *
-                            </span>
-
-                        </label>
-
-
-                        <select
-                            id="seccion"
-                            name="seccion"
-                            class="form-select"
-                            required
-                        >
-
-                            <option value="">
-                                Seleccione sección
-                            </option>
-
-                            <option value="A">
-                                A
-                            </option>
-
-                            <option value="B">
-                                B
-                            </option>
-
-                            <option value="C">
-                                C
-                            </option>
-
-                            <option value="D">
-                                D
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <label for="activo">
-
-                            ⚡ Estado
-
-                            <span class="required">
-                                *
-                            </span>
-
-                        </label>
-
-
-                        <select
-                            id="activo"
-                            name="activo"
-                            class="form-select"
-                            required
-                        >
-
-                            <option value="True">
-                                Activa
-                            </option>
-
-                            <option value="False">
-                                Inactiva
-                            </option>
+                            {% endfor %}
 
                         </select>
 
@@ -757,28 +660,100 @@
                     </div>
 
 
-                    <div
-                        class="col-md-12"
-                        id="previewClase"
-                        style="display:none;"
-                    >
-
-                        <div class="preview">
-
-                            <strong>
-                                🏫 Asignación:
-                            </strong>
+                </div>
 
 
-                            <span
-                                id="previewAsignacion"
-                                class="preview-codigo ms-2"
-                            ></span>
+                <label class="mt-3">
+
+                    🏫 Grados y secciones
+
+                    <span class="required">
+                        *
+                    </span>
+
+                </label>
+
+                <div class="ayuda mb-3">
+
+                    Marque una o varias secciones. Solo se muestran
+                    los grados y secciones con estudiantes matriculados.
+                    Las secciones en <strong>ámbar</strong> ya tienen
+                    un docente asignado para la asignatura y nivel
+                    elegidos.
+
+                </div>
+
+
+                {% if grados_secciones %}
+
+                    {% for g in grados_secciones %}
+
+                        <div class="grado-block">
+
+                            <h6>
+                                {{ g.grado }}
+                            </h6>
+
+                            {% for s in g.secciones %}
+
+                                <div class="seccion-item">
+
+                                    <label class="seccion-check">
+
+                                        <input
+                                            type="checkbox"
+                                            name="celdas"
+                                            value="{{ g.grado }}||{{ s }}"
+                                            class="celda-checkbox"
+                                            data-grado="{{ g.grado }}"
+                                            data-seccion="{{ s }}"
+                                        >
+
+                                        Sección {{ s }}
+
+                                    </label>
+
+                                    <span class="aviso-ocupada">
+                                        ⚠️ Ya asignada
+                                    </span>
+
+                                </div>
+
+                            {% endfor %}
 
                         </div>
 
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="alert alert-warning">
+                        No hay grados/secciones con estudiantes
+                        matriculados todavía.
                     </div>
 
+                {% endif %}
+
+
+                <div
+                    class="col-md-12 mt-2"
+                    id="previewClase"
+                    style="display:none;"
+                >
+
+                    <div class="preview">
+
+                        <strong>
+                            🏫 Se asignarán:
+                        </strong>
+
+
+                        <span
+                            id="previewAsignacion"
+                            class="preview-codigo ms-2"
+                        ></span>
+
+                    </div>
 
                 </div>
 
@@ -827,6 +802,15 @@
 <script>
 
 
+// ==========================================================
+// ASIGNACIONES ACTIVAS (VIENEN DEL BACKEND) PARA DETECTAR
+// REASIGNACIONES ANTES DE GUARDAR
+// ==========================================================
+
+const asignacionesExistentes =
+    {{ asignaciones_existentes|tojson }};
+
+
 const asignatura =
     document.getElementById(
         "asignatura_id"
@@ -845,16 +829,33 @@ const nivel =
     );
 
 
-const grado =
-    document.getElementById(
-        "grado"
-    );
+// ==========================================================
+// EVITA QUE EL BOTÓN "ATRÁS" DEL NAVEGADOR RESTAURE
+// CASILLAS MARCADAS DE UN ENVÍO ANTERIOR (bfcache)
+// ==========================================================
 
+window.addEventListener("pageshow", function (evento) {
 
-const seccion =
-    document.getElementById(
-        "seccion"
-    );
+    if (evento.persisted) {
+
+        document
+            .getElementById("formAsignacion")
+            .reset();
+
+        document.querySelectorAll(".celda-checkbox")
+            .forEach(function (cb) {
+                cb.checked = false;
+            });
+
+        document.getElementById("previewAsignatura").style.display = "none";
+        document.getElementById("previewDocente").style.display = "none";
+        document.getElementById("previewClase").style.display = "none";
+
+        marcarConflictos();
+
+    }
+
+});
 
 
 asignatura.addEventListener(
@@ -879,6 +880,7 @@ asignatura.addEventListener(
                 "none";
 
             actualizarPreview();
+            marcarConflictos();
 
             return;
         }
@@ -901,6 +903,7 @@ asignatura.addEventListener(
 
 
         actualizarPreview();
+        marcarConflictos();
 
     }
 );
@@ -928,6 +931,7 @@ docente.addEventListener(
                 "none";
 
             actualizarPreview();
+            marcarConflictos();
 
             return;
         }
@@ -950,9 +954,83 @@ docente.addEventListener(
 
 
         actualizarPreview();
+        marcarConflictos();
 
     }
 );
+
+
+function celdasMarcadas() {
+
+    return Array.from(
+        document.querySelectorAll(
+            ".celda-checkbox:checked"
+        )
+    );
+}
+
+
+// ==========================================================
+// BUSCA SI UNA CASILLA (grado/seccion) YA TIENE DOCENTE
+// PARA LA ASIGNATURA + NIVEL ACTUALMENTE ELEGIDOS
+// ==========================================================
+
+function buscarAsignacionExistente(grado, seccion) {
+
+    const opcionAsignatura =
+        asignatura.options[asignatura.selectedIndex];
+
+    const codigoAsignatura =
+        opcionAsignatura ? (opcionAsignatura.dataset.codigo || "") : "";
+
+    if (!codigoAsignatura || !nivel.value) {
+        return null;
+    }
+
+    const clave =
+        codigoAsignatura + "|" + nivel.value + "|" + grado + "|" + seccion;
+
+    return asignacionesExistentes[clave] || null;
+
+}
+
+
+// ==========================================================
+// MARCA VISUALMENTE LAS CASILLAS CUYA SECCIÓN YA TIENE
+// UN DOCENTE ASIGNADO (PARA ESA ASIGNATURA + NIVEL)
+// ==========================================================
+
+function marcarConflictos() {
+
+    document.querySelectorAll(".seccion-item").forEach(function (item) {
+
+        const checkbox = item.querySelector(".celda-checkbox");
+        const etiqueta = item.querySelector(".seccion-check");
+        const aviso = item.querySelector(".aviso-ocupada");
+
+        const existente =
+            buscarAsignacionExistente(
+                checkbox.dataset.grado,
+                checkbox.dataset.seccion
+            );
+
+        if (existente) {
+
+            etiqueta.classList.add("tiene-docente");
+            aviso.classList.add("visible");
+            aviso.textContent =
+                "⚠️ Ya asignada a " + existente.docente_nombre;
+
+        } else {
+
+            etiqueta.classList.remove("tiene-docente");
+            aviso.classList.remove("visible");
+
+        }
+
+    });
+
+}
 
 
 function actualizarPreview() {
@@ -964,10 +1042,8 @@ function actualizarPreview() {
         ];
 
 
-    const opcionDocente =
-        docente.options[
-            docente.selectedIndex
-        ];
+    const marcadas =
+        celdasMarcadas();
 
 
     if (
@@ -975,14 +1051,11 @@ function actualizarPreview() {
         !opcionAsignatura ||
         !opcionAsignatura.value ||
 
-        !opcionDocente ||
-        !opcionDocente.value ||
+        !docente.value ||
 
         !nivel.value ||
 
-        !grado.value ||
-
-        !seccion.value
+        marcadas.length === 0
 
     ) {
 
@@ -999,8 +1072,12 @@ function actualizarPreview() {
         opcionAsignatura.dataset.codigo || "";
 
 
-    const docenteCodigo =
-        opcionDocente.value || "";
+    const secciones =
+        marcadas
+            .map(function (c) {
+                return c.value.replace("||", " ");
+            })
+            .join(", ");
 
 
     const texto =
@@ -1011,13 +1088,10 @@ function actualizarPreview() {
         nivel.value +
         " · " +
 
-        grado.value +
-        " · " +
+        docente.value +
+        " → " +
 
-        seccion.value +
-        " · " +
-
-        docenteCodigo;
+        secciones;
 
 
     document.getElementById(
@@ -1036,20 +1110,25 @@ function actualizarPreview() {
 
 nivel.addEventListener(
     "change",
-    actualizarPreview
+    function () {
+        actualizarPreview();
+        marcarConflictos();
+    }
 );
 
 
-grado.addEventListener(
-    "change",
-    actualizarPreview
-);
+document
+    .querySelectorAll(
+        ".celda-checkbox"
+    )
+    .forEach(function (cb) {
 
+        cb.addEventListener(
+            "change",
+            actualizarPreview
+        );
 
-seccion.addEventListener(
-    "change",
-    actualizarPreview
-);
+    });
 
 
 document
@@ -1097,61 +1176,73 @@ document
             }
 
 
-            if (!grado.value) {
+            const marcadas = celdasMarcadas();
+
+            if (marcadas.length === 0) {
 
                 event.preventDefault();
 
                 alert(
-                    "Debe seleccionar el grado."
+                    "Debe marcar al menos una sección."
                 );
 
                 return;
             }
 
 
-            if (!seccion.value) {
+            // ==================================================
+            // CONFIRMACIÓN EXPLÍCITA SI HAY REASIGNACIONES
+            // ==================================================
 
-                event.preventDefault();
+            const reemplazos = [];
 
-                alert(
-                    "Debe seleccionar la sección."
+            marcadas.forEach(function (cb) {
+
+                const existente =
+                    buscarAsignacionExistente(
+                        cb.dataset.grado,
+                        cb.dataset.seccion
+                    );
+
+                if (
+                    existente &&
+                    existente.docente_id !== docente.value
+                ) {
+
+                    reemplazos.push(
+                        cb.dataset.grado +
+                        " Sección " +
+                        cb.dataset.seccion +
+                        " (actualmente: " +
+                        existente.docente_nombre +
+                        ")"
+                    );
+
+                }
+
+            });
+
+            if (reemplazos.length > 0) {
+
+                const confirmado = confirm(
+                    "Esto va a REEMPLAZAR al docente actual en:\n\n" +
+                    reemplazos.join("\n") +
+                    "\n\n¿Deseas continuar?"
                 );
 
-                return;
+                if (!confirmado) {
+                    event.preventDefault();
+                    return;
+                }
+
             }
-
-
-            console.log(
-                "ASIGNACIÓN DE CLASE"
-            );
-
-            console.log(
-                "ASIGNATURA ID:",
-                asignatura.value
-            );
-
-            console.log(
-                "DOCENTE:",
-                docente.value
-            );
-
-            console.log(
-                "NIVEL:",
-                nivel.value
-            );
-
-            console.log(
-                "GRADO:",
-                grado.value
-            );
-
-            console.log(
-                "SECCIÓN:",
-                seccion.value
-            );
 
         }
     );
+
+
+// ESTADO INICIAL
+marcarConflictos();
 
 </script>
 

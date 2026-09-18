@@ -255,11 +255,11 @@
                         </div>
 
 
-                        <div class="estado">
+                        <div class="estado {{ 'estado-inactiva' if clase.estado == 'Inactivo' else '' }}">
 
                             <span class="estado-punto"></span>
 
-                            Activa
+                            {{ 'Activa' if clase.estado != 'Inactivo' else 'Inactiva' }}
 
                         </div>
 
