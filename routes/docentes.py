@@ -22,6 +22,28 @@ from bson import ObjectId
 import gridfs
 from werkzeug.utils import secure_filename
 
+
+def filtro_id_estudiante(estudiante_id):
+    """
+    En db.estudiantes, "_id" puede ser el ObjectId real de Mongo
+    o el código propio del estudiante (ej. "CIEM-AEMZ"), según
+    cómo se haya creado el registro. Convertir siempre a ObjectId
+    revienta con bson.errors.InvalidId para los códigos CIEM-XXXX.
+    Esta función arma el filtro correcto según el formato recibido.
+    """
+
+    if ObjectId.is_valid(estudiante_id):
+
+        return {
+            "_id": ObjectId(estudiante_id)
+        }
+
+    return {
+        "_id": estudiante_id
+    }
+
+
+
 from flask_pymongo import PyMongo
 
 from reportlab.lib import colors
@@ -4360,11 +4382,36 @@ def estudiantes():
         )
 
     # =====================================
-    # TODOS LOS ESTUDIANTES
+    # FILTRO POR GRADO
+    # =====================================
+
+    grado_seleccionado = request.args.get(
+        "grado",
+        ""
+    ).strip()
+
+    filtro = {}
+
+    if grado_seleccionado:
+
+        filtro["grado"] = grado_seleccionado
+
+    # =====================================
+    # GRADOS DISPONIBLES (para el selector)
+    # =====================================
+
+    grados_disponibles = sorted({
+        str(g).strip()
+        for g in db.estudiantes.distinct("grado")
+        if g
+    })
+
+    # =====================================
+    # ESTUDIANTES (filtrados por grado si aplica)
     # =====================================
 
     estudiantes = list(
-        db.estudiantes.find({})
+        db.estudiantes.find(filtro)
     )
 
     # =====================================
@@ -4389,11 +4436,6 @@ def estudiantes():
     )
 
     # =====================================
-    # DEBUG
-    # =====================================
-
-
-    # =====================================
     # RENDERIZAR
     # =====================================
 
@@ -4401,8 +4443,86 @@ def estudiantes():
         "docente/estudiante.html",
         estudiantes=estudiantes,
         total_estudiantes=total_estudiantes,
-        docente=docente
+        docente=docente,
+        grados_disponibles=grados_disponibles,
+        grado_seleccionado=grado_seleccionado
     )
+
+# ============================================================
+# CONSULTA DE HISTORIAL (ASISTENCIA E INCIDENCIAS) POR GRADO
+# ============================================================
+#
+# Flujo simple y directo: elegir grado -> elegir estudiante ->
+# ver su historial. Sin botones de perfil/boletín/materiales
+# de por medio (eso lo cubre /estudiantes).
+
+@docente_bp.route("/consulta-historial")
+@role_required("docente")
+def consulta_historial():
+
+    usuario = session.get("usuario")
+
+    docente = db.docentes.find_one({
+        "usuario": usuario
+    })
+
+    if not docente:
+
+        flash(
+            "Docente no encontrado",
+            "danger"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+    # =====================================
+    # GRADOS DISPONIBLES
+    # =====================================
+
+    grados_disponibles = sorted({
+        str(g).strip()
+        for g in db.estudiantes.distinct("grado")
+        if g
+    })
+
+    # =====================================
+    # GRADO SELECCIONADO
+    # =====================================
+
+    grado_seleccionado = request.args.get(
+        "grado",
+        ""
+    ).strip()
+
+    estudiantes = []
+
+    if grado_seleccionado:
+
+        estudiantes = list(
+            db.estudiantes.find({
+                "grado": grado_seleccionado
+            })
+        )
+
+        estudiantes.sort(
+            key=lambda estudiante: str(
+                estudiante.get(
+                    "nombre",
+                    ""
+                )
+            ).lower()
+        )
+
+    return render_template(
+        "docente/consulta_historial.html",
+        docente=docente,
+        grados_disponibles=grados_disponibles,
+        grado_seleccionado=grado_seleccionado,
+        estudiantes=estudiantes
+    )
+
 
 # ============================================================
 # PLANES DE CLASE
@@ -7918,9 +8038,7 @@ def perfil_estudiante(estudiante_id):
 
 
     estudiante = db.estudiantes.find_one(
-        {
-            "_id": ObjectId(estudiante_id)
-        }
+        filtro_id_estudiante(estudiante_id)
     )
 
 
@@ -7951,9 +8069,7 @@ def perfil_estudiante(estudiante_id):
 def asistencia_estudiante(estudiante_id):
 
     estudiante = db.estudiantes.find_one(
-        {
-            "_id": ObjectId(estudiante_id)
-        }
+        filtro_id_estudiante(estudiante_id)
     )
 
     if not estudiante:
@@ -7966,20 +8082,73 @@ def asistencia_estudiante(estudiante_id):
             url_for("docente.estudiantes")
         )
 
+    # ========================================================
+    # IDS POSIBLES PARA ESTE ESTUDIANTE
+    # ========================================================
+    #
+    # "estudiante_id" en asistencias/incidencias puede haberse
+    # guardado como ObjectId, como el código CIEM-XXXX, o como
+    # texto plano del ObjectId (str(_id)). Se arma la lista de
+    # formatos válidos para no reventar con InvalidId cuando el
+    # _id real es un código y no un ObjectId.
+
+    _ids_posibles = [
+        estudiante_id,
+        estudiante.get("_id")
+    ]
+
+    if ObjectId.is_valid(estudiante_id):
+
+        _ids_posibles.append(
+            ObjectId(estudiante_id)
+        )
+
+    # ========================================================
+    # ASISTENCIAS
+    # ========================================================
 
     asistencias = list(
         db.asistencias.find(
             {
-                "estudiante_id": estudiante_id
+                "estudiante_id": {
+                    "$in": _ids_posibles
+                }
             }
+        ).sort(
+            "fecha",
+            -1
         )
     )
 
+    # ========================================================
+    # INCIDENCIAS
+    # ========================================================
+    #
+    # db.incidencias sí guarda "estudiante_id" como texto
+    # (str(estudiante["_id"])), así que se busca tal cual.
+
+    incidencias = list(
+        db.incidencias.find(
+            {
+                "estudiante_id": {
+                    "$in": [
+                        str(i) for i in _ids_posibles
+                    ]
+                }
+            }
+        ).sort(
+            "fecha_registro",
+            -1
+        )
+    )
 
     return render_template(
         "docente/asistencia_estudiante.html",
         estudiante=estudiante,
-        asistencias=asistencias
+        asistencias=asistencias,
+        incidencias=incidencias,
+        total_asistencias=len(asistencias),
+        total_incidencias=len(incidencias)
     )
 
 
@@ -7998,9 +8167,9 @@ def boletin_pdf_estudiante(estudiante_id):
     # BUSCAR ESTUDIANTE
     # ======================================================
 
-    estudiante = db.estudiantes.find_one({
-        "_id": ObjectId(estudiante_id)
-    })
+    estudiante = db.estudiantes.find_one(
+        filtro_id_estudiante(estudiante_id)
+    )
 
     if not estudiante:
 
@@ -8177,7 +8346,7 @@ def boletin_pdf_estudiante(estudiante_id):
     # ======================================================
 
     html_boletin = render_template(
-        "boletin_docente.html",
+        "docente/boletin_docente.html",
         estudiante=estudiante,
         notas=notas,
         boletin=boletin,
@@ -8247,9 +8416,7 @@ def materiales_estudiante(estudiante_id):
 
 
     estudiante = db.estudiantes.find_one(
-        {
-            "_id": ObjectId(estudiante_id)
-        }
+        filtro_id_estudiante(estudiante_id)
     )
 
 
@@ -8292,9 +8459,9 @@ def seleccionar_asistencia_estudiante(estudiante_id):
     # BUSCAR ESTUDIANTE
     # =====================================
 
-    estudiante = db.estudiantes.find_one({
-        "_id": estudiante_id
-    })
+    estudiante = db.estudiantes.find_one(
+        filtro_id_estudiante(estudiante_id)
+    )
 
     if not estudiante:
 

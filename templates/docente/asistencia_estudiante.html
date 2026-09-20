@@ -5,64 +5,707 @@
 
 <meta charset="UTF-8">
 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>
-Asistencia del estudiante
+Historial del estudiante | CIEM Académico
 </title>
-
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+>
+
 
 <style>
 
-body{
-background:#f4f6f9;
-font-family:'Segoe UI';
-}
+    :root {
 
+        --azul-oscuro: #0a2342;
+        --azul-medio: #1E4E8C;
+        --dorado: #c9a227;
 
-.header-ciem{
+        --fondo: #EEF2F8;
+        --blanco: #FFFFFF;
 
-background:linear-gradient(135deg,#08142C,#1E4E8C);
+        --texto: #172033;
+        --texto-suave: #667085;
 
-color:white;
+        --borde: #E3E8EF;
 
-padding:25px;
+        --verde: #16A34A;
+        --verde-fondo: #DCFCE7;
 
-border-radius:20px;
+        --rojo: #DC2626;
+        --rojo-fondo: #FEE2E2;
 
-}
+        --amarillo: #B45309;
+        --amarillo-fondo: #FEF3C7;
 
+        --azul-just: #2563EB;
+        --azul-just-fondo: #DBEAFE;
+    }
 
-.card-ciem{
+    * {
+        box-sizing: border-box;
+    }
 
-background:white;
+    body {
 
-border-radius:20px;
+        margin: 0;
+        background: var(--fondo);
+        color: var(--texto);
 
-padding:25px;
+        font-family:
+            "Inter",
+            "Segoe UI",
+            Arial,
+            sans-serif;
+    }
 
-box-shadow:0 5px 15px rgba(0,0,0,.1);
+    .contenedor {
+        max-width: 1000px;
+        margin: auto;
+        padding: 30px 20px 60px;
+    }
 
-}
+    /* ==========================================
+       ENCABEZADO
+    ========================================== */
 
+    .header-ciem {
 
-.foto{
+        position: relative;
+        overflow: hidden;
 
-width:90px;
+        background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul-medio) 100%);
+        border-bottom: 4px solid var(--dorado);
 
-height:90px;
+        color: white;
 
-border-radius:50%;
+        padding: 30px 32px;
 
-object-fit:cover;
+        border-radius: 22px;
 
-}
+        box-shadow: 0 14px 34px rgba(10, 35, 66, .22);
 
+        margin-bottom: 22px;
+    }
 
+    .header-ciem::after {
+
+        content: "";
+        position: absolute;
+        top: -60px;
+        right: -60px;
+
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+
+        background: rgba(255,255,255,.06);
+    }
+
+    .header-ciem h2 {
+        margin: 0;
+        font-size: 23px;
+        font-weight: 800;
+
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .header-ciem p {
+        margin: 6px 0 0;
+        color: #D8E2F0;
+        font-size: 13px;
+    }
+
+    /* ==========================================
+       PERFIL
+    ========================================== */
+
+    .card-ciem {
+
+        background: var(--blanco);
+        border: 1px solid var(--borde);
+        border-radius: 20px;
+
+        padding: 24px;
+
+        box-shadow: 0 8px 24px rgba(8, 20, 44, .07);
+
+        margin-bottom: 22px;
+    }
+
+    .perfil-fila {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+
+    .foto {
+
+        width: 72px;
+        height: 72px;
+        flex-shrink: 0;
+
+        border-radius: 50%;
+
+        background: linear-gradient(135deg, var(--azul-oscuro), var(--azul-medio));
+        color: white;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 28px;
+        font-weight: 800;
+        text-transform: uppercase;
+
+        box-shadow: 0 0 0 4px #EAF1FA;
+    }
+
+    .datos-estudiante {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .datos-estudiante h3 {
+        margin: 0 0 5px;
+        color: var(--azul-oscuro);
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .datos-estudiante p {
+        margin: 0 0 8px;
+        color: var(--texto-suave);
+        font-size: 13.5px;
+    }
+
+    .badge-grado {
+
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+
+        padding: 5px 11px;
+
+        background: #FBF3DC;
+        color: #8a6d10;
+        border: 1px solid var(--dorado);
+        border-radius: 8px;
+
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    /* ==========================================
+       ASISTENCIA: BARRA DE PORCENTAJE
+    ========================================== */
+
+    .asistencia-porcentaje {
+
+        flex-shrink: 0;
+
+        text-align: center;
+
+        min-width: 130px;
+    }
+
+    .aro-progreso {
+
+        position: relative;
+
+        width: 92px;
+        height: 92px;
+
+        margin: 0 auto 6px;
+    }
+
+    .aro-progreso svg {
+        transform: rotate(-90deg);
+    }
+
+    .aro-progreso .fondo-aro {
+        fill: none;
+        stroke: #EEF2F8;
+        stroke-width: 9;
+    }
+
+    .aro-progreso .valor-aro {
+        fill: none;
+        stroke: var(--dorado);
+        stroke-width: 9;
+        stroke-linecap: round;
+        transition: stroke-dashoffset .5s ease;
+    }
+
+    .aro-progreso .texto-aro {
+
+        position: absolute;
+        inset: 0;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--azul-oscuro);
+    }
+
+    .asistencia-porcentaje span {
+
+        display: block;
+
+        font-size: 11px;
+        color: var(--texto-suave);
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+
+    /* ==========================================
+       RESUMEN
+    ========================================== */
+
+    .resumen {
+
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+
+        margin-bottom: 22px;
+    }
+
+    .resumen-card {
+
+        background: var(--blanco);
+        border: 1px solid var(--borde);
+        border-radius: 16px;
+
+        padding: 16px;
+
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        box-shadow: 0 4px 14px rgba(15, 23, 42, .05);
+
+        transition: .2s;
+    }
+
+    .resumen-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(15,23,42,.09);
+    }
+
+    .icono-resumen {
+
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+
+        border-radius: 12px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 19px;
+    }
+
+    .icono-total {
+        background: #EAF2FF;
+        color: var(--azul-medio);
+    }
+
+    .icono-presente {
+        background: var(--verde-fondo);
+        color: var(--verde);
+    }
+
+    .icono-ausente {
+        background: var(--rojo-fondo);
+        color: var(--rojo);
+    }
+
+    .icono-incidencia {
+        background: #FBF3DC;
+        color: #8a6d10;
+    }
+
+    .resumen-numero {
+        font-size: 21px;
+        font-weight: 800;
+        line-height: 1;
+        color: var(--azul-oscuro);
+    }
+
+    .resumen-texto {
+        color: var(--texto-suave);
+        font-size: 11.5px;
+        margin-top: 3px;
+    }
+
+    /* ==========================================
+       TÍTULOS DE SECCIÓN
+    ========================================== */
+
+    .titulo-seccion {
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+
+        margin-bottom: 16px;
+    }
+
+    .titulo-seccion h4 {
+
+        display: flex;
+        align-items: center;
+        gap: 9px;
+
+        margin: 0;
+
+        color: var(--azul-oscuro);
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .titulo-seccion h4 i {
+        color: var(--azul-medio);
+    }
+
+    .contador-pill {
+
+        background: #F8FAFC;
+        border: 1px solid var(--borde);
+        color: var(--texto-suave);
+
+        padding: 4px 11px;
+        border-radius: 20px;
+
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    /* ==========================================
+       TIMELINE DE ASISTENCIA
+    ========================================== */
+
+    .timeline-asistencia {
+
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .fila-asistencia {
+
+        display: flex;
+        align-items: center;
+        gap: 14px;
+
+        background: #FAFBFD;
+        border: 1px solid var(--borde);
+        border-radius: 14px;
+
+        padding: 13px 16px;
+
+        transition: .2s;
+    }
+
+    .fila-asistencia:hover {
+        background: #F3F6FB;
+        border-color: #C9D7E8;
+    }
+
+    .icono-estado {
+
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+
+        border-radius: 50%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 16px;
+    }
+
+    .icono-estado.presente {
+        background: var(--verde-fondo);
+        color: var(--verde);
+    }
+
+    .icono-estado.ausente {
+        background: var(--rojo-fondo);
+        color: var(--rojo);
+    }
+
+    .icono-estado.justificada {
+        background: var(--azul-just-fondo);
+        color: var(--azul-just);
+    }
+
+    .fila-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .fila-info strong {
+
+        display: block;
+
+        font-size: 13.5px;
+        color: var(--texto);
+    }
+
+    .fila-info span {
+
+        font-size: 12px;
+        color: var(--texto-suave);
+    }
+
+    .fila-fecha {
+
+        flex-shrink: 0;
+
+        text-align: right;
+
+        font-size: 12.5px;
+        color: var(--texto-suave);
+        font-weight: 600;
+
+        min-width: 90px;
+    }
+
+    .pill-estado {
+
+        flex-shrink: 0;
+
+        padding: 5px 12px;
+
+        border-radius: 20px;
+
+        font-size: 11.5px;
+        font-weight: 700;
+
+        min-width: 84px;
+        text-align: center;
+    }
+
+    .pill-estado.presente {
+        background: var(--verde-fondo);
+        color: var(--verde);
+    }
+
+    .pill-estado.ausente {
+        background: var(--rojo-fondo);
+        color: var(--rojo);
+    }
+
+    .pill-estado.justificada {
+        background: var(--azul-just-fondo);
+        color: var(--azul-just);
+    }
+
+    /* ==========================================
+       INCIDENCIAS - TARJETAS
+    ========================================== */
+
+    .lista-incidencias {
+
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .card-incidencia {
+
+        background: #FAFBFD;
+        border: 1px solid var(--borde);
+        border-left: 4px solid var(--rojo);
+        border-radius: 14px;
+
+        padding: 15px 18px;
+
+        transition: .2s;
+    }
+
+    .card-incidencia:hover {
+        background: #F6F8FB;
+    }
+
+    .card-incidencia.estado-resuelta,
+    .card-incidencia.estado-resuelto {
+        border-left-color: var(--verde);
+    }
+
+    .card-incidencia.estado-pendiente {
+        border-left-color: var(--amarillo);
+    }
+
+    .incidencia-cabecera {
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+
+        margin-bottom: 8px;
+    }
+
+    .incidencia-tipo {
+
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+
+        padding: 4px 10px;
+
+        background: var(--rojo-fondo);
+        color: #B91C1C;
+
+        border-radius: 8px;
+
+        font-size: 11.5px;
+        font-weight: 700;
+    }
+
+    .incidencia-fecha {
+        font-size: 12px;
+        color: var(--texto-suave);
+        font-weight: 600;
+    }
+
+    .incidencia-descripcion {
+        margin: 0 0 8px;
+        font-size: 13.5px;
+        color: var(--texto);
+        line-height: 1.5;
+    }
+
+    .incidencia-pie {
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+
+        font-size: 12px;
+        color: var(--texto-suave);
+    }
+
+    .incidencia-pie i {
+        margin-right: 4px;
+    }
+
+    .pill-estado-incidencia {
+
+        padding: 4px 10px;
+
+        border-radius: 20px;
+
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: capitalize;
+    }
+
+    .pill-pendiente {
+        background: var(--amarillo-fondo);
+        color: var(--amarillo);
+    }
+
+    .pill-resuelta,
+    .pill-resuelto {
+        background: var(--verde-fondo);
+        color: var(--verde);
+    }
+
+    /* ==========================================
+       VACÍO
+    ========================================== */
+
+    .vacio-seccion {
+
+        text-align: center;
+        padding: 40px 15px;
+
+        color: var(--texto-suave);
+        font-size: 13.5px;
+    }
+
+    .vacio-seccion i {
+        font-size: 34px;
+        display: block;
+        margin-bottom: 10px;
+        color: #C9D3E0;
+    }
+
+    /* ==========================================
+       VOLVER
+    ========================================== */
+
+    .btn-volver {
+
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        padding: 10px 16px;
+
+        border-radius: 10px;
+
+        background: var(--blanco);
+        color: var(--azul-medio);
+        border: 1px solid var(--borde);
+
+        text-decoration: none;
+        font-size: 13.5px;
+        font-weight: 600;
+
+        transition: .2s;
+    }
+
+    .btn-volver:hover {
+        background: var(--azul-oscuro);
+        color: white;
+        border-color: var(--azul-oscuro);
+    }
+
+    @media (max-width: 700px) {
+
+        .resumen {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .perfil-fila {
+            justify-content: center;
+            text-align: center;
+        }
+
+        .fila-asistencia {
+            flex-wrap: wrap;
+        }
+
+        .fila-fecha {
+            text-align: left;
+        }
+    }
 
 </style>
 
@@ -73,242 +716,343 @@ object-fit:cover;
 <body>
 
 
-<div class="container py-4">
+<div class="contenedor">
 
 
+    <!-- ==================================================
+         ENCABEZADO
+    =================================================== -->
 
-<div class="header-ciem mb-4">
+    <div class="header-ciem">
 
+        <h2>
+            <i class="bi bi-clipboard2-pulse-fill"></i>
+            Historial de Asistencia e Incidencias
+        </h2>
 
-<h2>
+        <p>
+            Colegio Integral Emanuel Matagalpa
+        </p>
 
-<i class="bi bi-calendar-check"></i>
+    </div>
 
-Historial de Asistencia
 
-</h2>
+    <!-- ==================================================
+         PERFIL DEL ESTUDIANTE
+    =================================================== -->
 
+    {% set _total_asist = total_asistencias if total_asistencias is defined else asistencias|length %}
+    {% set _presentes = asistencias|selectattr("estado", "equalto", "Presente")|list|length %}
+    {% set _porcentaje = ((_presentes / _total_asist) * 100) | round | int if _total_asist > 0 else 0 %}
 
-<p>
-Colegio Integral Emanuel Matagalpa
-</p>
+    <div class="card-ciem">
 
+        <div class="perfil-fila">
 
-</div>
+            <div class="foto">
+                {{ estudiante.nombre[0]|upper if estudiante.nombre else "?" }}
+            </div>
 
+            <div class="datos-estudiante">
 
+                <h3>
+                    {{ estudiante.nombre }}
+                </h3>
 
+                <p>
+                    Código: {{ estudiante.codigo or "—" }}
+                </p>
 
-<div class="card-ciem mb-4">
+                <span class="badge-grado">
+                    <i class="bi bi-mortarboard-fill"></i>
+                    {{ estudiante.grado or "—" }} &nbsp;|&nbsp; Sección {{ estudiante.seccion or "—" }}
+                </span>
 
+            </div>
 
-<div class="d-flex align-items-center">
+            {% if _total_asist > 0 %}
 
+            <div class="asistencia-porcentaje">
 
-<img
-src="{{ url_for('static', filename='img/user.jpg') }}"
-class="foto">
+                <div class="aro-progreso">
 
+                    <svg width="92" height="92" viewBox="0 0 92 92">
 
-<div class="ms-4">
+                        <circle class="fondo-aro" cx="46" cy="46" r="38"></circle>
 
+                        <circle
+                            class="valor-aro"
+                            cx="46" cy="46" r="38"
+                            stroke-dasharray="238.76"
+                            stroke-dashoffset="{{ 238.76 - (238.76 * _porcentaje / 100) }}"
+                        ></circle>
 
-<h3>
-{{ estudiante.nombre }}
-</h3>
+                    </svg>
 
+                    <div class="texto-aro">
+                        {{ _porcentaje }}%
+                    </div>
 
-<p class="mb-0">
+                </div>
 
-Grado:
-{{ estudiante.grado }}
+                <span>Asistencia</span>
 
-|
-Sección:
-{{ estudiante.seccion }}
+            </div>
 
-</p>
+            {% endif %}
 
+        </div>
 
-</div>
+    </div>
 
 
-</div>
+    <!-- ==================================================
+         RESUMEN
+    =================================================== -->
 
+    <div class="resumen">
 
-</div>
+        <div class="resumen-card">
 
+            <div class="icono-resumen icono-total">
+                <i class="bi bi-calendar-check-fill"></i>
+            </div>
 
+            <div>
+                <div class="resumen-numero">
+                    {{ _total_asist }}
+                </div>
+                <div class="resumen-texto">
+                    Registros
+                </div>
+            </div>
 
+        </div>
 
+        <div class="resumen-card">
 
-<div class="card-ciem">
+            <div class="icono-resumen icono-presente">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
 
+            <div>
+                <div class="resumen-numero">
+                    {{ _presentes }}
+                </div>
+                <div class="resumen-texto">
+                    Presentes
+                </div>
+            </div>
 
-<h4>
+        </div>
 
-<i class="bi bi-list-check"></i>
+        <div class="resumen-card">
 
-Registro de asistencia
+            <div class="icono-resumen icono-ausente">
+                <i class="bi bi-x-circle-fill"></i>
+            </div>
 
-</h4>
+            <div>
+                <div class="resumen-numero">
+                    {{ asistencias|selectattr("estado", "equalto", "Ausente")|list|length }}
+                </div>
+                <div class="resumen-texto">
+                    Ausencias
+                </div>
+            </div>
 
+        </div>
 
+        <div class="resumen-card">
 
-<hr>
+            <div class="icono-resumen icono-incidencia">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
 
+            <div>
+                <div class="resumen-numero">
+                    {{ total_incidencias if total_incidencias is defined else incidencias|length }}
+                </div>
+                <div class="resumen-texto">
+                    Incidencias
+                </div>
+            </div>
 
+        </div>
 
-<div class="table-responsive">
+    </div>
 
 
-<table class="table table-hover">
+    <!-- ==================================================
+         ASISTENCIA
+    =================================================== -->
 
+    <div class="card-ciem">
 
-<thead>
+        <div class="titulo-seccion">
 
-<tr>
+            <h4>
+                <i class="bi bi-list-check"></i>
+                Registro de asistencia
+            </h4>
 
-<th>
-Fecha
-</th>
+            <span class="contador-pill">
+                {{ _total_asist }} registros
+            </span>
 
+        </div>
 
-<th>
-Asignatura
-</th>
+        {% if asistencias %}
 
+            <div class="timeline-asistencia">
 
-<th>
-Estado
-</th>
+                {% for a in asistencias %}
 
+                {% set _estado_clase =
+                    "presente" if a.estado == "Presente"
+                    else "ausente" if a.estado == "Ausente"
+                    else "justificada"
+                %}
 
-<th>
-Observación
-</th>
+                <div class="fila-asistencia">
 
+                    <div class="icono-estado {{ _estado_clase }}">
 
-</tr>
+                        {% if a.estado == "Presente" %}
+                            <i class="bi bi-check-lg"></i>
+                        {% elif a.estado == "Ausente" %}
+                            <i class="bi bi-x-lg"></i>
+                        {% else %}
+                            <i class="bi bi-info-lg"></i>
+                        {% endif %}
 
-</thead>
+                    </div>
 
+                    <div class="fila-info">
+                        <strong>{{ a.asignatura or a.asignatura_id or "Asignatura" }}</strong>
+                        {% if a.observacion %}
+                            <span>{{ a.observacion }}</span>
+                        {% endif %}
+                    </div>
 
+                    <div class="fila-fecha">
+                        {{ a.fecha }}
+                    </div>
 
-<tbody>
+                    <span class="pill-estado {{ _estado_clase }}">
+                        {{ a.estado }}
+                    </span>
 
+                </div>
 
-{% for a in asistencias %}
+                {% endfor %}
 
+            </div>
 
-<tr>
+        {% else %}
 
+            <div class="vacio-seccion">
+                <i class="bi bi-calendar-x"></i>
+                No existen registros de asistencia.
+            </div>
 
-<td>
+        {% endif %}
 
-{{ a.fecha }}
+    </div>
 
-</td>
 
+    <!-- ==================================================
+         INCIDENCIAS
+    =================================================== -->
 
-<td>
+    <div class="card-ciem">
 
-{{ a.asignatura_id }}
+        <div class="titulo-seccion">
 
-</td>
+            <h4>
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                Incidencias registradas
+            </h4>
 
+            <span class="contador-pill">
+                {{ incidencias|length }} incidencias
+            </span>
 
-<td>
+        </div>
 
+        {% if incidencias %}
 
-{% if a.estado=="Presente" %}
+            <div class="lista-incidencias">
 
-<span class="badge bg-success">
+                {% for i in incidencias %}
 
-Presente
+                <div class="card-incidencia estado-{{ (i.estado or 'pendiente')|lower }}">
 
-</span>
+                    <div class="incidencia-cabecera">
 
+                        <span class="incidencia-tipo">
+                            <i class="bi bi-exclamation-circle-fill"></i>
+                            {{ i.tipo }}
+                        </span>
 
-{% elif a.estado=="Ausente" %}
+                        <span class="incidencia-fecha">
+                            {{ i.fecha }}
+                        </span>
 
-<span class="badge bg-danger">
+                    </div>
 
-Ausente
+                    <p class="incidencia-descripcion">
+                        {{ i.descripcion or "Sin descripción." }}
+                    </p>
 
-</span>
+                    <div class="incidencia-pie">
 
+                        <span>
+                            <i class="bi bi-person-fill"></i>
+                            {{ i.docente_nombre or i.docente or "—" }}
+                            {% if i.asignatura %} · {{ i.asignatura }}{% endif %}
+                        </span>
 
-{% else %}
+                        <span class="pill-estado-incidencia pill-{{ (i.estado or 'pendiente')|lower }}">
+                            {{ i.estado or "Pendiente" }}
+                        </span>
 
-<span class="badge bg-warning">
+                    </div>
 
-{{a.estado}}
+                </div>
 
-</span>
+                {% endfor %}
 
+            </div>
 
-{% endif %}
+        {% else %}
 
+            <div class="vacio-seccion">
+                <i class="bi bi-emoji-smile"></i>
+                No existen incidencias registradas.
+            </div>
 
+        {% endif %}
 
-</td>
+    </div>
 
 
-<td>
+    <!-- ==================================================
+         REGRESAR
+    =================================================== -->
 
-{{ a.observacion }}
+    <a
+        href="{{ url_for(
+            'docente.perfil_estudiante',
+            estudiante_id=estudiante._id
+        ) }}"
+        class="btn-volver"
+    >
 
-</td>
+        <i class="bi bi-arrow-left"></i>
+        Regresar al perfil
 
-
-</tr>
-
-
-
-{% else %}
-
-
-<tr>
-
-<td colspan="4" class="text-center">
-
-No existen registros
-
-</td>
-
-</tr>
-
-
-{% endfor %}
-
-
-</tbody>
-
-
-</table>
-
-
-</div>
-
-
-</div>
-
-
-
-
-<a href="{{ url_for('docente.perfil_estudiante',
-estudiante_id=estudiante._id) }}"
-class="btn btn-secondary mt-3">
-
-
-<i class="bi bi-arrow-left"></i>
-
-Regresar
-
-
-</a>
-
+    </a>
 
 
 </div>

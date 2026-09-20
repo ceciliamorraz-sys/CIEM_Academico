@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -13,24 +12,608 @@
 
     <title>Asignaturas | CIEM Académico</title>
 
-
-    <!-- Bootstrap Icons -->
-
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         rel="stylesheet"
     >
 
-
-    <!-- CSS propio -->
-
     <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
-        href="{{ url_for(
-            'static',
-            filename='css/asignaturas.css'
-        ) }}"
     >
+
+    <style>
+
+        :root {
+
+            --azul-oscuro: #0a2342;
+            --azul-medio: #1E4E8C;
+            --dorado: #c9a227;
+
+            --fondo: #F4F7FB;
+            --blanco: #FFFFFF;
+
+            --texto: #172033;
+            --texto-suave: #667085;
+
+            --borde: #E3E8EF;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+
+            margin: 0;
+
+            background: var(--fondo);
+            color: var(--texto);
+
+            font-family:
+                "Inter",
+                "Segoe UI",
+                Arial,
+                sans-serif;
+        }
+
+        .pagina-asignaturas {
+            min-height: 100vh;
+        }
+
+        /* ==========================================
+           ENCABEZADO
+        ========================================== */
+
+        .encabezado {
+
+            background: linear-gradient(135deg, var(--azul-oscuro), var(--azul-medio));
+            border-bottom: 4px solid var(--dorado);
+
+            padding: 30px 35px;
+
+            color: white;
+        }
+
+        .encabezado-contenido {
+
+            max-width: 1200px;
+            margin: auto;
+
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .logo-contenedor {
+
+            width: 68px;
+            height: 68px;
+            flex-shrink: 0;
+
+            background: white;
+            border-radius: 15px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+        }
+
+        .logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .titulo {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .etiqueta-institucion {
+
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .6px;
+
+            color: #ffd873;
+
+            margin-bottom: 6px;
+        }
+
+        .titulo h1 {
+            margin: 0 0 4px;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .titulo p {
+            margin: 0;
+            color: #D8E2F0;
+            font-size: 13.5px;
+        }
+
+        .usuario {
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            background: rgba(255,255,255,.1);
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: 12px;
+
+            padding: 8px 14px;
+        }
+
+        .usuario-icono {
+
+            width: 36px;
+            height: 36px;
+
+            border-radius: 50%;
+
+            background: var(--dorado);
+            color: var(--azul-oscuro);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 16px;
+        }
+
+        .usuario-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .usuario-info span {
+            font-size: 10px;
+            letter-spacing: .5px;
+            color: #D8E2F0;
+        }
+
+        .usuario-info strong {
+            font-size: 13.5px;
+        }
+
+        /* ==========================================
+           CONTENIDO
+        ========================================== */
+
+        .contenido {
+            max-width: 1200px;
+            margin: auto;
+            padding: 30px 25px 50px;
+        }
+
+        .presentacion {
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+
+            margin-bottom: 28px;
+        }
+
+        .etiqueta-seccion {
+
+            display: inline-block;
+            margin-bottom: 6px;
+
+            padding: 3px 9px;
+
+            background: #FBF3DC;
+            color: #8a6d10;
+            border: 1px solid var(--dorado);
+            border-radius: 6px;
+
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .5px;
+        }
+
+        .presentacion-texto h2 {
+            margin: 0 0 5px;
+            color: var(--azul-oscuro);
+            font-size: 21px;
+            font-weight: 700;
+        }
+
+        .presentacion-texto p {
+            margin: 0;
+            color: var(--texto-suave);
+            font-size: 13.5px;
+            max-width: 480px;
+        }
+
+        .contador {
+
+            display: flex;
+            align-items: center;
+            gap: 14px;
+
+            background: white;
+            border: 1px solid var(--borde);
+            border-radius: 16px;
+
+            padding: 16px 20px;
+
+            box-shadow: 0 6px 18px rgba(8,20,44,.08);
+        }
+
+        .contador-icono {
+
+            width: 46px;
+            height: 46px;
+
+            border-radius: 12px;
+
+            background: #EAF2FF;
+            color: var(--azul-medio);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 20px;
+        }
+
+        .contador-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contador-info strong {
+            font-size: 22px;
+            color: var(--azul-oscuro);
+            line-height: 1.1;
+        }
+
+        .contador-info span {
+            font-size: 12px;
+            color: var(--texto-suave);
+        }
+
+        /* ==========================================
+           TARJETAS
+        ========================================== */
+
+        .asignaturas-grid {
+
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .asignatura-card {
+
+            position: relative;
+
+            background: white;
+            border: 1px solid var(--borde);
+            border-radius: 18px;
+
+            padding: 20px;
+
+            box-shadow: 0 6px 18px rgba(8,20,44,.06);
+
+            transition: .2s;
+        }
+
+        .asignatura-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(8,20,44,.12);
+        }
+
+        .numero-card {
+
+            position: absolute;
+            top: 14px;
+            right: 16px;
+
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--texto-suave);
+        }
+
+        .card-header {
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 14px;
+        }
+
+        .icono-asignatura {
+
+            width: 46px;
+            height: 46px;
+
+            border-radius: 12px;
+
+            background: linear-gradient(135deg, var(--azul-oscuro), var(--azul-medio));
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 19px;
+        }
+
+        .estado {
+
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            font-size: 11px;
+            font-weight: 700;
+            color: #166534;
+        }
+
+        .estado-punto {
+
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+
+            background: #16A34A;
+        }
+
+        .estado-inactiva {
+            color: #94A0B4;
+        }
+
+        .estado-inactiva .estado-punto {
+            background: #94A0B4;
+        }
+
+        .tipo-asignatura {
+
+            display: block;
+
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: .5px;
+            color: var(--texto-suave);
+
+            margin-bottom: 4px;
+        }
+
+        .card-body h3 {
+            margin: 0 0 14px;
+            color: var(--azul-oscuro);
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .datos-clase {
+
+            display: flex;
+            gap: 10px;
+
+            margin-bottom: 10px;
+        }
+
+        .dato {
+
+            flex: 1;
+
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            background: #F8FAFC;
+            border: 1px solid var(--borde);
+            border-radius: 10px;
+
+            padding: 8px 10px;
+        }
+
+        .dato-icono {
+
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+
+            border-radius: 8px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 13px;
+        }
+
+        .dato-icono.grado {
+            background: #EAF2FF;
+            color: var(--azul-medio);
+        }
+
+        .dato-icono.seccion {
+            background: #FBF3DC;
+            color: #8a6d10;
+        }
+
+        .dato-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .dato-info span {
+            font-size: 10px;
+            color: var(--texto-suave);
+        }
+
+        .dato-info strong {
+            font-size: 13px;
+            color: var(--texto);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .horario {
+
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            font-size: 12.5px;
+            color: var(--texto-suave);
+
+            margin-bottom: 4px;
+        }
+
+        .card-footer {
+            margin-top: 14px;
+        }
+
+        .btn-asistencia {
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            width: 100%;
+
+            background: var(--azul-oscuro);
+            color: white;
+
+            padding: 11px;
+            border-radius: 10px;
+
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 600;
+
+            transition: .2s;
+        }
+
+        .btn-asistencia:hover {
+            background: var(--dorado);
+            color: var(--azul-oscuro);
+        }
+
+        /* ==========================================
+           SIN ASIGNATURAS
+        ========================================== */
+
+        .sin-asignaturas {
+
+            grid-column: 1 / -1;
+
+            background: white;
+            border: 1px solid var(--borde);
+            border-radius: 18px;
+
+            padding: 55px 25px;
+
+            text-align: center;
+        }
+
+        .sin-icono {
+            font-size: 46px;
+            color: var(--texto-suave);
+            margin-bottom: 12px;
+        }
+
+        .sin-asignaturas h3 {
+            margin: 0 0 6px;
+            color: var(--azul-oscuro);
+        }
+
+        .sin-asignaturas p {
+            margin: 0;
+            color: var(--texto-suave);
+            font-size: 13.5px;
+        }
+
+        /* ==========================================
+           VOLVER
+        ========================================== */
+
+        .volver-contenedor {
+            margin-top: 28px;
+        }
+
+        .btn-volver {
+
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 10px 16px;
+
+            border-radius: 10px;
+
+            background: white;
+            color: var(--azul-medio);
+            border: 1px solid var(--borde);
+
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 600;
+
+            transition: .2s;
+        }
+
+        .btn-volver:hover {
+            background: var(--azul-oscuro);
+            color: white;
+            border-color: var(--azul-oscuro);
+        }
+
+        /* ==========================================
+           FOOTER
+        ========================================== */
+
+        footer {
+
+            text-align: center;
+            padding: 22px;
+
+            color: var(--texto-suave);
+            font-size: 12.5px;
+        }
+
+        footer strong {
+            color: var(--azul-oscuro);
+        }
+
+        @media (max-width: 650px) {
+
+            .encabezado-contenido {
+                flex-wrap: wrap;
+            }
+
+            .usuario {
+                width: 100%;
+            }
+
+            .presentacion {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+    </style>
 
 </head>
 

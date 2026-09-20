@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Boletín de Calificaciones</title>
+
+    <style>
+
+        @page {
+            size: letter;
+            margin: 2cm 1.6cm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+
+            margin: 0;
+
+            font-family: "Helvetica", "Arial", sans-serif;
+            color: #172033;
+
+            font-size: 12px;
+        }
+
+        /* ==========================================
+           ENCABEZADO
+        ========================================== */
+
+        .encabezado {
+
+            display: flex;
+            align-items: center;
+            gap: 16px;
+
+            border-bottom: 3px solid #c9a227;
+            padding-bottom: 14px;
+
+            margin-bottom: 20px;
+        }
+
+        .encabezado img {
+
+            width: 62px;
+            height: 62px;
+
+            object-fit: contain;
+
+            border-radius: 10px;
+            background: #0a2342;
+            padding: 4px;
+        }
+
+        .encabezado-texto {
+            flex: 1;
+        }
+
+        .encabezado-texto h1 {
+
+            margin: 0 0 3px;
+
+            font-size: 18px;
+            color: #0a2342;
+        }
+
+        .encabezado-texto p {
+
+            margin: 0;
+
+            font-size: 11px;
+            color: #667085;
+        }
+
+        .titulo-boletin {
+
+            text-align: right;
+
+            font-size: 13px;
+            font-weight: bold;
+
+            color: #0a2342;
+
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        /* ==========================================
+           DATOS DEL ESTUDIANTE
+        ========================================== */
+
+        .datos-estudiante {
+
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            background: #F8FAFC;
+            border: 1px solid #E2E7EF;
+            border-radius: 10px;
+
+            padding: 14px 16px;
+
+            margin-bottom: 20px;
+        }
+
+        .dato-item {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .dato-item span {
+
+            display: block;
+
+            font-size: 9.5px;
+            color: #667085;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+
+            margin-bottom: 2px;
+        }
+
+        .dato-item strong {
+            font-size: 12.5px;
+            color: #172033;
+        }
+
+        /* ==========================================
+           TABLA DE CALIFICACIONES
+        ========================================== */
+
+        table.tabla-notas {
+
+            width: 100%;
+            border-collapse: collapse;
+
+            margin-bottom: 18px;
+        }
+
+        table.tabla-notas thead th {
+
+            background: #0a2342;
+            color: white;
+
+            padding: 8px 6px;
+
+            font-size: 10px;
+            text-transform: uppercase;
+
+            text-align: center;
+        }
+
+        table.tabla-notas thead th:first-child {
+            text-align: left;
+        }
+
+        table.tabla-notas tbody td {
+
+            padding: 7px 6px;
+
+            border-bottom: 1px solid #E2E7EF;
+
+            font-size: 11px;
+            text-align: center;
+        }
+
+        table.tabla-notas tbody td:first-child {
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table.tabla-notas tbody tr:nth-child(even) {
+            background: #FAFBFD;
+        }
+
+        .estado-pill {
+
+            display: inline-block;
+            padding: 2px 8px;
+
+            border-radius: 20px;
+
+            font-size: 9.5px;
+            font-weight: bold;
+        }
+
+        .estado-aprobado {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        .estado-reforzamiento {
+            background: #FEE2E2;
+            color: #B91C1C;
+        }
+
+        .estado-pendiente {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        /* ==========================================
+           RESUMEN GENERAL
+        ========================================== */
+
+        .resumen-general {
+
+            display: flex;
+            gap: 14px;
+
+            margin-bottom: 20px;
+        }
+
+        .resumen-caja {
+
+            flex: 1;
+
+            border: 1px solid #E2E7EF;
+            border-top: 3px solid #c9a227;
+            border-radius: 10px;
+
+            padding: 12px 14px;
+            text-align: center;
+        }
+
+        .resumen-caja span {
+
+            display: block;
+
+            font-size: 9.5px;
+            color: #667085;
+            text-transform: uppercase;
+
+            margin-bottom: 4px;
+        }
+
+        .resumen-caja strong {
+
+            font-size: 20px;
+            color: #0a2342;
+        }
+
+        /* ==========================================
+           OBSERVACIÓN
+        ========================================== */
+
+        .observacion {
+
+            background: #FBF3DC;
+            border: 1px solid #c9a227;
+            border-radius: 10px;
+
+            padding: 14px 16px;
+
+            margin-bottom: 24px;
+        }
+
+        .observacion span {
+
+            display: block;
+
+            font-size: 9.5px;
+            color: #8a6d10;
+            text-transform: uppercase;
+            font-weight: bold;
+
+            margin-bottom: 5px;
+        }
+
+        .observacion p {
+
+            margin: 0;
+
+            font-size: 11.5px;
+            color: #172033;
+            line-height: 1.5;
+        }
+
+        /* ==========================================
+           FIRMAS
+        ========================================== */
+
+        .firmas {
+
+            display: flex;
+            justify-content: space-between;
+
+            margin-top: 50px;
+        }
+
+        .firma {
+
+            width: 42%;
+
+            text-align: center;
+
+            border-top: 1px solid #172033;
+
+            padding-top: 6px;
+
+            font-size: 10.5px;
+            color: #667085;
+        }
+
+        /* ==========================================
+           PIE
+        ========================================== */
+
+        .pie {
+
+            margin-top: 26px;
+
+            text-align: center;
+
+            font-size: 9px;
+            color: #94A0B4;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ==================================================
+         ENCABEZADO
+    =================================================== -->
+
+    <div class="encabezado">
+
+        <img
+            src="{{ url_for('static', filename='img/logo.jpg') }}"
+            alt="Logo CIEM"
+        >
+
+        <div class="encabezado-texto">
+            <h1>Colegio Integral Emanuel</h1>
+            <p>Matagalpa, Nicaragua</p>
+        </div>
+
+        <div class="titulo-boletin">
+            Boletín de<br>Calificaciones
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         DATOS DEL ESTUDIANTE
+    =================================================== -->
+
+    <div class="datos-estudiante">
+
+        <div class="dato-item">
+            <span>Estudiante</span>
+            <strong>{{ estudiante.nombre or "—" }}</strong>
+        </div>
+
+        <div class="dato-item">
+            <span>Código</span>
+            <strong>{{ estudiante.codigo or "—" }}</strong>
+        </div>
+
+        <div class="dato-item">
+            <span>Grado</span>
+            <strong>{{ estudiante.grado or "—" }}</strong>
+        </div>
+
+        <div class="dato-item">
+            <span>Sección</span>
+            <strong>{{ estudiante.seccion or "—" }}</strong>
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         TABLA DE CALIFICACIONES
+    =================================================== -->
+
+    <table class="tabla-notas">
+
+        <thead>
+            <tr>
+                <th>Asignatura</th>
+                <th>I Corte</th>
+                <th>II Corte</th>
+                <th>III Corte</th>
+                <th>IV Corte</th>
+                <th>Promedio</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for item in boletin %}
+
+            <tr>
+
+                <td>{{ item.asignatura }}</td>
+                <td>{{ item.corte1 if item.corte1 is not none else "—" }}</td>
+                <td>{{ item.corte2 if item.corte2 is not none else "—" }}</td>
+                <td>{{ item.corte3 if item.corte3 is not none else "—" }}</td>
+                <td>{{ item.corte4 if item.corte4 is not none else "—" }}</td>
+                <td>{{ item.promedio if item.promedio is not none else "—" }}</td>
+
+                <td>
+
+                    {% if item.estado == "Aprobado" %}
+                        <span class="estado-pill estado-aprobado">Aprobado</span>
+                    {% elif item.estado == "Reforzamiento" %}
+                        <span class="estado-pill estado-reforzamiento">Reforzamiento</span>
+                    {% else %}
+                        <span class="estado-pill estado-pendiente">Pendiente</span>
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+                <td colspan="7" style="text-align:center; padding:16px; color:#94A0B4;">
+                    No hay calificaciones registradas.
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <!-- ==================================================
+         RESUMEN GENERAL
+    =================================================== -->
+
+    <div class="resumen-general">
+
+        <div class="resumen-caja">
+            <span>Promedio general</span>
+            <strong>{{ promedio_general if promedio_general is not none else "—" }}</strong>
+        </div>
+
+        <div class="resumen-caja">
+            <span>Estado general</span>
+            <strong>{{ estado_general }}</strong>
+        </div>
+
+        <div class="resumen-caja">
+            <span>Asignaturas evaluadas</span>
+            <strong>{{ boletin|length }}</strong>
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         OBSERVACIÓN
+    =================================================== -->
+
+    <div class="observacion">
+        <span>Observación del período</span>
+        <p>{{ observacion }}</p>
+    </div>
+
+
+    <!-- ==================================================
+         FIRMAS
+    =================================================== -->
+
+    <div class="firmas">
+
+        <div class="firma">
+            Docente
+        </div>
+
+        <div class="firma">
+            Dirección Académica
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         PIE
+    =================================================== -->
+
+    <div class="pie">
+        Colegio Integral Emanuel · Matagalpa, Nicaragua · Documento generado por CIEM Académico
+    </div>
+
+
+</body>
+
+</html>

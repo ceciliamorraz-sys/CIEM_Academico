@@ -702,7 +702,24 @@ Tomar asistencia
 
 
 <a href="{{ url_for(
-'docente.boletin_estudiante',
+'docente.asistencia_estudiante',
+estudiante_id=estudiante._id
+) }}"
+
+class="btn btn-blue me-2">
+
+
+<i class="bi bi-clipboard2-pulse"></i>
+
+Historial de asistencia e incidencias
+
+
+</a>
+
+
+
+<a href="{{ url_for(
+'docente.boletin_pdf_estudiante',
 estudiante_id=estudiante._id
 ) }}"
 
