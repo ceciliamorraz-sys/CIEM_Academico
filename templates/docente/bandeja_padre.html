@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 
@@ -11,6 +10,11 @@
 
     <title>Mensajes | CIEM ONE</title>
 
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
     <style>
 
         * {
@@ -19,7 +23,7 @@
 
         body {
             margin: 0;
-            font-family: "Segoe UI", Arial, sans-serif;
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
             background: #F3F6FA;
             color: #1D3256;
         }
@@ -42,11 +46,11 @@
 
             background: linear-gradient(
                 135deg,
-                #08142C,
+                #0a2342,
                 #1E4E8C
             );
 
-            border-radius: 20px;
+            border-radius: 20px 20px 0 0;
 
             padding: 28px 30px;
 
@@ -61,7 +65,19 @@
             box-shadow:
                 0 10px 30px rgba(0,0,0,.12);
 
+            border-bottom: 4px solid #c9a227;
+        }
+
+        .encabezado-wrap {
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
             margin-bottom: 25px;
+
+            box-shadow:
+                0 10px 30px rgba(0,0,0,.12);
         }
 
         .icono-principal {
@@ -157,6 +173,8 @@
 
             border: 1px solid #E2E7EF;
 
+            border-top: 3px solid #c9a227;
+
             box-shadow:
                 0 6px 20px rgba(0,0,0,.06);
         }
@@ -165,7 +183,7 @@
 
             margin: 0 0 20px;
 
-            color: #08142C;
+            color: #0a2342;
 
             font-size: 20px;
         }
@@ -249,7 +267,7 @@
 
         .btn-enviar:hover {
 
-            background: #08142C;
+            background: #0a2342;
 
             transform: translateY(-1px);
         }
@@ -278,7 +296,7 @@
 
             margin: 0;
 
-            color: #08142C;
+            color: #0a2342;
 
             font-size: 20px;
         }
@@ -366,7 +384,7 @@
 
             margin: 0 0 5px;
 
-            color: #08142C;
+            color: #0a2342;
 
             font-size: 17px;
         }
@@ -396,9 +414,11 @@
 
             padding: 4px 9px;
 
-            background: #EEF4FB;
+            background: #FBF3DC;
 
-            color: #1E4E8C;
+            color: #8a6d10;
+
+            border: 1px solid #c9a227;
 
             border-radius: 6px;
 
@@ -463,7 +483,7 @@
 
         .btn-chat:hover {
 
-            background: #08142C;
+            background: #0a2342;
 
             transform: translateY(-1px);
         }
@@ -499,7 +519,7 @@
 
             margin: 0 0 7px;
 
-            color: #08142C;
+            color: #0a2342;
         }
 
         .vacio p {
@@ -651,24 +671,28 @@
              ENCABEZADO
         ======================================= -->
 
-        <div class="encabezado">
+        <div class="encabezado-wrap">
 
-            <div class="icono-principal">
+            <div class="encabezado">
 
-                💬
+                <div class="icono-principal">
 
-            </div>
+                    💬
 
-            <div>
+                </div>
 
-                <h1>
-                    Mensajes
-                </h1>
+                <div>
 
-                <p>
-                    Comunicación entre madre de familia
-                    y docentes
-                </p>
+                    <h1>
+                        Mensajes
+                    </h1>
+
+                    <p>
+                        Comunicación entre madre de familia
+                        y docentes
+                    </p>
+
+                </div>
 
             </div>
 
@@ -968,4 +992,3 @@
 </body>
 
 </html>
-```

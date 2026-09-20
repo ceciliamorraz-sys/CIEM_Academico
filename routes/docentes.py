@@ -19,6 +19,9 @@ import os
 
 from bson import ObjectId
 
+import gridfs
+from werkzeug.utils import secure_filename
+
 from flask_pymongo import PyMongo
 
 from reportlab.lib import colors
@@ -376,7 +379,143 @@ def dashboard_docente():
     clases_hoy = clases
 
     # ========================================================
-    # 15. ESTADÍSTICA
+    # 14.1 FECHA DE HOY (en español, sin depender del locale
+    #      del sistema operativo)
+    # ========================================================
+
+    dias_es = [
+        "Lunes", "Martes", "Miércoles", "Jueves",
+        "Viernes", "Sábado", "Domingo"
+    ]
+
+    meses_es = [
+        "", "enero", "febrero", "marzo", "abril", "mayo", "junio",
+        "julio", "agosto", "septiembre", "octubre", "noviembre",
+        "diciembre"
+    ]
+
+    hoy = datetime.now()
+
+    fecha_hoy = (
+        f"{dias_es[hoy.weekday()]}, {hoy.day} de "
+        f"{meses_es[hoy.month]} de {hoy.year}"
+    )
+    print("🔎 DEBUG fecha_hoy:", repr(fecha_hoy))
+
+    # ========================================================
+    # 15. ROSTER DE ESTUDIANTES DEL DOCENTE
+    #
+    # Se arma a partir de los grado/seccion que el docente
+    # tiene asignados en asignaciones_clase (variable 'clases'
+    # ya calculada arriba), para poder medir progreso.
+    # ========================================================
+
+    combos_grado_seccion = set()
+
+    for clase in clases:
+        combos_grado_seccion.add((
+            clase.get("nivel", ""),
+            clase.get("grado", ""),
+            clase.get("seccion", "")
+        ))
+
+    ids_estudiantes_docente = set()
+
+    for nivel_c, grado_c, seccion_c in combos_grado_seccion:
+
+        filtro_roster = {
+            "estado": "activo"
+        }
+
+        if nivel_c:
+            filtro_roster["nivel"] = nivel_c
+
+        if grado_c:
+            filtro_roster["grado"] = grado_c
+
+        if seccion_c:
+            filtro_roster["seccion"] = seccion_c
+
+        for est in db.estudiantes.find(
+            filtro_roster,
+            {"_id": 1}
+        ):
+            ids_estudiantes_docente.add(est["_id"])
+
+    total_roster = len(ids_estudiantes_docente)
+
+    # ========================================================
+    # 16. ESTADÍSTICA DE NOTAS DEL DOCENTE
+    # ========================================================
+
+    notas_docente = list(
+        db.notas.find({
+            "docente_id": docente_id
+        })
+    )
+
+    if notas_docente:
+
+        promedios = [
+            n.get("promedio", 0) for n in notas_docente
+        ]
+
+        promedio_general = round(
+            sum(promedios) / len(promedios), 2
+        )
+
+        aprobados = sum(
+            1 for n in notas_docente
+            if n.get("estado") == "Aprobado"
+        )
+
+        reprobados = len(notas_docente) - aprobados
+
+    else:
+
+        promedio_general = 0
+        aprobados = 0
+        reprobados = 0
+
+    # Estudiantes (del roster) que ya tienen al menos una nota
+    estudiantes_con_notas = {
+        n.get("estudiante_id") for n in notas_docente
+    }
+
+    progreso_notas = (
+        round(
+            len(estudiantes_con_notas & ids_estudiantes_docente)
+            / total_roster * 100
+        )
+        if total_roster > 0 else 0
+    )
+
+    # ========================================================
+    # 17. ESTADÍSTICA DE ASISTENCIA DEL DOCENTE
+    # ========================================================
+
+    asistencias_docente = list(
+        db.asistencias.find({
+            "docente_id": docente_id
+        })
+    )
+
+    presentes = len(asistencias_docente)
+
+    estudiantes_con_asistencia = {
+        a.get("estudiante_id") for a in asistencias_docente
+    }
+
+    progreso_asistencia = (
+        round(
+            len(estudiantes_con_asistencia & ids_estudiantes_docente)
+            / total_roster * 100
+        )
+        if total_roster > 0 else 0
+    )
+
+    # ========================================================
+    # 18. ESTADÍSTICA COMPLETA
     # ========================================================
 
     estadistica = {
@@ -391,17 +530,39 @@ def dashboard_docente():
             total_incidencias,
 
         "comunicaciones":
-            total_conversaciones
+            total_conversaciones,
+
+        "promedio_general":
+            promedio_general,
+
+        "aprobados":
+            aprobados,
+
+        "reprobados":
+            reprobados,
+
+        "presentes":
+            presentes,
+
+        "progreso_notas":
+            progreso_notas,
+
+        "progreso_asistencia":
+            progreso_asistencia
 
     }
 
     # ========================================================
-    # 16. RESUMEN FINAL
+    # 19. PLANES DE CLASE RECIENTES
     # ========================================================
 
+    planes_recientes = obtener_planes_clase(
+        codigo_docente,
+        limite=3
+    )
 
     # ========================================================
-    # 17. ENVIAR DATOS AL HTML
+    # 20. ENVIAR DATOS AL HTML
     # ========================================================
 
     return render_template(
@@ -430,363 +591,12 @@ def dashboard_docente():
 
         total_conversaciones=total_conversaciones,
 
-        mensajes_pendientes=mensajes_pendientes
+        mensajes_pendientes=mensajes_pendientes,
 
-    )
+        fecha_hoy=fecha_hoy,
 
-# ============================================================
-# CONSULTA DE ESTUDIANTES
-# GRADO → SECCIÓN → ESTUDIANTE
-# HISTORIAL DE ASISTENCIA E INCIDENCIAS
-# ============================================================
+        planes_recientes=planes_recientes
 
-@docente_bp.route("/consulta-estudiantes")
-@role_required("docente")
-def consulta_estudiantes():
-
-
-    usuario = session.get("usuario")
-
-    if not usuario:
-        flash("La sesión ha expirado.", "warning")
-        return redirect(url_for("login"))
-
-    # ========================================================
-    # 1. BUSCAR DOCENTE
-    # ========================================================
-
-    docente = db.docentes.find_one({
-        "usuario": usuario
-    })
-
-    if not docente:
-        flash("Docente no encontrado.", "danger")
-        return redirect(url_for("login"))
-
-    codigo_docente = str(
-        docente.get("codigo", "")
-    ).strip().upper()
-
-    if codigo_docente.startswith("DOC"):
-        docente_id = codigo_docente
-    else:
-        docente_id = "DOC" + codigo_docente
-
-
-    # ========================================================
-    # 2. PARÁMETROS
-    # ========================================================
-
-    grado = request.args.get(
-        "grado",
-        ""
-    ).strip()
-
-    seccion = request.args.get(
-        "seccion",
-        ""
-    ).strip().upper()
-
-    estudiante_id = request.args.get(
-        "estudiante_id",
-        ""
-    ).strip()
-
-    # ========================================================
-    # 3. GRADOS DISPONIBLES
-    # ========================================================
-
-    grados = [
-        "1er Nivel de Preescolar",
-        "2do Nivel de Preescolar",
-        "3er Nivel de Preescolar",
-        "1er Grado",
-        "2do Grado",
-        "3er Grado",
-        "4to Grado",
-        "5to Grado",
-        "6to Grado",
-        "1 Año",
-        "2 Año",
-        "3 Año",
-        "4 Año",
-        "5 Año"
-    ]
-
-    # ========================================================
-    # 4. BUSCAR ESTUDIANTES
-    # ========================================================
-
-    estudiantes = []
-
-    if grado:
-
-        filtro_estudiantes = {
-            "grado": grado,
-            "estado": "activo"
-        }
-
-        if seccion:
-            filtro_estudiantes["seccion"] = {
-                "$regex": "^" + seccion + "$",
-                "$options": "i"
-            }
-
-        estudiantes = list(
-            db.estudiantes.find(
-                filtro_estudiantes
-            ).sort(
-                "nombre",
-                1
-            )
-        )
-
-
-    # ========================================================
-    # 5. BUSCAR ESTUDIANTE SELECCIONADO
-    # ========================================================
-
-    estudiante = None
-
-    if estudiante_id:
-
-        estudiante = db.estudiantes.find_one({
-            "_id": estudiante_id
-        })
-
-        # Por si el ID fuera ObjectId
-        if not estudiante:
-
-            try:
-
-                estudiante = db.estudiantes.find_one({
-                    "_id": ObjectId(estudiante_id)
-                })
-
-            except Exception:
-
-                pass
-
-    # ========================================================
-    # 6. HISTORIAL DE ASISTENCIA
-    # ========================================================
-
-    asistencias = []
-
-    if estudiante:
-
-        id_estudiante = estudiante.get("_id")
-
-        ids_estudiante = [
-            str(id_estudiante)
-        ]
-
-        try:
-            ids_estudiante.append(
-                ObjectId(str(id_estudiante))
-            )
-        except Exception:
-            pass
-
-        asistencias = list(
-            db.asistencias.find({
-                "estudiante_id": {
-                    "$in": ids_estudiante
-                }
-            }).sort(
-                "fecha",
-                -1
-            )
-        )
-
-
-    # ========================================================
-    # 7. HISTORIAL DE INCIDENCIAS
-    # ========================================================
-
-    incidencias = []
-
-    if estudiante:
-
-        id_estudiante = estudiante.get("_id")
-
-        ids_estudiante = [
-            str(id_estudiante)
-        ]
-
-        try:
-            ids_estudiante.append(
-                ObjectId(str(id_estudiante))
-            )
-        except Exception:
-            pass
-
-        incidencias = list(
-            db.incidencias.find({
-                "estudiante_id": {
-                    "$in": ids_estudiante
-                }
-            }).sort(
-                "fecha",
-                -1
-            )
-        )
-
-
-    # ========================================================
-    # 8. CALCULAR ASISTENCIA
-    # ========================================================
-
-    presentes = 0
-    ausentes = 0
-
-    for asistencia in asistencias:
-
-        estado = str(
-            asistencia.get(
-                "estado",
-                ""
-            )
-        ).strip().lower()
-
-        if estado == "presente":
-            presentes += 1
-
-        elif estado == "ausente":
-            ausentes += 1
-
-    total_asistencias = (
-        presentes +
-        ausentes
-    )
-
-    if total_asistencias > 0:
-
-        porcentaje_asistencia = round(
-            (
-                presentes /
-                total_asistencias
-            ) * 100,
-            1
-        )
-
-    else:
-
-        porcentaje_asistencia = 0
-
-    # ========================================================
-    # 9. ENRIQUECER ASISTENCIAS
-    # ========================================================
-
-    for asistencia in asistencias:
-
-        asignatura_id = asistencia.get(
-            "asignatura_id"
-        )
-
-        asignatura_nombre = (
-            asistencia.get(
-                "asignatura",
-                ""
-            )
-        )
-
-        if not asignatura_nombre and asignatura_id:
-
-            asignacion = db.asignaciones_clase.find_one({
-                "_id": asignatura_id
-            })
-
-            if not asignacion:
-
-                try:
-
-                    asignacion = db.asignaciones_clase.find_one({
-                        "_id": ObjectId(
-                            str(asignatura_id)
-                        )
-                    })
-
-                except Exception:
-
-                    asignacion = None
-
-            if asignacion:
-
-                asignatura_nombre = (
-                    asignacion.get(
-                        "asignatura_nombre",
-                        ""
-                    )
-                )
-
-        asistencia["asignatura"] = (
-            asignatura_nombre or
-            "—"
-        )
-
-    # ========================================================
-    # 10. ENRIQUECER INCIDENCIAS
-    # ========================================================
-
-    for incidencia in incidencias:
-
-        if not incidencia.get("docente"):
-
-            docente_inc = db.docentes.find_one({
-                "codigo": incidencia.get(
-                    "docente_id"
-                )
-            })
-
-            if docente_inc:
-
-                incidencia["docente"] = (
-                    docente_inc.get(
-                        "nombre",
-                        ""
-                    )
-                )
-
-            else:
-
-                incidencia["docente"] = "—"
-
-    # ========================================================
-    # 11. RESULTADO
-    # ========================================================
-
-
-    # ========================================================
-    # 12. MOSTRAR HTML
-    # ========================================================
-
-    return render_template(
-        "docente/consulta_estudiantes.html",
-
-        grados=grados,
-
-        grado=grado,
-
-        seccion=seccion,
-
-        estudiantes=estudiantes,
-
-        estudiante=estudiante,
-
-        asistencias=asistencias,
-
-        incidencias=incidencias,
-
-        presentes=presentes,
-
-        ausentes=ausentes,
-
-        porcentaje_asistencia=porcentaje_asistencia,
-
-        docente=docente,
-
-        docente_id=docente_id
     )
 
 # ============================================================
@@ -1209,18 +1019,73 @@ def lista_incidencias():
     # 10. MENSAJES
     # ========================================================
 
+    # --------------------------------------------------
+    # CONDICIONES PARA ENCONTRAR AL DOCENTE
+    # --------------------------------------------------
+    #
+    # "docente_id" en conversaciones puede haber quedado
+    # guardado como el _id real de Mongo, como el código
+    # ("DOC012") o como el usuario, según cuándo/cómo se
+    # creó la conversación. Buscar solo por "docente_id"
+    # (el código) deja fuera las que se guardaron con otro
+    # formato, y por eso "mensajes_pendientes" podía salir
+    # en 0 aunque sí hubiera mensajes sin leer.
+
+    _condiciones_mensajes_docente = []
+
+    for _campo in ("_id", "codigo", "usuario"):
+
+        _valor = docente.get(_campo)
+
+        if _valor:
+
+            _condiciones_mensajes_docente.append({
+                "docente_id": _valor
+            })
+
+    if not _condiciones_mensajes_docente:
+
+        _condiciones_mensajes_docente = [
+            {"docente_id": docente_id}
+        ]
+
     conversaciones = list(
         db.conversaciones.find({
-            "docente_id": docente_id
+            "$or": _condiciones_mensajes_docente
         }).sort(
             "ultima_actualizacion",
             -1
         )
     )
 
+    # --------------------------------------------------
+    # NORMALIZAR CAMPO "madre"
+    # --------------------------------------------------
+    #
+    # Algunas conversaciones antiguas guardaron el objeto
+    # completo de la madre (nombre, cedula, telefono, etc.)
+    # en vez de solo el texto del nombre. Esto evita que el
+    # dashboard imprima ese diccionario crudo.
+
+    for _conv in conversaciones:
+
+        _valor_madre = _conv.get("madre")
+
+        if isinstance(_valor_madre, dict):
+
+            _conv["madre"] = (
+                _valor_madre.get("nombre")
+                or _valor_madre.get("usuario")
+                or "Padre/Madre de familia"
+            )
+
+        elif not _valor_madre:
+
+            _conv["madre"] = "Padre/Madre de familia"
+
     mensajes_pendientes = (
         db.conversaciones.count_documents({
-            "docente_id": docente_id,
+            "$or": _condiciones_mensajes_docente,
             "no_leidos_docente": {
                 "$gt": 0
             }
@@ -4540,6 +4405,220 @@ def estudiantes():
     )
 
 # ============================================================
+# PLANES DE CLASE
+# ============================================================
+
+def obtener_planes_clase(codigo_docente, limite=None):
+
+    query = db["planes_clase.files"].find({
+        "metadata.docente_codigo": codigo_docente
+    }).sort("uploadDate", -1)
+
+    if limite:
+        query = query.limit(limite)
+
+    planes = []
+
+    for archivo in query:
+
+        planes.append({
+            "_id": archivo["_id"],
+            "nombre_archivo": archivo.get("filename", "Archivo"),
+            "grado": archivo.get("metadata", {}).get("grado", ""),
+            "fecha": archivo.get("uploadDate")
+        })
+
+    return planes
+
+
+@docente_bp.route("/planes-clase")
+@role_required("docente")
+def planes_clase():
+
+    usuario = session.get("usuario")
+
+    docente = db.docentes.find_one({
+        "usuario": usuario
+    })
+
+    if not docente:
+
+        flash(
+            "Docente no encontrado",
+            "danger"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+    codigo_docente = str(
+        docente.get("codigo", "")
+    ).strip().upper()
+
+    planes = obtener_planes_clase(codigo_docente)
+
+    return render_template(
+        "docente/planes_clase.html",
+        planes=planes,
+        docente=docente
+    )
+
+
+@docente_bp.route(
+    "/planes-clase/subir",
+    methods=["POST"]
+)
+@role_required("docente")
+def subir_plan():
+
+    usuario = session.get("usuario")
+
+    docente = db.docentes.find_one({
+        "usuario": usuario
+    })
+
+    if not docente:
+
+        flash(
+            "Docente no encontrado",
+            "danger"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+    codigo_docente = str(
+        docente.get("codigo", "")
+    ).strip().upper()
+
+    archivo = request.files.get("archivo_plan")
+
+    if not archivo or archivo.filename == "":
+
+        flash(
+            "Debe seleccionar un archivo.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("docente.planes_clase")
+        )
+
+    extensiones_permitidas = {"pdf", "doc", "docx", "ppt", "pptx"}
+
+    extension = (
+        archivo.filename.rsplit(".", 1)[-1].lower()
+        if "." in archivo.filename
+        else ""
+    )
+
+    if extension not in extensiones_permitidas:
+
+        flash(
+            "Formato no permitido. Use PDF, Word o PowerPoint.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("docente.planes_clase")
+        )
+
+    nombre_seguro = secure_filename(archivo.filename)
+
+    fs = gridfs.GridFS(
+        db,
+        collection="planes_clase"
+    )
+
+    fs.put(
+        archivo,
+        filename=nombre_seguro,
+        content_type=archivo.content_type,
+        metadata={
+            "docente_codigo": codigo_docente,
+            "docente_nombre": docente.get("nombre", ""),
+            "grado": request.form.get("grado", "")
+        }
+    )
+
+    flash(
+        "Plan de clase subido correctamente.",
+        "success"
+    )
+
+    return redirect(
+        url_for("docente.planes_clase")
+    )
+
+
+@docente_bp.route("/planes-clase/descargar/<plan_id>")
+@role_required("docente")
+def descargar_plan(plan_id):
+
+    usuario = session.get("usuario")
+
+    docente = db.docentes.find_one({
+        "usuario": usuario
+    })
+
+    if not docente:
+
+        flash(
+            "Docente no encontrado",
+            "danger"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+    codigo_docente = str(
+        docente.get("codigo", "")
+    ).strip().upper()
+
+    fs = gridfs.GridFS(
+        db,
+        collection="planes_clase"
+    )
+
+    try:
+
+        archivo = fs.get(
+            ObjectId(plan_id)
+        )
+
+    except Exception:
+
+        flash(
+            "Archivo no encontrado.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("docente.planes_clase")
+        )
+
+    if archivo.metadata.get("docente_codigo") != codigo_docente:
+
+        flash(
+            "No tiene permiso para descargar este archivo.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("docente.planes_clase")
+        )
+
+    return send_file(
+        BytesIO(archivo.read()),
+        download_name=archivo.filename,
+        mimetype=archivo.content_type,
+        as_attachment=True
+    )
+
+# ============================================================
 # SELECCIONAR CLASE PARA CALIFICACIONES
 # ============================================================
 
@@ -5676,16 +5755,36 @@ def comunicacion():
             url_for("login")
         )
 
-    docente_id = docente.get("_id")
+    # =====================================
+    # ID OFICIAL DEL DOCENTE
+    # =====================================
+    #
+    # "asignaturas" ya no guarda docente_id desde la migración
+    # a asignaciones_clase (igual que aulas() y dashboard_docente()).
+    # Antes esta función seguía consultando la colección vieja
+    # con el _id crudo de Mongo, así que "clases" siempre salía
+    # vacío y por lo tanto "estudiantes" también, sin importar
+    # las clases reales del docente.
+    # =====================================
+
+    codigo_docente = str(
+        docente.get("codigo", "")
+    ).strip().upper()
+
+    if codigo_docente.startswith("DOC"):
+        docente_id = codigo_docente
+    else:
+        docente_id = "DOC" + codigo_docente
 
 
     # =====================================
-    # BUSCAR ASIGNATURAS DEL DOCENTE
+    # BUSCAR CLASES DEL DOCENTE
     # =====================================
 
     clases = list(
-        db.asignaturas.find({
-            "docente_id": docente_id
+        db.asignaciones_clase.find({
+            "docente_id": docente_id,
+            "activo": True
         })
     )
 
@@ -5968,10 +6067,28 @@ def guardar_comunicacion():
     # =====================================
     # NOMBRE DE LA MADRE
     # =====================================
+    #
+    # En la colección "usuarios", el campo "nombre" debería ser
+    # siempre texto, pero algunas cuentas (ej. atorrez) lo tienen
+    # guardado como el objeto completo de la madre (nombre, cedula,
+    # telefono, celular, ocupacion, usuario) en vez de solo el string
+    # del nombre. Este bloque cubre ambos casos para no guardar el
+    # diccionario completo como nombre de la conversación.
+
+    def _extraer_nombre_madre(valor):
+
+        if isinstance(valor, dict):
+
+            return (
+                valor.get("nombre")
+                or valor.get("nombre_completo")
+            )
+
+        return valor
 
     nombre_madre = (
-        usuario_madre.get("nombre")
-        or usuario_madre.get("nombre_completo")
+        _extraer_nombre_madre(usuario_madre.get("nombre"))
+        or _extraer_nombre_madre(usuario_madre.get("nombre_completo"))
         or madre_usuario
     )
 

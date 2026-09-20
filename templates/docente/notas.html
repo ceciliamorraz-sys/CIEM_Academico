@@ -21,6 +21,10 @@
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
     rel="stylesheet">
 
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
 <style>
 
     body {
@@ -33,6 +37,7 @@
             );
 
         font-family:
+            'Inter',
             'Segoe UI',
             Tahoma,
             Geneva,
@@ -52,7 +57,7 @@
         background:
             linear-gradient(
                 135deg,
-                #08142c,
+                #0a2342,
                 #0d2a52,
                 #1e4e8c
             );
@@ -61,6 +66,7 @@
         padding: 25px 30px;
         border-radius: 22px;
         margin-bottom: 25px;
+        border-bottom: 4px solid #c9a227;
 
         box-shadow:
             0 15px 35px
@@ -224,7 +230,7 @@
         background:
             linear-gradient(
                 135deg,
-                #08142c,
+                #0a2342,
                 #0d2a52
             );
 
@@ -379,7 +385,6 @@
     }
 
 </style>
-```
 
 </head>
 
@@ -395,7 +400,6 @@
 
 <div class="header-notas">
 
-```
 <div class="d-flex
             justify-content-between
             align-items-center
@@ -449,7 +453,6 @@
     </a>
 
 </div>
-```
 
 </div>
 
@@ -459,7 +462,6 @@
 
 {% with messages = get_flashed_messages(with_categories=true) %}
 
-```
 {% if messages %}
 
     {% for category, message in messages %}
@@ -479,7 +481,6 @@
     {% endfor %}
 
 {% endif %}
-```
 
 {% endwith %}
 

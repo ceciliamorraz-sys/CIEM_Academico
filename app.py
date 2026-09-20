@@ -30,6 +30,7 @@ from functools import wraps
 
 import os
 import re
+import random
 
 from config.database import db
 
@@ -3105,6 +3106,18 @@ def agregar_matricula():
 
                 },
 
+                # ==========================================
+                # madre_usuario también en la raíz del
+                # documento. obtener_estudiante_sesion() (en
+                # estudiante.py) y guardar_comunicacion() (en
+                # docentes.py) buscan este campo plano, no el
+                # anidado madre.usuario, así que sin esta línea
+                # el login de la madre nunca encontraba al hijo.
+                # ==========================================
+
+                "madre_usuario":
+                    madre_usuario,
+
                 "tutor": {
 
                     "nombre":
@@ -3262,6 +3275,9 @@ def agregar_matricula():
                                 madre_usuario
 
                         },
+
+                        "madre_usuario":
+                            madre_usuario,
 
                         "tutor": {
 
@@ -3472,6 +3488,43 @@ def agregar_matricula():
 
 
         # ==================================================
+        # CUENTA DE ACCESO DE LA MADRE/TUTORA
+        #
+        # Antes esto no existía: se guardaba el nombre de
+        # usuario deseado (madre_usuario) dentro del estudiante,
+        # pero nunca se creaba la cuenta correspondiente en
+        # db.usuarios, así que nadie podía iniciar sesión.
+        #
+        # Si el usuario ya existe (por ejemplo, dos hermanos
+        # con la misma madre) no se crea una cuenta duplicada,
+        # se reutiliza la que ya tiene.
+        # ==================================================
+
+        password_generada_madre = None
+
+        if madre_usuario:
+
+            cuenta_madre = db.usuarios.find_one({
+                "usuario": madre_usuario
+            })
+
+            if not cuenta_madre:
+
+                password_generada_madre = str(
+                    random.randint(100000, 999999)
+                )
+
+                db.usuarios.insert_one({
+                    "usuario": madre_usuario,
+                    "password": password_generada_madre,
+                    "rol": "padre",
+                    "activo": True,
+                    "estudiante_codigo": codigo,
+                    "fecha_creacion": datetime.now()
+                })
+
+
+        # ==================================================
         # MENSAJE FINAL
         # ==================================================
 
@@ -3491,6 +3544,16 @@ def agregar_matricula():
                 f"¡Matrícula registrada correctamente! "
                 f"Código: {codigo}",
                 "success"
+            )
+
+        if password_generada_madre:
+
+            flash(
+                f"Se creó la cuenta de acceso para la madre/tutora "
+                f"(usuario: {madre_usuario}, contraseña: "
+                f"{password_generada_madre}). Compártela con ella "
+                f"para que pueda ingresar al portal.",
+                "info"
             )
 
 

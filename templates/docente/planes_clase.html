@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Planes de Clase | CIEM Académico
+    </title>
+
+    <!-- TIPOGRAFÍA -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- ICONOS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
+
+    <!-- CSS -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/dashboard_docente.css'
+        ) }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- ==================================================
+         SIDEBAR
+    =================================================== -->
+
+    <aside class="sidebar">
+
+
+        <!-- MARCA -->
+
+        <div class="brand">
+
+            <img
+                src="{{ url_for(
+                    'static',
+                    filename='img/logo.jpg'
+                ) }}"
+                alt="Logo CIEM"
+            >
+
+            <div>
+
+                <h2>
+                    CIEM
+                </h2>
+
+                <span>
+                    Académico
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- MENÚ -->
+
+        <nav>
+
+
+            <!-- DASHBOARD -->
+
+            <a
+                href="{{ url_for(
+                    'docente.dashboard_docente'
+                ) }}"
+            >
+
+                <i class="bi bi-grid-1x2-fill"></i>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <!-- MIS CLASES -->
+
+            <a
+                href="{{ url_for(
+                    'docente.aulas'
+                ) }}"
+            >
+
+                <i class="bi bi-book-fill"></i>
+
+                <span>
+                    Mis clases
+                </span>
+
+            </a>
+
+
+            <!-- PLANES DE CLASE -->
+
+            <a
+                class="activo"
+                href="{{ url_for(
+                    'docente.planes_clase'
+                ) }}"
+            >
+
+                <i class="bi bi-journal-bookmark-fill"></i>
+
+                <span>
+                    Planes de clase
+                </span>
+
+            </a>
+
+
+            <!-- ESTUDIANTES -->
+
+            <a
+                href="{{ url_for(
+                    'docente.estudiantes'
+                ) }}"
+            >
+
+                <i class="bi bi-people-fill"></i>
+
+                <span>
+                    Estudiantes
+                </span>
+
+            </a>
+
+
+            <!-- ASISTENCIA -->
+
+            <a
+                href="{{ url_for(
+                    'docente.lista_asistencia'
+                ) }}"
+            >
+
+                <i class="bi bi-calendar-check-fill"></i>
+
+                <span>
+                    Asistencia
+                </span>
+
+            </a>
+
+
+            <!-- CALIFICACIONES -->
+
+            <a
+                href="{{ url_for(
+                    'docente.lista_calificaciones'
+                ) }}"
+            >
+
+                <i class="bi bi-pencil-square"></i>
+
+                <span>
+                    Calificaciones
+                </span>
+
+            </a>
+
+
+            <!-- INCIDENCIAS -->
+
+            <a
+                href="{{ url_for(
+                    'docente.lista_incidencias'
+                ) }}"
+            >
+
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                <span>
+                    Incidencias
+                </span>
+
+            </a>
+
+
+            <!-- COMUNICACIÓN -->
+
+            <a
+                href="{{ url_for(
+                    'docente.comunicacion'
+                ) }}"
+            >
+
+                <i class="bi bi-chat-dots-fill"></i>
+
+                <span>
+                    Comunicación Padres
+                </span>
+
+            </a>
+
+
+            <!-- INFORMES -->
+
+            <a
+                href="{{ url_for(
+                    'docente.informes_mined'
+                ) }}"
+            >
+
+                <i class="bi bi-file-earmark-bar-graph-fill"></i>
+
+                <span>
+                    Informes MINED
+                </span>
+
+            </a>
+
+
+            <!-- CIEM ASISTE IA -->
+
+            <a
+                href="{{ url_for(
+                    'ciem_ai.inicio'
+                ) }}"
+            >
+
+                <i class="bi bi-robot"></i>
+
+                <span>
+                    CIEM Asiste IA
+                </span>
+
+            </a>
+
+
+            <!-- CONFIGURACIÓN -->
+
+            <a
+                href="{{ url_for(
+                    'docente.configuracion'
+                ) }}"
+            >
+
+                <i class="bi bi-gear-fill"></i>
+
+                <span>
+                    Configuración
+                </span>
+
+            </a>
+
+
+            <!-- MENSAJES -->
+
+            <a
+                href="{{ url_for(
+                    'mensajes.bandeja_docente'
+                ) }}"
+            >
+
+                <i class="bi bi-envelope-fill"></i>
+
+                <span>
+                    Mensajes de padres
+                </span>
+
+            </a>
+
+
+            <!-- ==================================================
+                 SALIR
+            =================================================== -->
+
+            <div class="salir-container">
+
+                <a
+                    class="salir"
+                    href="{{ url_for(
+                        'docente.logout'
+                    ) }}"
+                >
+
+                    <i class="bi bi-box-arrow-left"></i>
+
+                    <span>
+                        Cerrar sesión
+                    </span>
+
+                    <i class="bi bi-chevron-right salir-flecha"></i>
+
+                </a>
+
+            </div>
+
+
+        </nav>
+
+    </aside>
+
+
+
+    <!-- ==================================================
+         CONTENIDO PRINCIPAL
+    =================================================== -->
+
+    <main class="contenido">
+
+
+        <!-- ==================================================
+             ENCABEZADO
+        =================================================== -->
+
+        <header class="encabezado">
+
+
+            <div>
+
+                <span class="fecha">
+                    Docencia
+                </span>
+
+
+                <h1>
+                    Planes de clase
+                </h1>
+
+
+                <p>
+                    Sube tus planificaciones o genera una nueva con ayuda de la IA.
+                </p>
+
+            </div>
+
+
+            <div class="encabezado-decoracion">
+
+                <div class="circulo-decorativo">
+
+                    <i class="bi bi-journal-bookmark-fill"></i>
+
+                </div>
+
+            </div>
+
+
+        </header>
+
+
+
+        <!-- ==================================================
+             SUBIR NUEVO PLAN
+        =================================================== -->
+
+        <section class="panel" style="margin-bottom: 22px;">
+
+
+            <div class="panel-header">
+
+                <div>
+
+                    <span class="panel-etiqueta">
+                        NUEVO
+                    </span>
+
+                    <h2>
+                        Subir plan de clase
+                    </h2>
+
+                    <p>
+                        Formatos aceptados: PDF, Word o PowerPoint.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form
+                action="{{ url_for(
+                    'docente.subir_plan'
+                ) }}"
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                <div style="padding: 16px 21px 0; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+
+                    <input
+                        type="text"
+                        name="grado"
+                        placeholder="Grado / sección (opcional)"
+                        style="flex: 1; min-width: 180px; padding: 10px 13px; border: 1px solid var(--borde); border-radius: 10px; font-family: inherit; font-size: 12px;"
+                    >
+
+                </div>
+
+                <label
+                    class="subir-plan-zona"
+                    for="archivo-plan"
+                >
+
+                    <i class="bi bi-cloud-arrow-up-fill"></i>
+
+                    <strong>
+                        Arrastra tu archivo aquí o haz clic para subir
+                    </strong>
+
+                    <small>
+                        PDF, Word o PowerPoint · máx. 10 MB
+                    </small>
+
+                    <input
+                        type="file"
+                        id="archivo-plan"
+                        name="archivo_plan"
+                        accept=".pdf,.doc,.docx,.ppt,.pptx"
+                        onchange="this.form.submit()"
+                    >
+
+                </label>
+
+            </form>
+
+
+            <a
+                href="{{ url_for(
+                    'ciem_ai.inicio'
+                ) }}?tipo=plan"
+                class="generar-ia-boton"
+            >
+
+                <i class="bi bi-stars"></i>
+
+                Generar plan de clase con IA
+
+            </a>
+
+
+        </section>
+
+
+
+        <!-- ==================================================
+             MIS PLANES
+        =================================================== -->
+
+        <section class="panel">
+
+
+            <div class="panel-header">
+
+                <div>
+
+                    <span class="panel-etiqueta">
+                        ARCHIVO
+                    </span>
+
+                    <h2>
+                        Mis planes subidos
+                    </h2>
+
+                    <p>
+                        {{ planes|length }} plan{% if planes|length != 1 %}es{% endif %} de clase.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="planes-lista">
+
+
+                {% for plan in planes %}
+
+
+                <div class="plan-item">
+
+
+                    <div class="plan-icono">
+
+                        <i class="bi bi-file-earmark-text-fill"></i>
+
+                    </div>
+
+
+                    <div class="plan-info">
+
+                        <h3>
+                            {{ plan.nombre_archivo }}
+                        </h3>
+
+                        <span>
+
+                            {% if plan.grado %}
+                                {{ plan.grado }} ·
+                            {% endif %}
+
+                            {% if plan.fecha %}
+                                {{ plan.fecha.strftime('%d/%m/%Y') }}
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="plan-acciones">
+
+                        <a
+                            href="{{ url_for(
+                                'docente.descargar_plan',
+                                plan_id=plan._id
+                            ) }}"
+                            title="Descargar"
+                        >
+
+                            <i class="bi bi-download"></i>
+
+                        </a>
+
+                    </div>
+
+
+                </div>
+
+
+                {% else %}
+
+
+                <div class="sin-datos">
+
+                    <i class="bi bi-journal-bookmark"></i>
+
+                    <p>
+                        Aún no has subido ningún plan de clase.
+                    </p>
+
+                </div>
+
+
+                {% endfor %}
+
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             FOOTER
+        =================================================== -->
+
+        <footer>
+
+            <strong>
+                CIEM Académico
+            </strong>
+
+            <span>
+                Sistema de gestión académica
+            </span>
+
+            <span>
+                © 2026
+            </span>
+
+        </footer>
+
+
+    </main>
+
+</div>
+
+
+</body>
+
+</html>

@@ -131,21 +131,17 @@ def obtener_estudiante_sesion():
             "estado": "activo"
         })
 
+    # ======================================================
+    # RESULTADO
+    #
+    # El return va fuera del if/elif para que aplique tanto
+    # al caso "estudiante" como al caso "padre". Antes solo
+    # estaba dentro del elif, así que cuando rol == "estudiante"
+    # la función siempre devolvía None aunque sí encontrara
+    # el documento en Mongo.
+    # ======================================================
 
-        # --------------------------------------------------
-        # RESULTADO
-        # --------------------------------------------------
-
-        if estudiante:
-
-            pass
-
-        else:
-
-            pass
-
-
-        return estudiante
+    return estudiante
 # ==========================================================
 # CONFIGURACIÓN
 # ==========================================================

@@ -724,15 +724,34 @@ def bandeja_docente():
         # ----------------------------------------------
         # OBTENER DATOS DE LA MADRE
         # ----------------------------------------------
+        #
+        # Algunos registros (por datos antiguos, ej. atorrez)
+        # tienen "madre_nombre" o el "madre" ya guardado en la
+        # conversación como el objeto completo de la madre en
+        # vez de solo el texto del nombre. Esto normaliza ambos
+        # casos para no mostrar el diccionario crudo en la bandeja.
+
+        def _texto_madre(valor, campo="nombre"):
+
+            if isinstance(valor, dict):
+
+                return (
+                    valor.get(campo)
+                    or valor.get("nombre")
+                    or valor.get("usuario")
+                )
+
+            return valor
 
         if estudiante:
 
-            madre_nombre = estudiante.get(
-                "madre_nombre"
+            madre_nombre = _texto_madre(
+                estudiante.get("madre_nombre")
             )
 
-            madre_usuario = estudiante.get(
-                "madre_usuario"
+            madre_usuario = _texto_madre(
+                estudiante.get("madre_usuario"),
+                campo="usuario"
             )
 
             # ------------------------------------------
@@ -740,20 +759,21 @@ def bandeja_docente():
             # ------------------------------------------
 
             if madre_nombre:
-
                 conversacion["madre"] = madre_nombre
 
             if madre_usuario:
-
                 conversacion["madre_usuario"] = madre_usuario
 
         # ----------------------------------------------
         # SI YA EXISTE EL DATO EN LA CONVERSACIÓN
+        # (puede venir mal guardado desde antes, ej. como
+        # el objeto completo de la madre)
         # ----------------------------------------------
 
-        if not conversacion.get("madre"):
-
-            conversacion["madre"] = "Madre"
+        conversacion["madre"] = (
+            _texto_madre(conversacion.get("madre"))
+            or "Padre/Madre de familia"
+        )
 
     # ======================================================
     # DEBUG

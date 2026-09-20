@@ -920,118 +920,152 @@ Aplique los conocimientos adquiridos en una situación real.
 
 def generar_plan(asignatura, tema, grado):
 
+    from datetime import datetime
+    fecha_hoy = datetime.now().strftime("%d/%m/%Y")
 
     return f"""
 
-
-<h2 class="text-center">
+<div class="text-center mb-4">
+<h2 style="color:#0a2342; font-weight:700; letter-spacing:1px;">
 PLAN DE CLASE
 </h2>
-
+<h6 style="color:#c9a227;">
+Colegio Integral Emanuel Matagalpa
+</h6>
+</div>
 
 
 <table class="table table-bordered">
 
-
 <tr>
-
-<th>
-Asignatura
-</th>
-
-<td>
-{asignatura}
-</td>
-
-
+<th style="background:#0a2342; color:#fff; width:20%;">Asignatura</th>
+<td>{asignatura}</td>
+<th style="background:#0a2342; color:#fff; width:20%;">Grado</th>
+<td>{grado}</td>
 </tr>
 
-
-
 <tr>
-
-<th>
-Tema
-</th>
-
-<td>
-{tema}
-</td>
-
-
+<th style="background:#0a2342; color:#fff;">Tema</th>
+<td colspan="3">{tema}</td>
 </tr>
 
-
-
 <tr>
-
-<th>
-Grado
-</th>
-
-<td>
-{grado}
-</td>
-
-
+<th style="background:#0a2342; color:#fff;">Fecha</th>
+<td colspan="3">{fecha_hoy}</td>
 </tr>
-
 
 </table>
 
 
+<table class="table table-bordered">
+
+<tr>
+<th style="background:#f4e9c9; width:35%;">Número de Competencia de Grado</th>
+<td>
+Competencia correspondiente al grado y asignatura, vinculada al contenido
+"{tema}", orientada al desarrollo de conocimientos, habilidades y actitudes
+propias del nivel.
+</td>
+</tr>
+
+<tr>
+<th style="background:#f4e9c9;">Competencia de Eje Transversal</th>
+<td>
+Fortalece valores cristianos, la convivencia armónica y el desarrollo integral
+del estudiante en el marco de la identidad institucional.
+</td>
+</tr>
+
+<tr>
+<th style="background:#f4e9c9;">Unidad</th>
+<td>
+Unidad correspondiente al contenido "{tema}" dentro de la planificación
+del grado.
+</td>
+</tr>
+
+<tr>
+<th style="background:#f4e9c9;">Indicador de Logro</th>
+<td>
+El estudiante comprende, analiza y aplica los conceptos relacionados con
+{tema} en situaciones concretas de aprendizaje.
+</td>
+</tr>
+
+<tr>
+<th style="background:#f4e9c9;">Contenido</th>
+<td>{tema}</td>
+</tr>
+
+<tr>
+<th style="background:#f4e9c9;">Criterio de Evaluación</th>
+<td>
+Se valorará la participación, comprensión conceptual, aplicación práctica
+y el cumplimiento de las actividades propuestas durante los tres momentos
+de la clase.
+</td>
+</tr>
+
+</table>
 
 
-<h5>
-Competencia
-</h5>
+<h4 style="color:#0a2342; border-bottom:2px solid #c9a227; padding-bottom:4px;">
+Desarrollo de la Clase
+</h4>
 
 
-<p>
+<table class="table table-bordered">
 
-Desarrolla habilidades mediante actividades
-significativas de aprendizaje.
+<thead style="background:#0a2342; color:#fff;">
+<tr>
+<th style="width:15%;">Momento</th>
+<th style="width:15%;">Tiempo</th>
+<th>Actividades</th>
+</tr>
+</thead>
 
-</p>
+<tbody>
+
+<tr>
+<td><b>Inicio</b></td>
+<td>10 min</td>
+<td>
+Lectura bíblica y reflexión inicial para centrar a los estudiantes en un
+ambiente de valores cristianos. Exploración de conocimientos previos sobre
+{tema} mediante preguntas generadoras y motivación hacia el nuevo contenido.
+</td>
+</tr>
+
+<tr>
+<td><b>Desarrollo</b></td>
+<td>a definir según horario de clase</td>
+<td>
+Calentamiento breve para activar la atención del grupo. Explicación del
+contenido "{tema}" con ejemplos claros y práctica guiada. Actividades
+individuales y grupales que refuercen el indicador de logro, incluyendo
+un juego creativo relacionado con el tema para consolidar el aprendizaje
+de forma lúdica.
+</td>
+</tr>
+
+<tr>
+<td><b>Cierre</b></td>
+<td>10 min</td>
+<td>
+Retroalimentación y evaluación del aprendizaje mediante preguntas de cierre
+o una breve actividad de comprobación. Espacio de relajación y estiramiento
+para finalizar la clase de forma tranquila.
+</td>
+</tr>
+
+</tbody>
+
+</table>
 
 
-
-<h5>
-Inicio
-
-</h5>
-
-<p>
-
-Exploración de conocimientos previos y motivación.
-
-</p>
-
-
-
-<h5>
-Desarrollo
-
-</h5>
-
-<p>
-
-Explicación del contenido, ejemplos y práctica guiada.
-
-</p>
-
-
-
-<h5>
-Cierre
-
-</h5>
-
-<p>
-
-Retroalimentación y evaluación del aprendizaje.
-
-</p>
-
+<div style="margin-top:20px;">
+<h6 style="color:#0a2342;">Observaciones del docente:</h6>
+<div style="height:70px; border:1px solid #c9a227; border-radius:8px;"></div>
+</div>
 
 """

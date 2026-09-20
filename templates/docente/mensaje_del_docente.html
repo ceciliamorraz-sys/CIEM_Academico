@@ -1,0 +1,78 @@
+<div class="respuesta-docente-form">
+
+    <form
+        method="POST"
+        action="{{ url_for('docente.responder_mensaje', id=conversacion._id) }}"
+    >
+
+        <textarea
+            name="respuesta"
+            class="respuesta-textarea"
+            placeholder="Escriba respuesta al padre..."
+            required
+        ></textarea>
+
+        <button
+            type="submit"
+            class="respuesta-btn"
+        >
+            📤 Enviar respuesta
+        </button>
+
+    </form>
+
+</div>
+
+<style>
+
+    .respuesta-docente-form {
+        margin-top: 16px;
+        padding: 18px;
+        background: white;
+        border: 1px solid #E2E7EF;
+        border-top: 3px solid #c9a227;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0,0,0,.06);
+    }
+
+    .respuesta-textarea {
+        width: 100%;
+        min-height: 90px;
+        padding: 12px 14px;
+        border: 1px solid #D6DCE5;
+        border-radius: 10px;
+        background: #FAFBFD;
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        font-size: 14px;
+        color: #1D3256;
+        resize: vertical;
+        outline: none;
+        transition: .2s;
+    }
+
+    .respuesta-textarea:focus {
+        border-color: #1E4E8C;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(30,78,140,.10);
+    }
+
+    .respuesta-btn {
+        margin-top: 12px;
+        border: none;
+        padding: 11px 20px;
+        background: #0a2342;
+        color: white;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 14px;
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+    .respuesta-btn:hover {
+        background: #1E4E8C;
+        transform: translateY(-1px);
+    }
+
+</style>

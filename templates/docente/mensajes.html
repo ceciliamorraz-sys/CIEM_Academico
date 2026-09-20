@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -12,71 +11,291 @@
     <title>Mensajes | CIEM ONE</title>
 
     <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
     >
 
     <style>
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            background: #f4f6f9;
+            margin: 0;
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+            background: #F3F6FA;
+            color: #1D3256;
+        }
+
+        .pagina {
+            min-height: 100vh;
+            padding: 35px 20px;
         }
 
         .contenedor {
             max-width: 1000px;
-            margin: 40px auto;
+            margin: auto;
         }
 
-        .titulo {
-            color: #0D2A52;
+        /* ==========================================
+           ENCABEZADO
+        ========================================== */
+
+        .encabezado-wrap {
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.12);
+        }
+
+        .encabezado {
+            background: linear-gradient(135deg, #0a2342, #1E4E8C);
+            border-bottom: 4px solid #c9a227;
+            padding: 28px 30px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .encabezado-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .icono-principal {
+            width: 65px;
+            height: 65px;
+            border-radius: 16px;
+            background: rgba(255,255,255,.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            flex-shrink: 0;
+        }
+
+        .encabezado h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        .encabezado p {
+            margin: 6px 0 0;
+            color: #D8E2F0;
+            font-size: 14px;
+        }
+
+        .volver {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(255,255,255,.12);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
             font-weight: 600;
+            font-size: 14px;
+            border: 1px solid rgba(255,255,255,.3);
+            transition: .2s;
+            flex-shrink: 0;
         }
 
-        .card-mensaje {
-            border: none;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            transition: 0.2s;
+        .volver:hover {
+            background: white;
+            color: #0a2342;
         }
 
-        .card-mensaje:hover {
+        /* ==========================================
+           LISTA DE CONVERSACIONES
+        ========================================== */
+
+        .lista {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .conversacion {
+            background: white;
+            border: 1px solid #E2E7EF;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: 0 6px 20px rgba(0,0,0,.06);
+            transition: .2s;
+        }
+
+        .conversacion:hover {
             transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,.10);
+            border-color: #C9D7E8;
         }
 
-        .docente {
-            color: #0D2A52;
-            font-weight: 600;
+        .avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: #EAF1FA;
+            color: #1E4E8C;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+            flex-shrink: 0;
         }
 
-        .ultimo-mensaje {
-            color: #555;
+        .informacion {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .informacion h3 {
+            margin: 0 0 5px;
+            color: #0a2342;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .etiqueta-estudiante {
+            display: inline-block;
+            margin-bottom: 6px;
+            padding: 3px 9px;
+            background: #FBF3DC;
+            color: #8a6d10;
+            border: 1px solid #c9a227;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .ultimo {
+            margin: 0;
+            color: #667085;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 550px;
         }
 
         .fecha {
+            display: block;
+            margin-top: 6px;
             font-size: 12px;
-            color: #888;
+            color: #94A0B4;
         }
 
-        .badge-mensaje {
-            background: #dc3545;
+        .acciones {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .badge-nuevo {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #FFF0F0;
+            color: #D32F2F;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
         }
 
         .btn-chat {
-            background: #0D2A52;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 11px 17px;
+            background: #1E4E8C;
             color: white;
-            border-radius: 8px;
-            border: none;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: .2s;
+            flex-shrink: 0;
         }
 
         .btn-chat:hover {
-            background: #1E4E8C;
-            color: white;
+            background: #0a2342;
+            transform: translateY(-1px);
         }
 
-        .sin-mensajes {
+        /* ==========================================
+           SIN MENSAJES
+        ========================================== */
+
+        .vacio {
+            background: white;
+            border-radius: 18px;
+            padding: 55px 25px;
             text-align: center;
-            padding: 60px;
-            color: #777;
+            border: 1px solid #E2E7EF;
+            box-shadow: 0 6px 20px rgba(0,0,0,.05);
+        }
+
+        .vacio-icono {
+            font-size: 50px;
+            margin-bottom: 12px;
+        }
+
+        .vacio h3 {
+            margin: 0 0 7px;
+            color: #0a2342;
+        }
+
+        .vacio p {
+            margin: 0;
+            color: #667085;
+            font-size: 14px;
+        }
+
+        /* ==========================================
+           RESPONSIVE
+        ========================================== */
+
+        @media (max-width: 650px) {
+
+            .pagina {
+                padding: 20px 12px;
+            }
+
+            .encabezado {
+                padding: 22px;
+                flex-wrap: wrap;
+            }
+
+            .encabezado h1 {
+                font-size: 22px;
+            }
+
+            .conversacion {
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .informacion {
+                width: calc(100% - 78px);
+            }
+
+            .btn-chat {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .acciones {
+                width: 100%;
+            }
         }
 
     </style>
@@ -87,79 +306,103 @@
 <body>
 
 
-<div class="container contenedor">
+<div class="pagina">
 
+    <div class="contenedor">
 
-    <!-- ====================================== -->
-    <!-- ENCABEZADO -->
-    <!-- ====================================== -->
+        <!-- ====================================== -->
+        <!-- ENCABEZADO -->
+        <!-- ====================================== -->
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="encabezado-wrap">
 
-        <div>
+            <div class="encabezado">
 
-            <h2 class="titulo">
-                💬 Mensajes
-            </h2>
+                <div class="encabezado-info">
 
-            <p class="text-muted mb-0">
-                Comunicación con los docentes
-            </p>
+                    <div class="icono-principal">
+                        💬
+                    </div>
+
+                    <div>
+
+                        <h1>
+                            Mensajes
+                        </h1>
+
+                        <p>
+                            Comunicación con los padres de familia
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <a
+                    href="{{ url_for('docente.dashboard_docente') }}"
+                    class="volver"
+                >
+                    ← Volver
+                </a>
+
+            </div>
 
         </div>
 
 
-        <a
-            href="{{ url_for('docente.dashboard_docente') }}"
-            class="btn btn-outline-secondary"
-        >
-            ← Volver
-        </a>
+        <!-- ====================================== -->
+        <!-- LISTA DE CONVERSACIONES -->
+        <!-- ====================================== -->
 
-        
-
-    </div>
+        {% if conversaciones %}
 
 
-    <!-- ====================================== -->
-    <!-- LISTA DE CONVERSACIONES -->
-    <!-- ====================================== -->
-
-    {% if conversaciones %}
+            <div class="lista">
 
 
-        {% for conversacion in conversaciones %}
+                {% for conversacion in conversaciones %}
 
 
-            <div class="card shadow-sm card-mensaje">
+                    <div class="conversacion">
 
 
-                <div class="card-body">
+                        <!-- AVATAR -->
 
-
-                    <div class="row align-items-center">
+                        <div class="avatar">
+                            👨‍👩‍👧
+                        </div>
 
 
                         <!-- ============================== -->
                         <!-- INFORMACIÓN -->
                         <!-- ============================== -->
 
-                        <div class="col-md-8">
+                        <div class="informacion">
 
-
-                            <h5 class="docente mb-2">
-
-                                👨‍🏫
+                            <h3>
 
                                 {{ conversacion.get(
-                                    "docente",
-                                    "Docente"
+                                    "madre",
+                                    "Padre/Madre de familia"
                                 ) }}
 
-                            </h5>
+                            </h3>
 
 
-                            <p class="ultimo-mensaje mb-2">
+                            {% if conversacion.get("estudiante") %}
+
+                                <span class="etiqueta-estudiante">
+
+                                    {{ conversacion.get(
+                                        "estudiante"
+                                    ) }}
+
+                                </span>
+
+                            {% endif %}
+
+
+                            <p class="ultimo">
 
                                 {% if conversacion.get(
                                     "ultimo_mensaje"
@@ -194,7 +437,6 @@
 
                             {% endif %}
 
-
                         </div>
 
 
@@ -202,22 +444,18 @@
                         <!-- ACCIONES -->
                         <!-- ============================== -->
 
-                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <div class="acciones">
 
 
                             {% if conversacion.get(
                                 "no_leidos_padre", 0
                             ) > 0 %}
 
-                                <span
-                                    class="badge badge-mensaje mb-2"
-                                >
+                                <span class="badge-nuevo">
 
                                     Nuevo mensaje
 
                                 </span>
-
-                                <br>
 
                             {% endif %}
 
@@ -228,7 +466,7 @@
                                     conversacion_id=
                                         conversacion._id
                                 ) }}"
-                                class="btn btn-chat"
+                                class="btn-chat"
                             >
 
                                 💬 Ver conversación
@@ -242,44 +480,37 @@
                     </div>
 
 
-                </div>
+                {% endfor %}
 
 
             </div>
 
 
-        {% endfor %}
+        {% else %}
 
 
-    {% else %}
+            <div class="vacio">
 
-
-        <div class="card shadow-sm">
-
-
-            <div class="card-body sin-mensajes">
-
-                <div style="font-size: 50px;">
+                <div class="vacio-icono">
                     💬
                 </div>
 
-                <h5 class="mt-3">
+                <h3>
                     No hay conversaciones
-                </h5>
+                </h3>
 
                 <p>
-                    Cuando un docente te envíe un mensaje,
+                    Cuando un padre de familia te envíe un mensaje,
                     aparecerá aquí.
                 </p>
 
             </div>
 
 
-        </div>
+        {% endif %}
 
 
-    {% endif %}
-
+    </div>
 
 </div>
 
@@ -287,4 +518,3 @@
 </body>
 
 </html>
-

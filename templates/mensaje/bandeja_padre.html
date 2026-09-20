@@ -14,6 +14,11 @@
     <title>Mensajes | CIEM ONE</title>
 
 
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
     <style>
 
         * {
@@ -26,6 +31,7 @@
             margin: 0;
 
             font-family:
+                "Inter",
                 "Segoe UI",
                 Arial,
                 sans-serif;
@@ -108,7 +114,7 @@
             background:
                 linear-gradient(
                     135deg,
-                    #08142C,
+                    #0a2342,
                     #1E4E8C
                 );
 
@@ -128,6 +134,8 @@
                 0 10px 30px rgba(0,0,0,.12);
 
             margin-bottom: 25px;
+
+            border-bottom: 4px solid #c9a227;
         }
 
 
@@ -181,6 +189,8 @@
             background: white;
 
             border: 1px solid #E2E7EF;
+
+            border-top: 3px solid #c9a227;
 
             border-radius: 16px;
 
@@ -245,7 +255,7 @@
 
             margin: 3px 0 0;
 
-            color: #08142C;
+            color: #0a2342;
 
             font-size: 17px;
 
@@ -359,7 +369,7 @@
 
             margin: 0 0 5px;
 
-            color: #08142C;
+            color: #0a2342;
 
             font-size: 17px;
         }
@@ -391,9 +401,11 @@
 
             padding: 4px 9px;
 
-            background: #EEF4FB;
+            background: #FBF3DC;
 
-            color: #1E4E8C;
+            color: #8a6d10;
+
+            border: 1px solid #c9a227;
 
             border-radius: 6px;
 
@@ -419,7 +431,7 @@
 
             background: #FFC107;
 
-            color: #08142C;
+            color: #0a2342;
 
             border-radius: 20px;
 
@@ -463,7 +475,7 @@
 
         .btn-chat:hover {
 
-            background: #08142C;
+            background: #0a2342;
 
             transform: translateY(-1px);
         }
@@ -502,7 +514,7 @@
 
             margin: 0 0 7px;
 
-            color: #08142C;
+            color: #0a2342;
         }
 
 
@@ -638,31 +650,38 @@
             <div class="madre-datos">
 
                 <p class="titulo">
-                    Madre
+                    Madre / Tutora
                 </p>
 
+
+                {% set _madre_raw = estudiante.get(
+                    "madre",
+                    estudiante.get("madre_nombre")
+                ) %}
 
                 <p class="nombre">
 
-                    {{ estudiante.get(
-                        "madre",
-                        estudiante.get(
-                            "madre_nombre",
-                            "Madre"
-                        )
-                    ) }}
+                    {{
+                        (_madre_raw.get("nombre") if _madre_raw is mapping else _madre_raw)
+                        or "Madre / Tutora"
+                    }}
 
                 </p>
 
 
-                {% if estudiante.get("madre_usuario") %}
+                {% set _madre_usuario_raw = estudiante.get("madre_usuario") %}
+
+                {% set _madre_usuario =
+                    (_madre_usuario_raw.get("usuario") if _madre_usuario_raw is mapping else _madre_usuario_raw)
+                    or (_madre_raw.get("usuario") if _madre_raw is mapping else None)
+                %}
+
+                {% if _madre_usuario %}
 
                     <p class="usuario">
 
                         Usuario:
-                        {{ estudiante.get(
-                            "madre_usuario"
-                        ) }}
+                        {{ _madre_usuario }}
 
                     </p>
 

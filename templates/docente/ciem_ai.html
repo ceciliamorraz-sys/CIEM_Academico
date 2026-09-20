@@ -401,6 +401,8 @@ name="tipo"
 
 value="rubrica"
 
+{% if tipo_preseleccionado == 'rubrica' %}checked{% endif %}
+
 required>
 
 
@@ -428,7 +430,9 @@ type="radio"
 
 name="tipo"
 
-value="lista">
+value="lista"
+
+{% if tipo_preseleccionado == 'lista' %}checked{% endif %}>
 
 
 <label>
@@ -502,7 +506,9 @@ type="radio"
 
 name="tipo"
 
-value="practica">
+value="practica"
+
+{% if tipo_preseleccionado == 'practica' %}checked{% endif %}>
 
 
 <label>
@@ -529,7 +535,9 @@ type="radio"
 
 name="tipo"
 
-value="examen">
+value="examen"
+
+{% if tipo_preseleccionado == 'examen' %}checked{% endif %}>
 
 
 <label>
@@ -556,7 +564,9 @@ type="radio"
 
 name="tipo"
 
-value="plan">
+value="plan"
+
+{% if tipo_preseleccionado == 'plan' %}checked{% endif %}>
 
 
 <label>
@@ -791,6 +801,15 @@ type="hidden"
 name="contenido"
 
 value="{{ resultado }}">
+
+
+<input
+
+type="hidden"
+
+name="titulo"
+
+value="{{ titulo }}">
 
 
 
