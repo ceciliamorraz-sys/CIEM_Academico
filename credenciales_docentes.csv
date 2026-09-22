@@ -1,0 +1,23 @@
+﻿docente_id,nombre,usuario,password,activo
+DOC012,,evert,123456,Sí
+DOC013,,malquiel,1234,Sí
+DOC014,,asley,1234,Sí
+DOC007,,daniela,1234,Sí
+DOC009,,anielka,1234,Sí
+DOC010,,erlin,1234,Sí
+DOC011,,carla,1234,Sí
+001,Hobeth Ariel Mendoza Aguilar,hobeth,1234,No
+002,Guissell Fabiola Mendoza,guissell,1234,No
+003,Darling Adriana Gómez Altamirano,darling,1234,No
+004,Rosa María Mendoza Aguilar,rosa,1234,Sí
+005,Tracy Johana Rosales Velasquez,tracy,1234,Sí
+006,Karla María Pichardo Barrera,karla,1234,Sí
+007,Daniela Alejandra Pineda Haer,daniela,1234,Sí
+008,Paula Amanda Villareya Castro,paula,1234,Sí
+009,Anielka del Carmen Rosales,anielka,1234,Sí
+010,Erlin Ramón Castilblanco Miranda,erlin,1234,Sí
+011,Carla Vanessa Mendoza García,carla,1234,Sí
+014,Asley Michel Mendoza Porraz,asley,1234,Sí
+013,Lic. Malquiel Enrique Centeno,malquiel,1234,Sí
+012,Evert Picado Ortiz,evert,1234,Sí
+DOC015,Verónice Cecilia Morráz,vero,1234,Sí

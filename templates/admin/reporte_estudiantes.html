@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-Reporte Estudiantes | CIEM
+Reporte Estudiantes
 </title>
 
 
@@ -15,6 +15,7 @@ rel="stylesheet">
 
 
 </head>
+
 
 
 <body class="bg-light">
@@ -26,55 +27,79 @@ rel="stylesheet">
 <div class="card shadow">
 
 
-<div class="card-header bg-primary text-white">
+<div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
 
 
-<h3>
-🎓 Reporte de Estudiantes
+<h3 class="mb-0">
+📚 Reporte de Estudiantes
 </h3>
 
 
+<div>
+
 <a href="{{ url_for('admin_dashboard') }}"
-class="btn btn-light">
-
-⬅ Regresar al Dashboard
-
+   class="btn btn-light">
+    ⬅ Regresar
 </a>
+
+<a href="{{ url_for('reporte_estudiantes_pdf') }}"
+   class="btn btn-warning">
+    ⬇ Descargar PDF
+</a>
+
+</div>
 
 
 </div>
 
 
 
+
 <div class="card-body">
 
 
-<table class="table table-bordered">
+
+<table class="table table-striped">
 
 
-<tr class="table-dark">
+<thead>
+
+
+<tr>
 
 <th>
 Código
 </th>
 
+
 <th>
 Nombre
 </th>
+
 
 <th>
 Grado
 </th>
 
+
 <th>
 Sección
 </th>
 
+
 </tr>
+
+
+</thead>
+
+
+
+<tbody>
 
 
 
 {% for e in estudiantes %}
+
 
 
 <tr>
@@ -103,13 +128,20 @@ Sección
 </tr>
 
 
+
 {% endfor %}
+
+
+
+</tbody>
 
 
 </table>
 
 
+
 </div>
+
 
 
 </div>

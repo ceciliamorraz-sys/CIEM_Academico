@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <title>
-Reporte Docentes | CIEM Académico
+Reporte Docentes
 </title>
 
 
@@ -14,75 +14,46 @@ Reporte Docentes | CIEM Académico
 rel="stylesheet">
 
 
-<style>
-
-body{
-
-background:#f1f5f9;
-font-family:'Segoe UI';
-
-}
-
-
-.card{
-
-border:none;
-border-radius:20px;
-box-shadow:0 5px 20px rgba(0,0,0,.15);
-
-}
-
-
-.header{
-
-background:linear-gradient(135deg,#08142C,#1E4E8C);
-color:white;
-padding:25px;
-border-radius:20px;
-
-}
-
-
-</style>
-
-
 </head>
 
 
-<body>
+
+<body class="bg-light">
 
 
 <div class="container mt-4">
 
 
-<div class="header mb-4">
+<div class="card shadow">
 
 
-<h2>
+<div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+
+
+<h3 class="mb-0">
 👨‍🏫 Reporte de Docentes
-</h2>
+</h3>
 
 
-<p>
-Listado general del personal docente CIEM
-</p>
-
+<div>
 
 <a href="{{ url_for('admin_dashboard') }}"
-class="btn btn-light">
-
-⬅ Regresar al Dashboard
-
+   class="btn btn-light">
+    ⬅ Regresar
 </a>
+
+<a href="{{ url_for('reporte_docentes_pdf') }}"
+   class="btn btn-warning">
+    ⬇ Descargar PDF
+</a>
+
+</div>
 
 
 </div>
 
 
 
-
-
-<div class="card">
 
 <div class="card-body">
 
@@ -91,9 +62,15 @@ class="btn btn-light">
 <table class="table table-striped">
 
 
-<thead class="table-dark">
+<thead>
+
 
 <tr>
+
+<th>
+Código
+</th>
+
 
 <th>
 Nombre
@@ -111,7 +88,17 @@ Especialidad
 
 
 <th>
+Nivel
+</th>
+
+
+<th>
 Teléfono
+</th>
+
+
+<th>
+Estado
 </th>
 
 
@@ -125,10 +112,18 @@ Teléfono
 <tbody>
 
 
+
 {% for d in docentes %}
 
 
+
 <tr>
+
+
+<td>
+{{ d.codigo }}
+</td>
+
 
 <td>
 {{ d.nombre }}
@@ -141,19 +136,38 @@ Teléfono
 
 
 <td>
-{{ d.especialidad if d.especialidad else '-' }}
+{{ d.especialidad }}
 </td>
 
 
 <td>
-{{ d.telefono if d.telefono else '-' }}
+{{ d.nivel }}
 </td>
+
+
+<td>
+{{ d.telefono }}
+</td>
+
+
+<td>
+
+{% if d.activo %}
+<span class="badge bg-success">Activo</span>
+{% else %}
+<span class="badge bg-secondary">Inactivo</span>
+{% endif %}
+
+</td>
+
 
 
 </tr>
 
 
+
 {% endfor %}
+
 
 
 </tbody>
@@ -166,6 +180,7 @@ Teléfono
 </div>
 
 
+
 </div>
 
 
@@ -173,5 +188,6 @@ Teléfono
 
 
 </body>
+
 
 </html>

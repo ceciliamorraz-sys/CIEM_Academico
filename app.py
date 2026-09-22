@@ -97,6 +97,38 @@ for _docente in db.docentes.find({}):
     if _usuario_existente:
         continue
 
+    # ======================================================
+    # EVITAR COLISIÓN DE NOMBRE DE USUARIO
+    #
+    # SI YA EXISTE UNA CUENTA (POR EJEMPLO DE ADMIN) CON ESE
+    # MISMO "usuario", NO SE CREA UNA SEGUNDA CUENTA DE
+    # DOCENTE CON EL MISMO NOMBRE DE LOGIN — CAUSARÍA QUE EL
+    # LOGIN ENCUENTRE LA CUENTA EQUIVOCADA.
+    # ======================================================
+
+    _usuario_login_check = str(
+        _docente.get("usuario", "")
+    ).strip().lower()
+
+    if not _usuario_login_check:
+
+        _primer_nombre_check = str(
+            _docente.get("nombre", "")
+        ).strip().split(" ")[0]
+
+        _usuario_login_check = _quitar_acentos(
+            _primer_nombre_check
+        ).lower()
+
+    if _usuario_login_check:
+
+        _colision = db.usuarios.find_one({
+            "usuario": _usuario_login_check
+        })
+
+        if _colision:
+            continue
+
 
     # ======================================================
     # ID DEL USUARIO A PARTIR DEL CÓDIGO DEL DOCENTE
@@ -224,6 +256,30 @@ for _usuario_admin in usuarios_administradores:
 
 
 # ==========================================================
+# LIMPIEZA: CUENTAS DUPLICADAS DE LOS ADMINISTRADORES
+#
+# SI HOBETH, GUISSELL O DARLING TAMBIÉN QUEDARON REGISTRADAS
+# COMO DOCENTES (CON OTRO _id), ESA CUENTA DUPLICADA SE
+# DESACTIVA PARA QUE EL LOGIN SIEMPRE ENCUENTRE LA CUENTA DE
+# ADMIN Y NO LA DE DOCENTE. NO SE ELIMINA, SOLO SE INACTIVA.
+# ==========================================================
+
+for _usuario_admin in usuarios_administradores:
+
+    db.usuarios.update_many(
+        {
+            "usuario": _usuario_admin["usuario"],
+            "_id": {"$ne": _usuario_admin["_id"]}
+        },
+        {
+            "$set": {
+                "activo": False
+            }
+        }
+    )
+
+
+# ==========================================================
 # APLICACIÓN
 # ==========================================================
 
@@ -268,12 +324,35 @@ def login():
         # BUSCAR USUARIO
         # --------------------------------------------------
 
+        # --------------------------------------------------
+        # SE BUSCA PRIMERO ENTRE CUENTAS ACTIVAS. SI HAY MÁS
+        # DE UNA CUENTA CON EL MISMO "usuario" (CASO DUPLICADO
+        # DOCENTE/ADMIN), ESTO ASEGURA QUE SE USE LA ACTIVA.
+        # --------------------------------------------------
+
         user = db["usuarios"].find_one({
-            "usuario": usuario
+            "usuario": usuario,
+            "activo": {"$ne": False}
         })
 
         # --------------------------------------------------
-        # BUSCAR SIN IMPORTAR MAYÚSCULAS
+        # BUSCAR SIN IMPORTAR MAYÚSCULAS (SOLO ACTIVAS)
+        # --------------------------------------------------
+
+        if user is None:
+
+            user = db["usuarios"].find_one({
+                "usuario": {
+                    "$regex": "^" + re.escape(usuario) + "$",
+                    "$options": "i"
+                },
+                "activo": {"$ne": False}
+            })
+
+        # --------------------------------------------------
+        # SI NO HAY NINGUNA CUENTA ACTIVA, SE BUSCA CUALQUIERA
+        # PARA PODER MOSTRAR EL MENSAJE CORRECTO ("inactivo"
+        # EN VEZ DE "no encontrado")
         # --------------------------------------------------
 
         if user is None:
@@ -614,6 +693,90 @@ def role_required(*roles):
 def logout():
     session.clear()
     return redirect(url_for("login"))
+
+
+# =========================
+# CONFIGURACIÓN: CAMBIAR CONTRASEÑA (ADMIN)
+# =========================
+
+@app.route("/admin/configuracion", methods=["GET", "POST"])
+@role_required("admin", "director", "secretaria", "contadora")
+def configuracion_admin():
+
+    if request.method == "POST":
+
+        password_actual = request.form.get(
+            "password_actual", ""
+        ).strip()
+
+        password_nueva = request.form.get(
+            "password_nueva", ""
+        ).strip()
+
+        password_confirmar = request.form.get(
+            "password_confirmar", ""
+        ).strip()
+
+        usuario_actual = db.usuarios.find_one({
+            "usuario": session.get("usuario")
+        })
+
+        if not usuario_actual:
+
+            flash(
+                "No se encontró tu cuenta.",
+                "danger"
+            )
+
+            return redirect(url_for("configuracion_admin"))
+
+        password_bd = str(
+            usuario_actual.get("password", "")
+        ).strip()
+
+        if password_bd != password_actual:
+
+            flash(
+                "La contraseña actual no es correcta.",
+                "danger"
+            )
+
+            return redirect(url_for("configuracion_admin"))
+
+        if len(password_nueva) < 4:
+
+            flash(
+                "La nueva contraseña debe tener al menos 4 caracteres.",
+                "warning"
+            )
+
+            return redirect(url_for("configuracion_admin"))
+
+        if password_nueva != password_confirmar:
+
+            flash(
+                "La nueva contraseña y su confirmación no coinciden.",
+                "warning"
+            )
+
+            return redirect(url_for("configuracion_admin"))
+
+        db.usuarios.update_one(
+            {"usuario": session.get("usuario")},
+            {"$set": {"password": password_nueva}}
+        )
+
+        flash(
+            "Contraseña actualizada correctamente.",
+            "success"
+        )
+
+        return redirect(url_for("configuracion_admin"))
+
+    return render_template(
+        "admin/configuracion.html",
+        usuario=session.get("usuario")
+    )
 
 
 evert = db.docentes.find_one({
@@ -5290,6 +5453,36 @@ def reporte_estudiantes():
     )
 
 
+@app.route("/admin/reporte/estudiantes/pdf")
+@role_required("admin", "director", "secretaria", "contadora")
+def reporte_estudiantes_pdf():
+
+    estudiantes = list(
+        db.estudiantes.find().sort(
+            "nombre",
+            1
+        )
+    )
+
+    html_render = render_template(
+        "admin/reporte_estudiantes_pdf.html",
+        estudiantes=estudiantes,
+        fecha_generado=datetime.now().strftime("%d/%m/%Y %H:%M")
+    )
+
+    pdf_bytes = HTML(
+        string=html_render,
+        base_url=request.url_root
+    ).write_pdf()
+
+    return send_file(
+        BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name="reporte_estudiantes.pdf"
+    )
+
+
 # =========================
 # REPORTE DE DOCENTES
 # =========================
@@ -5313,6 +5506,36 @@ def reporte_docentes():
     )
 
 
+@app.route("/admin/reporte/docentes/pdf")
+@role_required("admin", "director", "secretaria", "contadora")
+def reporte_docentes_pdf():
+
+    docentes = list(
+        db.docentes.find().sort(
+            "nombre",
+            1
+        )
+    )
+
+    html_render = render_template(
+        "admin/reporte_docentes_pdf.html",
+        docentes=docentes,
+        fecha_generado=datetime.now().strftime("%d/%m/%Y %H:%M")
+    )
+
+    pdf_bytes = HTML(
+        string=html_render,
+        base_url=request.url_root
+    ).write_pdf()
+
+    return send_file(
+        BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name="reporte_docentes.pdf"
+    )
+
+
 # =========================
 # REPORTE DE MATRÍCULAS
 # =========================
@@ -5323,16 +5546,88 @@ def reporte_matriculas():
 
 
     matriculas = list(
-        db.matriculas.find().sort(
-            "fecha_matricula",
-            -1
-        )
+        db.matriculas.aggregate([
+
+            {
+                "$lookup": {
+                    "from": "estudiantes",
+                    "localField": "estudiante_id",
+                    "foreignField": "_id",
+                    "as": "estudiante"
+                }
+            },
+
+            {
+                "$unwind": {
+                    "path": "$estudiante",
+                    "preserveNullAndEmptyArrays": True
+                }
+            },
+
+            {
+                "$sort": {
+                    "fecha_matricula": -1
+                }
+            }
+
+        ])
     )
 
 
     return render_template(
         "admin/reporte_matriculas.html",
         matriculas=matriculas
+    )
+
+
+@app.route("/admin/reporte/matriculas/pdf")
+@role_required("admin", "director", "secretaria", "contadora")
+def reporte_matriculas_pdf():
+
+    matriculas = list(
+        db.matriculas.aggregate([
+
+            {
+                "$lookup": {
+                    "from": "estudiantes",
+                    "localField": "estudiante_id",
+                    "foreignField": "_id",
+                    "as": "estudiante"
+                }
+            },
+
+            {
+                "$unwind": {
+                    "path": "$estudiante",
+                    "preserveNullAndEmptyArrays": True
+                }
+            },
+
+            {
+                "$sort": {
+                    "fecha_matricula": -1
+                }
+            }
+
+        ])
+    )
+
+    html_render = render_template(
+        "admin/reporte_matriculas_pdf.html",
+        matriculas=matriculas,
+        fecha_generado=datetime.now().strftime("%d/%m/%Y %H:%M")
+    )
+
+    pdf_bytes = HTML(
+        string=html_render,
+        base_url=request.url_root
+    ).write_pdf()
+
+    return send_file(
+        BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name="reporte_matriculas.pdf"
     )
 
 # =========================

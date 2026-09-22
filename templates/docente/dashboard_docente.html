@@ -1902,6 +1902,260 @@
     ) }}"
 ></script>
 
+{% if mensajes_pendientes > 0 %}
+
+<!-- ==================================================
+     MODAL: MENSAJES PENDIENTES
+=================================================== -->
+
+<div
+    class="modal-overlay-mensajes"
+    id="modalMensajesPendientes"
+>
+
+    <div class="modal-mensajes">
+
+        <div class="modal-mensajes-icono">
+            <i class="bi bi-envelope-heart-fill"></i>
+        </div>
+
+        <h3>
+            {% if mensajes_pendientes == 1 %}
+                Tienes 1 mensaje nuevo
+            {% else %}
+                Tienes {{ mensajes_pendientes }} mensajes nuevos
+            {% endif %}
+        </h3>
+
+        <p>
+            {% if mensajes_pendientes == 1 %}
+                Un padre o madre de familia te escribió y aún no lo has leído.
+            {% else %}
+                Varios padres o madres de familia te escribieron y aún no los has leído.
+            {% endif %}
+        </p>
+
+        <div class="modal-mensajes-botones">
+
+            <a
+                href="{{ url_for('mensajes.bandeja_docente') }}"
+                class="modal-btn-ver"
+            >
+                <i class="bi bi-chat-dots-fill"></i>
+                Ver mensajes
+            </a>
+
+            <button
+                type="button"
+                class="modal-btn-cerrar"
+                onclick="cerrarModalMensajesPendientes()"
+            >
+                Ahora no
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+
+    .modal-overlay-mensajes {
+
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+
+        background: rgba(10, 35, 66, .55);
+        backdrop-filter: blur(2px);
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 20px;
+
+        opacity: 0;
+        pointer-events: none;
+
+        transition: opacity .25s ease;
+    }
+
+    .modal-overlay-mensajes.visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .modal-mensajes {
+
+        background: white;
+        border-radius: 22px;
+        border-top: 5px solid #c9a227;
+
+        max-width: 380px;
+        width: 100%;
+
+        padding: 32px 28px 26px;
+
+        text-align: center;
+
+        box-shadow: 0 25px 60px rgba(0,0,0,.3);
+
+        transform: translateY(14px) scale(.97);
+        transition: transform .25s ease;
+    }
+
+    .modal-overlay-mensajes.visible .modal-mensajes {
+        transform: translateY(0) scale(1);
+    }
+
+    .modal-mensajes-icono {
+
+        width: 64px;
+        height: 64px;
+
+        margin: 0 auto 16px;
+
+        border-radius: 50%;
+
+        background: linear-gradient(135deg, #0a2342, #1E4E8C);
+        color: #ffd873;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 26px;
+
+        animation: modalMensajesPulso 1.8s ease-in-out infinite;
+    }
+
+    @keyframes modalMensajesPulso {
+
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(10, 35, 66, .25);
+        }
+
+        50% {
+            box-shadow: 0 0 0 10px rgba(10, 35, 66, 0);
+        }
+    }
+
+    .modal-mensajes h3 {
+        margin: 0 0 8px;
+        color: #0a2342;
+        font-size: 19px;
+        font-weight: 800;
+    }
+
+    .modal-mensajes p {
+        margin: 0 0 22px;
+        color: #667085;
+        font-size: 13.5px;
+        line-height: 1.5;
+    }
+
+    .modal-mensajes-botones {
+
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .modal-btn-ver {
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+
+        background: #0a2342;
+        color: white;
+
+        padding: 12px;
+        border-radius: 12px;
+
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 700;
+
+        transition: .2s;
+    }
+
+    .modal-btn-ver:hover {
+        background: #c9a227;
+        color: #0a2342;
+    }
+
+    .modal-btn-cerrar {
+
+        background: none;
+        border: none;
+
+        color: #94A0B4;
+
+        font-size: 13px;
+        font-weight: 600;
+
+        padding: 6px;
+        cursor: pointer;
+    }
+
+    .modal-btn-cerrar:hover {
+        color: #667085;
+    }
+
+</style>
+
+<script>
+
+    (function () {
+
+        var TOTAL_PENDIENTES = {{ mensajes_pendientes|int }};
+        var CLAVE = "ciem_modal_mensajes_visto";
+
+        var visto = sessionStorage.getItem(CLAVE);
+
+        // Solo lo vuelve a mostrar si el número de pendientes
+        // cambió desde la última vez que se cerró (ej. llegaron
+        // mensajes nuevos), o si nunca se ha mostrado en esta sesión.
+
+        if (visto !== String(TOTAL_PENDIENTES)) {
+
+            var modal = document.getElementById(
+                "modalMensajesPendientes"
+            );
+
+            setTimeout(function () {
+
+                modal.classList.add("visible");
+
+            }, 400);
+
+        }
+
+        window.cerrarModalMensajesPendientes = function () {
+
+            var modal = document.getElementById(
+                "modalMensajesPendientes"
+            );
+
+            modal.classList.remove("visible");
+
+            sessionStorage.setItem(
+                CLAVE,
+                String(TOTAL_PENDIENTES)
+            );
+
+        };
+
+    })();
+
+</script>
+
+{% endif %}
+
 
 </body>
 

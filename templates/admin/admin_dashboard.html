@@ -9,21 +9,26 @@
 <title>Dashboard Admin | CIEM Académico</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
 :root{
-    --primary:#2563eb;
-    --success:#10b981;
-    --warning:#f59e0b;
-    --dark:#0f172a;
+    --dark:#0D2A52;
+    --dark-2:#1E4E8C;
+    --gold:#D4AF37;
+    --gold-2:#B8860B;
+    --teal:#0891b2;
+    --teal-2:#0e7490;
+    --navy:#08142C;
+    --bg:#f1f5f9;
 }
 
 body{
-    background:#f1f5f9;
-    font-family:'Segoe UI',sans-serif;
+    background:var(--bg);
+    font-family:'Inter','Segoe UI',sans-serif;
 }
 
 /* SIDEBAR */
@@ -49,12 +54,21 @@ body{
     color:white;
     text-decoration:none;
     padding:12px;
-    margin-top:8px;
+    margin-top:6px;
     border-radius:10px;
+    font-size:14.5px;
 }
 
 .sidebar a:hover{
-    background:#1e293b;
+    background:var(--dark-2);
+}
+
+.sidebar-section-label{
+    text-transform:uppercase;
+    font-size:11px;
+    letter-spacing:.05em;
+    color:#93a5c7;
+    margin:18px 4px 4px;
 }
 
 /* CONTENIDO */
@@ -64,81 +78,94 @@ body{
     padding:30px;
 }
 
+.section-title{
+    font-size:15px;
+    font-weight:600;
+    color:var(--dark);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    margin:32px 0 14px;
+}
+
+.section-title:first-of-type{
+    margin-top:8px;
+}
+
 /* TARJETAS */
 
 .card-stat{
     border:none;
-    border-radius:20px;
+    border-radius:18px;
     color:white;
-    transition:.3s;
+    transition:.25s;
+    height:100%;
 }
 
 .card-stat:hover{
-    transform:translateY(-5px);
+    transform:translateY(-4px);
 }
 
-.bg-estudiantes{
-    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+.main .row a{
+    text-decoration:none;
+    color:inherit;
+    display:block;
 }
 
-.bg-docentes{
-    background:linear-gradient(135deg,#10b981,#059669);
+.card-stat .card-body{
+    padding:22px;
 }
 
-.bg-asignaturas{
-    background:linear-gradient(135deg,#f59e0b,#d97706);
+.card-stat h5{
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:0;
 }
 
-.bg-matriculas{
-    background:linear-gradient(135deg,#8b5cf6,#6d28d9);
+.card-stat .desc{
+    font-size:13.5px;
+    margin-top:8px;
+    opacity:.9;
 }
 
-/* GESTIÓN ACADÉMICA */
+/* Paleta unificada: 4 familias reutilizadas por categoría */
 
-.bg-agregar-asignatura{
-    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+.bg-dark-grad{
+    background:linear-gradient(135deg,var(--dark),var(--dark-2));
 }
 
-.bg-asignar-clase{
-    background:linear-gradient(135deg,#10b981,#059669);
+.bg-gold-grad{
+    background:linear-gradient(135deg,var(--gold-2),var(--gold));
+    color:var(--navy);
 }
 
-.bg-gestionar-asignaciones{
-    background:linear-gradient(135deg,#0891b2,#0e7490);
+.bg-teal-grad{
+    background:linear-gradient(135deg,var(--teal-2),var(--teal));
 }
 
-/* HISTORIAL DE MATRÍCULA */
-
-.bg-historial{
-    background:linear-gradient(135deg,#0D2A52,#1E4E8C);
-}
-
-/* REPORTE POR GRADO */
-
-.bg-reporte-grado{
-    background:linear-gradient(135deg,#0ea5e9,#0369a1);
-}
-
-.bg-reporte-estudiantes{
-    background:linear-gradient(135deg,#6366f1,#4338ca);
-}
-
-.bg-reporte-docentes{
-    background:linear-gradient(135deg,#10b981,#047857);
-}
-
-.bg-reporte-matriculas{
-    background:linear-gradient(135deg,#f59e0b,#b45309);
+.bg-navy-grad{
+    background:linear-gradient(135deg,var(--navy),var(--dark-2));
 }
 
 .numero{
-    font-size:40px;
-    font-weight:bold;
+    font-size:38px;
+    font-weight:700;
 }
 
 .card{
     border:none;
-    border-radius:20px;
+    border-radius:18px;
+}
+
+.btn-gold{
+    background:var(--gold);
+    border:none;
+    color:var(--navy);
+    font-weight:600;
+}
+
+.btn-gold:hover{
+    background:var(--gold-2);
+    color:white;
 }
 
 @media (max-width:768px){
@@ -188,97 +215,83 @@ Sistema Académico
 
 <hr>
 
-
 <a href="{{ url_for('admin_dashboard') }}">
 🏠 Dashboard
 </a>
-
 
 <a href="{{ url_for('listar_estudiantes_admin') }}">
 👨‍🎓 Estudiantes
 </a>
 
-
 <a href="{{ url_for('listar_docentes') }}">
 👩‍🏫 Docentes
 </a>
 
+<div class="sidebar-section-label">Académico</div>
 
-<!-- ==========================
-     ASIGNATURAS
-=========================== -->
-
-<a href="{{ url_for('agregar_asignatura') }}"
-   class="btn btn-primary">
-    ➕ Agregar Asignatura
+<a href="{{ url_for('listar_asignaturas') }}">
+📚 Asignaturas
 </a>
 
-<!-- ==========================
-     ASIGNAR CLASE
-=========================== -->
+<a href="{{ url_for('agregar_asignatura') }}">
+➕ Agregar Asignatura
+</a>
 
 <a href="{{ url_for('asignar_clase') }}">
-    👨‍🏫 Asignar Clase
+👨‍🏫 Asignar Clase
 </a>
 
 <a href="{{ url_for('gestionar_asignaciones') }}">
-    📋 Gestionar Asignaciones
+📋 Gestionar Asignaciones
 </a>
+
+<div class="sidebar-section-label">Matrícula</div>
 
 <a href="{{ url_for('listar_matriculas') }}">
 📝 Matrículas
 </a>
 
-
 <a href="{{ url_for('historial_matricula_admin') }}">
 🗂️ Historial de Matrícula
 </a>
 
-
-<hr>
-
-
-<!-- ==========================
-     REPORTES
-=========================== -->
-
-<div class="text-uppercase small text-secondary mt-3 mb-2">
-    Reportes
-</div>
-
+<div class="sidebar-section-label">Reportes</div>
 
 <a href="{{ url_for('reporte_estudiantes') }}">
 📚 Reporte Estudiantes
 </a>
 
-
 <a href="{{ url_for('reporte_estudiantes_por_grado') }}">
 🎓 Reporte por Grado
 </a>
-
 
 <a href="{{ url_for('reporte_docentes') }}">
 👨‍🏫 Reporte Docentes
 </a>
 
-
 <a href="{{ url_for('reporte_matriculas') }}">
 📝 Reporte Matrículas
 </a>
-
 
 <a href="{{ url_for('reporte_academico') }}">
 📊 Reporte Académico
 </a>
 
-
 <hr>
 
+<a href="{{ url_for('admin_comunicados') }}">
+📢 Comunicados
+</a>
+
+<a href="{{ url_for('configuracion_admin') }}">
+⚙️ Configuración
+</a>
+
+<hr>
 
 <a href="{{ url_for('logout') }}">
 🚪 Cerrar sesión
 </a>
-
 
 </div>
 
@@ -290,7 +303,7 @@ Sistema Académico
 <div class="main">
 
 
-<div class="mb-4">
+<div class="mb-2">
 
 <h2>
 Dashboard Académico
@@ -304,103 +317,48 @@ Bienvenido al sistema CIEM Académico
 
 
 <!-- ==========================
-     TARJETAS PRINCIPALES
+     RESUMEN
 =========================== -->
+
+<div class="section-title">Resumen general</div>
 
 <div class="row g-4">
 
-
-<!-- ESTUDIANTES -->
+<div class="col-md-3">
+<div class="card card-stat bg-dark-grad shadow">
+<div class="card-body">
+<h5>Estudiantes</h5>
+<div class="numero">{{ total_estudiantes }}</div>
+</div>
+</div>
+</div>
 
 <div class="col-md-3">
-
-<div class="card card-stat bg-estudiantes shadow">
-
+<div class="card card-stat bg-teal-grad shadow">
 <div class="card-body">
-
-<h5>
-Estudiantes
-</h5>
-
-<div class="numero">
-{{ total_estudiantes }}
+<h5>Docentes</h5>
+<div class="numero">{{ total_docentes }}</div>
 </div>
-
 </div>
-
 </div>
-
-</div>
-
-
-<!-- DOCENTES -->
 
 <div class="col-md-3">
-
-<div class="card card-stat bg-docentes shadow">
-
+<div class="card card-stat bg-gold-grad shadow">
 <div class="card-body">
-
-<h5>
-Docentes
-</h5>
-
-<div class="numero">
-{{ total_docentes }}
+<h5>Asignaturas</h5>
+<div class="numero">{{ total_asignaturas }}</div>
 </div>
-
 </div>
-
 </div>
-
-</div>
-
-
-<!-- ASIGNATURAS -->
 
 <div class="col-md-3">
-
-<div class="card card-stat bg-asignaturas shadow">
-
+<div class="card card-stat bg-navy-grad shadow">
 <div class="card-body">
-
-<h5>
-Asignaturas
-</h5>
-
-<div class="numero">
-{{ total_asignaturas }}
+<h5>Matrículas</h5>
+<div class="numero">{{ total_matriculas }}</div>
 </div>
-
 </div>
-
 </div>
-
-</div>
-
-
-<!-- MATRÍCULAS -->
-
-<div class="col-md-3">
-
-<div class="card card-stat bg-matriculas shadow">
-
-<div class="card-body">
-
-<h5>
-Matrículas
-</h5>
-
-<div class="numero">
-{{ total_matriculas }}
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 
 </div>
 
@@ -409,379 +367,86 @@ Matrículas
      GESTIÓN ACADÉMICA
 =========================== -->
 
-<div class="row g-4 mt-2">
+<div class="section-title">Gestión académica</div>
 
-
-<!-- ==========================
-     ASIGNATURAS
-=========================== -->
+<div class="row g-4">
 
 <div class="col-md-3">
-
-<a
-    href="{{ url_for('listar_asignaturas') }}"
-    style="text-decoration:none;"
->
-
-<div
-    class="card card-stat bg-asignaturas shadow"
-    style="cursor:pointer;"
->
-
+<a href="{{ url_for('listar_asignaturas') }}">
+<div class="card card-stat bg-dark-grad shadow" style="cursor:pointer;">
 <div class="card-body">
-
-<h5>
-📚 Asignaturas
-</h5>
-
-<div style="
-font-size:15px;
-margin-top:10px;
-opacity:.9;
-">
-
-Administrar asignaturas
-
+<h5>📚 Asignaturas</h5>
+<div class="desc">Administrar asignaturas</div>
 </div>
-
 </div>
-
-</div>
-
 </a>
-
 </div>
-
-
-<!-- ==========================
-     AGREGAR ASIGNATURA
-=========================== -->
 
 <div class="col-md-3">
-
-<a
-    href="{{ url_for('agregar_asignatura') }}"
-    style="text-decoration:none;"
->
-
-<div
-    class="card card-stat bg-agregar-asignatura shadow"
-    style="cursor:pointer;"
->
-
+<a href="{{ url_for('agregar_asignatura') }}">
+<div class="card card-stat bg-dark-grad shadow" style="cursor:pointer;">
 <div class="card-body">
-
-<h5>
-➕ Agregar Asignatura
-</h5>
-
-<div style="
-font-size:15px;
-margin-top:10px;
-opacity:.9;
-">
-
-Registrar una nueva asignatura
-
+<h5>➕ Agregar Asignatura</h5>
+<div class="desc">Registrar una nueva asignatura</div>
 </div>
-
 </div>
-
-</div>
-
 </a>
+</div>
+
+<div class="col-md-3">
+<a href="{{ url_for('asignar_clase') }}">
+<div class="card card-stat bg-teal-grad shadow" style="cursor:pointer;">
+<div class="card-body">
+<h5>👨‍🏫 Asignar Clase</h5>
+<div class="desc">Asignar docente, grado y sección</div>
+</div>
+</div>
+</a>
+</div>
+
+<div class="col-md-3">
+<a href="{{ url_for('gestionar_asignaciones') }}">
+<div class="card card-stat bg-teal-grad shadow" style="cursor:pointer;">
+<div class="card-body">
+<h5>📋 Gestionar Asignaciones</h5>
+<div class="desc">Ver, desactivar o eliminar asignaciones</div>
+</div>
+</div>
+</a>
+</div>
 
 </div>
 
 
 <!-- ==========================
-     ASIGNAR CLASE
+     MATRÍCULA
 =========================== -->
 
-<div class="col-md-3">
+<div class="section-title">Matrícula</div>
 
-<a
-    href="{{ url_for('asignar_clase') }}"
-    style="text-decoration:none;"
->
-
-<div
-    class="card card-stat bg-asignar-clase shadow"
-    style="cursor:pointer;"
->
-
-<div class="card-body">
-
-<h5>
-👨‍🏫 Asignar Clase
-</h5>
-
-<div style="
-font-size:15px;
-margin-top:10px;
-opacity:.9;
-">
-
-Asignar docente, grado y sección
-
-</div>
-
-</div>
-
-</div>
-
-</a>
-
-</div>
-
-
-<!-- ==========================
-     GESTIONAR ASIGNACIONES
-=========================== -->
+<div class="row g-4">
 
 <div class="col-md-3">
-
-<a
-    href="{{ url_for('gestionar_asignaciones') }}"
-    style="text-decoration:none;"
->
-
-<div
-    class="card card-stat bg-gestionar-asignaciones shadow"
-    style="cursor:pointer;"
->
-
+<a href="{{ url_for('historial_matricula_admin') }}">
+<div class="card card-stat bg-gold-grad shadow" style="cursor:pointer;">
 <div class="card-body">
-
-<h5>
-📋 Gestionar Asignaciones
-</h5>
-
-<div style="
-font-size:15px;
-margin-top:10px;
-opacity:.9;
-">
-
-Ver, desactivar o eliminar asignaciones
-
+<h5>🗂️ Historial de Matrícula</h5>
+<div class="desc">Ver historial por estudiante y año</div>
 </div>
-
 </div>
-
-</div>
-
 </a>
-
 </div>
-
-
-<!-- ==========================
-     HISTORIAL DE MATRÍCULA
-=========================== -->
 
 <div class="col-md-3">
-
-<a
-    href="{{ url_for('historial_matricula_admin') }}"
-    style="text-decoration:none;"
->
-
-<div
-    class="card card-stat bg-historial shadow"
-    style="cursor:pointer;"
->
-
+<a href="{{ url_for('agregar_matricula') }}">
+<div class="card card-stat bg-dark-grad shadow" style="cursor:pointer;">
 <div class="card-body">
-
-<h5>
-🗂️ Historial de Matrícula
-</h5>
-
-<div style="
-font-size:15px;
-margin-top:10px;
-opacity:.9;
-">
-
-Ver el historial de matrículas de un estudiante por año
-
+<h5>➕ Nuevo Estudiante</h5>
+<div class="desc">Registrar una nueva matrícula</div>
 </div>
-
 </div>
-
-</div>
-
 </a>
-
 </div>
-
-
-</div>
-
-
-<!-- ==========================
-     ACCESOS A REPORTES
-=========================== -->
-
-<div class="row g-4 mt-2">
-
-
-<!-- REPORTE ESTUDIANTES -->
-
-<div class="col-md-3">
-
-<a
-    href="{{ url_for('reporte_estudiantes') }}"
-    style="text-decoration:none;"
->
-
-<div
-    class="card card-stat bg-reporte-estudiantes shadow"
-    style="cursor:pointer;"
->
-
-<div class="card-body">
-
-<h5>
-📚 Reporte Estudiantes
-</h5>
-
-<div style="
-font-size:15px;
-margin-top:10px;
-opacity:.9;
-">
-
-Listado general de estudiantes
-
-</div>
-
-</div>
-
-</div>
-
-</a>
-
-</div>
-
-
-<!-- REPORTE POR GRADO -->
-
-<div class="col-md-3">
-
-<a
-    href="{{ url_for('reporte_estudiantes_por_grado') }}"
-    style="text-decoration:none;"
->
-
-<div
-    class="card card-stat bg-reporte-grado shadow"
-    style="cursor:pointer;"
->
-
-<div class="card-body">
-
-<h5>
-🎓 Reporte por Grado
-</h5>
-
-<div style="
-font-size:15px;
-margin-top:10px;
-opacity:.9;
-">
-
-Consultar estudiantes por grado y sección
-
-</div>
-
-</div>
-
-</div>
-
-</a>
-
-</div>
-
-
-<!-- REPORTE DOCENTES -->
-
-<div class="col-md-3">
-
-<a
-    href="{{ url_for('reporte_docentes') }}"
-    style="text-decoration:none;"
->
-
-<div
-    class="card card-stat bg-reporte-docentes shadow"
-    style="cursor:pointer;"
->
-
-<div class="card-body">
-
-<h5>
-👨‍🏫 Reporte Docentes
-</h5>
-
-<div style="
-font-size:15px;
-margin-top:10px;
-opacity:.9;
-">
-
-Información del personal docente
-
-</div>
-
-</div>
-
-</div>
-
-</a>
-
-</div>
-
-
-<!-- REPORTE MATRÍCULAS -->
-
-<div class="col-md-3">
-
-<a
-    href="{{ url_for('reporte_matriculas') }}"
-    style="text-decoration:none;"
->
-
-<div
-    class="card card-stat bg-reporte-matriculas shadow"
-    style="cursor:pointer;"
->
-
-<div class="card-body">
-
-<h5>
-📝 Reporte Matrículas
-</h5>
-
-<div style="
-font-size:15px;
-margin-top:10px;
-opacity:.9;
-">
-
-Consulta de matrículas registradas
-
-</div>
-
-</div>
-
-</div>
-
-</a>
-
-</div>
-
 
 </div>
 
@@ -790,50 +455,74 @@ Consulta de matrículas registradas
      COMUNICADOS
 =========================== -->
 
-<div class="row g-4 mt-2">
+<div class="section-title">Comunicación</div>
+
+<div class="row g-4">
 
 <div class="col-md-3">
-
-<a
-    href="{{ url_for('admin_comunicados') }}"
-    style="text-decoration:none;"
->
-
-<div
-    class="card card-stat shadow"
-    style="
-    background:linear-gradient(
-        135deg,
-        #08142C,
-        #1E4E8C
-    );
-    color:white;
-    cursor:pointer;
-    "
->
-
+<a href="{{ url_for('admin_comunicados') }}">
+<div class="card card-stat bg-navy-grad shadow" style="cursor:pointer;">
 <div class="card-body">
-
-<h5 style="color:white;">
-📢 Comunicados
-</h5>
-
-<div style="
-font-size:15px;
-margin-top:10px;
-opacity:.9;
-">
-
-Enviar avisos a los padres
-
+<h5>📢 Comunicados</h5>
+<div class="desc">Enviar avisos a los padres</div>
 </div>
-
 </div>
-
-</div>
-
 </a>
+</div>
 
+</div>
+
+
+<!-- ==========================
+     REPORTES
+=========================== -->
+
+<div class="section-title">Reportes</div>
+
+<div class="row g-4">
+
+<div class="col-md-3">
+<a href="{{ url_for('reporte_estudiantes') }}">
+<div class="card card-stat bg-dark-grad shadow" style="cursor:pointer;">
+<div class="card-body">
+<h5>📚 Reporte Estudiantes</h5>
+<div class="desc">Listado general de estudiantes</div>
+</div>
+</div>
+</a>
+</div>
+
+<div class="col-md-3">
+<a href="{{ url_for('reporte_estudiantes_por_grado') }}">
+<div class="card card-stat bg-teal-grad shadow" style="cursor:pointer;">
+<div class="card-body">
+<h5>🎓 Reporte por Grado</h5>
+<div class="desc">Estudiantes por grado y sección</div>
+</div>
+</div>
+</a>
+</div>
+
+<div class="col-md-3">
+<a href="{{ url_for('reporte_docentes') }}">
+<div class="card card-stat bg-gold-grad shadow" style="cursor:pointer;">
+<div class="card-body">
+<h5>👨‍🏫 Reporte Docentes</h5>
+<div class="desc">Información del personal docente</div>
+</div>
+</div>
+</a>
+</div>
+
+<div class="col-md-3">
+<a href="{{ url_for('reporte_matriculas') }}">
+<div class="card card-stat bg-navy-grad shadow" style="cursor:pointer;">
+<div class="card-body">
+<h5>📝 Reporte Matrículas</h5>
+<div class="desc">Consulta de matrículas registradas</div>
+</div>
+</div>
+</a>
 </div>
 
 </div>
@@ -843,144 +532,26 @@ Enviar avisos a los padres
      GRÁFICOS
 =========================== -->
 
-<div class="row mt-4">
+<div class="section-title">Estadísticas visuales</div>
 
+<div class="row g-4">
 
 <div class="col-md-8">
-
 <div class="card shadow">
-
 <div class="card-body">
-
-<h5>
-Estadísticas generales
-</h5>
-
+<h5>Estadísticas generales</h5>
 <canvas id="graficoBarras"></canvas>
-
 </div>
-
 </div>
-
 </div>
-
 
 <div class="col-md-4">
-
 <div class="card shadow">
-
 <div class="card-body">
-
-<h5>
-Distribución
-</h5>
-
+<h5>Distribución</h5>
 <canvas id="graficoCircular"></canvas>
-
 </div>
-
 </div>
-
-</div>
-
-
-</div>
-
-
-<!-- ==========================
-     ÚLTIMOS ESTUDIANTES
-=========================== -->
-
-<div class="card shadow mt-4">
-
-<div class="card-body">
-
-<h5>
-Últimos estudiantes registrados
-</h5>
-
-
-<a
-    href="{{ url_for('agregar_matricula') }}"
-    class="btn btn-primary mb-3"
->
-
-➕ Nuevo estudiante
-
-</a>
-
-
-<table class="table table-striped">
-
-<thead>
-
-<tr>
-
-<th>Código</th>
-
-<th>Nombre</th>
-
-<th>Grado</th>
-
-<th>Acciones</th>
-
-</tr>
-
-</thead>
-
-
-<tbody>
-
-
-{% for e in estudiantes %}
-
-<tr>
-
-<td>
-{{ e.codigo }}
-</td>
-
-<td>
-{{ e.nombre }}
-</td>
-
-<td>
-{{ e.grado }}
-</td>
-
-<td>
-
-<a
-    href="{{ url_for('editar_estudiante', id=e._id) }}"
-    class="btn btn-warning btn-sm"
->
-
-✏️ Editar
-
-</a>
-
-
-<a
-    href="{{ url_for('eliminar_estudiante', id=e._id) }}"
-    class="btn btn-danger btn-sm"
-    onclick="return confirm('¿Desea eliminar este estudiante?')"
->
-
-🗑 Eliminar
-
-</a>
-
-</td>
-
-</tr>
-
-{% endfor %}
-
-
-</tbody>
-
-</table>
-
 </div>
 
 </div>
@@ -995,92 +566,46 @@ Distribución
 
 <script>
 
-
-/* ==========================================
-   GRÁFICO DE BARRAS
-========================================== */
-
 new Chart(
-
-document.getElementById('graficoBarras'),
-
-{
-
-type:'bar',
-
-data:{
-
-labels:[
-
-'Estudiantes',
-'Docentes',
-'Asignaturas',
-'Matrículas'
-
-],
-
-datasets:[{
-
-label:'Cantidad',
-
-data:[
-
-{{ total_estudiantes }},
-{{ total_docentes }},
-{{ total_asignaturas }},
-{{ total_matriculas }}
-
-]
-
-}]
-
-}
-
-}
-
+    document.getElementById('graficoBarras'),
+    {
+        type:'bar',
+        data:{
+            labels:['Estudiantes','Docentes','Asignaturas','Matrículas'],
+            datasets:[{
+                label:'Cantidad',
+                data:[
+                    {{ total_estudiantes }},
+                    {{ total_docentes }},
+                    {{ total_asignaturas }},
+                    {{ total_matriculas }}
+                ],
+                backgroundColor:['#0D2A52','#0891b2','#D4AF37','#08142C']
+            }]
+        },
+        options:{
+            plugins:{ legend:{ display:false } }
+        }
+    }
 );
 
-
-/* ==========================================
-   GRÁFICO CIRCULAR
-========================================== */
-
 new Chart(
-
-document.getElementById('graficoCircular'),
-
-{
-
-type:'doughnut',
-
-data:{
-
-labels:[
-
-'Estudiantes',
-'Docentes',
-'Asignaturas'
-
-],
-
-datasets:[{
-
-data:[
-
-{{ total_estudiantes }},
-{{ total_docentes }},
-{{ total_asignaturas }}
-
-]
-
-}]
-
-}
-
-}
-
+    document.getElementById('graficoCircular'),
+    {
+        type:'doughnut',
+        data:{
+            labels:['Estudiantes','Docentes','Asignaturas'],
+            datasets:[{
+                data:[
+                    {{ total_estudiantes }},
+                    {{ total_docentes }},
+                    {{ total_asignaturas }}
+                ],
+                backgroundColor:['#0D2A52','#0891b2','#D4AF37']
+            }]
+        }
+    }
 );
-
 
 </script>
 

@@ -41,6 +41,11 @@ rel="stylesheet">
     ⬅ Regresar
 </a>
 
+<a href="{{ url_for('reporte_matriculas_pdf') }}"
+   class="btn btn-warning">
+    ⬇ Descargar PDF
+</a>
+
 
 
 </div>
@@ -104,7 +109,7 @@ Estado
 
 
 <td>
-{{ m.estudiante_nombre if m.estudiante_nombre else '-' }}
+{{ m.estudiante.nombre if m.estudiante else '-' }}
 </td>
 
 

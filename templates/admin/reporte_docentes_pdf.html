@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+
+@page {
+    size: letter;
+    margin: 2cm 1.5cm;
+}
+
+body{
+    font-family:'Helvetica','Arial',sans-serif;
+    color:#0D2A52;
+    font-size:11px;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:16px;
+}
+
+.header img{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    margin-bottom:6px;
+}
+
+.header h1{
+    font-size:16px;
+    margin:4px 0 0;
+    color:#0D2A52;
+}
+
+.header h2{
+    font-size:12px;
+    font-weight:normal;
+    margin:2px 0 0;
+    color:#1E4E8C;
+}
+
+.linea-dorada{
+    border:none;
+    border-top:2px solid #D4AF37;
+    margin:10px 0 16px;
+}
+
+.fecha-generado{
+    text-align:right;
+    font-size:9px;
+    color:#64748b;
+    margin-bottom:10px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#0D2A52;
+    color:white;
+    text-align:left;
+    padding:6px 8px;
+    font-size:10px;
+}
+
+td{
+    padding:5px 8px;
+    border-bottom:1px solid #e2e8f0;
+}
+
+tr:nth-child(even) td{
+    background:#f8fafc;
+}
+
+.footer{
+    margin-top:14px;
+    text-align:center;
+    font-size:8.5px;
+    color:#94a3b8;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<img src="{{ url_for('static', filename='img/logo.jpg') }}">
+<h1>COLEGIO INTEGRAL EMANUEL</h1>
+<h2>Reporte de Docentes</h2>
+</div>
+
+<hr class="linea-dorada">
+
+<div class="fecha-generado">
+Generado: {{ fecha_generado }}
+</div>
+
+<table>
+
+<thead>
+<tr>
+<th>Código</th>
+<th>Nombre</th>
+<th>Cargo</th>
+<th>Especialidad</th>
+<th>Nivel</th>
+<th>Teléfono</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for d in docentes %}
+<tr>
+<td>{{ d.codigo }}</td>
+<td>{{ d.nombre }}</td>
+<td>{{ d.cargo }}</td>
+<td>{{ d.especialidad }}</td>
+<td>{{ d.nivel }}</td>
+<td>{{ d.telefono }}</td>
+</tr>
+{% endfor %}
+
+</tbody>
+
+</table>
+
+<div class="footer">
+Total de docentes: {{ docentes|length }}
+</div>
+
+</body>
+</html>
