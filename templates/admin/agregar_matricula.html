@@ -81,10 +81,30 @@
         .anio {
             background: #FFC107;
             color: #08142C;
-            padding: 8px 18px;
+            padding: 8px 30px 8px 18px;
             border-radius: 20px;
             font-weight: bold;
             white-space: nowrap;
+
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+
+            background-image:
+                url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'><path d='M0 0l5 6 5-6z' fill='%2308142C'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 10px 6px;
+        }
+
+        .anio:focus {
+            outline: 2px solid #08142C;
+            outline-offset: 2px;
         }
 
         /* ==========================================
@@ -492,9 +512,16 @@
 
             </div>
 
-            <div class="anio">
-                Año Lectivo 2026
-            </div>
+            <select
+                class="anio"
+                name="anio_lectivo"
+                form="formularioMatricula"
+                id="anioLectivo"
+            >
+                <option value="2025">Año Lectivo 2025</option>
+                <option value="2026" selected>Año Lectivo 2026</option>
+                <option value="2027">Año Lectivo 2027</option>
+            </select>
 
         </div>
 

@@ -2441,14 +2441,26 @@ def api_obtener_estudiante(codigo):
         )
 
 
-    informacion_linguistica = estudiante.get(
-        "informacion_linguistica",
-        {}
+    # ======================================================
+    # ALGUNOS ESTUDIANTES ANTIGUOS TIENEN "padre"/"madre"/
+    # "tutor"/"informacion_linguistica" GUARDADOS COMO TEXTO
+    # PLANO EN VEZ DE OBJETO (datos previos a este formulario).
+    # SI SE USA .get(campo, {}) Y EL VALOR GUARDADO ES UN
+    # STRING (NO None NI AUSENTE), EL DEFAULT {} NUNCA SE
+    # APLICA Y .get("subcampo") SOBRE EL STRING TRUENA CON
+    # AttributeError. AQUÍ SE VALIDA EL TIPO, NO SOLO SI EXISTE.
+    # ======================================================
+
+    def _como_dict(valor):
+        return valor if isinstance(valor, dict) else {}
+
+    informacion_linguistica = _como_dict(
+        estudiante.get("informacion_linguistica")
     )
 
-    padre = estudiante.get("padre", {})
-    madre = estudiante.get("madre", {})
-    tutor = estudiante.get("tutor", {})
+    padre = _como_dict(estudiante.get("padre"))
+    madre = _como_dict(estudiante.get("madre"))
+    tutor = _como_dict(estudiante.get("tutor"))
 
 
     return jsonify({
