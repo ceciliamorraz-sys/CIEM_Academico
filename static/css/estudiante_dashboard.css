@@ -517,6 +517,30 @@ a {
     min-width: 160px;
 }
 
+/* Columna "Asignatura" fija: en móvil la tabla scrollea de lado,
+   pero esta columna se queda visible para no perder el contexto
+   de qué materia se está viendo. */
+.tabla-notas th.col-asignatura,
+.tabla-notas td.col-asignatura {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--papel);
+    box-shadow: 4px 0 8px -4px rgba(20, 33, 61, .18);
+}
+
+.tabla-notas thead th.col-asignatura {
+    z-index: 3;
+}
+
+.tabla-notas tbody tr:hover td.col-asignatura {
+    background: var(--papel-sombra);
+}
+
+.table-scroll-hint {
+    display: none;
+}
+
 .tabla-notas .num {
     text-align: center;
     color: var(--tinta-suave);
@@ -856,5 +880,43 @@ a {
 
     .stat-ledger {
         gap: 24px;
+    }
+
+    .table-scroll-hint {
+        display: block;
+        margin-top: 10px;
+        font-size: .78rem;
+        color: var(--tinta-suave);
+        text-align: center;
+    }
+}
+
+
+/* =========================================================
+   MÓVIL PEQUEÑO — la barra superior (rail) se recarga con
+   marca + estudiante + navegación en una sola fila; se quita
+   el subtítulo y el detalle de grado/sección para dejar más
+   espacio a los enlaces de navegación.
+========================================================= */
+
+@media (max-width: 460px) {
+
+    .rail {
+        gap: 12px;
+        padding: 12px 14px;
+    }
+
+    .brand-sub,
+    .viewer-meta {
+        display: none;
+    }
+
+    .viewer-name {
+        font-size: .85rem;
+        white-space: nowrap;
+    }
+
+    .sheet {
+        padding: 22px 16px 40px;
     }
 }

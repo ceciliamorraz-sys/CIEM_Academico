@@ -397,10 +397,48 @@
 
 
     <!-- ==================================================
+         BARRA SUPERIOR MÓVIL (solo visible en móvil)
+    =================================================== -->
+
+    <header class="topbar-movil">
+
+        <button
+            type="button"
+            class="boton-menu-movil"
+            id="botonMenuMovil"
+            aria-label="Abrir menú"
+            aria-expanded="false"
+            aria-controls="sidebarDocente"
+        >
+            <i class="bi bi-list"></i>
+        </button>
+
+        <img
+            src="{{ url_for(
+                'static',
+                filename='img/logo.jpg'
+            ) }}"
+            alt="Logo CIEM"
+            class="topbar-movil-logo"
+        >
+
+        <span class="topbar-movil-titulo">
+            CIEM Académico
+        </span>
+
+    </header>
+
+
+    <!-- FONDO OSCURO AL ABRIR EL MENÚ EN MÓVIL -->
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+
+    <!-- ==================================================
          SIDEBAR
     =================================================== -->
 
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebarDocente">
 
 
         <!-- MARCA -->
@@ -426,6 +464,15 @@
                 </span>
 
             </div>
+
+            <button
+                type="button"
+                class="boton-cerrar-sidebar"
+                id="botonCerrarSidebar"
+                aria-label="Cerrar menú"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
 
         </div>
 
@@ -1901,6 +1948,65 @@
         filename='js/dashboard_docente.js'
     ) }}"
 ></script>
+
+<!-- ==================================================
+     MENÚ MÓVIL: abrir / cerrar sidebar
+=================================================== -->
+
+<script>
+
+    (function () {
+
+        var sidebar = document.getElementById("sidebarDocente");
+        var overlay = document.getElementById("sidebarOverlay");
+        var botonAbrir = document.getElementById("botonMenuMovil");
+        var botonCerrar = document.getElementById("botonCerrarSidebar");
+
+        function abrirMenu() {
+            sidebar.classList.add("abierta");
+            overlay.classList.add("visible");
+            botonAbrir.setAttribute("aria-expanded", "true");
+            document.body.style.overflow = "hidden";
+        }
+
+        function cerrarMenu() {
+            sidebar.classList.remove("abierta");
+            overlay.classList.remove("visible");
+            botonAbrir.setAttribute("aria-expanded", "false");
+            document.body.style.overflow = "";
+        }
+
+        if (botonAbrir) {
+            botonAbrir.addEventListener("click", abrirMenu);
+        }
+
+        if (botonCerrar) {
+            botonCerrar.addEventListener("click", cerrarMenu);
+        }
+
+        if (overlay) {
+            overlay.addEventListener("click", cerrarMenu);
+        }
+
+        // Cierra el menú al tocar cualquier enlace del sidebar,
+        // para que no quede abierto tapando la pantalla al navegar.
+        if (sidebar) {
+            sidebar.querySelectorAll("nav a").forEach(function (enlace) {
+                enlace.addEventListener("click", cerrarMenu);
+            });
+        }
+
+        // Si la pantalla crece (ej. rotar a horizontal o pasar a
+        // escritorio), asegura que el menú no quede abierto de más.
+        window.addEventListener("resize", function () {
+            if (window.innerWidth > 700) {
+                cerrarMenu();
+            }
+        });
+
+    })();
+
+</script>
 
 {% if mensajes_pendientes > 0 %}
 

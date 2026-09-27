@@ -1327,6 +1327,78 @@ footer {
 
 
 /* =========================================================
+   BARRA SUPERIOR MÓVIL + BOTÓN HAMBURGUESA
+   (ocultos en escritorio/tablet; activados en @media 700px)
+========================================================= */
+
+.topbar-movil {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    padding: 12px 16px;
+    background: linear-gradient(180deg, var(--azul-950) 0%, var(--azul-900) 100%);
+    box-shadow: 0 4px 14px rgba(6, 17, 38, .18);
+}
+
+.topbar-movil-logo {
+    width: 34px;
+    height: 34px;
+    object-fit: cover;
+    border-radius: 9px;
+    background: white;
+    padding: 2px;
+}
+
+.topbar-movil-titulo {
+    color: white;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: .3px;
+}
+
+.boton-menu-movil {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 10px;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.boton-menu-movil:hover {
+    background: rgba(255, 255, 255, .14);
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 11, 26, .55);
+    z-index: 1400;
+    opacity: 0;
+    transition: opacity .25s ease;
+}
+
+.sidebar-overlay.visible {
+    display: block;
+    opacity: 1;
+}
+
+.boton-cerrar-sidebar {
+    display: none;
+}
+
+
+/* =========================================================
    MÓVIL
 ========================================================= */
 
@@ -1334,11 +1406,36 @@ footer {
     .app {
         display: block;
     }
+    .topbar-movil {
+        display: flex;
+    }
     .sidebar {
-        position: relative;
-        width: 100%;
-        height: auto;
-        min-height: auto;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 280px;
+        max-width: 82vw;
+        height: 100vh;
+        transform: translateX(-100%);
+        transition: transform .28s ease;
+        z-index: 1500;
+    }
+    .sidebar.abierta {
+        transform: translateX(0);
+    }
+    .boton-cerrar-sidebar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        margin-left: auto;
+        background: rgba(255, 255, 255, .08);
+        border: 1px solid rgba(255, 255, 255, .12);
+        border-radius: 8px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
     }
     .sidebar nav {
         padding-bottom: 13px;
