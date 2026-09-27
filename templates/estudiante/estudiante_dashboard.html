@@ -153,6 +153,69 @@
 
 
         <!-- =================================================
+             AVISOS INSTITUCIONALES (destacado, arriba de todo
+             para que no pase desapercibido)
+        ================================================== -->
+
+        {% if avisos %}
+
+            <section class="panel-avisos-destacado">
+
+                <div class="avisos-destacado-head">
+
+                    <div class="avisos-destacado-titulo">
+                        <span class="avisos-destacado-icono">📢</span>
+                        <div>
+                            <h2>Avisos institucionales</h2>
+                            <p>Comunicados importantes de CIEM ONE.</p>
+                        </div>
+                    </div>
+
+                    <span class="panel-contador panel-contador--bronce">
+                        {{ avisos|length }} aviso{% if avisos|length != 1 %}s{% endif %}
+                    </span>
+
+                </div>
+
+                <div class="lista-avisos">
+
+                    {% for aviso in avisos %}
+
+                        <div class="aviso-card">
+
+                            <div class="aviso-icono">📢</div>
+
+                            <div class="aviso-contenido">
+
+                                <h3>{{ aviso.get("titulo", "Aviso institucional") }}</h3>
+
+                                <p>{{ aviso.get("contenido", "") }}</p>
+
+                                <div class="aviso-pie">
+
+                                    <span>🏫 Dirección Académica</span>
+
+                                    {% if aviso.get("fecha") %}
+                                        <span>📅 {{ aviso.get("fecha") }}</span>
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+        {% endif %}
+
+
+
+        <!-- =================================================
              CALCULAR INFORMACIÓN ACADÉMICA
         ================================================== -->
 
@@ -483,18 +546,18 @@
 
                 <div>
                     <h2>💬 Comunicación con docentes</h2>
-                    <p>Envía un mensaje al docente seleccionado.</p>
+                    <p>Elige un docente para ir directo a la conversación.</p>
                 </div>
 
             </div>
 
             <form
-                method="POST"
-                action="{{ url_for('mensajes.crear') }}"
-                class="nota-form"
+                method="GET"
+                action="{{ url_for('mensajes.ir_conversacion') }}"
+                class="ir-conversacion-form"
             >
 
-                <div>
+                <div class="ir-conversacion-campo">
 
                     <label for="docente_id">Docente</label>
 
@@ -510,21 +573,8 @@
 
                 </div>
 
-                <div>
-
-                    <label for="mensaje">Mensaje</label>
-
-                    <textarea
-                        name="mensaje"
-                        id="mensaje"
-                        placeholder="Escriba su mensaje..."
-                        required
-                    ></textarea>
-
-                </div>
-
                 <button type="submit" class="btn-tinta">
-                    📩 Enviar mensaje
+                    💬 Ir a la conversación
                 </button>
 
             </form>
@@ -563,7 +613,15 @@
 
                             <div class="conversacion-info">
 
-                                <h4>👨‍🏫 {{ conversacion.docente or "Docente" }}</h4>
+                                <h4>
+
+                                    👨‍🏫 {{ conversacion.docente or "Docente" }}
+
+                                    {% if conversacion.no_leidos_padre and conversacion.no_leidos_padre > 0 %}
+                                        <span class="badge-no-leido">{{ conversacion.no_leidos_padre }} nuevo{% if conversacion.no_leidos_padre != 1 %}s{% endif %}</span>
+                                    {% endif %}
+
+                                </h4>
 
                                 <p>
                                     <strong>Último mensaje:</strong>
@@ -599,73 +657,6 @@
 
         </section>
 
-
-
-        <!-- =================================================
-             AVISOS INSTITUCIONALES
-        ================================================== -->
-
-        <section class="panel">
-
-            <div class="panel-head">
-
-                <div>
-                    <h2>📢 Avisos institucionales</h2>
-                    <p>Comunicados importantes de CIEM ONE.</p>
-                </div>
-
-                {% if avisos %}
-                    <span class="panel-contador">
-                        {{ avisos|length }} aviso{% if avisos|length != 1 %}s{% endif %}
-                    </span>
-                {% endif %}
-
-            </div>
-
-
-            {% if avisos %}
-
-                <div class="lista-avisos">
-
-                    {% for aviso in avisos %}
-
-                        <div class="aviso-card">
-
-                            <div class="aviso-icono">📢</div>
-
-                            <div class="aviso-contenido">
-
-                                <h3>{{ aviso.get("titulo", "Aviso institucional") }}</h3>
-
-                                <p>{{ aviso.get("contenido", "") }}</p>
-
-                                <div class="aviso-pie">
-
-                                    <span>🏫 Dirección Académica</span>
-
-                                    {% if aviso.get("fecha") %}
-                                        <span>📅 {{ aviso.get("fecha") }}</span>
-                                    {% endif %}
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    {% endfor %}
-
-                </div>
-
-            {% else %}
-
-                <div class="vacio">
-                    📭 No hay avisos institucionales todavía. Cuando Dirección publique un comunicado, aparecerá aquí.
-                </div>
-
-            {% endif %}
-
-        </section>
 
 
     </main>

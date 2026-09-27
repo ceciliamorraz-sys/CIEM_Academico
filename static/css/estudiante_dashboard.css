@@ -621,6 +621,62 @@ a {
 
 
 /* ==========================================================
+   IR A CONVERSACIÓN (selector de docente en el dashboard,
+   reemplaza el formulario de escribir mensaje: escribir el
+   mensaje ya se hace una sola vez, dentro del chat)
+   ========================================================== */
+
+.ir-conversacion-form {
+
+    background: var(--papel-sombra);
+    border: 1px solid var(--regla);
+    border-radius: var(--radio);
+    padding: 22px 24px;
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+    max-width: 560px;
+}
+
+.ir-conversacion-campo {
+    flex: 1;
+    min-width: 200px;
+}
+
+.ir-conversacion-campo label {
+
+    display: block;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--tinta-suave);
+    margin-bottom: 8px;
+}
+
+.ir-conversacion-campo select {
+
+    width: 100%;
+    padding: 11px 13px;
+    border: 1px solid var(--regla-fuerte);
+    border-radius: 10px;
+    background: var(--papel);
+    font-family: inherit;
+    font-size: .92rem;
+    color: var(--tinta);
+}
+
+.ir-conversacion-campo select:focus {
+    outline: none;
+    border-color: var(--bronce);
+    box-shadow: 0 0 0 3px rgba(192,138,40,.18);
+}
+
+.ir-conversacion-form .btn-tinta {
+    flex-shrink: 0;
+}
+
+
+/* ==========================================================
    FORMULARIO DE MENSAJE
    ========================================================== */
 
@@ -713,6 +769,22 @@ a {
 
     font-size: 1rem;
     margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.badge-no-leido {
+
+    display: inline-block;
+    background: var(--ladrillo);
+    color: #fff;
+    font-size: .68rem;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
 }
 
 .conversacion-info p {
@@ -743,6 +815,78 @@ a {
 .btn-linea:hover {
     background: var(--tinta);
     color: #fff;
+}
+
+
+/* ==========================================================
+   AVISOS INSTITUCIONALES — banner destacado arriba de todo
+   para que un comunicado de Dirección no pase desapercibido.
+   Fondo dorado suave + borde bronce, distinto a los paneles
+   blancos normales del resto del dashboard.
+   ========================================================== */
+
+.panel-avisos-destacado {
+
+    background: var(--bronce-suave);
+    border: 1px solid var(--regla-fuerte);
+    border-left: 5px solid var(--bronce);
+    border-radius: var(--radio);
+    padding: 26px 28px;
+    margin-bottom: 40px;
+    box-shadow: 0 8px 22px rgba(192, 138, 40, .14);
+}
+
+.avisos-destacado-head {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.avisos-destacado-titulo {
+
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.avisos-destacado-icono {
+
+    font-size: 1.7rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.avisos-destacado-titulo h2 {
+    font-size: 1.2rem;
+}
+
+.avisos-destacado-titulo p {
+    margin: 4px 0 0;
+    color: var(--tinta-suave);
+    font-size: .88rem;
+}
+
+.panel-contador--bronce {
+
+    background: var(--bronce);
+    color: #fff;
+    font-weight: 700;
+}
+
+.panel-avisos-destacado .lista-avisos {
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.panel-avisos-destacado .aviso-card {
+
+    border-left-color: var(--tinta);
 }
 
 

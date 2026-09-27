@@ -295,6 +295,124 @@ def condiciones_docente_id(docente):
 # PADRE / DOCENTE
 # ==========================================================
 
+@mensajes_bp.route("/ir-conversacion")
+def ir_conversacion():
+
+    # ======================================================
+    # Lleva directo al chat con el docente elegido en el
+    # selector del dashboard, sin pedir escribir el mensaje
+    # aquí también (eso ya lo hace la pantalla de chat).
+    # Si ya existe una conversación con ese docente, entra a
+    # ella; si no, la crea vacía (sin primer mensaje) y entra.
+    # ======================================================
+
+    estudiante = obtener_estudiante()
+
+    if not estudiante:
+
+        flash(
+            "No se encontró el estudiante asociado a su cuenta.",
+            "danger"
+        )
+
+        return redirect(
+            request.referrer or
+            url_for("estudiante.dashboard")
+        )
+
+    docente_id = request.args.get(
+        "docente_id",
+        ""
+    ).strip()
+
+    if not docente_id:
+
+        flash(
+            "Debe seleccionar un docente.",
+            "warning"
+        )
+
+        return redirect(
+            request.referrer or
+            url_for("estudiante.dashboard")
+        )
+
+    docente = resolver_docente(docente_id)
+
+    if not docente:
+
+        flash(
+            "No se encontró el docente seleccionado.",
+            "danger"
+        )
+
+        return redirect(
+            request.referrer or
+            url_for("estudiante.dashboard")
+        )
+
+    estudiante_id = estudiante.get("_id")
+    docente_real_id = docente.get("_id")
+
+    conversacion = conversaciones.find_one({
+
+        "estudiante_id": estudiante_id,
+
+        "docente_id": docente_real_id
+
+    })
+
+    if conversacion:
+
+        conversacion_id = conversacion["_id"]
+
+    else:
+
+        resultado = conversaciones.insert_one({
+
+            "estudiante_id":
+                estudiante_id,
+
+            "docente_id":
+                docente_real_id,
+
+            "estudiante":
+                estudiante.get("nombre", ""),
+
+            "docente":
+                docente.get("nombre", ""),
+
+            "ultimo_mensaje":
+                "",
+
+            "fecha_creacion":
+                datetime.now(),
+
+            "ultima_actualizacion":
+                datetime.now(),
+
+            "no_leidos_docente":
+                0,
+
+            "no_leidos_padre":
+                0
+
+        })
+
+        conversacion_id = resultado.inserted_id
+
+    return redirect(
+
+        url_for(
+            "mensajes.chat",
+            conversacion_id=str(
+                conversacion_id
+            )
+        )
+
+    )
+
+
 @mensajes_bp.route("/crear", methods=["POST"])
 def crear():
 

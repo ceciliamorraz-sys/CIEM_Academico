@@ -377,14 +377,43 @@ def dashboard_docente():
     # ========================================================
     # 13. MENSAJES PENDIENTES
     # ========================================================
+    #
+    # "destinatario_id" no existe en los documentos de la
+    # colección "mensajes" (tienen docente_id, madre_usuario,
+    # emisor, leido...), así que esa consulta siempre daba 0.
+    # Se cuenta en su lugar sobre "conversaciones", usando
+    # "no_leidos_docente" (que sí se actualiza cuando el padre
+    # escribe) y cubriendo con "$or" los distintos formatos en
+    # que quedó guardado "docente_id" (_id real, código o
+    # usuario), igual que en el resto del sistema.
 
     mensajes_pendientes = 0
 
     try:
 
-        mensajes_pendientes = db.mensajes.count_documents({
-            "destinatario_id": docente_id,
-            "leido": False
+        _condiciones_mensajes_docente = []
+
+        for _campo in ("_id", "codigo", "usuario"):
+
+            _valor = docente.get(_campo)
+
+            if _valor:
+
+                _condiciones_mensajes_docente.append({
+                    "docente_id": _valor
+                })
+
+        if not _condiciones_mensajes_docente:
+
+            _condiciones_mensajes_docente = [
+                {"docente_id": docente_id}
+            ]
+
+        mensajes_pendientes = db.conversaciones.count_documents({
+            "$or": _condiciones_mensajes_docente,
+            "no_leidos_docente": {
+                "$gt": 0
+            }
         })
 
     except Exception as e:
