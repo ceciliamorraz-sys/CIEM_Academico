@@ -287,7 +287,31 @@ app = Flask(__name__)
 
 app.secret_key = "CIEM_clave_segura_2026"
 
+# ==========================================================
+# RUTA TEMPORAL DE DIAGNÓSTICO — BORRAR DESPUÉS DE USAR
+# ==========================================================
 
+@app.route("/debug-atorrez-temp")
+def debug_atorrez_temp():
+
+    resultados = list(
+        db.usuarios.find({
+            "usuario": {"$regex": "^atorrez$", "$options": "i"}
+        })
+    )
+
+    salida = []
+
+    for doc in resultados:
+        doc_limpio = {}
+        for campo, valor in doc.items():
+            doc_limpio[campo] = str(valor)
+        salida.append(doc_limpio)
+
+    return jsonify({
+        "cantidad_encontrada": len(resultados),
+        "documentos": salida
+    })
 # ==========================================================
 # LOGIN
 # ==========================================================
