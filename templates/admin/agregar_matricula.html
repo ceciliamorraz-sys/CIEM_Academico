@@ -481,6 +481,230 @@
             }
         }
 
+        /* ==========================================
+           ENCABEZADO Y FIRMAS SOLO PARA IMPRESIÓN
+        ========================================== */
+
+        .solo-impresion {
+            display: none;
+        }
+
+        .btn-imprimir {
+            background: #FFC107;
+            color: #08142C;
+        }
+
+        .btn-imprimir:hover {
+            background: #e6ac00;
+        }
+
+        /* ==========================================
+           IMPRESIÓN (A4)
+        ========================================== */
+
+        @page {
+            size: A4;
+            margin: 12mm;
+        }
+
+        @media print {
+
+            * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            body {
+                background: white;
+                font-size: 11px;
+            }
+
+            .contenedor {
+                width: 100%;
+                max-width: none;
+                margin: 0;
+            }
+
+            /* Se oculta todo lo interactivo */
+
+            .encabezado,
+            .acciones,
+            #buscarEstudiante,
+            #resultadosBusqueda,
+            #estudianteSeleccionado,
+            .campo > label[for="buscarEstudiante"],
+            .nota,
+            .ayuda {
+                display: none !important;
+            }
+
+            /* Bloque de búsqueda completo */
+
+            .contenido-seccion > .campo:first-child {
+                display: none !important;
+            }
+
+            /* Encabezado institucional impreso */
+
+            .solo-impresion {
+                display: block;
+            }
+
+            .encabezado-impreso {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 16px;
+                text-align: center;
+                padding-bottom: 8px;
+                border-bottom: 3px solid #FFC107;
+                margin-bottom: 12px;
+            }
+
+            .encabezado-impreso img {
+                height: 62px;
+                width: auto;
+            }
+
+            .encabezado-impreso h1 {
+                margin: 0;
+                font-size: 17px;
+                color: #08142C;
+                letter-spacing: .5px;
+            }
+
+            .encabezado-impreso p {
+                margin: 3px 0 0;
+                font-size: 11px;
+                color: #1d3256;
+            }
+
+            .encabezado-impreso .anio-impreso {
+                font-weight: bold;
+                font-size: 12px;
+            }
+
+            .contenido {
+                padding: 0;
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            /* Secciones compactas */
+
+            .seccion {
+                margin-bottom: 9px;
+                border-radius: 6px;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .titulo-seccion {
+                padding: 5px 12px;
+                font-size: 12px;
+            }
+
+            .contenido-seccion {
+                padding: 9px 12px;
+            }
+
+            /* Se mantiene la distribución de escritorio
+               aunque el ancho de la hoja sea menor */
+
+            .grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 8px !important;
+            }
+
+            .grid-3 {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 8px !important;
+            }
+
+            .grid-2 {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+            }
+
+            .opciones {
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 5px !important;
+            }
+
+            .campo label {
+                font-size: 10px;
+                margin-bottom: 2px;
+            }
+
+            .campo input,
+            .campo select,
+            .campo textarea {
+                padding: 3px 6px;
+                font-size: 11px;
+                border: none;
+                border-bottom: 1px solid #1d3256;
+                border-radius: 0;
+                background: transparent;
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                min-height: 22px;
+            }
+
+            .campo textarea {
+                min-height: 50px;
+                border: 1px solid #1d3256;
+                resize: none;
+            }
+
+            .check {
+                padding: 3px 6px;
+                font-size: 10px;
+                background: white;
+            }
+
+            .familia-titulo {
+                padding: 4px 10px;
+                font-size: 11px;
+            }
+
+            .familia-contenido {
+                padding: 8px 10px;
+            }
+
+            .familia-contenido br {
+                display: none;
+            }
+
+            .familia-contenido .campo {
+                margin-bottom: 6px;
+            }
+
+            .compromiso {
+                padding: 8px 12px;
+                font-size: 11px;
+                line-height: 1.4;
+            }
+
+            /* Firmas */
+
+            .firmas {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 30px;
+                margin-top: 38px;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .firma {
+                text-align: center;
+                font-size: 10px;
+                border-top: 1px solid #1d3256;
+                padding-top: 4px;
+            }
+        }
+
     </style>
 
 </head>
@@ -490,6 +714,32 @@
 
 
 <div class="contenedor">
+
+
+    <!-- ==========================================
+         ENCABEZADO SOLO PARA IMPRESIÓN
+    =========================================== -->
+
+    <div class="solo-impresion encabezado-impreso">
+
+        <img
+            src="{{ url_for('static', filename='img/logo.jpg') }}"
+            alt="Logo CIEM"
+        >
+
+        <div>
+
+            <h1>COLEGIO INTEGRAL EMANUEL MATAGALPA - CIEM</h1>
+
+            <p>HOJA DE MATRÍCULA</p>
+
+            <p class="anio-impreso">
+                Año Lectivo <span id="anioImpreso">2026</span>
+            </p>
+
+        </div>
+
+    </div>
 
 
     <!-- ==========================================
@@ -1885,6 +2135,21 @@
 
 
             <!-- ======================================
+                 FIRMAS (SOLO IMPRESIÓN)
+            ======================================= -->
+
+            <div class="solo-impresion firmas">
+
+                <div class="firma">Firma del padre, madre o tutor</div>
+
+                <div class="firma">Firma de Secretaría</div>
+
+                <div class="firma">Firma y sello de Dirección</div>
+
+            </div>
+
+
+            <!-- ======================================
                  BOTONES
             ======================================= -->
 
@@ -1903,6 +2168,15 @@
 
 
                 <div class="grupo-botones">
+
+                    <button
+                        type="button"
+                        class="btn btn-imprimir"
+                        onclick="window.print()"
+                    >
+                        🖨️ Imprimir hoja
+                    </button>
+
 
                     <button
                         type="reset"
@@ -2013,6 +2287,67 @@ formulario.addEventListener(
 
     }
 );
+
+</script>
+
+
+<!-- ==========================================
+     JAVASCRIPT - PREPARAR LA IMPRESIÓN
+========================================== -->
+
+<script>
+
+(function () {
+
+    const selectAnio =
+        document.getElementById("anioLectivo");
+
+    const spanAnioImpreso =
+        document.getElementById("anioImpreso");
+
+    let textoOriginalOtro = null;
+
+
+    window.addEventListener("beforeprint", function () {
+
+        // Año lectivo elegido en el encabezado
+
+        spanAnioImpreso.textContent = selectAnio.value;
+
+        // Si eligió "Otro barrio", se imprime el nombre escrito
+
+        const opcion =
+            selectBarrio.options[selectBarrio.selectedIndex];
+
+        if (
+            opcion &&
+            opcion.value === "__OTRO__" &&
+            inputOtroBarrio.value.trim() !== ""
+        ) {
+
+            textoOriginalOtro = opcion.textContent;
+
+            opcion.textContent = inputOtroBarrio.value.trim();
+        }
+
+    });
+
+
+    window.addEventListener("afterprint", function () {
+
+        const opcion =
+            selectBarrio.options[selectBarrio.selectedIndex];
+
+        if (opcion && textoOriginalOtro !== null) {
+
+            opcion.textContent = textoOriginalOtro;
+
+            textoOriginalOtro = null;
+        }
+
+    });
+
+})();
 
 </script>
 
