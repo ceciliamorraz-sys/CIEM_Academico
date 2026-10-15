@@ -499,12 +499,12 @@
         }
 
         /* ==========================================
-           IMPRESIÓN (A4)
+           IMPRESIÓN (HOJA TAMAÑO LEGAL - UNA SOLA PÁGINA)
         ========================================== */
 
         @page {
-            size: A4;
-            margin: 12mm;
+            size: 8.5in 14in; /* Legal vertical */
+            margin: 8mm 10mm;
         }
 
         @media print {
@@ -514,9 +514,18 @@
                 print-color-adjust: exact;
             }
 
+            html,
             body {
                 background: white;
                 font-size: 11px;
+                height: auto;
+            }
+
+            /* Los saltos de línea del formulario ocupan espacio
+               de más al imprimir: se quitan todos */
+
+            .contenido-seccion br {
+                display: none !important;
             }
 
             .contenedor {
@@ -556,13 +565,13 @@
                 justify-content: center;
                 gap: 16px;
                 text-align: center;
-                padding-bottom: 8px;
+                padding-bottom: 5px;
                 border-bottom: 3px solid #FFC107;
-                margin-bottom: 12px;
+                margin-bottom: 8px;
             }
 
             .encabezado-impreso img {
-                height: 62px;
+                height: 50px;
                 width: auto;
             }
 
@@ -593,19 +602,24 @@
             /* Secciones compactas */
 
             .seccion {
-                margin-bottom: 9px;
+                margin-bottom: 6px;
                 border-radius: 6px;
                 break-inside: avoid;
                 page-break-inside: avoid;
             }
 
             .titulo-seccion {
-                padding: 5px 12px;
-                font-size: 12px;
+                padding: 3px 12px;
+                font-size: 11px;
             }
 
             .contenido-seccion {
-                padding: 9px 12px;
+                padding: 6px 10px;
+            }
+
+            .contenido-seccion .grid-2,
+            .contenido-seccion .opciones {
+                margin-bottom: 4px;
             }
 
             /* Se mantiene la distribución de escritorio
@@ -613,7 +627,7 @@
 
             .grid {
                 grid-template-columns: repeat(4, 1fr) !important;
-                gap: 8px !important;
+                gap: 5px 8px !important;
             }
 
             .grid-3 {
@@ -623,7 +637,7 @@
 
             .grid-2 {
                 grid-template-columns: repeat(2, 1fr) !important;
-                gap: 8px !important;
+                gap: 5px 8px !important;
             }
 
             .opciones {
@@ -639,7 +653,7 @@
             .campo input,
             .campo select,
             .campo textarea {
-                padding: 3px 6px;
+                padding: 2px 6px;
                 font-size: 11px;
                 border: none;
                 border-bottom: 1px solid #1d3256;
@@ -648,42 +662,53 @@
                 appearance: none;
                 -webkit-appearance: none;
                 -moz-appearance: none;
-                min-height: 22px;
+                min-height: 18px;
             }
 
             .campo textarea {
-                min-height: 50px;
+                min-height: 32px;
+                height: 32px;
                 border: 1px solid #1d3256;
                 resize: none;
             }
 
             .check {
-                padding: 3px 6px;
+                padding: 1px 5px;
                 font-size: 10px;
                 background: white;
             }
 
             .familia-titulo {
-                padding: 4px 10px;
+                padding: 3px 10px;
                 font-size: 11px;
             }
 
-            .familia-contenido {
-                padding: 8px 10px;
-            }
+            /* Padre / Madre / Tutor: campos en 2 columnas
+               (el nombre ocupa el ancho completo) */
 
-            .familia-contenido br {
-                display: none;
+            .familia-contenido {
+                padding: 6px 10px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 4px 10px;
             }
 
             .familia-contenido .campo {
-                margin-bottom: 6px;
+                margin-bottom: 0;
+            }
+
+            .familia-contenido .campo:first-of-type {
+                grid-column: 1 / -1;
             }
 
             .compromiso {
-                padding: 8px 12px;
-                font-size: 11px;
-                line-height: 1.4;
+                padding: 5px 12px;
+                font-size: 10.5px;
+                line-height: 1.3;
+            }
+
+            .aceptacion {
+                margin-top: 4px;
             }
 
             /* Firmas */
@@ -692,7 +717,7 @@
                 display: grid;
                 grid-template-columns: repeat(3, 1fr);
                 gap: 30px;
-                margin-top: 38px;
+                margin-top: 28px;
                 break-inside: avoid;
                 page-break-inside: avoid;
             }
