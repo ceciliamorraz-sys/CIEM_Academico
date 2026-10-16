@@ -251,6 +251,10 @@ Sistema Académico
 📝 Matrículas
 </a>
 
+<a href="{{ url_for('listar_matriculas', anio=2027) }}">
+🎓 Matrículas 2027
+</a>
+
 <a href="{{ url_for('historial_matricula_admin') }}">
 🗂️ Historial de Matrícula
 </a>
@@ -425,6 +429,17 @@ Bienvenido al sistema CIEM Académico
 <div class="section-title">Matrícula</div>
 
 <div class="row g-4">
+
+<div class="col-md-3">
+<a href="{{ url_for('listar_matriculas', anio=2027) }}">
+<div class="card card-stat bg-teal-grad shadow" style="cursor:pointer;">
+<div class="card-body">
+<h5>🎓 Matrículas 2027</h5>
+<div class="desc">Ver matrículas del próximo año ordenadas por grado</div>
+</div>
+</div>
+</a>
+</div>
 
 <div class="col-md-3">
 <a href="{{ url_for('historial_matricula_admin') }}">
