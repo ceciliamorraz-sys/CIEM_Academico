@@ -199,7 +199,7 @@
         </div>
 
         <a
-            href="{{ url_for('listar_matriculas') }}"
+            href="{{ url_for('listar_matriculas', anio=matricula.anio_lectivo) }}"
             class="btn btn-regresar"
         >
             <i class="bi bi-arrow-left"></i>
@@ -214,7 +214,7 @@
     ================================================== -->
 <form
     method="POST"
-    action="{{ url_for('editar_matricula', codigo=matricula.codigo) }}"
+    action="{{ url_for('editar_matricula', codigo=matricula.codigo, anio=matricula.anio_lectivo) }}"
 >
 
 
@@ -278,7 +278,9 @@
                             type="number"
                             name="anio_lectivo"
                             class="form-control"
-                            value="{{ matricula.anio_lectivo or 2026 }}"
+                            value="{{ matricula.anio_lectivo or '' }}"
+                            readonly
+                            title="El año lectivo de una matrícula no se modifica"
                         >
 
                     </div>
@@ -299,65 +301,19 @@
                                 Seleccione el grado
                             </option>
 
-                            <option value="Preescolar"
-                                {% if matricula.grado == "Preescolar" %}selected{% endif %}>
-                                Preescolar
-                            </option>
+                            {% set grados_validos = ["1er Nivel de Preescolar","2do Nivel de Preescolar","3er Nivel de Preescolar","1er Grado","2do Grado","3er Grado","4to Grado","5to Grado","6to Grado","1 Año","2 Año","3 Año"] %}
 
-                            <option value="Primero"
-                                {% if matricula.grado == "Primero" %}selected{% endif %}>
-                                Primero
+                            {% if matricula.grado and matricula.grado not in grados_validos %}
+                            <option value="{{ matricula.grado }}" selected>
+                                {{ matricula.grado }} (valor actual)
                             </option>
+                            {% endif %}
 
-                            <option value="Segundo"
-                                {% if matricula.grado == "Segundo" %}selected{% endif %}>
-                                Segundo
+                            {% for g in grados_validos %}
+                            <option value="{{ g }}" {% if matricula.grado == g %}selected{% endif %}>
+                                {{ g }}
                             </option>
-
-                            <option value="Tercero"
-                                {% if matricula.grado == "Tercero" %}selected{% endif %}>
-                                Tercero
-                            </option>
-
-                            <option value="Cuarto"
-                                {% if matricula.grado == "Cuarto" %}selected{% endif %}>
-                                Cuarto
-                            </option>
-
-                            <option value="Quinto"
-                                {% if matricula.grado == "Quinto" %}selected{% endif %}>
-                                Quinto
-                            </option>
-
-                            <option value="Sexto"
-                                {% if matricula.grado == "Sexto" %}selected{% endif %}>
-                                Sexto
-                            </option>
-
-                            <option value="Primer año"
-                                {% if matricula.grado == "Primer año" %}selected{% endif %}>
-                                Primer año
-                            </option>
-
-                            <option value="Segundo año"
-                                {% if matricula.grado == "Segundo año" %}selected{% endif %}>
-                                Segundo año
-                            </option>
-
-                            <option value="Tercer año"
-                                {% if matricula.grado == "Tercer año" %}selected{% endif %}>
-                                Tercer año
-                            </option>
-
-                            <option value="Cuarto año"
-                                {% if matricula.grado == "Cuarto año" %}selected{% endif %}>
-                                Cuarto año
-                            </option>
-
-                            <option value="Quinto año"
-                                {% if matricula.grado == "Quinto año" %}selected{% endif %}>
-                                Quinto año
-                            </option>
+                            {% endfor %}
 
                         </select>
 
@@ -413,6 +369,11 @@
                             <option value="activa"
                                 {% if matricula.estado == "activa" %}selected{% endif %}>
                                 Activa
+                            </option>
+
+                            <option value="inactiva"
+                                {% if matricula.estado == "inactiva" %}selected{% endif %}>
+                                Inactiva
                             </option>
 
                             <option value="cancelada"
@@ -1248,7 +1209,7 @@
         <div class="acciones d-flex justify-content-between align-items-center">
 
             <a
-                href="{{ url_for('listar_matriculas') }}"
+                href="{{ url_for('listar_matriculas', anio=matricula.anio_lectivo) }}"
                 class="btn btn-regresar"
             >
 

@@ -90,7 +90,7 @@ tr:nth-child(even) td{
 <div class="header">
 <img src="{{ url_for('static', filename='img/logo.jpg') }}">
 <h1>COLEGIO INTEGRAL EMANUEL</h1>
-<h2>Reporte de Matrículas</h2>
+<h2>Reporte de Matrículas — Año Lectivo {{ anio_lectivo }}</h2>
 </div>
 
 <hr class="linea-dorada">
@@ -106,6 +106,7 @@ Generado: {{ fecha_generado }}
 <th>Fecha</th>
 <th>Estudiante</th>
 <th>Grado</th>
+<th>Sección</th>
 <th>Estado</th>
 </tr>
 </thead>
@@ -117,7 +118,8 @@ Generado: {{ fecha_generado }}
 <td>{{ m.fecha_matricula }}</td>
 <td>{{ m.estudiante.nombre if m.estudiante else '-' }}</td>
 <td>{{ m.grado }}</td>
-<td>Activo</td>
+<td>{{ m.seccion }}</td>
+<td>{{ (m.estado or '-')|capitalize }}</td>
 </tr>
 {% endfor %}
 
@@ -126,7 +128,7 @@ Generado: {{ fecha_generado }}
 </table>
 
 <div class="footer">
-Total de matrículas: {{ matriculas|length }}
+Total de matrículas {{ anio_lectivo }}: {{ matriculas|length }} ({{ total_activas }} activas)
 </div>
 
 </body>

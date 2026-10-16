@@ -4,7 +4,6 @@
 
 <head>
 
-```
 <meta charset="UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -542,7 +541,6 @@
     }
 
 </style>
-```
 
 </head>
 
@@ -550,7 +548,6 @@
 
 <div class="contenedor">
 
-```
 <!-- ==================================================
      ENCABEZADO
 ================================================== -->
@@ -633,7 +630,7 @@
         <div class="botones">
 
             <a
-                href="{{ url_for('listar_matriculas') }}"
+                href="{{ url_for('listar_matriculas', anio=matricula.anio_lectivo) }}"
                 class="btn btn-volver"
             >
                 ← Volver a Matrículas
@@ -643,7 +640,8 @@
             <a
                 href="{{ url_for(
                     'editar_matricula',
-                    codigo=matricula.codigo
+                    codigo=matricula.codigo,
+                    anio=matricula.anio_lectivo
                 ) }}"
                 class="btn btn-editar"
             >
@@ -936,7 +934,7 @@
                 </label>
 
                 <div class="valor">
-                    {{ matricula.anio_lectivo or "2026" }}
+                    {{ matricula.anio_lectivo or "—" }}
                 </div>
 
             </div>
@@ -1467,13 +1465,12 @@
 
         <br>
 
-        Sistema Académico CIEM © 2026
+        Sistema Académico CIEM © {{ matricula.anio_lectivo or '' }}
 
     </div>
 
 
 </div>
-```
 
 </div>
 

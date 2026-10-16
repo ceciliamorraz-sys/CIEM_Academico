@@ -833,10 +833,12 @@ def admin_dashboard():
     total_estudiantes = db.estudiantes.count_documents({})
     total_docentes = db.docentes.count_documents({})
     total_asignaturas = db.asignaturas.count_documents({})
-    total_matriculas = db.matriculas.count_documents({})
+    anio_lectivo = leer_anio_solicitado()
+    total_matriculas = contar_matriculas_anio(anio_lectivo)
 
     return render_template(
         "admin/admin_dashboard.html",
+        anio_lectivo=anio_lectivo,
         total_estudiantes=total_estudiantes,
         total_docentes=total_docentes,
         total_asignaturas=total_asignaturas,
@@ -1979,6 +1981,209 @@ def agregar_docente():
     )
 
 # ==========================================================
+# AÑO LECTIVO / ORDEN ACADÉMICO DE GRADOS (MATRÍCULAS)
+# ==========================================================
+# ANIO_LECTIVO_VIGENTE: año cuyo grado/sección se refleja en la
+# ficha del estudiante (estudiantes.grado / estudiantes.seccion).
+# Una matrícula de un año futuro (ej. renovación 2027) NO debe
+# sobrescribir esos datos mientras no sea el año vigente.
+# Cuando empiece 2027, cambiar este valor a 2027.
+
+ANIO_LECTIVO_VIGENTE = 2026
+ANIOS_LECTIVOS_FORMULARIO = [2025, 2026, 2027]
+
+_GRUPOS_GRADO = [
+    ["preescolar", "1er nivel de preescolar", "i nivel", "preescolar i nivel", "primer nivel"],
+    ["2do nivel de preescolar", "ii nivel", "preescolar ii nivel", "segundo nivel"],
+    ["3er nivel de preescolar", "iii nivel", "preescolar iii nivel", "tercer nivel"],
+    ["1er grado", "1ro grado", "primer grado", "primero", "1", "1ro"],
+    ["2do grado", "segundo grado", "segundo", "2", "2do"],
+    ["3er grado", "3ro grado", "tercer grado", "tercero", "3", "3ro"],
+    ["4to grado", "cuarto grado", "cuarto", "4"],
+    ["5to grado", "quinto grado", "quinto", "5"],
+    ["6to grado", "sexto grado", "sexto", "6"],
+    ["1 ano", "primer ano", "1er ano"],
+    ["2 ano", "segundo ano", "2do ano"],
+    ["3 ano", "tercer ano", "3er ano"],
+    ["4 ano", "cuarto ano", "4to ano"],
+    ["5 ano", "quinto ano", "5to ano"],
+]
+
+ORDEN_GRADOS = {
+    variante: indice
+    for indice, grupo in enumerate(_GRUPOS_GRADO)
+    for variante in grupo
+}
+
+
+def _normalizar_grado(grado):
+    return " ".join(
+        _quitar_acentos(str(grado or "")).strip().lower().split()
+    )
+
+
+def clave_orden_grado(grado):
+    normalizado = _normalizar_grado(grado)
+    return (ORDEN_GRADOS.get(normalizado, 999), normalizado)
+
+
+def _filtro_anio(anio):
+    # Tolera matrículas antiguas con el año guardado como texto.
+    return {"anio_lectivo": {"$in": [anio, str(anio)]}}
+
+
+def leer_anio_solicitado():
+    try:
+        return int(request.args.get("anio", ANIO_LECTIVO_VIGENTE))
+    except (TypeError, ValueError):
+        return ANIO_LECTIVO_VIGENTE
+
+
+def anios_disponibles():
+    anios = set(ANIOS_LECTIVOS_FORMULARIO)
+    for valor in db.matriculas.distinct("anio_lectivo"):
+        try:
+            anios.add(int(valor))
+        except (TypeError, ValueError):
+            pass
+    return sorted(anios, reverse=True)
+
+
+def contar_matriculas_anio(anio, solo_activas=False):
+    filtro = _filtro_anio(anio)
+    if solo_activas:
+        filtro["estado"] = "activa"
+    return db.matriculas.count_documents(filtro)
+
+
+def obtener_matriculas_anio(anio, busqueda="", grado="", seccion=""):
+    """Matrículas de UN año lectivo, ordenadas por grado (orden
+    académico real) -> sección -> apellidos -> nombres."""
+
+    filtro = _filtro_anio(anio)
+
+    if grado:
+        filtro["grado"] = grado
+
+    if seccion:
+        filtro["seccion"] = seccion
+
+    matriculas = list(db.matriculas.aggregate([
+        {"$match": filtro},
+        {"$lookup": {
+            "from": "estudiantes",
+            "localField": "estudiante_id",
+            "foreignField": "_id",
+            "as": "est_ref"
+        }},
+        {"$unwind": {
+            "path": "$est_ref",
+            "preserveNullAndEmptyArrays": True
+        }},
+        {"$addFields": {
+            "estudiante": {
+                "$mergeObjects": [
+                    {"$ifNull": ["$estudiante", {}]},
+                    {"$ifNull": ["$est_ref", {}]}
+                ]
+            }
+        }},
+        {"$project": {"est_ref": 0}}
+    ]))
+
+    texto = _quitar_acentos(str(busqueda or "")).strip().lower()
+
+    if texto:
+        resultado = []
+        for m in matriculas:
+            est = m.get("estudiante") or {}
+            pajar = _quitar_acentos(" ".join(str(x or "") for x in [
+                est.get("nombre"), est.get("primer_nombre"),
+                est.get("segundo_nombre"), est.get("primer_apellido"),
+                est.get("segundo_apellido"), m.get("codigo"),
+                m.get("estudiante_id"), m.get("grado"), m.get("seccion")
+            ])).lower()
+            if texto in pajar:
+                resultado.append(m)
+        matriculas = resultado
+
+    def clave(m):
+        est = m.get("estudiante") or {}
+        return (
+            clave_orden_grado(m.get("grado")),
+            _quitar_acentos(str(m.get("seccion") or "")).lower(),
+            _quitar_acentos(str(est.get("primer_apellido") or est.get("nombre") or "")).lower(),
+            _quitar_acentos(str(est.get("segundo_apellido") or "")).lower(),
+            _quitar_acentos(str(est.get("primer_nombre") or "")).lower(),
+        )
+
+    matriculas.sort(key=clave)
+    return matriculas
+
+
+def agrupar_matriculas_por_grado(matriculas):
+    grupos = []
+    indice = {}
+    for m in matriculas:
+        llave = (m.get("grado") or "Sin grado", m.get("seccion") or "")
+        if llave not in indice:
+            indice[llave] = {
+                "grado": llave[0],
+                "seccion": llave[1],
+                "matriculas": [],
+                "total": 0,
+                "activas": 0,
+            }
+            grupos.append(indice[llave])
+        g = indice[llave]
+        g["matriculas"].append(m)
+        g["total"] += 1
+        if m.get("estado") == "activa":
+            g["activas"] += 1
+    return grupos
+
+
+GRADOS_OFICIALES = [
+    "1er Nivel de Preescolar", "2do Nivel de Preescolar",
+    "3er Nivel de Preescolar", "1er Grado", "2do Grado", "3er Grado",
+    "4to Grado", "5to Grado", "6to Grado", "1 Año", "2 Año", "3 Año",
+]
+
+
+def resumen_matriculas_por_grado(anio):
+    """Matrículas de un año lectivo contadas por grado (orden académico).
+    Incluye todos los grados oficiales aunque tengan 0."""
+
+    conteo = {g: {"grado": g, "total": 0, "activas": 0}
+              for g in GRADOS_OFICIALES}
+
+    for fila in db.matriculas.aggregate([
+        {"$match": _filtro_anio(anio)},
+        {"$group": {
+            "_id": "$grado",
+            "total": {"$sum": 1},
+            "activas": {"$sum": {"$cond": [{"$eq": ["$estado", "activa"]}, 1, 0]}}
+        }}
+    ]):
+        g = fila["_id"] or "Sin grado"
+        item = conteo.setdefault(g, {"grado": g, "total": 0, "activas": 0})
+        item["total"] += fila["total"]
+        item["activas"] += fila["activas"]
+
+    return sorted(conteo.values(), key=lambda x: clave_orden_grado(x["grado"]))
+
+
+def _buscar_matricula_estudiante(codigo):
+    """Matrícula del estudiante para el año indicado en ?anio=;
+    si no se indica, la más reciente."""
+    filtro = {"estudiante_id": codigo}
+    anio = request.args.get("anio", type=int)
+    if anio is not None:
+        filtro["anio_lectivo"] = {"$in": [anio, str(anio)]}
+    return db.matriculas.find_one(filtro, sort=[("anio_lectivo", -1)])
+
+
+# ==========================================================
 # LISTAR MATRÍCULAS
 # ==========================================================
 
@@ -1988,42 +2193,38 @@ def listar_matriculas():
 
     try:
 
-        matriculas = list(
-            db.matriculas.aggregate([
+        anio_lectivo = leer_anio_solicitado()
+        busqueda = request.args.get("q", "").strip()
+        grado_filtro = request.args.get("grado", "").strip()
+        seccion_filtro = request.args.get("seccion", "").strip()
 
-                {
-                    "$lookup": {
-                        "from": "estudiantes",
-                        "localField": "estudiante_id",
-                        "foreignField": "_id",
-                        "as": "estudiante"
-                    }
-                },
-
-                {
-                    "$unwind": {
-                        "path": "$estudiante",
-                        "preserveNullAndEmptyArrays": True
-                    }
-                },
-
-                {
-                    "$sort": {
-                        "fecha_matricula": -1
-                    }
-                }
-
-            ])
+        matriculas = obtener_matriculas_anio(
+            anio_lectivo, busqueda, grado_filtro, seccion_filtro
         )
 
+        grados_filtro = sorted(
+            {g for g in db.matriculas.distinct(
+                "grado", _filtro_anio(anio_lectivo)) if g},
+            key=clave_orden_grado
+        )
 
         return render_template(
             "admin/matriculas.html",
-            matriculas=matriculas
+            matriculas=matriculas,
+            grupos=agrupar_matriculas_por_grado(matriculas),
+            anio_lectivo=anio_lectivo,
+            anios_disponibles=anios_disponibles(),
+            total_anio=contar_matriculas_anio(anio_lectivo),
+            total_activas=contar_matriculas_anio(anio_lectivo, True),
+            anio_proximo=ANIO_LECTIVO_VIGENTE + 1,
+            resumen_proximo=resumen_matriculas_por_grado(ANIO_LECTIVO_VIGENTE + 1),
+            grados_filtro=grados_filtro,
+            busqueda=busqueda,
+            grado_filtro=grado_filtro,
+            seccion_filtro=seccion_filtro
         )
 
     except Exception as e:
-
 
         flash(
             f"No se pudieron cargar las matrículas: {e}",
@@ -3389,12 +3590,6 @@ def agregar_matricula():
                         "fecha_nacimiento":
                             fecha_nacimiento,
 
-                        "grado":
-                            grado,
-
-                        "seccion":
-                            seccion,
-
                         "edad":
                             edad,
 
@@ -3504,6 +3699,19 @@ def agregar_matricula():
 
                 }
 
+            )
+
+
+        # ==================================================
+        # GRADO/SECCIÓN EN LA FICHA: SOLO PARA EL AÑO VIGENTE
+        # (una renovación 2027 no pisa el grado 2026)
+        # ==================================================
+
+        if anio_lectivo == ANIO_LECTIVO_VIGENTE:
+
+            db.estudiantes.update_one(
+                {"_id": codigo},
+                {"$set": {"grado": grado, "seccion": seccion}}
             )
 
 
@@ -3795,21 +4003,7 @@ def ver_matricula(codigo):
         # BUSCAR MATRÍCULA MÁS RECIENTE
         # ==================================================
 
-        matricula = db.matriculas.find_one(
-
-            {
-                "codigo":
-                    codigo
-            },
-
-            sort=[
-                (
-                    "anio_lectivo",
-                    -1
-                )
-            ]
-
-        )
+        matricula = _buscar_matricula_estudiante(codigo)
 
 
         if not matricula:
@@ -3935,21 +4129,7 @@ def editar_matricula(codigo):
         # BUSCAR MATRÍCULA MÁS RECIENTE
         # ==================================================
 
-        matricula = db.matriculas.find_one(
-
-            {
-                "estudiante_id":
-                    codigo
-            },
-
-            sort=[
-                (
-                    "anio_lectivo",
-                    -1
-                )
-            ]
-
-        )
+        matricula = _buscar_matricula_estudiante(codigo)
 
 
         if not matricula:
@@ -4050,75 +4230,13 @@ def editar_matricula(codigo):
             # ==================================================
             # AÑO LECTIVO
             # ==================================================
+            # El año lectivo de una matrícula NO se cambia desde
+            # esta pantalla: la matrícula conserva su año.
 
-            anio_lectivo = str(
-                request.form.get(
-
-                    "anio_lectivo",
-
-                    matricula.get(
-                        "anio_lectivo",
-                        2026
-                    )
-
-                )
-            ).strip()
-
-
-            try:
-
-                anio_lectivo = int(
-                    anio_lectivo
-                )
-
-            except ValueError:
-
-                anio_lectivo = matricula.get(
-                    "anio_lectivo",
-                    2026
-                )
-
-
-            # ==================================================
-            # EVITAR CHOCAR CON OTRA MATRÍCULA DEL MISMO AÑO
-            # ==================================================
-            # Si el año lectivo cambió, verificar que el
-            # estudiante no tenga ya otra matrícula (distinta
-            # a la que se está editando) para ese año.
-
-            if anio_lectivo != matricula.get("anio_lectivo"):
-
-                choque = db.matriculas.find_one({
-
-                    "estudiante_id":
-                        codigo,
-
-                    "anio_lectivo":
-                        anio_lectivo,
-
-                    "_id": {
-                        "$ne": matricula["_id"]
-                    }
-
-                })
-
-                if choque:
-
-                    flash(
-                        f"El estudiante {codigo} ya tiene "
-                        f"otra matrícula registrada para "
-                        f"{anio_lectivo}. No se puede "
-                        f"cambiar el año lectivo a uno "
-                        f"que ya está en uso.",
-                        "danger"
-                    )
-
-                    return redirect(
-                        url_for(
-                            "editar_matricula",
-                            codigo=codigo
-                        )
-                    )
+            anio_lectivo = matricula.get(
+                "anio_lectivo",
+                ANIO_LECTIVO_VIGENTE
+            )
 
 
             # ==================================================
@@ -4404,12 +4522,6 @@ def editar_matricula(codigo):
                         "lugar_nacimiento":
                             lugar_nacimiento,
 
-                        "grado":
-                            grado,
-
-                        "seccion":
-                            seccion,
-
                         "talla":
                             talla,
 
@@ -4515,6 +4627,22 @@ def editar_matricula(codigo):
                 }
 
             )
+
+
+            # grado/sección de la ficha: solo si se edita la
+            # matrícula del año vigente
+
+            try:
+                _anio_editado = int(anio_lectivo)
+            except (TypeError, ValueError):
+                _anio_editado = None
+
+            if _anio_editado == ANIO_LECTIVO_VIGENTE:
+
+                db.estudiantes.update_one(
+                    {"_id": codigo},
+                    {"$set": {"grado": grado, "seccion": seccion}}
+                )
 
 
             # ==================================================
@@ -4677,7 +4805,8 @@ def editar_matricula(codigo):
 
             return redirect(
                 url_for(
-                    "listar_matriculas"
+                    "listar_matriculas",
+                    anio=anio_lectivo
                 )
             )
 
@@ -5580,39 +5709,17 @@ def reporte_docentes_pdf():
 @role_required("admin", "director", "secretaria", "contadora")
 def reporte_matriculas():
 
-
-    matriculas = list(
-        db.matriculas.aggregate([
-
-            {
-                "$lookup": {
-                    "from": "estudiantes",
-                    "localField": "estudiante_id",
-                    "foreignField": "_id",
-                    "as": "estudiante"
-                }
-            },
-
-            {
-                "$unwind": {
-                    "path": "$estudiante",
-                    "preserveNullAndEmptyArrays": True
-                }
-            },
-
-            {
-                "$sort": {
-                    "fecha_matricula": -1
-                }
-            }
-
-        ])
-    )
-
+    anio_lectivo = leer_anio_solicitado()
+    matriculas = obtener_matriculas_anio(anio_lectivo)
 
     return render_template(
         "admin/reporte_matriculas.html",
-        matriculas=matriculas
+        matriculas=matriculas,
+        anio_lectivo=anio_lectivo,
+        anios_disponibles=anios_disponibles(),
+        total_activas=sum(
+            1 for m in matriculas if m.get("estado") == "activa"
+        )
     )
 
 
@@ -5620,37 +5727,16 @@ def reporte_matriculas():
 @role_required("admin", "director", "secretaria", "contadora")
 def reporte_matriculas_pdf():
 
-    matriculas = list(
-        db.matriculas.aggregate([
-
-            {
-                "$lookup": {
-                    "from": "estudiantes",
-                    "localField": "estudiante_id",
-                    "foreignField": "_id",
-                    "as": "estudiante"
-                }
-            },
-
-            {
-                "$unwind": {
-                    "path": "$estudiante",
-                    "preserveNullAndEmptyArrays": True
-                }
-            },
-
-            {
-                "$sort": {
-                    "fecha_matricula": -1
-                }
-            }
-
-        ])
-    )
+    anio_lectivo = leer_anio_solicitado()
+    matriculas = obtener_matriculas_anio(anio_lectivo)
 
     html_render = render_template(
         "admin/reporte_matriculas_pdf.html",
         matriculas=matriculas,
+        anio_lectivo=anio_lectivo,
+        total_activas=sum(
+            1 for m in matriculas if m.get("estado") == "activa"
+        ),
         fecha_generado=datetime.now().strftime("%d/%m/%Y %H:%M")
     )
 
@@ -5663,7 +5749,7 @@ def reporte_matriculas_pdf():
         BytesIO(pdf_bytes),
         mimetype="application/pdf",
         as_attachment=True,
-        download_name="reporte_matriculas.pdf"
+        download_name=f"reporte_matriculas_{anio_lectivo}.pdf"
     )
 
 # =========================
@@ -5681,23 +5767,25 @@ def reporte_academico():
 
     total_asignaturas = db.asignaturas.count_documents({})
 
-    total_matriculas = db.matriculas.count_documents({})
+    anio_lectivo = leer_anio_solicitado()
+
+    total_matriculas = contar_matriculas_anio(anio_lectivo)
 
 
-    # estudiantes por grado
+    # estudiantes por grado (según matrículas del año lectivo)
 
-    grados = list(
-        db.estudiantes.aggregate([
-            {
-                "$group":{
-                    "_id":"$grado",
-                    "cantidad":{
-                        "$sum":1
-                    }
-                }
-            }
-        ])
-    )
+    _conteo = {}
+    for m in obtener_matriculas_anio(anio_lectivo):
+        g = m.get("grado") or "Sin grado"
+        _conteo[g] = _conteo.get(g, 0) + 1
+
+    grados = [
+        {"_id": g, "cantidad": c}
+        for g, c in sorted(
+            _conteo.items(),
+            key=lambda par: clave_orden_grado(par[0])
+        )
+    ]
 
     return render_template(
         "admin/reporte_academico.html",
@@ -5709,6 +5797,8 @@ def reporte_academico():
         total_asignaturas=total_asignaturas,
 
         total_matriculas=total_matriculas,
+
+        anio_lectivo=anio_lectivo,
 
         grados=grados
 

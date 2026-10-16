@@ -31,17 +31,25 @@ rel="stylesheet">
 
 
 <h3>
-📚 Reporte de Matrículas 2026
+📚 Reporte de Matrículas {{ anio_lectivo }}
 </h3>
 
 
+
+<form method="GET" class="d-inline">
+<select name="anio" class="form-select d-inline w-auto" onchange="this.form.submit()">
+{% for a in anios_disponibles %}
+<option value="{{ a }}" {% if a == anio_lectivo %}selected{% endif %}>Año {{ a }}</option>
+{% endfor %}
+</select>
+</form>
 
 <a href="{{ url_for('admin_dashboard') }}"
    class="btn btn-light">
     ⬅ Regresar
 </a>
 
-<a href="{{ url_for('reporte_matriculas_pdf') }}"
+<a href="{{ url_for('reporte_matriculas_pdf', anio=anio_lectivo) }}"
    class="btn btn-warning">
     ⬇ Descargar PDF
 </a>
@@ -77,6 +85,11 @@ Estudiante
 
 <th>
 Grado
+</th>
+
+
+<th>
+Sección
 </th>
 
 
@@ -119,10 +132,15 @@ Estado
 
 
 <td>
+{{ m.seccion }}
+</td>
 
-<span class="badge bg-success">
 
-Activo
+<td>
+
+<span class="badge {{ 'bg-success' if m.estado == 'activa' else 'bg-secondary' }}">
+
+{{ (m.estado or '-')|capitalize }}
 
 </span>
 
@@ -142,6 +160,10 @@ Activo
 
 
 </table>
+
+<p class="text-muted">
+Total matrículas {{ anio_lectivo }}: {{ matriculas|length }} ({{ total_activas }} activas)
+</p>
 
 
 
