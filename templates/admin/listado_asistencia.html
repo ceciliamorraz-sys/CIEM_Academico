@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Listado de asistencia | CIEM Académico</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body{background:#f1f5f9;font-family:'Inter','Segoe UI',sans-serif;}
+.hoja{background:white;padding:24px;border-radius:12px;}
+table.asistencia{border-collapse:collapse;width:100%;font-size:12px;}
+table.asistencia th,table.asistencia td{border:1px solid #444;padding:2px 3px;text-align:center;}
+table.asistencia td.nombre{text-align:left;white-space:nowrap;padding-left:6px;}
+table.asistencia th.dia{width:24px;font-size:10px;line-height:1.1;}
+table.asistencia td.celda{height:22px;}
+.encabezado h4{color:#0D2A52;margin-bottom:2px;}
+@media print{
+    @page{size:landscape;margin:10mm;}
+    body{background:white;}
+    .no-print{display:none !important;}
+    .hoja{padding:0;border-radius:0;}
+}
+</style>
+</head>
+<body>
+<div class="container-fluid p-4">
+
+<form method="get" class="card card-body shadow-sm mb-3 no-print">
+<div class="row g-2 align-items-end">
+    <div class="col-md-2">
+        <label class="form-label mb-1">Año lectivo</label>
+        <select name="anio" class="form-select">
+            {% for a in anios %}<option value="{{ a }}" {{ 'selected' if a==anio }}>{{ a }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label mb-1">Grado</label>
+        <select name="grado" class="form-select" required>
+            <option value="">Seleccione…</option>
+            {% for g in grados %}<option value="{{ g }}" {{ 'selected' if g==grado }}>{{ g }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label class="form-label mb-1">Sección</label>
+        <select name="seccion" class="form-select">
+            <option value="">Todas</option>
+            {% for s in secciones %}<option value="{{ s }}" {{ 'selected' if s==seccion }}>{{ s }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label class="form-label mb-1">Mes</label>
+        <select name="mes" class="form-select">
+            {% for n in meses %}<option value="{{ loop.index }}" {{ 'selected' if loop.index==mes }}>{{ n }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3 d-flex gap-2">
+        <button class="btn btn-primary">Generar</button>
+        {% if grado %}<button type="button" class="btn btn-success" onclick="window.print()">🖨️ Imprimir / PDF</button>{% endif %}
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">Volver</a>
+    </div>
+</div>
+</form>
+
+{% if grado %}
+<div class="hoja shadow-sm">
+    <div class="encabezado mb-2">
+        <h4>Colegio Integral Emanuel Matagalpa — Listado de asistencia</h4>
+        <div>
+            <strong>Grado:</strong> {{ grado }}
+            &nbsp; <strong>Sección:</strong> {{ seccion or 'Todas' }}
+            &nbsp; <strong>Mes:</strong> {{ nombre_mes }} {{ anio }}
+            &nbsp; <strong>Docente:</strong> ______________________________
+            &nbsp; <strong>Total:</strong> <span id="totalEst">{{ estudiantes|length }}</span>
+            <small class="text-muted no-print" id="estadoAct"></small>
+        </div>
+    </div>
+
+    <table class="asistencia">
+        <thead>
+            <tr>
+                <th rowspan="2" style="width:28px;">N.º</th>
+                <th rowspan="2" style="min-width:230px;">Apellidos y nombres</th>
+                {% for d in dias %}<th class="dia">{{ d.letra }}</th>{% endfor %}
+                <th rowspan="2" style="width:34px;">Total</th>
+            </tr>
+            <tr>
+                {% for d in dias %}<th class="dia">{{ d.num }}</th>{% endfor %}
+            </tr>
+        </thead>
+        <tbody id="cuerpo">
+            {% for e in estudiantes %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td class="nombre">{{ e.nombre }}</td>
+                {% for d in dias %}<td class="celda"></td>{% endfor %}
+                <td></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="{{ dias|length + 3 }}" class="py-3">No hay estudiantes activos para esta selección.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="mt-2" style="font-size:11px;">Leyenda: P = presente · A = ausente · T = tarde · J = justificado</div>
+</div>
+{% endif %}
+
+</div>
+
+{% if grado %}
+<script>
+/* Se actualiza solo con las matrículas nuevas (cada 30 s) */
+const NDIAS = {{ dias|length }};
+function esc(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+function refrescar(){
+    const p = new URLSearchParams({anio:"{{ anio }}", grado:{{ grado|tojson }}, seccion:{{ seccion|tojson }}});
+    fetch("{{ url_for('api_asistencia_estudiantes') }}?" + p, {credentials:'same-origin'})
+        .then(r => r.json())
+        .then(d => {
+            let celdas = '<td class="celda"></td>'.repeat(NDIAS);
+            let filas = d.estudiantes.map((e,i) =>
+                '<tr><td>'+(i+1)+'</td><td class="nombre">'+esc(e.nombre)+'</td>'+celdas+'<td></td></tr>').join('');
+            if(!filas) filas = '<tr><td colspan="'+(NDIAS+3)+'" class="py-3">No hay estudiantes activos para esta selección.</td></tr>';
+            document.getElementById('cuerpo').innerHTML = filas;
+            document.getElementById('totalEst').textContent = d.total;
+            document.getElementById('estadoAct').textContent =
+                ' (actualizado ' + new Date().toLocaleTimeString('es-NI') + ')';
+        })
+        .catch(() => {});
+}
+setInterval(refrescar, 30000);
+</script>
+{% endif %}
+</body>
+</html>

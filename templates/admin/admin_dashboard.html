@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
 <style>
 
@@ -259,6 +260,12 @@ Sistema Académico
 🗂️ Historial de Matrícula
 </a>
 
+<div class="sidebar-section-label">Asistencia</div>
+
+<a href="{{ url_for('listado_asistencia') }}">
+✅ Listado de asistencia
+</a>
+
 <div class="sidebar-section-label">Reportes</div>
 
 <a href="{{ url_for('reporte_estudiantes') }}">
@@ -368,89 +375,13 @@ Bienvenido al sistema CIEM Académico
 
 
 <!-- ==========================
-     GESTIÓN ACADÉMICA
+     ACCIÓN RÁPIDA
+     (lo demás ya está en el menú lateral)
 =========================== -->
 
-<div class="section-title">Gestión académica</div>
+<div class="section-title">Acción rápida</div>
 
 <div class="row g-4">
-
-<div class="col-md-3">
-<a href="{{ url_for('listar_asignaturas') }}">
-<div class="card card-stat bg-dark-grad shadow" style="cursor:pointer;">
-<div class="card-body">
-<h5>📚 Asignaturas</h5>
-<div class="desc">Administrar asignaturas</div>
-</div>
-</div>
-</a>
-</div>
-
-<div class="col-md-3">
-<a href="{{ url_for('agregar_asignatura') }}">
-<div class="card card-stat bg-dark-grad shadow" style="cursor:pointer;">
-<div class="card-body">
-<h5>➕ Agregar Asignatura</h5>
-<div class="desc">Registrar una nueva asignatura</div>
-</div>
-</div>
-</a>
-</div>
-
-<div class="col-md-3">
-<a href="{{ url_for('asignar_clase') }}">
-<div class="card card-stat bg-teal-grad shadow" style="cursor:pointer;">
-<div class="card-body">
-<h5>👨‍🏫 Asignar Clase</h5>
-<div class="desc">Asignar docente, grado y sección</div>
-</div>
-</div>
-</a>
-</div>
-
-<div class="col-md-3">
-<a href="{{ url_for('gestionar_asignaciones') }}">
-<div class="card card-stat bg-teal-grad shadow" style="cursor:pointer;">
-<div class="card-body">
-<h5>📋 Gestionar Asignaciones</h5>
-<div class="desc">Ver, desactivar o eliminar asignaciones</div>
-</div>
-</div>
-</a>
-</div>
-
-</div>
-
-
-<!-- ==========================
-     MATRÍCULA
-=========================== -->
-
-<div class="section-title">Matrícula</div>
-
-<div class="row g-4">
-
-<div class="col-md-3">
-<a href="{{ url_for('listar_matriculas', anio=2027) }}">
-<div class="card card-stat bg-teal-grad shadow" style="cursor:pointer;">
-<div class="card-body">
-<h5>🎓 Matrículas 2027</h5>
-<div class="desc">Ver matrículas del próximo año ordenadas por grado</div>
-</div>
-</div>
-</a>
-</div>
-
-<div class="col-md-3">
-<a href="{{ url_for('historial_matricula_admin') }}">
-<div class="card card-stat bg-gold-grad shadow" style="cursor:pointer;">
-<div class="card-body">
-<h5>🗂️ Historial de Matrícula</h5>
-<div class="desc">Ver historial por estudiante y año</div>
-</div>
-</div>
-</a>
-</div>
 
 <div class="col-md-3">
 <a href="{{ url_for('agregar_matricula') }}">
@@ -467,83 +398,6 @@ Bienvenido al sistema CIEM Académico
 
 
 <!-- ==========================
-     COMUNICADOS
-=========================== -->
-
-<div class="section-title">Comunicación</div>
-
-<div class="row g-4">
-
-<div class="col-md-3">
-<a href="{{ url_for('admin_comunicados') }}">
-<div class="card card-stat bg-navy-grad shadow" style="cursor:pointer;">
-<div class="card-body">
-<h5>📢 Comunicados</h5>
-<div class="desc">Enviar avisos a los padres</div>
-</div>
-</div>
-</a>
-</div>
-
-</div>
-
-
-<!-- ==========================
-     REPORTES
-=========================== -->
-
-<div class="section-title">Reportes</div>
-
-<div class="row g-4">
-
-<div class="col-md-3">
-<a href="{{ url_for('reporte_estudiantes') }}">
-<div class="card card-stat bg-dark-grad shadow" style="cursor:pointer;">
-<div class="card-body">
-<h5>📚 Reporte Estudiantes</h5>
-<div class="desc">Listado general de estudiantes</div>
-</div>
-</div>
-</a>
-</div>
-
-<div class="col-md-3">
-<a href="{{ url_for('reporte_estudiantes_por_grado') }}">
-<div class="card card-stat bg-teal-grad shadow" style="cursor:pointer;">
-<div class="card-body">
-<h5>🎓 Reporte por Grado</h5>
-<div class="desc">Estudiantes por grado y sección</div>
-</div>
-</div>
-</a>
-</div>
-
-<div class="col-md-3">
-<a href="{{ url_for('reporte_docentes') }}">
-<div class="card card-stat bg-gold-grad shadow" style="cursor:pointer;">
-<div class="card-body">
-<h5>👨‍🏫 Reporte Docentes</h5>
-<div class="desc">Información del personal docente</div>
-</div>
-</div>
-</a>
-</div>
-
-<div class="col-md-3">
-<a href="{{ url_for('reporte_matriculas') }}">
-<div class="card card-stat bg-navy-grad shadow" style="cursor:pointer;">
-<div class="card-body">
-<h5>📝 Reporte Matrículas</h5>
-<div class="desc">Consulta de matrículas registradas</div>
-</div>
-</div>
-</a>
-</div>
-
-</div>
-
-
-<!-- ==========================
      GRÁFICOS
 =========================== -->
 
@@ -551,20 +405,36 @@ Bienvenido al sistema CIEM Académico
 
 <div class="row g-4">
 
-<div class="col-md-8">
+<div class="col-12">
 <div class="card shadow">
 <div class="card-body">
-<h5>Estadísticas generales</h5>
-<canvas id="graficoBarras"></canvas>
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+<h5 class="mb-0">Matrículas por grado: {{ anio_actual }} vs {{ anio_proximo }}</h5>
+<small class="text-muted" id="comparativoInfo">Cargando…</small>
+</div>
+<div style="height:340px" class="mt-3"><canvas id="graficoComparativo"></canvas></div>
 </div>
 </div>
 </div>
 
-<div class="col-md-4">
+</div>
+
+<div class="row g-4 mt-1">
+
+<div class="col-md-6">
+<div class="card shadow">
+<div class="card-body">
+<h5>Estadísticas generales</h5>
+<div style="height:300px"><canvas id="graficoBarras"></canvas></div>
+</div>
+</div>
+</div>
+
+<div class="col-md-6">
 <div class="card shadow">
 <div class="card-body">
 <h5>Distribución</h5>
-<canvas id="graficoCircular"></canvas>
+<div style="height:300px"><canvas id="graficoCircular"></canvas></div>
 </div>
 </div>
 </div>
@@ -599,6 +469,7 @@ new Chart(
             }]
         },
         options:{
+            maintainAspectRatio:false,
             plugins:{ legend:{ display:false } }
         }
     }
@@ -618,9 +489,75 @@ new Chart(
                 ],
                 backgroundColor:['#0D2A52','#0891b2','#D4AF37']
             }]
+        },
+        plugins:[ChartDataLabels],
+        options:{
+            maintainAspectRatio:false,
+            plugins:{
+                legend:{ position:'bottom' },
+                datalabels:{
+                    color:'#fff',
+                    font:{ weight:'bold', size:14 },
+                    formatter:(valor, ctx) => {
+                        const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+                        return total ? (valor*100/total).toFixed(1)+'%' : '';
+                    }
+                },
+                tooltip:{
+                    callbacks:{
+                        label:(ctx) => {
+                            const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+                            const p = total ? (ctx.parsed*100/total).toFixed(1) : 0;
+                            return ctx.label+': '+ctx.parsed+' ('+p+'%)';
+                        }
+                    }
+                }
+            }
         }
     }
 );
+
+/* Comparativo 2026 vs 2027 — se actualiza solo cada 30 s */
+const graficoComparativo = new Chart(
+    document.getElementById('graficoComparativo'),
+    {
+        type:'bar',
+        data:{
+            labels:[],
+            datasets:[
+                { label:'{{ anio_actual }}', data:[], backgroundColor:'#0D2A52' },
+                { label:'{{ anio_proximo }}', data:[], backgroundColor:'#D4AF37' }
+            ]
+        },
+        options:{
+            maintainAspectRatio:false,
+            scales:{ y:{ beginAtZero:true, ticks:{ precision:0 } } },
+            plugins:{ legend:{ position:'top' } }
+        }
+    }
+);
+
+function actualizarComparativo(){
+    fetch("{{ url_for('api_matriculas_comparativo') }}", { credentials:'same-origin' })
+        .then(r => r.json())
+        .then(d => {
+            graficoComparativo.data.labels = d.grados;
+            graficoComparativo.data.datasets[0].data = d.actual;
+            graficoComparativo.data.datasets[1].data = d.proximo;
+            graficoComparativo.update();
+            document.getElementById('comparativoInfo').textContent =
+                d.anio_actual + ': ' + d.total_actual + ' · ' +
+                d.anio_proximo + ': ' + d.total_proximo +
+                ' · actualizado ' + new Date().toLocaleTimeString('es-NI');
+        })
+        .catch(() => {
+            document.getElementById('comparativoInfo').textContent =
+                'No se pudo actualizar';
+        });
+}
+
+actualizarComparativo();
+setInterval(actualizarComparativo, 30000);
 
 </script>
 

@@ -839,11 +839,34 @@ def admin_dashboard():
     return render_template(
         "admin/admin_dashboard.html",
         anio_lectivo=anio_lectivo,
+        anio_actual=ANIO_LECTIVO_VIGENTE,
+        anio_proximo=ANIO_LECTIVO_VIGENTE + 1,
         total_estudiantes=total_estudiantes,
         total_docentes=total_docentes,
         total_asignaturas=total_asignaturas,
         total_matriculas=total_matriculas
     )
+@app.route("/admin/api/matriculas-comparativo")
+@role_required("admin", "director", "secretaria", "contadora")
+def api_matriculas_comparativo():
+    """Matrículas por grado: año vigente vs. año siguiente (se consulta
+    desde el dashboard cada cierto tiempo para mantenerse actualizado)."""
+    actual = ANIO_LECTIVO_VIGENTE
+    proximo = ANIO_LECTIVO_VIGENTE + 1
+    r_act = {f["grado"]: f["total"] for f in resumen_matriculas_por_grado(actual)}
+    r_pro = {f["grado"]: f["total"] for f in resumen_matriculas_por_grado(proximo)}
+    grados = sorted(set(r_act) | set(r_pro), key=clave_orden_grado)
+    return jsonify({
+        "anio_actual": actual,
+        "anio_proximo": proximo,
+        "grados": grados,
+        "actual": [r_act.get(g, 0) for g in grados],
+        "proximo": [r_pro.get(g, 0) for g in grados],
+        "total_actual": sum(r_act.values()),
+        "total_proximo": sum(r_pro.values()),
+    })
+
+
 # ==========================================================
 # ADMIN - CREAR COMUNICADO
 # ==========================================================
@@ -2057,6 +2080,37 @@ def clave_orden_grado(grado):
     return (ORDEN_GRADOS.get(normalizado, 999), normalizado)
 
 
+_NOMBRES_OFICIALES_POR_INDICE = [
+    "1er Nivel de Preescolar", "2do Nivel de Preescolar",
+    "3er Nivel de Preescolar", "1er Grado", "2do Grado", "3er Grado",
+    "4to Grado", "5to Grado", "6to Grado",
+    "1 Año", "2 Año", "3 Año", "4 Año", "5 Año",
+]
+
+
+def nombre_grado_oficial(grado):
+    """Unifica las variantes con que pudo guardarse un grado
+    ("Primer Año", "1er Año", "primer ano", "Primero"...) en el
+    nombre oficial que usa el formulario ("1 Año", "1er Grado"...).
+    Así 1 Año y 2 Año se cuentan, filtran y agrupan igual que el
+    resto de grados. Si no se reconoce, se devuelve tal cual."""
+    normalizado = _normalizar_grado(grado)
+
+    if not normalizado:
+        return "Sin grado"
+
+    # "Preescolar" a secas se deja como está (no se sabe el nivel)
+    if normalizado == "preescolar":
+        return str(grado).strip()
+
+    indice = ORDEN_GRADOS.get(normalizado)
+
+    if indice is None:
+        return str(grado).strip()
+
+    return _NOMBRES_OFICIALES_POR_INDICE[indice]
+
+
 def _filtro_anio(anio):
     # Tolera matrículas antiguas con el año guardado como texto.
     return {"anio_lectivo": {"$in": [anio, str(anio)]}}
@@ -2117,8 +2171,8 @@ def obtener_matriculas_anio(anio, busqueda="", grado="", seccion=""):
 
     filtro = _filtro_anio(anio)
 
-    if grado:
-        filtro["grado"] = grado
+    # El grado se filtra más abajo, comparando el nombre oficial, para
+    # que "Primer Año" y "1 Año" cuenten como el mismo grado.
 
     if seccion:
         filtro["seccion"] = seccion
@@ -2145,6 +2199,13 @@ def obtener_matriculas_anio(anio, busqueda="", grado="", seccion=""):
         }},
         {"$project": {"est_ref": 0}}
     ]))
+
+    if grado:
+        grado_oficial = nombre_grado_oficial(grado)
+        matriculas = [
+            m for m in matriculas
+            if nombre_grado_oficial(m.get("grado")) == grado_oficial
+        ]
 
     texto = _quitar_acentos(str(busqueda or "")).strip().lower()
 
@@ -2180,7 +2241,7 @@ def agrupar_matriculas_por_grado(matriculas):
     grupos = []
     indice = {}
     for m in matriculas:
-        llave = (m.get("grado") or "Sin grado", m.get("seccion") or "")
+        llave = (nombre_grado_oficial(m.get("grado")), m.get("seccion") or "")
         if llave not in indice:
             indice[llave] = {
                 "grado": llave[0],
@@ -2202,6 +2263,7 @@ GRADOS_OFICIALES = [
     "1er Nivel de Preescolar", "2do Nivel de Preescolar",
     "3er Nivel de Preescolar", "1er Grado", "2do Grado", "3er Grado",
     "4to Grado", "5to Grado", "6to Grado", "1 Año", "2 Año", "3 Año",
+    "4 Año", "5 Año",
 ]
 
 
@@ -2220,7 +2282,7 @@ def resumen_matriculas_por_grado(anio):
             "activas": {"$sum": {"$cond": [{"$eq": ["$estado", "activa"]}, 1, 0]}}
         }}
     ]):
-        g = fila["_id"] or "Sin grado"
+        g = nombre_grado_oficial(fila["_id"])
         item = conteo.setdefault(g, {"grado": g, "total": 0, "activas": 0})
         item["total"] += fila["total"]
         item["activas"] += fila["activas"]
@@ -2257,9 +2319,13 @@ def listar_matriculas():
             anio_lectivo, busqueda, grado_filtro, seccion_filtro
         )
 
+        # Siempre se ofrecen todos los grados oficiales (incluidos
+        # 1 Año a 5 Año), más cualquier otro que exista guardado.
         grados_filtro = sorted(
-            {g for g in db.matriculas.distinct(
-                "grado", _filtro_anio(anio_lectivo)) if g},
+            set(GRADOS_OFICIALES) | {
+                nombre_grado_oficial(g) for g in db.matriculas.distinct(
+                    "grado", _filtro_anio(anio_lectivo)) if g
+            },
             key=clave_orden_grado
         )
 
@@ -5959,7 +6025,7 @@ def reporte_academico():
 
     _conteo = {}
     for m in obtener_matriculas_anio(anio_lectivo):
-        g = m.get("grado") or "Sin grado"
+        g = nombre_grado_oficial(m.get("grado"))
         _conteo[g] = _conteo.get(g, 0) + 1
 
     grados = [
@@ -6112,6 +6178,92 @@ def reporte_estudiantes_por_grado():
         return redirect(
             url_for("admin_dashboard")
         )
+
+def _estudiantes_asistencia(anio, grado, seccion=""):
+    """Estudiantes con matrícula activa de un grado/sección/año, leídos
+    de la base en el momento (apellidos, nombres)."""
+    lista = []
+    if not grado:
+        return lista
+    for m in obtener_matriculas_anio(anio, grado=grado, seccion=seccion):
+        if m.get("estado") != "activa":
+            continue
+        est = m.get("estudiante") or {}
+        apellidos = " ".join(x for x in [
+            est.get("primer_apellido"), est.get("segundo_apellido")] if x)
+        nombres = " ".join(x for x in [
+            est.get("primer_nombre"), est.get("segundo_nombre")] if x)
+        nombre = (f"{apellidos}, {nombres}".strip(", ")
+                  if (apellidos or nombres) else
+                  str(est.get("nombre") or m.get("codigo") or ""))
+        lista.append({
+            "nombre": nombre,
+            "codigo": m.get("codigo") or m.get("estudiante_id") or "",
+            "seccion": m.get("seccion") or "",
+        })
+    return lista
+
+
+@app.route("/admin/api/asistencia-estudiantes", methods=["GET"])
+@role_required("admin", "director", "secretaria", "contadora")
+def api_asistencia_estudiantes():
+    """Lista actualizada que el listado de asistencia consulta solo."""
+    est = _estudiantes_asistencia(
+        leer_anio_solicitado(),
+        request.args.get("grado", "").strip(),
+        request.args.get("seccion", "").strip())
+    return jsonify({"estudiantes": est, "total": len(est)})
+
+
+# ==========================================================
+# ADMIN - LISTADO DE ASISTENCIA (imprimible)
+# ==========================================================
+
+@app.route("/admin/asistencia", methods=["GET"])
+@role_required("admin", "director", "secretaria", "contadora")
+def listado_asistencia():
+    import calendar
+    from datetime import date
+
+    anio = leer_anio_solicitado()
+    grado = request.args.get("grado", "").strip()
+    seccion = request.args.get("seccion", "").strip()
+    hoy = date.today()
+    mes = request.args.get("mes", type=int) or hoy.month
+    if not 1 <= mes <= 12:
+        mes = hoy.month
+
+    # Grados y secciones disponibles para el año elegido
+    todas = obtener_matriculas_anio(anio)
+    grados = sorted(
+        {nombre_grado_oficial(m.get("grado")) for m in todas
+         if m.get("grado")},
+        key=clave_orden_grado)
+    secciones = sorted({
+        (m.get("seccion") or "") for m in todas
+        if (not grado or nombre_grado_oficial(m.get("grado"))
+            == nombre_grado_oficial(grado)) and m.get("seccion")})
+
+    estudiantes = _estudiantes_asistencia(anio, grado, seccion)
+
+    # Días hábiles (lunes a viernes) del mes
+    dias = []
+    for d in range(1, calendar.monthrange(anio, mes)[1] + 1):
+        fecha = date(anio, mes, d)
+        if fecha.weekday() < 5:
+            dias.append({"num": d, "letra": "LMXJV"[fecha.weekday()]})
+
+    meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
+             "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+
+    return render_template(
+        "admin/listado_asistencia.html",
+        anio=anio, mes=mes, nombre_mes=meses[mes - 1], meses=meses,
+        grado=grado, seccion=seccion, grados=grados, secciones=secciones,
+        estudiantes=estudiantes, dias=dias,
+        anios=sorted({ANIO_LECTIVO_VIGENTE, ANIO_LECTIVO_VIGENTE + 1}),
+    )
+
 
 # =========================
 # VERIFICAR RUTAS
