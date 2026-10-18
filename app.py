@@ -1060,21 +1060,15 @@ def listar_estudiantes_admin():
 
     try:
 
-        estudiantes = list(
-            db.estudiantes.find().sort(
-                "nombre",
-                1
+        # Ordenar por grado (Preescolar -> 5to Año), luego sección y nombre
+        estudiantes = sorted(
+            db.estudiantes.find(),
+            key=lambda e: (
+                clave_orden_grado(e.get("grado")),
+                str(e.get("seccion", "") or "").upper(),
+                normalizar_texto(e.get("nombre", "") or "")
             )
         )
-
-        for e in estudiantes[:10]:
-
-            pass
-
-        for e in estudiantes:
-
-            pass
-
 
         return render_template(
             "admin/estudiantes.html",
@@ -1120,8 +1114,7 @@ def diagnostico_duplicados():
         # Sin matrícula en el año vigente (2026), aunque tenga de otros años
         if db.matriculas.count_documents({
             "$and": [
-                {"$or": [{"estudiante_id": e["_id"]},
-                         {"codigo": e["_id"]}]},
+                {"estudiante_id": e["_id"]},
                 _filtro_anio(ANIO_LECTIVO_VIGENTE)
             ]
         }) == 0:
@@ -1154,6 +1147,30 @@ def diagnostico_duplicados():
     html.append(f"<h3>Fichas sin matrícula {ANIO_LECTIVO_VIGENTE} "
                 f"({len(sin_matricula)})</h3><ul>"
                 + "".join(fila(f) for f in sin_matricula) + "</ul>")
+
+    # Matrículas del año vigente cuyo estudiante_id no coincide con
+    # ninguna ficha, o fichas con más de una matrícula en ese año.
+    ids_fichas = {e["_id"] for e in db.estudiantes.find({}, {"_id": 1})}
+    mats = list(db.matriculas.find(_filtro_anio(ANIO_LECTIVO_VIGENTE)))
+    huerfanas = [m for m in mats if m.get("estudiante_id") not in ids_fichas]
+    conteo = defaultdict(int)
+    for m in mats:
+        conteo[m.get("estudiante_id")] += 1
+    repetidas = {k: v for k, v in conteo.items() if v > 1}
+
+    html.append(f"<h3>Matrículas {ANIO_LECTIVO_VIGENTE} sin ficha "
+                f"({len(huerfanas)})</h3><ul>"
+                + "".join(
+                    f"<li>matrícula {escape(str(m['_id']))} | "
+                    f"estudiante_id: {escape(str(m.get('estudiante_id')))} | "
+                    f"codigo: {escape(str(m.get('codigo')))} | "
+                    f"nombre: {escape(str(m.get('nombre', '')))}</li>"
+                    for m in huerfanas) + "</ul>")
+    html.append(f"<h3>Fichas con más de una matrícula {ANIO_LECTIVO_VIGENTE} "
+                f"({len(repetidas)})</h3><ul>"
+                + "".join(f"<li>{escape(str(k))}: {v} matrículas</li>"
+                          for k, v in repetidas.items()) + "</ul>")
+    html.append(f"<p>Total matrículas {ANIO_LECTIVO_VIGENTE}: {len(mats)}</p>")
 
     return "".join(html)
 
@@ -1613,142 +1630,89 @@ def comunicado_whatsapp(id):
 
 @app.route(
     "/admin/estudiantes/eliminar/<id>",
-    methods=["GET"]
+    methods=["GET", "POST"]
 )
 @role_required("admin", "director", "secretaria", "contadora")
 def eliminar_estudiante(id):
+    from markupsafe import escape
 
-
-    # ======================================================
-    # BUSCAR ESTUDIANTE
-    # ======================================================
-
-    estudiante = db.estudiantes.find_one({
-        "_id": id
-    })
-
-
-    # ======================================================
-    # VALIDAR EXISTENCIA
-    # ======================================================
+    estudiante = db.estudiantes.find_one({"_id": id})
 
     if estudiante is None:
+        flash("Estudiante no encontrado.", "danger")
+        return redirect(url_for("listar_estudiantes_admin"))
 
-        flash(
-            "Estudiante no encontrado.",
-            "danger"
+    # GET: pedir confirmación (no borra nada)
+    if request.method == "GET":
+        n = db.matriculas.count_documents({"estudiante_id": id})
+        return (
+            f"<h2>¿Eliminar a {escape(estudiante.get('nombre', id))} "
+            f"({escape(id)})?</h2>"
+            f"<p>Se eliminará su ficha y {n} matrícula(s). "
+            f"Quedará una copia en la papelera para restaurarla.</p>"
+            f"<form method='post'>"
+            f"<button type='submit'>Sí, eliminar</button> "
+            f"<a href='{url_for('listar_estudiantes_admin')}'>Cancelar</a>"
+            f"</form>"
         )
 
-        return redirect(
-            url_for("listar_estudiantes_admin")
-        )
-
-    # ======================================================
-    # ELIMINAR ESTUDIANTE
-    # ======================================================
-
-    resultado = db.estudiantes.delete_one({
-        "_id": id
+    # POST: copiar a la papelera y luego borrar
+    matriculas = list(db.matriculas.find({"estudiante_id": id}))
+    db.papelera_estudiantes.insert_one({
+        "estudiante_id": id,
+        "ficha": estudiante,
+        "matriculas": matriculas,
+        "eliminado_el": datetime.now(),
+        "eliminado_por": session.get("usuario") or session.get("nombre"),
     })
 
+    db.estudiantes.delete_one({"_id": id})
+    db.matriculas.delete_many({"estudiante_id": id})
 
-    # ======================================================
-    # ELIMINAR MATRÍCULA RELACIONADA
-    # ======================================================
-
-    resultado_matricula = db.matriculas.delete_many({
-        "estudiante_id": id
-    })
+    flash("Estudiante eliminado. Puedes restaurarlo desde la papelera.",
+          "success")
+    return redirect(url_for("listar_estudiantes_admin"))
 
 
-    # ======================================================
-    # MENSAJE
-    # ======================================================
+@app.route("/admin/estudiantes/papelera")
+@role_required("admin", "director")
+def papelera_estudiantes():
+    from markupsafe import escape
+    items = list(db.papelera_estudiantes.find().sort("eliminado_el", -1))
+    filas = "".join(
+        f"<li><b>{escape(i['estudiante_id'])}</b> - "
+        f"{escape(i['ficha'].get('nombre', ''))} | "
+        f"{len(i['matriculas'])} matrícula(s) | "
+        f"eliminado: {escape(str(i['eliminado_el'])[:16])} "
+        f"<form method='post' style='display:inline' "
+        f"action='{url_for('restaurar_estudiante', pid=str(i['_id']))}'>"
+        f"<button>Restaurar</button></form></li>"
+        for i in items
+    ) or "<li>La papelera está vacía.</li>"
+    return f"<h2>Papelera de estudiantes</h2><ul>{filas}</ul>"
 
-    flash(
-        "Estudiante eliminado correctamente.",
-        "success"
-    )
 
-    # ======================================================
-    # REGRESAR AL LISTADO
-    # ======================================================
+@app.route("/admin/estudiantes/papelera/restaurar/<pid>", methods=["POST"])
+@role_required("admin", "director")
+def restaurar_estudiante(pid):
+    item = db.papelera_estudiantes.find_one({"_id": ObjectId(pid)})
+    if item is None:
+        flash("No se encontró en la papelera.", "danger")
+        return redirect(url_for("papelera_estudiantes"))
 
-    return redirect(
-        url_for("listar_estudiantes_admin")
-    )
-    # ==================================================
-    # ACTUALIZAR EN MONGODB
-    # ==================================================
+    if db.estudiantes.find_one({"_id": item["estudiante_id"]}):
+        flash("Ya existe una ficha con ese código; no se restauró.",
+              "danger")
+        return redirect(url_for("papelera_estudiantes"))
 
-    db.estudiantes.update_one(
+    db.estudiantes.insert_one(item["ficha"])
+    for m in item["matriculas"]:
+        if not db.matriculas.find_one({"_id": m["_id"]}):
+            db.matriculas.insert_one(m)
+    db.papelera_estudiantes.delete_one({"_id": item["_id"]})
 
-        {
-            "_id": id
-        },
-
-        {
-            "$set": {
-
-                "nombre":
-                    nombre_completo,
-
-                "primer_nombre":
-                    primer_nombre,
-
-                "segundo_nombre":
-                    segundo_nombre,
-
-                "primer_apellido":
-                    primer_apellido,
-
-                "segundo_apellido":
-                    segundo_apellido,
-
-                "grado":
-                    grado,
-
-                "seccion":
-                    seccion,
-
-                "edad":
-                    edad,
-
-                "genero":
-                    genero,
-
-                "telefono":
-                    telefono,
-
-                "celular":
-                    celular,
-
-                "direccion":
-                    direccion,
-
-                "barrio":
-                    barrio,
-
-                "padre":
-                    padre,
-
-                "madre":
-                    madre,
-
-                "tutor":
-                    tutor
-            }
-        }
-    )
-
-    flash(
-        "Estudiante actualizado correctamente.",
-        "success"
-    )
-
-    return redirect(
-        url_for("listar_estudiantes_admin")
-    )
+    flash("Estudiante restaurado.", "success")
+    return redirect(url_for("listar_estudiantes_admin"))
 
 
 # ======================================================
@@ -2299,7 +2263,7 @@ def listar_matriculas():
             key=clave_orden_grado
         )
 
-        return render_template(
+        pagina = render_template(
             "admin/matriculas.html",
             matriculas=matriculas,
             grupos=agrupar_matriculas_por_grado(matriculas),
@@ -2315,6 +2279,29 @@ def listar_matriculas():
             seccion_filtro=seccion_filtro
         )
 
+        # Botón "Imprimir": usa los mismos filtros que se ven en pantalla
+        from urllib.parse import urlencode
+        params = {"anio": anio_lectivo}
+        if busqueda:
+            params["q"] = busqueda
+        if grado_filtro:
+            params["grado"] = grado_filtro
+        if seccion_filtro:
+            params["seccion"] = seccion_filtro
+        url_imprimir = url_for("imprimir_matriculas") + "?" + urlencode(params)
+        boton = (
+            f'<a href="{url_imprimir}" target="_blank" '
+            'style="position:fixed;right:20px;bottom:20px;z-index:9999;'
+            'background:#0D2A52;color:#fff;padding:12px 18px;'
+            'border-radius:8px;text-decoration:none;font-weight:bold;'
+            'box-shadow:0 2px 8px rgba(0,0,0,.3)">🖨️ Imprimir listado</a>'
+        )
+        if "</body>" in pagina:
+            pagina = pagina.replace("</body>", boton + "</body>", 1)
+        else:
+            pagina += boton
+        return pagina
+
     except Exception as e:
 
         flash(
@@ -2325,6 +2312,94 @@ def listar_matriculas():
         return redirect(
             url_for("admin_dashboard")
         )
+
+# ==========================================================
+# IMPRIMIR LISTADO DE MATRÍCULAS (respeta año, grado, sección y búsqueda)
+# ==========================================================
+
+@app.route("/matriculas/imprimir")
+@role_required("admin", "director", "secretaria", "contadora")
+def imprimir_matriculas():
+    from markupsafe import escape
+
+    anio_lectivo = leer_anio_solicitado()
+    busqueda = request.args.get("q", "").strip()
+    grado_filtro = request.args.get("grado", "").strip()
+    seccion_filtro = request.args.get("seccion", "").strip()
+
+    matriculas = obtener_matriculas_anio(
+        anio_lectivo, busqueda, grado_filtro, seccion_filtro
+    )
+    grupos = agrupar_matriculas_por_grado(matriculas)
+
+    def nombre(m):
+        est = m.get("estudiante") or {}
+        return est.get("nombre") or m.get("nombre") or ""
+
+    filtros = []
+    if grado_filtro:
+        filtros.append(f"Grado: {grado_filtro}")
+    if seccion_filtro:
+        filtros.append(f"Sección: {seccion_filtro}")
+    if busqueda:
+        filtros.append(f"Búsqueda: {busqueda}")
+
+    bloques = []
+    for g in grupos:
+        filas = "".join(
+            f"<tr><td>{i}</td>"
+            f"<td>{escape(m.get('estudiante_id') or m.get('codigo') or '')}</td>"
+            f"<td>{escape(nombre(m))}</td>"
+            f"<td>{escape(m.get('fecha_matricula') or m.get('fecha') or '')}</td>"
+            f"<td>{escape(str(m.get('estado') or '').capitalize())}</td></tr>"
+            for i, m in enumerate(g["matriculas"], 1)
+        )
+        bloques.append(
+            f"<h3>{escape(g['grado'])} — Sección {escape(g['seccion'])} "
+            f"<span>{g['total']} matrícula(s), {g['activas']} activa(s)</span></h3>"
+            f"<table><thead><tr><th>#</th><th>Código</th><th>Estudiante</th>"
+            f"<th>Fecha de matrícula</th><th>Estado</th></tr></thead>"
+            f"<tbody>{filas}</tbody></table>"
+        )
+
+    activas = sum(1 for m in matriculas if m.get("estado") == "activa")
+    return f"""<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<title>Matrículas {anio_lectivo}</title>
+<style>
+@page {{ size: letter; margin: 1.5cm; }}
+body {{ font-family: Arial, Helvetica, sans-serif; color:#0D2A52; font-size:12px; }}
+.header {{ text-align:center; border-bottom:2px solid #D4AF37; padding-bottom:8px; margin-bottom:12px; }}
+.header h1 {{ font-size:18px; margin:0; }}
+.header h2 {{ font-size:13px; font-weight:normal; margin:3px 0 0; }}
+.meta {{ font-size:11px; color:#475569; margin-bottom:10px; }}
+h3 {{ font-size:13px; margin:16px 0 4px; break-after:avoid; }}
+h3 span {{ font-weight:normal; font-size:11px; color:#475569; }}
+table {{ width:100%; border-collapse:collapse; break-inside:auto; }}
+tr {{ break-inside:avoid; }}
+th {{ background:#0D2A52; color:#fff; text-align:left; padding:5px 7px; font-size:11px; }}
+td {{ padding:4px 7px; border-bottom:1px solid #e2e8f0; }}
+tr:nth-child(even) td {{ background:#f8fafc; }}
+.noprint {{ margin-bottom:12px; }}
+.noprint button {{ padding:8px 14px; font-size:14px; cursor:pointer; }}
+@media print {{ .noprint {{ display:none; }}
+  th, tr:nth-child(even) td {{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }} }}
+</style></head><body>
+<div class="noprint">
+  <button onclick="window.print()">🖨️ Imprimir</button>
+  <button onclick="history.back()">← Volver</button>
+</div>
+<div class="header">
+  <h1>Colegio Integral Emanuel Matagalpa</h1>
+  <h2>Listado de Matrículas — Año Lectivo {anio_lectivo}</h2>
+</div>
+<div class="meta">Total: {len(matriculas)} matrícula(s), {activas} activa(s)
+{(' · ' + escape(' · '.join(filtros))) if filtros else ''}
+· Generado: {datetime.now().strftime('%d/%m/%Y %H:%M')}</div>
+{''.join(bloques) or '<p>No hay matrículas para mostrar.</p>'}
+<script>window.addEventListener('load', function(){{ setTimeout(function(){{ window.print(); }}, 300); }});</script>
+</body></html>"""
+
 
 # ==========================================================
 # NORMALIZAR TEXTO
