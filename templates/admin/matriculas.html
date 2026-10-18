@@ -827,6 +827,14 @@
                 </a>
 
                 <a
+                    href="{{ url_for('historial_matricula_admin') }}"
+                    class="btn"
+                    style="background:#1E4E8C;color:white;"
+                >
+                    🗂️ Historial de Matrícula
+                </a>
+
+                <a
                     href="{{ url_for('agregar_matricula') }}"
                     class="btn btn-nueva"
                 >
@@ -1298,6 +1306,17 @@
                                         title="Editar matrícula"
                                     >
                                         ✏️
+                                    </a>
+
+
+                                    <!-- HISTORIAL -->
+
+                                    <a
+                                        href="{{ url_for('historial_matricula_admin', codigo=matricula.estudiante_id or matricula.codigo) }}"
+                                        class="btn-accion ver"
+                                        title="Ver historial del estudiante"
+                                    >
+                                        🗂️
                                     </a>
 
 

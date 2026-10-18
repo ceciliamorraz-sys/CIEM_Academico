@@ -169,6 +169,28 @@ body{
     color:white;
 }
 
+.control-details>summary{list-style:none;cursor:pointer;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-radius:18px}
+.control-details>summary::-webkit-details-marker{display:none}
+.control-details>summary:hover{background:#f7f9fb}
+.control-details[open]>summary{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.control-flecha{font-size:22px;color:var(--dark);transition:transform .2s}
+.control-details[open] .control-flecha{transform:rotate(180deg)}
+.control-tabla{width:100%;border-collapse:collapse;font-size:14px}
+.control-tabla th{background:var(--dark);color:#fff;padding:10px 12px;text-align:center;font-weight:600;white-space:nowrap}
+.control-tabla th:first-child{text-align:left;border-top-left-radius:10px}
+.control-tabla th:last-child{border-top-right-radius:10px}
+.control-tabla td{padding:9px 12px;border-bottom:1px solid #e8edf2;text-align:center}
+.control-tabla td:first-child{text-align:left;font-weight:600;color:var(--dark)}
+.control-tabla tbody tr:hover{background:#f7f9fb}
+.control-tabla a{color:var(--dark);text-decoration:none;display:block}
+.control-tabla a:hover{text-decoration:underline}
+.control-tabla .act{font-size:17px;font-weight:700}
+.control-tabla .tot{font-size:11px;color:#6c757d;display:block}
+.control-tabla .cero{opacity:.45}
+.control-tabla .col-vigente{background:#fff8e1}
+.control-tabla tfoot td{background:#f1f5f9;font-weight:700;border-top:2px solid var(--dark)}
+.control-tabla tfoot .act{font-size:18px}
+
 @media (max-width:768px){
 
     .sidebar{
@@ -375,26 +397,39 @@ Bienvenido al sistema CIEM Académico
 
 
 <!-- ==========================
-     ACCIÓN RÁPIDA
-     (lo demás ya está en el menú lateral)
+     CONTROL DE MATRÍCULAS POR GRADO Y AÑO
 =========================== -->
 
-<div class="section-title">Acción rápida</div>
+<div class="section-title">Control de estudiantes por grado y año</div>
 
-<div class="row g-4">
+<details class="card shadow control-details" id="controlDetails">
 
-<div class="col-md-3">
-<a href="{{ url_for('agregar_matricula') }}">
-<div class="card card-stat bg-dark-grad shadow" style="cursor:pointer;">
-<div class="card-body">
-<h5>➕ Nuevo Estudiante</h5>
-<div class="desc">Registrar una nueva matrícula</div>
+<summary class="control-resumen">
+<div>
+<h5 class="mb-0">Estudiantes matriculados por grado y año</h5>
+<small class="text-muted" id="controlResumenTxt">Cargando…</small>
 </div>
+<span class="control-flecha" aria-hidden="true">▾</span>
+</summary>
+
+<div class="card-body pt-0">
+
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+<small class="text-muted">Número grande = matrículas activas · número pequeño = total registrado. Pulsa una cifra para ver el listado.</small>
+<small class="text-muted" id="controlInfo">Cargando…</small>
 </div>
-</a>
+
+<div class="table-responsive">
+<table class="control-tabla">
+<thead id="controlHead"></thead>
+<tbody id="controlBody"></tbody>
+<tfoot id="controlFoot"></tfoot>
+</table>
 </div>
 
 </div>
+
+</details>
 
 
 <!-- ==========================
@@ -558,6 +593,82 @@ function actualizarComparativo(){
 
 actualizarComparativo();
 setInterval(actualizarComparativo, 30000);
+
+/* Control de estudiantes por grado y año — se actualiza solo cada 30 s */
+const urlMatriculas = {{ url_for('listar_matriculas')|tojson }};
+
+function celdaControl(valor, anio, grado, vigente){
+    const td = document.createElement('td');
+    if (anio === vigente) td.className = 'col-vigente';
+    const a = document.createElement('a');
+    const q = new URLSearchParams({anio: anio});
+    if (grado) q.set('grado', grado);
+    a.href = urlMatriculas + '?' + q.toString();
+    const act = document.createElement('span');
+    act.className = 'act' + (valor.total === 0 ? ' cero' : '');
+    act.textContent = valor.activas;
+    const tot = document.createElement('span');
+    tot.className = 'tot';
+    tot.textContent = 'de ' + valor.total;
+    a.appendChild(act);
+    a.appendChild(tot);
+    td.appendChild(a);
+    return td;
+}
+
+function actualizarControl(){
+    fetch({{ url_for('api_control_matriculas')|tojson }}, { credentials:'same-origin' })
+        .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+        .then(d => {
+            const head = document.getElementById('controlHead');
+            const body = document.getElementById('controlBody');
+            const foot = document.getElementById('controlFoot');
+            head.replaceChildren(); body.replaceChildren(); foot.replaceChildren();
+
+            const trh = document.createElement('tr');
+            const th0 = document.createElement('th');
+            th0.textContent = 'Grado';
+            trh.appendChild(th0);
+            d.anios.forEach(a => {
+                const th = document.createElement('th');
+                th.textContent = a + (a === d.anio_vigente ? ' (vigente)' : '');
+                trh.appendChild(th);
+            });
+            head.appendChild(trh);
+
+            d.grados.forEach(f => {
+                const tr = document.createElement('tr');
+                const td0 = document.createElement('td');
+                td0.textContent = f.grado;
+                tr.appendChild(td0);
+                d.anios.forEach(a => tr.appendChild(
+                    celdaControl(f.anios[String(a)], a, f.grado, d.anio_vigente)));
+                body.appendChild(tr);
+            });
+
+            const trf = document.createElement('tr');
+            const tf0 = document.createElement('td');
+            tf0.textContent = 'Total';
+            trf.appendChild(tf0);
+            d.anios.forEach(a => trf.appendChild(
+                celdaControl(d.totales[String(a)], a, '', d.anio_vigente)));
+            foot.appendChild(trf);
+
+            document.getElementById('controlInfo').textContent =
+                'actualizado ' + new Date().toLocaleTimeString('es-NI');
+            const partes = d.anios.filter(a => a >= d.anio_vigente).map(a =>
+                a + ': ' + d.totales[String(a)].activas + ' activas');
+            document.getElementById('controlResumenTxt').textContent =
+                partes.join(' · ') + ' — pulsa para ver el detalle por grado';
+        })
+        .catch(() => {
+            document.getElementById('controlInfo').textContent = 'No se pudo actualizar';
+            document.getElementById('controlResumenTxt').textContent = 'No se pudo actualizar';
+        });
+}
+
+actualizarControl();
+setInterval(actualizarControl, 30000);
 
 </script>
 

@@ -270,6 +270,24 @@
         }
 
 
+        .btn-dashboard.btn-agregar {
+
+            background: var(--dorado);
+
+            border-color: var(--dorado);
+
+            color: var(--azul-950);
+        }
+
+
+        .btn-dashboard.btn-agregar:hover {
+
+            background: var(--blanco);
+
+            border-color: var(--blanco);
+        }
+
+
         /* ==================================================
            RESUMEN
         ================================================== */
@@ -1062,16 +1080,42 @@
             </div>
 
 
-            <a
-                href="{{ url_for('admin_dashboard') }}"
-                class="btn-dashboard"
-            >
+            <div class="d-flex gap-2 flex-wrap">
 
-                <i class="bi bi-house-fill"></i>
+                <a
+                    href="{{ url_for('agregar_matricula') }}"
+                    class="btn-dashboard btn-agregar"
+                >
 
-                Dashboard
+                    <i class="bi bi-person-plus-fill"></i>
 
-            </a>
+                    Agregar estudiante
+
+                </a>
+
+                <a
+                    href="{{ url_for('historial_matricula_admin') }}"
+                    class="btn-dashboard"
+                >
+
+                    <i class="bi bi-clock-history"></i>
+
+                    Historial de matrícula
+
+                </a>
+
+                <a
+                    href="{{ url_for('admin_dashboard') }}"
+                    class="btn-dashboard"
+                >
+
+                    <i class="bi bi-house-fill"></i>
+
+                    Dashboard
+
+                </a>
+
+            </div>
 
         </div>
 
@@ -1176,7 +1220,7 @@
 
                         <i class="bi bi-plus-circle"></i>
 
-                        Nueva Matrícula
+                        Agregar Estudiante
 
                     </a>
 

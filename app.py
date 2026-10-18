@@ -867,6 +867,47 @@ def api_matriculas_comparativo():
     })
 
 
+@app.route("/admin/api/control-matriculas")
+@role_required("admin", "director", "secretaria", "contadora")
+def api_control_matriculas():
+    """Estudiantes matriculados por grado y año lectivo (para el panel
+    de control del dashboard). Cada celda trae total y activas."""
+    anios = sorted(anios_disponibles())
+    por_anio = {
+        a: {f["grado"]: f for f in resumen_matriculas_por_grado(a)}
+        for a in anios
+    }
+    grados = sorted(
+        set().union(*[set(d) for d in por_anio.values()]),
+        key=clave_orden_grado
+    )
+    filas = []
+    for g in grados:
+        filas.append({
+            "grado": g,
+            "anios": {
+                str(a): {
+                    "total": por_anio[a].get(g, {}).get("total", 0),
+                    "activas": por_anio[a].get(g, {}).get("activas", 0),
+                }
+                for a in anios
+            }
+        })
+    totales = {
+        str(a): {
+            "total": sum(f["total"] for f in por_anio[a].values()),
+            "activas": sum(f["activas"] for f in por_anio[a].values()),
+        }
+        for a in anios
+    }
+    return jsonify({
+        "anios": anios,
+        "anio_vigente": ANIO_LECTIVO_VIGENTE,
+        "grados": filas,
+        "totales": totales,
+    })
+
+
 # ==========================================================
 # ADMIN - CREAR COMUNICADO
 # ==========================================================
@@ -3049,6 +3090,111 @@ def api_historial_matricula(codigo):
 
 
 # ==========================================================
+# API: HISTORIAL DE MATRÍCULA POR GRADO, SECCIÓN O TODO EL CENTRO
+# ==========================================================
+
+@app.route("/admin/api/historial-matricula")
+@role_required("admin", "director", "secretaria", "contadora")
+def api_historial_matricula_grupo():
+
+    tipo = request.args.get("tipo", "").strip().lower()
+    grado = request.args.get("grado", "").strip()
+    seccion = request.args.get("seccion", "").strip()
+
+    if tipo not in {"grado", "seccion", "todos"}:
+        return jsonify({"error": "Tipo de consulta no válido."}), 400
+    if tipo in {"grado", "seccion"} and not grado:
+        return jsonify({"error": "Selecciona un grado."}), 400
+    if tipo == "seccion" and not seccion:
+        return jsonify({"error": "Selecciona una sección."}), 400
+
+    grados_guardados = [
+        valor for valor in db.matriculas.distinct("grado")
+        if valor and nombre_grado_oficial(valor) == nombre_grado_oficial(grado)
+    ]
+
+    if tipo == "todos":
+        estudiantes = list(db.estudiantes.find(
+            {},
+            {"_id": 1, "nombre": 1, "primer_nombre": 1,
+             "segundo_nombre": 1, "primer_apellido": 1,
+             "segundo_apellido": 1, "grado": 1, "seccion": 1}
+        ))
+        titulo = "Historial de todos los estudiantes"
+    else:
+        filtro_matricula = {"grado": {"$in": grados_guardados}}
+        if tipo == "seccion":
+            secciones_guardadas = [
+                valor for valor in db.matriculas.distinct("seccion", {"grado": {"$in": grados_guardados}})
+                if str(valor or "").strip() == seccion
+            ]
+            filtro_matricula["seccion"] = {"$in": secciones_guardadas}
+        codigos = db.matriculas.distinct("estudiante_id", filtro_matricula)
+        estudiantes = list(db.estudiantes.find(
+            {"_id": {"$in": codigos}},
+            {"_id": 1, "nombre": 1, "primer_nombre": 1,
+             "segundo_nombre": 1, "primer_apellido": 1,
+             "segundo_apellido": 1, "grado": 1, "seccion": 1}
+        ))
+        titulo = (
+            f"Historial del grado {nombre_grado_oficial(grado)}"
+            if tipo == "grado"
+            else f"Historial de {nombre_grado_oficial(grado)} · Sección {seccion}"
+        )
+
+    codigos = [e.get("_id") for e in estudiantes if e.get("_id") is not None]
+    matriculas = list(db.matriculas.find({
+        "estudiante_id": {"$in": codigos}
+    })) if codigos else []
+
+    def clave_anio(matricula):
+        try:
+            return (0, int(matricula.get("anio_lectivo", 0)))
+        except (TypeError, ValueError):
+            return (1, str(matricula.get("anio_lectivo", "")))
+
+    por_estudiante = {}
+    for matricula in matriculas:
+        codigo = str(matricula.get("estudiante_id", ""))
+        por_estudiante.setdefault(codigo, []).append(matricula)
+
+    def nombre_completo(estudiante):
+        nombre = str(estudiante.get("nombre") or "").strip()
+        if nombre:
+            return nombre
+        return " ".join(str(estudiante.get(campo, "") or "").strip() for campo in (
+            "primer_nombre", "segundo_nombre", "primer_apellido", "segundo_apellido"
+        )).strip()
+
+    salida = []
+    for estudiante in estudiantes:
+        codigo = str(estudiante.get("_id", ""))
+        historial = sorted(por_estudiante.get(codigo, []), key=clave_anio)
+        salida.append({
+            "codigo": codigo,
+            "nombre": nombre_completo(estudiante) or "(sin nombre)",
+            "grado": estudiante.get("grado", ""),
+            "seccion": estudiante.get("seccion", ""),
+            "historial": [{
+                "anio_lectivo": str(m.get("anio_lectivo", "")),
+                "grado": str(m.get("grado", "")),
+                "seccion": str(m.get("seccion", "")),
+                "fecha_matricula": str(m.get("fecha_matricula", "")) if m.get("fecha_matricula") else "",
+                "tipo_matricula": str(m.get("tipo_matricula", "")),
+                "estado": str(m.get("estado", "")),
+            } for m in historial]
+        })
+
+    salida.sort(key=lambda e: (
+        clave_orden_grado(e.get("grado")),
+        _quitar_acentos(str(e.get("seccion", ""))).lower(),
+        _quitar_acentos(e.get("nombre", "")).lower(),
+    ))
+
+    return jsonify({"titulo": titulo, "total": len(salida), "estudiantes": salida})
+
+
+# ==========================================================
 # ADMIN - PANTALLA DE HISTORIAL DE MATRÍCULA
 # ==========================================================
 
@@ -3058,8 +3204,35 @@ def api_historial_matricula(codigo):
 @role_required("admin", "director", "secretaria", "contadora")
 def historial_matricula_admin():
 
+    secciones_por_grado = {}
+    grados_disponibles = set()
+    for matricula in db.matriculas.find({}, {"grado": 1, "seccion": 1}):
+        grado = matricula.get("grado")
+        seccion = str(matricula.get("seccion") or "").strip()
+        if not grado:
+            continue
+        grado = nombre_grado_oficial(grado)
+        grados_disponibles.add(grado)
+        if not seccion:
+            continue
+        secciones_por_grado.setdefault(grado, set()).add(seccion)
+
+    secciones_por_grado = {
+        grado: sorted(secciones, key=lambda valor: _quitar_acentos(valor).lower())
+        for grado, secciones in secciones_por_grado.items()
+    }
+    # Siempre se ofrecen todos los grados oficiales (hasta 5 Año),
+    # aunque todavía no tengan matrículas (quedan "en espera").
+    grados = sorted(
+        set(GRADOS_OFICIALES) | grados_disponibles,
+        key=clave_orden_grado
+    )
+
     return render_template(
-        "admin/historial_matricula.html"
+        "admin/historial_matricula.html",
+        grados=grados,
+        secciones_por_grado=secciones_por_grado,
+        codigo_inicial=request.args.get("codigo", "").strip(),
     )
 
 

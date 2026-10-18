@@ -648,6 +648,15 @@
                 ✏️ Editar Matrícula
             </a>
 
+
+            <a
+                href="{{ url_for('historial_matricula_admin', codigo=matricula.estudiante_id or matricula.codigo) }}"
+                class="btn"
+                style="background:#1E4E8C;color:white;"
+            >
+                🗂️ Historial de Matrícula
+            </a>
+
         </div>
 
     </div>
