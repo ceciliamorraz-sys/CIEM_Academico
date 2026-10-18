@@ -909,6 +909,122 @@ def api_control_matriculas():
 
 
 # ==========================================================
+# ADMIN - ALERTAS ACADÉMICAS (asistencia, notas, docentes)
+# ==========================================================
+UMBRAL_FALTAS = 3          # faltas injustificadas para marcar al estudiante
+VENTANA_FALTAS_DIAS = 30   # ...dentro de los últimos N días
+PARCIALES = [
+    ("I Semestre", "Primer Parcial"),
+    ("I Semestre", "Segundo Parcial"),
+    ("II Semestre", "Tercer Parcial"),
+    ("II Semestre", "Cuarto Parcial"),
+]
+
+
+def _nombres_estudiantes(ids):
+    """{id_str: (nombre, grado, seccion)} para ids que pueden ser
+    ObjectId o código CIEM-XXXX en estudiantes._id."""
+    llaves = set()
+    for i in ids:
+        llaves.add(i)
+        if ObjectId.is_valid(i):
+            llaves.add(ObjectId(i))
+    out = {}
+    for e in db.estudiantes.find({"_id": {"$in": list(llaves)}}):
+        out[str(e["_id"])] = (
+            e.get("nombre", "(sin nombre)"),
+            e.get("grado", ""), e.get("seccion", ""))
+    return out
+
+
+@app.route("/admin/api/alertas")
+@role_required("admin", "director", "secretaria", "contadora")
+def api_alertas():
+    from datetime import timedelta
+    hoy = datetime.now().strftime("%Y-%m-%d")
+    desde = (datetime.now() - timedelta(days=VENTANA_FALTAS_DIAS)
+             ).strftime("%Y-%m-%d")
+
+    clases = list(db.asignaciones_clase.find({"activo": True}))
+    ids_clase = {str(c["_id"]): c for c in clases}
+
+    def etiqueta(c):
+        return "{} · {} {}".format(
+            c.get("asignatura_nombre", "?"),
+            c.get("grado", ""), c.get("seccion", "")).strip()
+
+    # ---- Asistencia de hoy -------------------------------
+    reg_hoy = list(db.asistencias.find({"fecha": hoy}))
+    ausentes_ids = {r["estudiante_id"] for r in reg_hoy
+                    if r.get("estado") == "Ausente"
+                    and r.get("estudiante_id")}
+    clases_con_lista = {str(r.get("asignatura_id")) for r in reg_hoy}
+    sin_lista = [etiqueta(c) for k, c in ids_clase.items()
+                 if k not in clases_con_lista]
+    nombres = _nombres_estudiantes(ausentes_ids)
+    ausentes = sorted(
+        ({"nombre": nombres.get(i, (i, "", ""))[0],
+          "grado": nombres.get(i, ("", "", ""))[1],
+          "seccion": nombres.get(i, ("", "", ""))[2]}
+         for i in ausentes_ids),
+        key=lambda x: (x["grado"], x["nombre"]))
+
+    # ---- Muchas faltas -----------------------------------
+    pipeline = [
+        {"$match": {"estado": "Ausente", "fecha": {"$gte": desde}}},
+        {"$group": {"_id": "$estudiante_id", "faltas": {"$sum": 1}}},
+        {"$match": {"faltas": {"$gte": UMBRAL_FALTAS}}},
+        {"$sort": {"faltas": -1}},
+    ]
+    muchas = list(db.asistencias.aggregate(pipeline))
+    nom2 = _nombres_estudiantes([m["_id"] for m in muchas])
+    muchas_faltas = [{
+        "nombre": nom2.get(m["_id"], (m["_id"], "", ""))[0],
+        "grado": nom2.get(m["_id"], ("", "", ""))[1],
+        "seccion": nom2.get(m["_id"], ("", "", ""))[2],
+        "faltas": m["faltas"]} for m in muchas]
+
+    # ---- Notas por parcial -------------------------------
+    parciales = []
+    for periodo, evaluacion in PARCIALES:
+        con_notas = {str(x) for x in db.notas.distinct(
+            "asignatura_id",
+            {"periodo": periodo, "evaluacion": evaluacion})}
+        pendientes = [
+            {"clase": etiqueta(c),
+             "docente": c.get("docente_nombre") or c.get("docente_id", "")}
+            for k, c in ids_clase.items() if k not in con_notas]
+        pendientes.sort(key=lambda x: (x["docente"], x["clase"]))
+        parciales.append({
+            "evaluacion": evaluacion, "periodo": periodo,
+            "con_notas": len(ids_clase) - len(pendientes),
+            "total": len(ids_clase), "pendientes": pendientes})
+
+    # ---- Docentes / clases -------------------------------
+    docentes = list(db.docentes.find({}))
+    cod_con_clase = {c.get("docente_id") for c in clases}
+    docentes_sin_clases = sorted(
+        d.get("nombre", d.get("codigo", "")) for d in docentes
+        if d.get("activo", True) and d.get("codigo") not in cod_con_clase)
+    cod_validos = {d.get("codigo") for d in docentes
+                   if d.get("activo", True)}
+    clases_sin_docente = sorted(
+        etiqueta(c) for c in clases
+        if not c.get("docente_id") or c.get("docente_id") not in cod_validos)
+
+    return jsonify({
+        "hoy": hoy, "umbral": UMBRAL_FALTAS,
+        "ventana": VENTANA_FALTAS_DIAS,
+        "ausentes_hoy": ausentes,
+        "clases_sin_lista_hoy": sorted(sin_lista),
+        "muchas_faltas": muchas_faltas,
+        "parciales": parciales,
+        "docentes_sin_clases": docentes_sin_clases,
+        "clases_sin_docente": clases_sin_docente,
+    })
+
+
+# ==========================================================
 # ADMIN - CREAR COMUNICADO
 # ==========================================================
 

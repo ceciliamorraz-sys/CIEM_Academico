@@ -169,6 +169,20 @@ body{
     color:white;
 }
 
+
+.alertas-strip{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.alerta-chip{flex:1 1 180px;border:0;background:#fff;border-radius:14px;padding:12px 16px;text-align:left;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08);border-left:5px solid #2e9e5b;transition:transform .15s}
+.alerta-chip:hover{transform:translateY(-2px)}
+.alerta-chip.warn{border-left-color:#e0a100}
+.alerta-chip.bad{border-left-color:#d64545}
+.alerta-chip.activa{outline:2px solid var(--dark)}
+.alerta-num{font-size:24px;font-weight:700;line-height:1}
+.alerta-txt{font-size:13px;color:#555}
+#alertaDetalle{display:none;margin-bottom:18px}
+#alertaDetalle ul{margin:0;padding-left:18px;max-height:260px;overflow:auto;font-size:14px}
+.alerta-parciales{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.alerta-parciales button{border:1px solid #ccd3da;background:#fff;border-radius:20px;padding:3px 12px;font-size:13px;cursor:pointer}
+.alerta-parciales button.activa{background:var(--dark);color:#fff;border-color:var(--dark)}
 .control-details>summary{list-style:none;cursor:pointer;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-radius:18px}
 .control-details>summary::-webkit-details-marker{display:none}
 .control-details>summary:hover{background:#f7f9fb}
@@ -399,6 +413,16 @@ Bienvenido al sistema CIEM Académico
 <!-- ==========================
      CONTROL DE MATRÍCULAS POR GRADO Y AÑO
 =========================== -->
+
+<div class="section-title">Alertas académicas</div>
+
+<div class="alertas-strip" id="alertasStrip">
+<button class="alerta-chip" data-k="ausentes"><div class="alerta-num" id="aNumAus">–</div><div class="alerta-txt">Ausentes hoy</div></button>
+<button class="alerta-chip" data-k="faltas"><div class="alerta-num" id="aNumFal">–</div><div class="alerta-txt" id="aTxtFal">Con muchas faltas</div></button>
+<button class="alerta-chip" data-k="notas"><div class="alerta-num" id="aNumNot">–</div><div class="alerta-txt">Clases sin notas (parcial)</div></button>
+<button class="alerta-chip" data-k="docentes"><div class="alerta-num" id="aNumDoc">–</div><div class="alerta-txt">Docentes / clases sin asignar</div></button>
+</div>
+<div class="card shadow" id="alertaDetalle"><div class="card-body" id="alertaDetalleBody"></div></div>
 
 <div class="section-title">Control de estudiantes por grado y año</div>
 
@@ -669,6 +693,101 @@ function actualizarControl(){
 
 actualizarControl();
 setInterval(actualizarControl, 30000);
+
+// ---------- ALERTAS ACADÉMICAS ----------
+let alertasData = null, alertaAbierta = null, parcialSel = 0;
+
+function lista(items, vacio){
+    const ul = document.createElement('ul');
+    if (!items.length){
+        const p = document.createElement('p');
+        p.className = 'text-muted mb-0';
+        p.textContent = vacio;
+        return p;
+    }
+    items.forEach(t => { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+    return ul;
+}
+
+function pintarDetalle(){
+    const box = document.getElementById('alertaDetalle');
+    const body = document.getElementById('alertaDetalleBody');
+    body.replaceChildren();
+    document.querySelectorAll('.alerta-chip').forEach(c =>
+        c.classList.toggle('activa', c.dataset.k === alertaAbierta));
+    if (!alertaAbierta || !alertasData){ box.style.display = 'none'; return; }
+    const d = alertasData;
+    const h = document.createElement('h6');
+    if (alertaAbierta === 'ausentes'){
+        h.textContent = 'Ausentes hoy (' + d.hoy + ')';
+        body.append(h, lista(d.ausentes_hoy.map(a => a.nombre + ' — ' + a.grado + ' ' + a.seccion), 'Nadie marcado ausente hoy.'));
+        if (d.clases_sin_lista_hoy.length){
+            const h2 = document.createElement('h6'); h2.className = 'mt-3';
+            h2.textContent = 'Clases que aún no pasaron lista hoy (' + d.clases_sin_lista_hoy.length + ')';
+            body.append(h2, lista(d.clases_sin_lista_hoy, ''));
+        }
+    } else if (alertaAbierta === 'faltas'){
+        h.textContent = d.umbral + '+ faltas injustificadas en los últimos ' + d.ventana + ' días';
+        body.append(h, lista(d.muchas_faltas.map(a => a.nombre + ' — ' + a.grado + ' ' + a.seccion + ' · ' + a.faltas + ' faltas'), 'Ningún estudiante supera el umbral.'));
+    } else if (alertaAbierta === 'notas'){
+        const bar = document.createElement('div'); bar.className = 'alerta-parciales';
+        d.parciales.forEach((p, i) => {
+            const b = document.createElement('button');
+            b.textContent = p.evaluacion + ' (' + p.con_notas + '/' + p.total + ')';
+            if (i === parcialSel) b.className = 'activa';
+            b.onclick = () => { parcialSel = i; window._parcialElegido = true; const n = d.parciales[i].pendientes.length; document.getElementById('aNumNot').textContent = n; colorChip('notas', n); pintarDetalle(); };
+            bar.appendChild(b);
+        });
+        const p = d.parciales[parcialSel];
+        h.textContent = 'Sin notas en ' + p.evaluacion + ' (' + p.pendientes.length + ')';
+        body.append(bar, h, lista(p.pendientes.map(x => x.clase + ' — ' + (x.docente || 'sin docente')), 'Todas las clases ya subieron notas.'));
+    } else if (alertaAbierta === 'docentes'){
+        h.textContent = 'Clases sin docente válido (' + d.clases_sin_docente.length + ')';
+        const h2 = document.createElement('h6'); h2.className = 'mt-3';
+        h2.textContent = 'Docentes sin clases asignadas (' + d.docentes_sin_clases.length + ')';
+        body.append(h, lista(d.clases_sin_docente, 'Todas las clases tienen docente.'),
+                    h2, lista(d.docentes_sin_clases, 'Todos los docentes tienen clases.'));
+    }
+    box.style.display = 'block';
+}
+
+function colorChip(k, n){
+    const c = document.querySelector('.alerta-chip[data-k="' + k + '"]');
+    c.classList.remove('warn', 'bad');
+    if (n > 0) c.classList.add(k === 'faltas' ? 'bad' : 'warn');
+}
+
+function actualizarAlertas(){
+    fetch({{ url_for('api_alertas')|tojson }}, { credentials:'same-origin' })
+        .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+        .then(d => {
+            alertasData = d;
+            // parcial por defecto: el último que ya tenga alguna nota
+            let ult = 0;
+            d.parciales.forEach((p, i) => { if (p.con_notas > 0) ult = i; });
+            if (!window._parcialElegido) parcialSel = ult;
+            document.getElementById('aNumAus').textContent = d.ausentes_hoy.length;
+            document.getElementById('aNumFal').textContent = d.muchas_faltas.length;
+            document.getElementById('aTxtFal').textContent = 'Con ' + d.umbral + '+ faltas (' + d.ventana + ' días)';
+            const pend = d.parciales[parcialSel].pendientes.length;
+            document.getElementById('aNumNot').textContent = pend;
+            const sinAsig = d.docentes_sin_clases.length + d.clases_sin_docente.length;
+            document.getElementById('aNumDoc').textContent = sinAsig;
+            colorChip('ausentes', d.ausentes_hoy.length);
+            colorChip('faltas', d.muchas_faltas.length);
+            colorChip('notas', pend);
+            colorChip('docentes', sinAsig);
+            pintarDetalle();
+        })
+        .catch(() => {});
+}
+
+document.querySelectorAll('.alerta-chip').forEach(c => c.addEventListener('click', () => {
+    alertaAbierta = (alertaAbierta === c.dataset.k) ? null : c.dataset.k;
+    pintarDetalle();
+}));
+actualizarAlertas();
+setInterval(actualizarAlertas, 60000);
 
 </script>
 
