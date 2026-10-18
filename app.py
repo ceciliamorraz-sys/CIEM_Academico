@@ -830,7 +830,7 @@ if evert:
 @role_required("admin", "director", "secretaria", "contadora")
 def admin_dashboard():
 
-    total_estudiantes = db.estudiantes.count_documents({})
+    total_estudiantes = contar_estudiantes_total()
     total_docentes = db.docentes.count_documents({})
     total_asignaturas = db.asignaturas.count_documents({})
     anio_lectivo = leer_anio_solicitado()
@@ -1092,6 +1092,72 @@ def listar_estudiantes_admin():
         return redirect(
             url_for("admin_dashboard")
         )
+# ==========================================================
+# ADMIN - DIAGNÓSTICO DE ESTUDIANTES DUPLICADOS
+# Explica por qué el total no es 182: lista fichas repetidas
+# (mismo nombre y apellidos) y fichas sin ninguna matrícula.
+# Solo lectura: no borra nada.
+# ==========================================================
+
+@app.route("/admin/estudiantes/duplicados")
+@role_required("admin", "director")
+def diagnostico_duplicados():
+
+    from collections import defaultdict
+    from markupsafe import escape
+
+    grupos = defaultdict(list)
+    sin_matricula = []
+
+    for e in db.estudiantes.find():
+        clave = tuple(
+            normalizar_texto(e.get(c, "") or "").lower()
+            for c in ("primer_nombre", "segundo_nombre",
+                      "primer_apellido", "segundo_apellido")
+        )
+        grupos[clave].append(e)
+
+        # Sin matrícula en el año vigente (2026), aunque tenga de otros años
+        if db.matriculas.count_documents({
+            "$and": [
+                {"$or": [{"estudiante_id": e["_id"]},
+                         {"codigo": e["_id"]}]},
+                _filtro_anio(ANIO_LECTIVO_VIGENTE)
+            ]
+        }) == 0:
+            sin_matricula.append(e)
+
+    def fila(e):
+        matriculas_e = list(db.matriculas.find(
+            {"$or": [{"estudiante_id": e["_id"]},
+                     {"codigo": e["_id"]}]},
+            {"anio_lectivo": 1}))
+        anios = sorted({str(m.get("anio_lectivo", "")) for m in matriculas_e})
+        return (f"<li><b>{escape(e['_id'])}</b> - "
+                f"{escape(e.get('nombre', ''))} | "
+                f"nac: {escape(e.get('fecha_nacimiento', ''))} | "
+                f"grado: {escape(e.get('grado', ''))} | "
+                f"matrículas: {len(matriculas_e)} "
+                f"(años: {escape(', '.join(anios) or 'ninguno')})</li>")
+
+    html = [f"<h2>Total de fichas: {contar_estudiantes_total()}</h2>",
+            "<h3>Fichas repetidas (mismo nombre y apellidos)</h3>"]
+    hay = False
+    for fichas in grupos.values():
+        if len(fichas) > 1:
+            hay = True
+            html.append("<ul>" + "".join(fila(f) for f in fichas)
+                        + "</ul><hr>")
+    if not hay:
+        html.append("<p>No hay repetidas por nombre.</p>")
+
+    html.append(f"<h3>Fichas sin matrícula {ANIO_LECTIVO_VIGENTE} "
+                f"({len(sin_matricula)})</h3><ul>"
+                + "".join(fila(f) for f in sin_matricula) + "</ul>")
+
+    return "".join(html)
+
+
 # ==========================================================
 # ADMIN - EDITAR ESTUDIANTE
 # ==========================================================
@@ -2047,6 +2113,31 @@ def anios_disponibles():
         except (TypeError, ValueError):
             pass
     return sorted(anios, reverse=True)
+
+
+def contar_estudiantes_total():
+    """Total de estudiantes del colegio (fichas unicas en
+    db.estudiantes). NO depende del año ni de las matrículas:
+    matricular/renovar nunca crea una ficha nueva si el
+    estudiante ya existe, así que este total no varía."""
+    return db.estudiantes.count_documents({})
+
+
+def buscar_posible_duplicado(primer_nombre, primer_apellido,
+                             segundo_apellido=""):
+    """Estudiante ya registrado con mismo primer nombre y
+    apellidos (aunque la fecha de nacimiento no coincida)."""
+    consulta = {
+        "primer_nombre": {"$regex": "^" + re.escape(
+            normalizar_texto(primer_nombre)) + "$", "$options": "i"},
+        "primer_apellido": {"$regex": "^" + re.escape(
+            normalizar_texto(primer_apellido)) + "$", "$options": "i"},
+    }
+    seg = normalizar_texto(segundo_apellido)
+    if seg:
+        consulta["segundo_apellido"] = {"$regex": "^" + re.escape(
+            seg) + "$", "$options": "i"}
+    return db.estudiantes.find_one(consulta)
 
 
 def contar_matriculas_anio(anio, solo_activas=False):
@@ -3048,6 +3139,23 @@ def agregar_matricula():
             # ==============================================
 
             else:
+
+                posible = buscar_posible_duplicado(
+                    primer_nombre,
+                    primer_apellido,
+                    segundo_apellido
+                )
+
+                if posible:
+                    flash(
+                        f"Ya existe un estudiante registrado como "
+                        f"{posible.get('nombre', '')} "
+                        f"({posible['_id']}). Selecciónelo en el "
+                        f"buscador para renovar su matrícula; así "
+                        f"el total de estudiantes no aumenta.",
+                        "warning"
+                    )
+                    return redirect(url_for("agregar_matricula"))
 
                 codigo = generar_codigo_estudiante(
 
@@ -5761,7 +5869,7 @@ def reporte_matriculas_pdf():
 def reporte_academico():
 
 
-    total_estudiantes = db.estudiantes.count_documents({})
+    total_estudiantes = contar_estudiantes_total()
 
     total_docentes = db.docentes.count_documents({})
 
